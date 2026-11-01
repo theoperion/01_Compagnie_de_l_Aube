@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Compagnie">
 <script>
   /* Adresse du moteur (Apps Script → Déployer → Gérer les déploiements → URL /exec) */
-  window.API_URL = 'https://script.google.com/macros/s/AKfycbw_eKBcTG1aNiKppaSDv3FFLRC8S1Kv7wiMbPipBiT7HkEEnysItWGbZIAsfsfz8V3J/exec';
+  window.API_URL = 'https://script.google.com/macros/s/AKfycby91ddycJx5IaoDfgyEwl420wCD1U-zp3hLcKG29GS4KVVcDkaCPiWXzDfo983IBucH/exec';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
@@ -565,6 +565,11 @@
   .stat2 .bar > i { background: linear-gradient(90deg, #3d6fb3, #6aa3ef); }
   .stat2-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
   .md.neg { color: var(--pv); }
+  .montre-recu { position: relative; margin: 0 0 8px; padding: 10px 34px 10px 12px; border-radius: 14px; border: 1px solid rgba(91,143,214,.45); background: linear-gradient(135deg, rgba(91,143,214,.14), rgba(91,143,214,.04)); animation: vitIn .4s ease-out; }
+  .montre-recu.ok { border-color: rgba(79,191,122,.5); background: linear-gradient(135deg, rgba(79,191,122,.14), rgba(79,191,122,.03)); }
+  .montre-recu b { display: block; font-size: 13.5px; } .montre-recu span { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .montre-recu em { display: block; font-style: normal; font-size: 12.5px; color: var(--ok); margin-top: 3px; font-weight: 600; }
+  .mr-x { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; border: 0; background: rgba(255,255,255,.06); color: var(--muted); cursor: pointer; }
   /* Défilement : les fenêtres défilent seules, sans entraîner la page derrière */
   .sheet { max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
   #vitrine, #bossVue, .cine, .d20-ov { overscroll-behavior: contain; }
@@ -1347,7 +1352,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-01-7';
+const VERSION_APP = '2026-11-01-8';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2638,9 +2643,31 @@ function nouvellesDe(s, dimanche) {
   if (m && m.rebond) L.push({ id: 'rebond|' + m.lundi, html: `<div class="evt on"><div class="evt-t">⚡ Rebondissement</div><div class="evt-e">${esc(m.rebond.effetTexte)}</div>${m.rebond.texte ? plie(m.rebond.texte, 'evt-x', 2) : ''}</div>` });
   const E = s.evenement, e = E && (E.actuel || E.prochain);
   if (e) { const sansMJ = Object.assign({}, s, { mj: null }); L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), html: carteEvenement(sansMJ, 2) }); }
+  ((s.reglages && s.reglages.montre) || []).forEach(m => { const t = texteMontre(m); L.push({ id: 'montre|' + m.id, html: `<div class="evt on"><div class="evt-t">${t.titre}</div><div class="evt-e">${t.detail} · ${t.statut}</div></div>` }); });
   if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, html: `<div class="section" style="margin-top:4px"><h2>Bilan du dimanche</h2><span>semaine du ${dateCourte(s.bilan.semaine.lundi)}</span></div>${carteBilan(s, true)}` });
   return L;
 }
+/* ---------- Reçu de la montre : la course (ou le renfo) arrive sur l'écran d'accueil ---------- */
+const cleMontreVus = () => 'montreVus|' + (herosActif || '');
+function montreVus() { try { return JSON.parse(localStorage.getItem(cleMontreVus()) || '[]'); } catch (e) { return []; } }
+function texteMontre(m) {
+  const allure = m.allure ? ` · ${Math.floor(m.allure / 60)}'${String(m.allure % 60).padStart(2, '0')}/km` : '';
+  const chiffres = [m.km ? String(m.km).replace('.', ',') + ' km' : '', m.min ? m.min + ' min' : ''].filter(Boolean).join(' · ') + allure;
+  const statut = m.valide === 'ok' ? `✓ « ${esc(m.quete)} » validée` : m.valide === 'deja' ? `« ${esc(m.quete)} » était déjà validée`
+    : /^ailleurs:/.test(m.valide) ? `déjà comptée pour le ${dateCourte(m.valide.slice(9))}` : m.quete ? 'séance en plus, rien à valider' : 'enregistrée';
+  return { titre: `⌚ ${m.type === 'renfo' ? 'Renfo' : 'Course'} reçue de ta montre · ${dateCourte(m.date)}`, detail: (m.nom ? esc(m.nom) + ' · ' : '') + chiffres, statut };
+}
+function bandeauMontre(s) {
+  const vus = montreVus(), L = ((s.reglages && s.reglages.montre) || []).filter(m => !vus.includes(m.id));
+  return L.map(m => { const t = texteMontre(m);
+    return `<div class="montre-recu ${m.valide === 'ok' ? 'ok' : ''}"><button class="mr-x" data-montre-vu="${esc(m.id)}" aria-label="J'ai vu">✕</button>
+      <b>${t.titre}</b><span>${t.detail}</span><em>${t.statut}</em></div>`; }).join('');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-montre-vu]'); if (!b) return;
+  const v = montreVus(); v.push(b.dataset.montreVu); try { localStorage.setItem(cleMontreVus(), JSON.stringify(v.slice(-40))); } catch (err) {}
+  render();
+});
 /** Une ligne de pastilles sur l'écran des quêtes : les bonus en cours, sans les textes (toucher → Nouvelles). */
 function effetsActifs(s) {
   const p = [], B = beneditionActive(s), m = s.mj, E = s.evenement && s.evenement.actuel;
@@ -3055,6 +3082,7 @@ function render() {
       <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles">📜 Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button></div>
     ${sousOnglet === 'nouvelles' ? vueNouvelles + '<div style="height:20px"></div>' : `
     ${bandeauHorsLigne(s)}
+    ${bandeauMontre(s)}
     ${effetsActifs(s)}
     ${carteD20(s)}
     ${carteBossMini(s)}
