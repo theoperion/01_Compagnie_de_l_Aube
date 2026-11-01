@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<script>window.API_URL='https://script.google.com/macros/s/AKfycbwO02BUkqfE5AEzBVw2xJHAgnLsNgwVrQYsn9FTnpGDbaPkU17haTB0e-qEN3-drNM1/exec';</script>
+<script>window.API_URL='https://script.google.com/macros/s/AKfycbznEQ6ZBfZojOoMh9CKwDqkxNRkFJjkHzis_pxWx21vIKqytPT0IeVeqiOeGojGizmL/exec';</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
@@ -139,12 +139,13 @@ label{font-weight:600;font-size:.92rem;display:grid;gap:4px;color:var(--muted)}
 .ex b{font-family:var(--display);font-size:.9rem}
 .figbox{background:radial-gradient(ellipse at 50% 120%,var(--str-soft),transparent 70%),var(--sunk);border-radius:10px;border:1px solid var(--line2)}
 .fig{width:100%;height:auto;display:block}
-.fig polyline,.fig line{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.fig .gnd{stroke:var(--line2);stroke-width:2}
-.fig .far{stroke:var(--muted);stroke-width:6;opacity:.5}
-.fig .torso{stroke:var(--fg);stroke-width:8}
-.fig .near{stroke:var(--str);stroke-width:7}
-.fig .head{fill:var(--fg)}
+.fig .gnd{stroke:var(--line2);stroke-width:2;stroke-linecap:round}
+.fig .ombre{fill:rgba(0,0,0,.28)}
+.fig .tapis{fill:var(--str);opacity:.28}
+.fig .mur{fill:var(--line2);opacity:.55}.fig .marche{fill:var(--line2);opacity:.8}
+.fig .sk{fill:#e7b48f}.fig .shirt{fill:var(--str)}.fig .short{fill:#2f3b5c}.fig .shoe{fill:#3c4152}
+.fig .hair{fill:#3a281d}.fig .eye{fill:#2a1b12}.fig .halt{fill:#6f7684}
+.fig .loin{filter:brightness(.68) saturate(.85)}
 .player{display:grid;gap:12px;background:linear-gradient(180deg,#241a40,var(--surface));border:1px solid var(--str);border-radius:var(--r);padding:16px}
 .player .phase{font-family:var(--display);font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
 .player .phase.work{color:var(--str)} .player .phase.rest{color:var(--muted)}
@@ -327,7 +328,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
-const VERSION_CARNET_APP = '2026-11-02-2'; // affichée en bas des réglages
+const VERSION_CARNET_APP = '2026-11-02-3'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
@@ -1289,13 +1290,14 @@ function renderRun(){
     <div class="mapwrap">${mapSVG(W)}</div>
     <div class="row small muted"><span>cercle rouge : séance de qualité</span><span>·</span><span>grand cercle : sortie longue</span><span>·</span><span>losange : course</span></div></details>
     ${pauseVacances()}
+    ${wi>=0&&wi<W.length?'<button class="btn sm" id="goWeek" style="margin:6px 0">↓ Aller à la semaine en cours</button>':""}
     ${decalerHTML()}
     ${epicHTML(EPICS.run,epicDone("run"))}
   </div>
   ${histoHTML()}
-  <div class="card"><h2>Tes allures</h2>
+  <div class="card"><details id="allures"${valid?"":" open"}><summary><h2 style="display:inline">⏱ Tes allures</h2>${valid?` <span class="small muted">· EF ${mmss(P.EF)} · 10 km ${mmss(P.AS10)}</span>`:""}</summary>
     ${valid?`<div class="paces">${Object.keys(zoneTxt).map(k=>`<div class="pace"><span class="small muted">${zoneTxt[k]}</span><b>${mmss(P[k])}/km</b></div>`).join("")}</div>`:'<p class="err">Objectif invalide : écris-le sous la forme 42:00 dans les réglages.</p>'}
-    <p class="small muted">Calculées à partir de ton objectif (${esc(state.run.goal)}). Ton dernier 10 km : ${esc(state.run.ref)}. Si l'endurance te semble dure, ralentis : c'est l'erreur la plus courante.</p>
+    <p class="small muted">Calculées à partir de ton objectif (${esc(state.run.goal)}). Ton dernier 10 km : ${esc(state.run.ref)}. Si l'endurance te semble dure, ralentis : c'est l'erreur la plus courante.</p></details>
   </div>
   ${W.map((w,i)=>{const st=S[i];const sl=state.str.logs[st.key];const rows=[...w.s.map(s=>({...s,kind:"run"})),{kind:"str",dow:STR_DAY,date:st.date,st,sl}].sort((a,b)=>a.dow-b.dow);
   const wd=w.s.filter(s=>state.run.logs[s.key]).length;
@@ -1313,6 +1315,7 @@ function renderRun(){
   p.querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>{const k=b.dataset.log;if(state.run.logs[k]){delete state.run.logs[k];save();renderAll()}else{openLog=k;renderRun()}});
   p.querySelectorAll("[data-gostr]").forEach(b=>b.onclick=()=>setTab("str"));
   bindDecaler(); bindHisto();
+  $("#goWeek")&&($("#goWeek").onclick=()=>document.getElementById("curweek")?.scrollIntoView({block:"start",behavior:"smooth"}));
   p.querySelectorAll("[data-rpe]").forEach(b=>b.onclick=()=>{const l=state.run.logs[b.dataset.rpe];if(l){l.rpe=+b.dataset.v;save();renderRun()}});
   p.querySelectorAll("[data-story]").forEach(b=>b.onclick=async()=>{
     const k=b.dataset.story, l=state.run.logs[k]; let ss=null, ww=null;
@@ -1410,15 +1413,52 @@ EX.gainage.name="Gainage frontal";
 function fullPose(P){const q={...P};const sh=(a)=>[a[0]-4,a[1]];
   q.t=q.t||[q.f[0]+9,q.f[1]+2];q.e2=q.e2||sh(q.e);q.w2=q.w2||sh(q.w);q.k2=q.k2||sh(q.k);q.f2=q.f2||sh(q.f);q.t2=q.t2||sh(q.t);return q}
 for(const k in EX){EX[k].FA=fullPose(EX[k].A);EX[k].FB=fullPose(EX[k].B)}
-function figSVG(id,cls=""){return `<svg class="fig ${cls}" data-ex="${id}" viewBox="0 0 200 160" role="img" aria-label="Animation : ${esc(EX[id].name)}"><line class="gnd" x1="4" y1="153" x2="196" y2="153"/><polyline class="far"/><polyline class="far"/><line class="torso"/><polyline class="near"/><polyline class="near"/><circle class="head" r="9"/></svg>`}
+/* Personnage du renfo : silhouette pleine (tête, cheveux, t-shirt, short, baskets), membres arrondis et effilés,
+   côté éloigné assombri, ombre au sol et accessoire de l'exercice (tapis, mur, marche, haltère). */
+const PROPS={tapis:["pont","pont1j","gainage","gainage_lat","mountain","birddog","pompes","deadbug","legcurl"],
+  mur:["chaise","tibial"],marche:["stepup"],halt:["mollet_ext"]};
+const propDe=id=>Object.keys(PROPS).filter(k=>PROPS[k].includes(id));
+function figSVG(id,cls=""){
+  const P=propDe(id), A=EX[id]&&EX[id].FA;
+  let decor="";
+  if(P.includes("tapis")) decor+=`<rect class="tapis" x="14" y="150" width="172" height="5" rx="2.5"/>`;
+  if(P.includes("mur")&&A){const x=Math.min(A.n[0],A.p[0])-10;decor+=`<rect class="mur" x="${x-10}" y="2" width="10" height="151" rx="2"/>`}
+  if(P.includes("marche")&&A){const x=A.f[0]-14;decor+=`<rect class="marche" x="${x}" y="${A.f[1]+5}" width="34" height="${153-A.f[1]-5}" rx="3"/>`}
+  const seg=c=>`<path class="${c}"/>`;
+  return `<svg class="fig ${cls}" data-ex="${id}" viewBox="0 0 200 160" role="img" aria-label="Animation : ${esc(EX[id].name)}">
+  ${decor}<ellipse class="ombre" cx="100" cy="153" rx="34" ry="3"/><line class="gnd" x1="4" y1="153" x2="196" y2="153"/>
+  <g class="loin">${seg("sk bras2")}${seg("shirt manche2")}${seg("sk avb2")}<circle class="sk main2" r="3"/>${seg("sk cuisse2")}${seg("short jambe2")}${seg("sk tibia2")}${seg("shoe pied2")}</g>
+  ${seg("sk cou")}${seg("short bassin")}${seg("shirt tronc")}
+  ${seg("sk cuisse")}${seg("short jambe")}${seg("sk tibia")}${seg("shoe pied")}
+  <circle class="hair cheveux" r="8.8"/><circle class="sk visage" r="8"/><circle class="eye oeil" r="1.1"/>
+  ${P.includes("halt")?'<g class="haltere"><rect class="halt" x="-7" y="-1.6" width="14" height="3.2" rx="1.2"/><rect class="halt" x="-8.5" y="-4.5" width="4" height="9" rx="1.5"/><rect class="halt" x="4.5" y="-4.5" width="4" height="9" rx="1.5"/></g>':""}
+  ${seg("sk bras")}${seg("shirt manche")}${seg("sk avb")}<circle class="sk main" r="3.2"/>
+</svg>`}
+/* Membre arrondi et effilé de a (rayon ra) à b (rayon rb) */
+function capsule(a,b,ra,rb){
+  const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1e-6,nx=-dy/L,ny=dx/L,f=v=>v.toFixed(1);
+  return `M${f(a[0]+nx*ra)} ${f(a[1]+ny*ra)}L${f(b[0]+nx*rb)} ${f(b[1]+ny*rb)}A${rb} ${rb} 0 0 0 ${f(b[0]-nx*rb)} ${f(b[1]-ny*rb)}L${f(a[0]-nx*ra)} ${f(a[1]-ny*ra)}A${ra} ${ra} 0 0 0 ${f(a[0]+nx*ra)} ${f(a[1]+ny*ra)}Z`}
+const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
 function drawFig(svg,q){
-  const pl=svg.querySelectorAll("polyline"), pt=a=>a.map(x=>x.join(",")).join(" ");
-  pl[0].setAttribute("points",pt([q.n,q.e2,q.w2]));
-  pl[1].setAttribute("points",pt([q.p,q.k2,q.f2,q.t2]));
-  pl[2].setAttribute("points",pt([q.p,q.k,q.f,q.t]));
-  pl[3].setAttribute("points",pt([q.n,q.e,q.w]));
-  const tl=svg.querySelector(".torso");tl.setAttribute("x1",q.n[0]);tl.setAttribute("y1",q.n[1]);tl.setAttribute("x2",q.p[0]);tl.setAttribute("y2",q.p[1]);
-  const h=svg.querySelector(".head");h.setAttribute("cx",q.h[0]);h.setAttribute("cy",q.h[1]);
+  const S=(c,d)=>{const e=svg.querySelector("."+c);if(e)e.setAttribute("d",d)};
+  const C=(c,p)=>{const e=svg.querySelector("."+c);if(e){e.setAttribute("cx",p[0].toFixed(1));e.setAttribute("cy",p[1].toFixed(1))}};
+  // côté éloigné
+  S("bras2",capsule(q.n,q.e2,3.6,3));S("manche2",capsule(q.n,mix(q.n,q.e2,.45),4.4,3.9));S("avb2",capsule(q.e2,q.w2,3,2.4));C("main2",q.w2);
+  S("cuisse2",capsule(q.p,q.k2,6.2,4.4));S("jambe2",capsule(q.p,mix(q.p,q.k2,.5),6.8,5.4));S("tibia2",capsule(q.k2,q.f2,4.3,3));S("pied2",capsule(mix(q.f2,q.t2,-.25),q.t2,3.2,2.5));
+  // tronc : épaules → taille (t-shirt), taille → hanches (short), cou
+  const u=[q.h[0]-q.n[0],q.h[1]-q.n[1]],lu=Math.hypot(u[0],u[1])||1,up=[u[0]/lu,u[1]/lu],face=[-up[1],up[0]];
+  const taille=mix(q.n,q.p,.62);
+  S("tronc",capsule(mix(q.n,q.p,-.04),mix(q.n,q.p,.78),8.6,7));S("bassin",capsule(mix(q.n,q.p,.6),q.p,7.2,7.6));
+  S("cou",capsule(q.n,mix(q.n,q.h,.6),3.4,3.2));
+  // côté proche
+  S("cuisse",capsule(q.p,q.k,6.6,4.6));S("jambe",capsule(q.p,mix(q.p,q.k,.5),6.9,5.6));S("tibia",capsule(q.k,q.f,4.5,3.1));
+  S("pied",capsule(mix(q.f,q.t,-.25),q.t,3.4,2.6));  // tête : cheveux derrière, visage, œil du côté où il regarde
+  C("cheveux",[q.h[0]-face[0]*1.8+up[0]*.9,q.h[1]-face[1]*1.8+up[1]*.9]);C("visage",[q.h[0]+face[0]*.9,q.h[1]+face[1]*.9]);
+  C("oeil",[q.h[0]+face[0]*5+up[0]*1.3,q.h[1]+face[1]*5+up[1]*1.3]);
+  S("bras",capsule(q.n,q.e,3.9,3.2));S("manche",capsule(q.n,mix(q.n,q.e,.45),4.8,4.2));S("avb",capsule(q.e,q.w,3.2,2.6));C("main",q.w);
+  const h=svg.querySelector(".haltere");if(h)h.setAttribute("transform",`translate(${q.w[0].toFixed(1)},${(q.w[1]+2).toFixed(1)})`);
+  // ombre sous le corps
+  const o=svg.querySelector(".ombre");if(o){const xs=[q.p[0],q.n[0],q.f[0],q.f2[0]];const a=Math.min(...xs),b=Math.max(...xs);o.setAttribute("cx",((a+b)/2).toFixed(1));o.setAttribute("rx",Math.max(16,(b-a)/2+12).toFixed(1))}
 }
 function animate(now){
   document.querySelectorAll("svg.fig").forEach(svg=>{
@@ -1777,7 +1817,7 @@ function bindAcct(){
 let tab="en", lastTab="en";
 /* Bouton maison : revient à l'app de la Compagnie (onglet Quêtes) ; ouvert seul, le Carnet mène à l'app */
 document.getElementById("maison").onclick=()=>{try{if(window.parent!==window){window.parent.postMessage({t:"compagnie-retour"},"*");return}}catch(e){}location.href="./"};
-function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);try{localStorage.setItem("quetes-tab",t)}catch(e){}if(t==="run")setTimeout(()=>document.getElementById("curweek")?.scrollIntoView({block:"start",behavior:"smooth"}),50)}
+function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);try{localStorage.setItem("quetes-tab",t)}catch(e){}}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setTab(b.dataset.go));
 $("#gear").onclick=()=>setTab(tab==="set"?lastTab:"set");

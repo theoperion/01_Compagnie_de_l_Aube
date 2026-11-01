@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Compagnie">
 <script>
   /* Adresse du moteur (Apps Script → Déployer → Gérer les déploiements → URL /exec) */
-  window.API_URL = 'https://script.google.com/macros/s/AKfycbwO02BUkqfE5AEzBVw2xJHAgnLsNgwVrQYsn9FTnpGDbaPkU17haTB0e-qEN3-drNM1/exec';
+  window.API_URL = 'https://script.google.com/macros/s/AKfycbznEQ6ZBfZojOoMh9CKwDqkxNRkFJjkHzis_pxWx21vIKqytPT0IeVeqiOeGojGizmL/exec';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
@@ -73,7 +73,11 @@
   .profil { cursor: pointer; margin: -6px -8px; padding: 6px 8px; border-radius: 14px; -webkit-tap-highlight-color: transparent; transition: background .15s; }
   .profil:active { background: #221c2a; }
   .profil .hero-txt { flex: 1; min-width: 0; }
-  .profil .chev { color: var(--gold); font-size: 26px; line-height: 1; opacity: .7; }
+  .profil .chev { color: var(--gold); font-size: 26px; line-height: 1; opacity: .8; display: flex; align-items: center; gap: 2px; margin-right: 34px; }
+  .avenir-bloc { margin: 10px 0 4px; } .avenir-bloc summary { cursor: pointer; color: var(--muted); font-size: 13px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 12px; list-style: none; }
+  .avenir-bloc summary::-webkit-details-marker { display: none; } .avenir-bloc[open] summary { color: var(--gold); margin-bottom: 6px; }
+  .card.avenir { opacity: .6; filter: saturate(.5); pointer-events: none; }
+  .profil .chev small { font: 600 10px var(--f-texte); letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 3px 7px; opacity: .9; }
   .lvl { width: 66px; height: 66px; flex: none; border-radius: 50%;
     display: grid; place-items: center; position: relative;
     background: conic-gradient(var(--gold) calc(var(--p) * 1%), #3a3145 0);
@@ -1337,7 +1341,7 @@ let busy = new Set();
 let filtre = 'Tout';
 let onglet = 'quetes';
 let profilErreur = '';
-let profil = null, profilCharge = false, decQuete = '', ongletPrec = 'quetes';
+let profil = null, profilCharge = false, decQuete = '', ongletPrec = 'quetes', modeProfil = 'profil'; // profil : perso, Life Grid, records, histoire ; reglages : la roue ⚙️
 const confort = () => (state && state.reglages && state.reglages.confort) || { animations: true, vibrations: true };
 function vib(p) { if (confort().vibrations && navigator.vibrate) navigator.vibrate(p); }
 try { onglet = localStorage.getItem('onglet') || 'quetes'; } catch (e) {}
@@ -1352,7 +1356,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-02-2';
+const VERSION_APP = '2026-11-02-4';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2258,7 +2262,7 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
-const VERSION_CARNET = '2026-11-02-2'; // change à chaque livraison : force le téléphone à recharger carnet.html
+const VERSION_CARNET = '2026-11-02-3'; // change à chaque livraison : force le téléphone à recharger carnet.html
 function afficherCarnet(oui) {
   const box = document.getElementById('carnetBox');
   if (!box) return;
@@ -2403,7 +2407,7 @@ function dessinerVitrine() {
   const orn = moi ? ornementsDe(state) : (s.ornements || {});
   const svg = orner(cl.dessin(pal, 'vit', lookDe(s.look)), orn, 'vit', true);
   const mage = !/voleur|assassin|roublard/i.test((s.classe || {}).nom || '');
-  const mode3d = vue3d();
+  const mode3d = false; // figurine 3D retirée (rendu jugé raté) : vitrine 2D seule
   const parts = Array.from({ length: 14 }, (_, i) => `<i style="left:${8 + (i * 61) % 84}%;animation-delay:${(i * .73) % 6}s;animation-duration:${5 + (i % 4)}s"></i>`).join('');
   // petites tuiles : toucher = porter / retirer ; « ? » = comment on le gagne
   const coll = moi ? EMPLACEMENTS.map(E => {
@@ -2425,7 +2429,6 @@ function dessinerVitrine() {
       <div class="vit-rot ${mode3d ? 'fig' : ''}" id="vitRot"><div class="vit-saut" id="vitSaut"><div class="vit-perso" id="vitPerso">${mode3d ? figurine3d(svg) : svg}</div></div></div>
       <div class="vit-ombre"></div>
     </div>
-    <div class="vit-mode"><button class="${mode3d ? '' : 'on'}" data-vue3d="0">2D</button><button class="${mode3d ? 'on' : ''}" data-vue3d="1">Figurine 3D</button></div>
     <p class="vit-aide">${mode3d ? 'Fais tourner la figurine du doigt · touche-la pour la saluer' : 'Incline-le du doigt · touche-le pour le saluer'}</p>
     <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche une forme atteinte pour revoir son évolution' : 'toucher'}</span></div>
     <div class="evo-rang">${evos}</div>
@@ -2909,7 +2912,7 @@ function carteHabitude(h, petite) {
       <div class="name">${esc(h.nom)}</div>${h.sous ? `<div class="sous">${esc(h.sous)}</div>` : ''}
       <div class="meta">${h.serieNb > 0 && h.serie > 0 ? `<span class="streak">🔥 ${h.serie} j</span> · ` : ''}${rythme}${h.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(h.nom)}</div>
       ${gains(h)}
-      ${(h.decalages || []).map(x => `<span class="chip d">↔ ${JOURS_LONGS[indexJour(x.de)]} → ${JOURS_LONGS[indexJour(x.a)]}</span>`).join(' ')}
+      ${(h.decalages || []).map(x => `<span class="chip d">↔ séance du ${JOURS_LONGS[indexJour(x.de)]} déplacée au ${JOURS_LONGS[indexJour(x.a)]}</span>`).join(' ')}
     </div>
     <div class="right">
       <div class="week ${okSem ? 'ok' : ''}"><b>${h.semaine}/${h.objectif}</b> sem.</div>
@@ -2917,6 +2920,16 @@ function carteHabitude(h, petite) {
     </div>
     <button class="more" data-more="${esc(h.nom)}" aria-label="Plus d'options">⋯</button>
   </div>`;
+}
+
+/* Aperçu des annexes qui ouvrent bientôt (« Disponible dès le » dans les 14 jours), regroupées par date d'ouverture */
+function aVenirHTML(s) {
+  const L = s.annexesAVenir || []; if (!L.length) return '';
+  const parDate = {}; L.forEach(a => (parDate[a.des] = parDate[a.des] || []).push(a));
+  return Object.keys(parDate).sort().map(d => { const g = parDate[d];
+    return `<details class="avenir-bloc"><summary>🔒 ${g.length > 1 ? g.length + ' quêtes ouvrent' : '1 quête ouvre'} le ${dateLongueCourte(d)}</summary>
+      <div class="list">${g.map(a => `<div class="card small avenir"><div class="icon">${ICONES[a.carac] || '⭐'}</div><div class="body"><div class="name">${esc(a.nom)}</div>${a.sous ? `<div class="sous">${esc(a.sous)}</div>` : ''}
+        <div class="meta">${a.xp} XP · du ${dateCourte(a.des)}${a.echeance ? ' au ' + dateCourte(a.echeance) : ''}</div></div></div>`).join('')}</div></details>`; }).join('');
 }
 
 /* Quêtes à paliers (colonne « Palier de » du Sheet) : une seule carte, un seul palier validé par mois */
@@ -3050,16 +3063,16 @@ function render() {
     ${enLigne || distant ? '' : '<div class="demo">Aperçu avec des données fictives : rien n\'est enregistré</div>'}
     <div class="compagnie"><b>☀ La Compagnie de l'Aube ☀</b><span>Ce que l'on tient chaque jour forge ce que l'on devient.</span></div>
     <header>
-      <div class="hero-row profil" data-tab="profil" role="button" aria-label="Ouvrir le profil du héros">
+      <div class="hero-row profil" data-tab="profil" data-mode="profil" role="button" aria-label="Ouvrir le profil du héros">
         <div class="lvl" style="--p:${p}"><span>${s.niveau}</span><small>NIV</small></div>
         <div class="hero-txt">
           <div class="hero-name">${esc(s.heros)}</div>
           <div class="hero-title">${esc(s.titre)}${surnomDe(s) ? ` <span class="surnom">« ${esc(surnomDe(s))} »</span>` : ''}</div>
           <div class="hero-sub">${Math.round(Number(s.xpTotale)).toLocaleString('fr-FR')} XP · ${s.etat}<span class="joker">🃏 ${s.jokersRestants}/${s.jokersParSemaine}</span>${s.d20 ? `<span class="joker">🎲 ${s.d20.de}</span>` : ''}</div>
         </div>
-        <span class="chev">›</span>
+        <span class="chev"><small>Profil</small>›</span>
       </div>
-      <button class="engrenage" data-tab="profil" aria-label="Réglages">⚙️</button>
+      <button class="engrenage" data-tab="profil" data-mode="reglages" aria-label="Réglages">⚙️</button>
       <div class="bars">
         <div><div class="bar-label"><span>Expérience</span><span><b>${s.xpSuivant}</b> XP avant le niveau ${s.niveau + 1}</span></div>
           <div class="bar xp"><i style="width:${p}%"></i></div></div>
@@ -3094,9 +3107,10 @@ function render() {
     <div class="list">${plusTard.map(h => carteHabitude(h, true)).join('')}</div>` : ''}
     ${annexes.length ? `<div class="section"><h2>Quêtes annexes</h2><span>facultatives · XP ×1,5</span></div>
     <div class="list">${regrouperPaliers(annexes).map(a => a.membres ? carteGroupe(a) : carteAnnexe(a)).join('')}</div>` : ''}
+    ${aVenirHTML(s)}
     ${epiques.length ? `<div class="section"><h2>Quêtes épiques</h2><span>trait doré = temps écoulé</span></div>
     <div class="list">${epiques.map(carteEpique).join('')}</div>` : ''}
-    ${enPause.length ? `<button class="pause-note" data-tab="profil">⏸ ${enPause.length > 1 ? enPause.length + ' quêtes en pause' : esc(enPause[0].nom) + ' est en pause'} · gérer dans ton profil</button>` : ''}`}`;
+    ${enPause.length ? `<button class="pause-note" data-tab="profil" data-mode="reglages">⏸ ${enPause.length > 1 ? enPause.length + ' quêtes en pause' : esc(enPause[0].nom) + ' est en pause'} · gérer dans les réglages ⚙️</button>` : ''}`}`;
 
   const CL = classeDe(s), pal = palierDe(s.niveau, CL), prochain = CL.paliers[pal + 1];
   const cl = s.classe || { nom: 'Magicien', fav1: 'Intelligence', fav2: 'Sagesse', bonus: 1.1, epiques: 1.2 };
@@ -3133,8 +3147,6 @@ function render() {
     <div class="panel">${capas}</div>
     ${s.bilan.precedente && textesClaude['coach|' + s.bilan.precedente.lundi] ? `<div class="panel coach"><b>🧙 Le mot du mentor</b>${plie(textesClaude['coach|' + s.bilan.precedente.lundi])}</div>` : ''}
     ${blocTitres(s)}
-    <div class="section"><h2>Bilan</h2><span>semaine du ${dateCourte(s.bilan.semaine.lundi)}</span></div>
-    ${carteBilan(s, dimanche)}
     <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
     <div class="panel">${series}</div>
     ${calendrierHTML(s)}
@@ -3142,7 +3154,7 @@ function render() {
     <div class="section"><h2>Caractéristiques</h2><span>score · bonus au d20</span></div>
     <div class="panel">${statsHtml}
       <div class="stat-note">Chaque quête donne 100 % de son XP à sa carac. principale et 50 % en plus à la secondaire. Les scores de départ viennent de ta classe et de tes caractéristiques favorites (15 · 14 · 13 · 12 · 10 · 10 · 8, comme une répartition de D&D), puis +1 tous les ${Number(s.xpParPoint).toLocaleString('fr-FR')} XP, jusqu'à 20. Les bases sont modifiables dans le Sheet (onglet Personnage, colonne H).</div></div>
-    <button class="vac-btn" data-tab="profil">⚙️ Profil et réglages (vacances, pauses, rappel…)</button>`;
+    <button class="vac-btn" data-tab="profil" data-mode="reglages">⚙️ Réglages (vacances, pauses, rappel…)</button>`;
 
   const coop = (s.compagnons || []).length > 0;
   if (!coop && onglet === 'compagnie') onglet = 'quetes';
@@ -3163,7 +3175,7 @@ function render() {
       <button data-tab="quetes" class="${onglet === 'quetes' ? 'on' : ''}"><span>⚔️</span>Quêtes${duJour.length - faits > 0 && !s.vacances ? `<i>${duJour.length - faits}</i>` : ''}</button>
       ${distant && s.carnet ? `<button data-tab="carnet" class="${onglet === 'carnet' ? 'on' : ''}"><span>📖</span>Carnet</button>` : ''}
       ${aBoss ? `<button data-tab="combat" class="${onglet === 'combat' ? 'on' : ''}"><span>🐉</span>Combat${bossEnCours ? `<i class="pvb">${bossEnCours}%</i>` : ''}</button>` : ''}
-      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros${dimanche ? '<i>!</i>' : ''}</button>
+      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros</button>
       ${coop ? `<button data-tab="compagnie" class="${onglet === 'compagnie' ? 'on' : ''}"><span>🤝</span>Compagnie</button>` : ''}
     </nav>`);
   if (onglet === 'profil' && change) dessinerGrille();
@@ -3414,10 +3426,16 @@ function vueProfil(s) {
       ${sv.dossier ? `<a class="lien" href="${esc(sv.dossier)}" target="_blank">📁 Ouvrir le dossier des sauvegardes</a>` : ''}
     </div>`;
 
+  if (modeProfil === 'reglages') return `
+    <button class="back" data-tab="${ongletPrec}">‹ Retour</button>
+    <div class="section"><h2>⚙️ Réglages</h2><span>enregistrés dans le Sheet</span></div>
+    ${regTheme}${regVac}${regVoyage}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
+    ${(s.compagnie || []).length > 1 ? '<button class="lien changer" data-pr="changer-heros" style="position:static;display:block;margin:10px auto">⇄ Changer de héros sur ce téléphone</button>' : ''}
+    <div class="version">La Compagnie de l'Aube · app ${VERSION_APP} · moteur ${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}${lireAttente().length ? ' · ' + lireAttente().length + ' saisie(s) en attente' : ''}</div>`;
   return `
     <button class="back" data-tab="${ongletPrec}">‹ Retour</button>
-    ${(s.compagnie || []).length > 1 ? '<button class="lien changer" data-pr="changer-heros">⇄ Changer de héros</button>' : ''}
-    <div class="id-card sans-av">
+    <div class="id-card">
+      <div class="id-av" data-vitrine="1" role="button" aria-label="Voir ton personnage en grand">${avatar(pal, 'p', s)}</div>
       <div>
         <div class="nm">${esc(s.heros)}</div>
         <div class="tt">${esc(s.titre)} · niveau ${s.niveau} · ${esc((s.classe || {}).nom || 'Magicien')}</div>
@@ -3428,10 +3446,7 @@ function vueProfil(s) {
     <details class="lg" ${lgOuverte ? 'open' : ''}><summary><div class="section"><h2><span class="fl">›</span> Ta vie en semaines</h2><span>Life Grid · toucher pour ouvrir</span></div></summary>
     ${grille}</details>
     ${records ? `<div class="section"><h2>Records</h2><span>depuis le début de l'aventure</span></div>${records}` : ''}
-    ${histoire ? `<div class="section"><h2>Ton histoire</h2><span>modifiable dans le Sheet</span></div>${histoire}` : ''}
-    <div class="section"><h2>Réglages</h2><span>enregistrés dans le Sheet</span></div>
-    ${regTheme}${regVac}${regVoyage}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
-    <div class="version">La Compagnie de l'Aube · app ${VERSION_APP} · moteur ${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}${lireAttente().length ? ' · ' + lireAttente().length + ' saisie(s) en attente' : ''}</div>`;
+    ${histoire ? `<div class="section"><h2>Ton histoire</h2><span>modifiable dans le Sheet</span></div>${histoire}` : ''}`;
 }
 
 function dessinerGrille() {
@@ -3855,10 +3870,11 @@ document.addEventListener('click', e => {
   if (t) {
     const cible = t.dataset.tab;
     if (cible === 'profil' && onglet !== 'profil') ongletPrec = onglet;
+    if (cible === 'profil') modeProfil = t.dataset.mode === 'reglages' ? 'reglages' : 'profil';
     onglet = cible;
     try { localStorage.setItem('onglet', onglet === 'profil' ? ongletPrec : onglet); } catch (err) {}
     render(); window.scrollTo(0, 0);
-    if (onglet === 'profil') chargerProfil();
+    if (onglet === 'profil' && modeProfil === 'profil') chargerProfil();
     return;
   }
   const pr = e.target.closest('[data-pr]');
@@ -4156,7 +4172,7 @@ function choisirHerosEcran() {
   api('getHeros').then(liste => {
     if (liste.length <= 1) { herosActif = liste[0] ? liste[0].nom : ''; lancer(); return; }
     document.getElementById('app').innerHTML = `<div class="choix"><h1>Qui rejoint la Compagnie ?</h1>
-      <p>Ce téléphone s'en souviendra. Tu pourras changer depuis ton profil.</p>
+      <p>Ce téléphone s'en souviendra. Tu pourras changer dans les réglages ⚙️.</p>
       ${liste.map((h, i) => {
         const cl = classeDe({ classe: { nom: h.classe } });
         return `<button data-choix="${esc(h.nom)}">${cl.dessin(palierDe(Number(h.niveau) || 1, cl), 'ch' + i, lookDe(h.look))}
