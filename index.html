@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Compagnie">
 <script>
   /* Adresse du moteur (Apps Script → Déployer → Gérer les déploiements → URL /exec) */
-  window.API_URL = 'https://script.google.com/macros/s/AKfycbxrJdBY5fmNF8xPEkw_klKspUEvDTfvT8P1Kk6DMqKMmMUFCpZrauQXCMxK6CwTofiW/exec';
+  window.API_URL = 'https://script.google.com/macros/s/AKfycbynEOmY354fjOFKSGK0v7eL7NqG6KtNEFg1lpUBlWYacb_0kU7H-azT2bkFpaMEXNQs/exec';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
@@ -218,6 +218,8 @@
   .d20-sub { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 0 0 6px; }
   .d20 { width: 170px; height: 170px; display: block; margin: 10px auto; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55)); }
   .d20 text { font-family: Cinzel, serif; font-weight: 800; }
+  .horsligne { margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; border: 1px dashed #6a5320; background: rgba(212,173,60,.07); font-size: 13px; line-height: 1.45; }
+  .horsligne span { color: var(--muted); font-size: 12px; } .horsligne .btn { margin-top: 8px; }
   .d20.roule { animation: rouler .35s linear infinite; }
   @keyframes rouler { 0% { transform: rotate(0) scale(.92); } 50% { transform: rotate(180deg) scale(1.05); } 100% { transform: rotate(360deg) scale(.92); } }
   .d20.pose { animation: poser .45s cubic-bezier(.2,1.6,.4,1); }
@@ -1010,7 +1012,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-10-29-3';
+const VERSION_APP = '2026-11-01-1';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -1028,7 +1030,7 @@ async function appelDistant(fn, args) {
       }
     } catch (e) {
       if (essai < 2 && LECTURES.has(fn)) { await pause(1200 * (essai + 1)); continue; }
-      if (fn !== 'signalerErreurs') signaler({ ou: 'réseau', fn, msg: String((e && e.message) || e) });
+      if (fn !== 'signalerErreurs' && navigator.onLine !== false) signaler({ ou: 'réseau', fn, msg: String((e && e.message) || e) });
       throw /Failed to fetch|NetworkError|Load failed/i.test(String(e && e.message)) ? new Error('Pas de connexion au Sheet (réseau)') : e;
     }
     // Sheet occupé par une autre action : rien n'a été fait, on réessaie tout seul
@@ -1052,6 +1054,67 @@ function apiFond(fn, ...args) {
   fileFond = p.catch(() => {}).then(() => pause(250));
   return p;
 }
+/* ---------- Hors connexion ----------
+ * Chaque saisie part avec un identifiant et sa vraie date. Sans réseau, elle reste dans une file sur le téléphone
+ * (avec l'effet déjà visible à l'écran) et part au Sheet dès que le réseau revient. Le Sheet ne compte jamais deux fois la même.
+ */
+function isoLocal(d) { d = d || new Date(); const z = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()); }
+function isoLocalPlus(n) { const d = new Date(); d.setDate(d.getDate() + n); return isoLocal(d); }
+const nouvelId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function estHorsLigne(e) { return (typeof navigator !== 'undefined' && navigator.onLine === false) || /Pas de connexion|Failed to fetch|NetworkError|Load failed|Réponse inattendue/i.test(String((e && e.message) || e)); }
+const cleAttente = () => 'attente|' + (herosActif || '');
+function lireAttente() { try { return JSON.parse(localStorage.getItem(cleAttente()) || '[]'); } catch (e) { return []; } }
+function ecrireAttente(l) { try { localStorage.setItem(cleAttente(), JSON.stringify(l)); } catch (e) {} }
+function mettreEnAttente(item) { const l = lireAttente(); l.push(item); ecrireAttente(l); if (state) { memoriserEtat(); render(); } }
+let envoiAttente = null;
+/** Envoie la file d'attente au Sheet. Renvoie l'état du Sheet (ou null si rien à envoyer / pas de réseau). */
+function envoyerAttente(silencieux) {
+  if (envoiAttente) return envoiAttente;
+  const l = lireAttente();
+  if (!l.length || !(distant || enLigne)) return Promise.resolve(null);
+  const lot = l.slice(0, 60);
+  envoiAttente = api('saisirHorsLigne', lot).then(etat => {
+    const res = etat.horsLigne || [];
+    const traites = new Set(res.map(r => r.id));
+    ecrireAttente(lireAttente().filter(x => !traites.has(x.id)));
+    const refus = res.filter(r => !r.ok);
+    const ok = res.filter(r => r.ok && !r.deja).length;
+    if (refus.length) toast(`${refus.length} saisie(s) hors connexion refusée(s) : ${refus[0].message}`);
+    else if (ok && !silencieux) toast(`📶 De retour en ligne : ${ok} saisie${ok > 1 ? 's' : ''} envoyée${ok > 1 ? 's' : ''} au Sheet`);
+    if (envoisEnCours === 0) { state = etat; confirme = null; render(); } else confirme = etat;
+    if (lireAttente().length) setTimeout(() => envoyerAttente(true), 500); // il en reste (plus de 60)
+    return etat;
+  }).catch(e => { if (!estHorsLigne(e)) toast('Envoi des saisies en attente impossible : ' + ((e && e.message) || e)); return null; })
+    .finally(() => { envoiAttente = null; });
+  return envoiAttente;
+}
+window.addEventListener('online', () => { if (state) render(); envoyerAttente(); });
+window.addEventListener('offline', () => { if (state) render(); });
+setInterval(() => { if (lireAttente().length && navigator.onLine !== false) envoyerAttente(true); }, 30000);
+/** Fiche gardée d'un jour précédent, ouverte sans réseau : on la remet au jour d'aujourd'hui (estimation). */
+function passerAuJour(s) {
+  const t = isoLocal();
+  if (!s || !s.today || s.today >= t) return s;
+  const n = copie(s), nouvelleSemaine = lundiDe(t) !== lundiDe(s.today);
+  n.today = t; n.d20 = null; n.estime = true;
+  n.habitudes.forEach(h => {
+    h.jour = { fait: 0, rate: 0, repos: 0 };
+    if (nouvelleSemaine) h.semaine = 0;
+    if (h.type === 'Routine') h.aFaire = !h.enPause && prevu(h, t);
+  });
+  n.annexes.forEach(a => { a.jour = Object.assign({}, a.jour, { fait: 0 }); });
+  return n;
+}
+function lundiDe(iso) { return isoPlusLocal(iso, -indexJour(iso)); }
+function isoPlusLocal(iso, k) { const d = versDate(iso); d.setDate(d.getDate() + k); return isoLocal(d); }
+function bandeauHorsLigne(s) {
+  const n = lireAttente().length, off = navigator.onLine === false;
+  if (!n && !off && !s.estime) return '';
+  return `<div class="horsligne">${off ? '📴 <b>Hors connexion</b>' : '📶 <b>En ligne</b>'}${n ? ` · ⏳ ${n} saisie${n > 1 ? 's' : ''} en attente d'envoi` : ' · tes saisies seront gardées sur le téléphone'}${s.estime ? '<br><span>Fiche estimée depuis ta dernière connexion : les chiffres exacts arrivent avec le réseau.</span>' : ''}
+    ${n && !off ? '<button class="btn mini or" data-envoyer="1">Envoyer maintenant</button>' : ''}</div>`;
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-envoyer]')) envoyerAttente(); });
+
 /* Erreurs vues sur ce téléphone : envoyées au Sheet (onglet « Erreurs de l'app ») pour être réparées */
 const erreursEnvoi = [], erreursVues = new Set();
 let erreursTimer = null;
@@ -1071,7 +1134,7 @@ let herosActif = '';
 try { herosActif = localStorage.getItem('heros') || ''; } catch (e) {}
 const ARITE = { getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
   decalerSeance: 3, annulerDecalage: 3, reglerRappel: 1, testerRappel: 0, changerDifficulte: 1, reglerConfort: 1, reglerDevise: 1,
-  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1 };
+  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1 };
 function api(fn, ...args) {
   if (fn in ARITE) {
     args = args.slice(0, ARITE[fn]);
@@ -1460,7 +1523,7 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
-const VERSION_CARNET = '2026-10-29-3'; // change à chaque livraison : force le téléphone à recharger carnet.html
+const VERSION_CARNET = '2026-11-01-1'; // change à chaque livraison : force le téléphone à recharger carnet.html
 function afficherCarnet(oui) {
   const box = document.getElementById('carnetBox');
   if (!box) return;
@@ -1873,8 +1936,11 @@ async function lancerDe() {
   if (anim) [.32, .64, .88].forEach((o, k) => setTimeout(() => vib(k === 2 ? 15 : 30), o * 1100)); // les « toc » sur la table
   const d1 = 1 + Math.floor(Math.random() * 20), d2 = 1 + Math.floor(Math.random() * 20);
   const local = d20Local(state, d1, d2);
-  // le Sheet enregistre le jet pendant que le dé roule
-  const envoi = api('lancerD20', { d1, d2 });
+  // le Sheet enregistre le jet pendant que le dé roule (ou plus tard, s'il n'y a pas de réseau)
+  const jet = { id: nouvelId(), type: 'd20', d1, d2, date: isoLocal() };
+  const horsLigne = lireAttente().length || navigator.onLine === false;
+  const envoi = horsLigne ? Promise.reject(new Error('Pas de connexion au Sheet (réseau)')) : api('lancerD20', { d1, d2 });
+  envoi.catch(() => {});
   await (anim ? anim.finished : pause(200));
   clearInterval(tic);
   state.d20 = local;
@@ -1891,6 +1957,10 @@ async function lancerDe() {
     }
     render();
   }).catch(e => {
+    if (estHorsLigne(e)) { // le résultat reste : il sera enregistré au retour du réseau
+      mettreEnAttente(jet);
+      return;
+    }
     state.d20 = null; render();
     if (document.getElementById('d20ov').classList.contains('on')) { btn.textContent = 'Lancer le dé'; zone.innerHTML = d20Svg('?', ''); document.getElementById('d20res').innerHTML = ''; }
     toast('Le dé s\'est perdu (pas de réponse du Sheet) : relance-le dans un instant');
@@ -2063,6 +2133,7 @@ function render() {
 
   const vueQuetes = `
     ${s.retro && s.retro.texte ? `<button class="evt on" data-tab="compagnie" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">🎆 La rétrospective ${esc(s.retro.annee)} est arrivée</div><div class="evt-e">À lire dans le camp de la Compagnie ›</div></button>` : ''}
+    ${bandeauHorsLigne(s)}
     ${carteSagaMini(s)}
     ${carteEvenement(s)}
     ${carteD20(s)}
@@ -2474,7 +2545,7 @@ async function regler(fn, ...args) {
     return true;
   } catch (e) {
     envoisEnCours--;
-    toast(e && e.message ? e.message : String(e));
+    toast(estHorsLigne(e) ? '📴 Hors connexion : ce réglage demande le réseau, réessaie quand tu es connecté' : (e && e.message ? e.message : String(e)));
     if (confirme && envoisEnCours === 0) { state = confirme; confirme = null; }
     render(); return false;
   }
@@ -2520,7 +2591,7 @@ function evolution(niveau) {
   vib([80, 50, 80, 50, 160]);
 }
 function toast(msg) {
-  if (/impossible|indisponible|ne répond pas|erreur|échec|n'a pas pu|pas de connexion|inattendu/i.test(String(msg))) signaler({ ou: 'toast', msg });
+  if (navigator.onLine !== false && /impossible|indisponible|ne répond pas|erreur|échec|n'a pas pu|pas de connexion|inattendu/i.test(String(msg))) signaler({ ou: 'toast', msg });
   const t = document.getElementById('toast');
   t.textContent = msg; t.style.display = 'block';
   setTimeout(() => (t.style.display = 'none'), 3500);
@@ -2666,9 +2737,26 @@ function agir(nom, statut) {
       else setTimeout(() => niveauSup(pred.monte, state.titre, false), 350);
     }
   } else { busy.add(nom); render(); }
+  const item = statut === 'undo' ? { id: nouvelId(), type: 'undo', quete: nom, date: isoLocal() }
+    : { id: nouvelId(), type: 'saisie', quete: nom, statut: statut === 'hier' ? 'Fait' : statut, date: statut === 'hier' ? isoLocalPlus(-1) : isoLocal(), hier: statut === 'hier' };
+  // Déjà des saisies en attente (ou pas de réseau) : celle-ci rejoint la file, dans l'ordre
+  if (lireAttente().length || navigator.onLine === false) {
+    busy.delete(nom);
+    const l = lireAttente();
+    // annuler une saisie pas encore envoyée : on la retire simplement de la file
+    const k = item.type === 'undo' ? l.map(x => x.type === 'saisie' && x.quete === nom && x.date === item.date).lastIndexOf(true) : -1;
+    if (k >= 0) { l.splice(k, 1); ecrireAttente(l); } else { l.push(item); ecrireAttente(l); }
+    if (!pred) toast('Hors connexion : saisie gardée, elle partira au retour du réseau');
+    memoriserEtat(); render();
+    if (navigator.onLine !== false) envoyerAttente(true);
+    return;
+  }
   envoisEnCours++;
-  const appel = () => statut === 'undo' ? api('undoToday', nom)
-    : statut === 'hier' ? api('logAction', nom, 'Fait', true) : api('logAction', nom, statut);
+  const appel = () => api('saisirHorsLigne', [Object.assign({ direct: true }, item)]).then(etat => {
+    const r = (etat.horsLigne || [])[0];
+    if (r && !r.ok) throw new Error(r.message);
+    return etat;
+  });
   fileEnvois = fileEnvois.then(appel).then(apres => {
     envoisEnCours--; busy.delete(nom);
     const avant = confirme; confirme = apres;
@@ -2681,6 +2769,12 @@ function agir(nom, statut) {
     if (envoisEnCours === 0) { state = apres; confirme = null; render(); }
   }).catch(e => {
     envoisEnCours--; busy.delete(nom);
+    if (estHorsLigne(e)) { // pas de réseau : la saisie est gardée, l'écran garde son effet
+      mettreEnAttente(item);
+      toast('📴 Hors connexion : saisie gardée sur le téléphone, elle partira au retour du réseau');
+      if (envoisEnCours === 0 && confirme) confirme = null;
+      return;
+    }
     toast('Échec de l\'enregistrement : ' + (e && e.message ? e.message : e));
     // On revient à la vérité du Sheet
     return api('getState').then(s => { if (envoisEnCours === 0) { state = s; confirme = null; } else confirme = s; render(); })
@@ -2983,6 +3077,14 @@ const demo = (() => {
     },
     preparerSort(q) { sortDemo = q; return etat(); },
     utiliserRestauration() { restauDemo = true; return etat(); },
+    saisirHorsLigne(liste) {
+      const res = [];
+      (liste || []).forEach(x => {
+        try { if (x.type === 'd20') this.lancerD20(); else if (x.type === 'undo') this.undoToday(x.quete); else this.logAction(x.quete, x.statut); res.push({ id: x.id, ok: true }); }
+        catch (e) { res.push({ id: x.id, ok: false, message: e.message }); }
+      });
+      return Object.assign(etat(), { horsLigne: res });
+    },
     logAction(nom, statut) {
       const q = trouver(nom);
       if (statut === 'Fait') {
@@ -3020,9 +3122,11 @@ function memoriserEtat() { try { if (state && (enLigne || distant)) localStorage
 function lancer() {
   let memo = null;
   try { memo = JSON.parse(localStorage.getItem(cleEtat()) || 'null'); } catch (e) {}
-  if (memo && (enLigne || distant)) { state = memo; render(); }
+  if (memo && (enLigne || distant)) { state = memo; if (navigator.onLine === false) state = passerAuJour(state); render(); }
   else document.getElementById('app').innerHTML = '<div class="loading">Chargement de ta feuille de personnage…</div>';
-  api('getState').then(s => {
+  // des saisies faites hors connexion attendent : elles partent d'abord, et la réponse est l'état à jour
+  const premier = lireAttente().length ? envoyerAttente(true).then(s => s || api('getState')) : api('getState');
+  premier.then(s => {
     state = s; premierEtatRecu = true;
     if (s.heros && herosActif !== String(s.heros)) { herosActif = String(s.heros); try { localStorage.setItem('heros', herosActif); } catch (e) {} }
     render(); celebrer(s.nouveauxBonus);
@@ -3031,7 +3135,8 @@ function lancer() {
   }).catch(e => {
     // Dernière version déjà affichée : on la garde et on prévient, au lieu d'effacer l'écran
     premierEtatRecu = true;
-    if (memo && state) toast('Le Sheet ne répond pas (' + (e && e.message ? e.message : e) + ') : affichage de la dernière version connue.');
+    if (memo && state && estHorsLigne(e)) { state = passerAuJour(state); render(); toast('📴 Hors connexion : tu peux quand même valider tes quêtes, elles partiront au retour du réseau'); }
+    else if (memo && state) toast('Le Sheet ne répond pas (' + (e && e.message ? e.message : e) + ') : affichage de la dernière version connue.');
     else erreurChargement(e);
   });
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><script>window.API_URL='https://script.google.com/macros/s/AKfycbxrJdBY5fmNF8xPEkw_klKspUEvDTfvT8P1Kk6DMqKMmMUFCpZrauQXCMxK6CwTofiW/exec';</script>
+<head><script>window.API_URL='https://script.google.com/macros/s/AKfycbynEOmY354fjOFKSGK0v7eL7NqG6KtNEFg1lpUBlWYacb_0kU7H-azT2bkFpaMEXNQs/exec';</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
@@ -489,12 +489,18 @@ let dbDoc=null, saveTimer=null;
 function save(){
   try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}
   if(!dbDoc) return;
+  try{localStorage.setItem("quetes-nonSync","1")}catch(e){}
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
-    try{await dbDoc.set({json:JSON.stringify(state),updatedAt:new Date().toISOString()});setSync("Sauvegardé dans la Compagnie")}
-    catch(e){setSync("Sauvegarde Drive impossible : copie locale seulement")}
+    if(navigator.onLine===false){setSync("📴 Hors connexion : gardé sur le téléphone, envoi au retour du réseau");return}
+    try{await dbDoc.set({json:JSON.stringify(state),updatedAt:new Date().toISOString()});try{localStorage.removeItem("quetes-nonSync")}catch(e){}setSync("Sauvegardé dans la Compagnie")}
+    catch(e){setSync("📴 Pas de réseau : gardé sur le téléphone, envoi au retour du réseau")}
   },700);
 }
+/* Hors connexion : ce qui a été fait sans réseau part dès que le réseau revient */
+const nonSync=()=>{try{return localStorage.getItem("quetes-nonSync")==="1"}catch(e){return false}};
+window.addEventListener("online",()=>{if(nonSync()&&dbDoc)save()});
+setInterval(()=>{if(nonSync()&&dbDoc&&navigator.onLine!==false)save()},60000);
 function setSync(t){document.getElementById("sync").textContent=t}
 
 let sample=null;
@@ -507,13 +513,16 @@ let sample=null;
       const id=await user.id();
       if(id){
         dbDoc=db.doc("data/users/"+id+"/state");
+        if(navigator.onLine===false){setSync("📴 Hors connexion : tu travailles sur la copie du téléphone");return}
+        // des séances faites hors connexion pas encore envoyées : la copie du téléphone est la plus récente
+        if(nonSync()&&localStorage.getItem("quetes-state")){save();setTimeout(initMontre,1500);return}
         const snap=await dbDoc.get();
         if(snap.exists&&snap.data()?.json){state=migrate(JSON.parse(snap.data().json));renderAll();setSync("Sauvegardé dans la Compagnie");setTimeout(evaluerNiveaux,3000)}
         else save();
         setTimeout(initMontre,1500);
       }
     }
-  }catch(e){setSync("Sauvegarde locale")}
+  }catch(e){setSync(navigator.onLine===false?"📴 Hors connexion : copie du téléphone":"Sauvegarde locale")}
 })();
 
 /* ======================================================================
