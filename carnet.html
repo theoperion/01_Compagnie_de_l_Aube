@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><script>window.API_URL='https://script.google.com/macros/s/AKfycbxjQXmx2VCQP40ZFlz6AeSn8j-c4bZnnqqYIXmU0dR5styW85c0SLDdFTcA96w80Q9Z/exec';</script>
+<head><script>window.API_URL='https://script.google.com/macros/s/AKfycbwWu2v377DkfK8BKHOVoxqGxcNMql9IGa1IJKnd_qdwSfGHsT5u9yCmFKMwadaFIpjP/exec';</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
@@ -264,6 +264,14 @@ details.parcours summary{cursor:pointer;color:var(--gold,#d3a84a);font-size:.95r
    APP_K : code d'accès injecté par doGet, renvoyé à chaque appel serveur.
    ====================================================================== */
 function toParent(msg){try{if(window.parent!==window)window.parent.postMessage(msg,"*")}catch(e){}}
+/* Thème choisi dans la Compagnie (même site) : mêmes couleurs et polices dans le Carnet */
+function appliquerThemeCarnet(){let T={};try{T=JSON.parse(localStorage.getItem("themeCarnet")||"{}")}catch(e){}
+  const r=document.documentElement;["--bg","--surface","--surface2","--sunk","--line2","--fg","--muted","--gold","--gold2"].forEach(k=>{if(T[k])r.style.setProperty(k,T[k]);else r.style.removeProperty(k)});
+  let l=document.getElementById("policeTheme");if(T.police){if(!l){l=document.createElement("link");l.id="policeTheme";l.rel="stylesheet";document.head.appendChild(l)}l.href="https://fonts.googleapis.com/css2?family="+T.police+"&display=swap"}else if(l)l.remove();
+  let st=document.getElementById("styleTheme");if(!st){st=document.createElement("style");st.id="styleTheme";document.head.appendChild(st)}
+  st.textContent=(T.texte?"body{font-family:"+T.texte+"}":"")+(T.titre?"h1,h2,h3{font-family:"+T.titre+"}":"")}
+appliquerThemeCarnet();
+window.addEventListener("storage",e=>{if(e.key==="themeCarnet")appliquerThemeCarnet()});
 window.addEventListener("error",e=>toParent({t:"compagnie-erreur",msg:String(e.message||""),detail:String(e.filename||"").split("/").pop()+":"+e.lineno+":"+e.colno}));
 window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"compagnie-erreur",msg:"promesse : "+String((r&&(r.message||r.code))||r),detail:String((r&&r.stack)||"").split("\n")[1]||""})});
 (function(){
@@ -315,7 +323,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
-const VERSION_CARNET_APP = '2026-11-01-2'; // affichée en bas des réglages
+const VERSION_CARNET_APP = '2026-11-01-3'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
