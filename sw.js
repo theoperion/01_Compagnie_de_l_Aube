@@ -1,40 +1,50 @@
-/* Versus : mode hors connexion.
-   La coquille de l'appli (page, scripts, icônes) est gardée sur le téléphone pour s'ouvrir sans réseau.
-   Réseau d'abord : en ligne, on prend toujours la dernière version ; hors ligne (ou réseau trop lent), la copie gardée.
-   Les appels à l'API (script.google.com) ne passent jamais par ici : l'appli garde elle-même ses dernières données. */
-const VERSION = "versus-v14";
-const COQUILLE = ["./", "index.html", "moteur.js", "moi.js?v=19", "piste.js?v=1", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "icon.svg"];
-self.addEventListener("install", e => {
-  e.waitUntil(caches.open(VERSION).then(c => Promise.all(COQUILLE.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting()));
+/* La Compagnie de l'Aube : copie de l'app sur le téléphone pour l'ouvrir sans réseau.
+ * Pages (index, carnet) : réseau d'abord (les mises à jour arrivent tout de suite), copie locale si le réseau
+ * manque ou traîne plus de 4 s. Icônes et polices : copie locale d'abord.
+ * Les échanges avec le Sheet (POST vers Apps Script) ne passent jamais par ici.
+ */
+const CACHE = 'compagnie-2026-11-01';
+const COQUILLE = ['./', 'index.html', 'carnet.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable.png'];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => Promise.all(COQUILLE.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
 });
-self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(l => Promise.all(l.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
-function delai(ms) { return new Promise((_, rej) => setTimeout(() => rej(new Error("lent")), ms)); }
-async function reseauDabord(req, ms) {
-  const cache = await caches.open(VERSION);
-  try {
-    const frais = req.mode === "navigate" ? fetch(req.url, { cache: "no-cache", credentials: "same-origin" }) : fetch(req, { cache: "no-cache" });   // revalide auprès de GitHub
-    const rep = await Promise.race([frais, delai(ms)]);
-    if (rep && rep.ok) cache.put(req, rep.clone());
-    return rep;
-  } catch (err) {
-    const c = await cache.match(req, { ignoreSearch: req.mode === "navigate" }) || (req.mode === "navigate" ? await cache.match("index.html") : null);
-    if (c) return c;
-    throw err;
+
+function avecDelai(p, ms) {
+  return new Promise((ok, ko) => { const t = setTimeout(() => ko(new Error('lent')), ms); p.then(r => { clearTimeout(t); ok(r); }, e => { clearTimeout(t); ko(e); }); });
+}
+/* Clé de copie : la page sans « ?v=… » (le carnet est demandé avec un numéro de version) */
+function cleCopie(url) { const u = new URL(url); u.search = ''; return u.href; }
+
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  const memeSite = url.origin === self.location.origin;
+  const police = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
+  if (!memeSite && !police) return;
+
+  if (police || /\.(png|webmanifest)$/.test(url.pathname)) {
+    // copie locale d'abord, mise à jour en arrière-plan
+    e.respondWith(caches.open(CACHE).then(async c => {
+      const copie = await c.match(cleCopie(req.url));
+      const reseau = fetch(req).then(r => { if (r && (r.ok || r.type === 'opaque')) c.put(cleCopie(req.url), r.clone()); return r; }).catch(() => null);
+      return copie || (await reseau) || Response.error();
+    }));
+    return;
   }
-}
-async function cacheDabord(req) {
-  const cache = await caches.open(VERSION), c = await cache.match(req);
-  const frais = fetch(req).then(rep => { if (rep && (rep.ok || rep.type === "opaque")) cache.put(req, rep.clone()); return rep; }).catch(() => null);
-  return c || (await frais) || Response.error();
-}
-self.addEventListener("fetch", e => {
-  const req = e.request; if (req.method !== "GET") return;
-  const u = new URL(req.url);
-  if (u.hostname.endsWith("google.com") || u.hostname.endsWith("googleusercontent.com")) return;   // API : jamais en cache ici
-  if (u.hostname === "fonts.googleapis.com" || u.hostname === "fonts.gstatic.com") { e.respondWith(cacheDabord(req)); return; }
-  if (u.origin !== self.location.origin) return;
-  if (req.mode === "navigate" || /\.(html|js)$/.test(u.pathname) || u.pathname.endsWith("/")) { e.respondWith(reseauDabord(req, 4000)); return; }
-  e.respondWith(cacheDabord(req));
+
+  // pages et scripts du site : réseau d'abord, copie si hors connexion
+  e.respondWith(caches.open(CACHE).then(async c => {
+    const reseau = fetch(req).then(r => { if (r && r.ok) c.put(cleCopie(req.url), r.clone()); return r; });
+    try { return await avecDelai(reseau, 4000); }
+    catch (err) {
+      const copie = await c.match(cleCopie(req.url)) || (req.mode === 'navigate' ? (await c.match(new URL('index.html', self.location).href) || await c.match(new URL('./', self.location).href)) : null);
+      if (copie) return copie;
+      try { return await reseau; } catch (e2) { return new Response('Hors connexion : ouvre l\'app une fois avec du réseau pour qu\'elle se garde sur ce téléphone.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }); }
+    }
+  }));
 });
