@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Compagnie">
 <script>
   /* Adresse du moteur (Apps Script → Déployer → Gérer les déploiements → URL /exec) */
-  window.API_URL = 'https://script.google.com/macros/s/AKfycbynEOmY354fjOFKSGK0v7eL7NqG6KtNEFg1lpUBlWYacb_0kU7H-azT2bkFpaMEXNQs/exec';
+  window.API_URL = 'https://script.google.com/macros/s/AKfycbxjQXmx2VCQP40ZFlz6AeSn8j-c4bZnnqqYIXmU0dR5styW85c0SLDdFTcA96w80Q9Z/exec';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
@@ -218,6 +218,75 @@
   .d20-sub { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 0 0 6px; }
   .d20 { width: 170px; height: 170px; display: block; margin: 10px auto; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55)); }
   .d20 text { font-family: Cinzel, serif; font-weight: 800; }
+  .engrenage { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.04); font-size: 17px; line-height: 1; cursor: pointer; color: inherit; }
+  header { position: relative; }
+  .version { margin: 22px 0 8px; text-align: center; font-size: 11.5px; color: var(--muted); opacity: .8; }
+  .hero-perso { position: relative; cursor: pointer; }
+  .hero-perso .loupe { position: absolute; right: 4px; bottom: 6px; font-size: 10.5px; padding: 2px 7px; border-radius: 99px; background: rgba(0,0,0,.45); color: var(--gold); border: 1px solid rgba(212,173,60,.4); }
+  svg[data-lueur="argent"] { filter: drop-shadow(0 0 4px rgba(220,230,245,.75)); }
+  svg[data-lueur="or"] { filter: drop-shadow(0 0 5px rgba(240,200,90,.8)); }
+  svg[data-lueur="pourpre"] { filter: drop-shadow(0 0 5px rgba(190,50,110,.8)); }
+  svg[data-lueur="aube"] { animation: aube 6s linear infinite; }
+  @keyframes aube { 0%,100% { filter: drop-shadow(0 0 5px rgba(255,170,90,.8)); } 50% { filter: drop-shadow(0 0 6px rgba(170,140,255,.8)); } }
+  .orn-fam { animation: flotte 3.2s ease-in-out infinite; transform-box: fill-box; }
+  .orn-emb .scint, .orn-emb { animation: scint 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .orn-sol .tourne { animation: tourne 9s linear infinite; }
+  .orn-sol .braise { animation: braise 3.8s ease-in infinite; transform-box: fill-box; }
+  .orn-sol .pet { animation: pet 5s ease-in-out infinite; transform-box: fill-box; }
+  .orn .flam { animation: flam 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+  @keyframes flotte { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @keyframes scint { 0%,100% { opacity: .85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+  @keyframes tourne { to { stroke-dashoffset: -60; } }
+  @keyframes braise { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-46px); opacity: 0; } }
+  @keyframes pet { 0%,100% { transform: translate(0,0) rotate(0); } 50% { transform: translate(2px,-2px) rotate(25deg); } }
+  @keyframes flam { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.15) skewX(4deg); } }
+  #vitrine { position: fixed; inset: 0; z-index: 60; background: rgba(8,6,12,.86); backdrop-filter: blur(6px); display: none; overflow-y: auto; }
+  #vitrine.on { display: block; animation: vitIn .25s ease-out; }
+  @keyframes vitIn { from { opacity: 0; } to { opacity: 1; } }
+  .vit-box { max-width: 460px; margin: 0 auto; padding: 18px 16px 40px; position: relative; }
+  .vit-x { position: sticky; top: 0; float: right; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: #1c1726; color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
+  .vit-nom { text-align: center; margin: 6px 0 0; } .vit-nom b { display: block; font: 600 22px Georgia, serif; color: var(--gold); } .vit-nom span { font-size: 13px; color: var(--muted); }
+  .vit-scene { position: relative; height: min(70vh, 470px); perspective: 900px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+  .vit-scene::before { content: ''; position: absolute; left: 50%; top: 52%; width: 300px; height: 300px; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle, rgba(127,214,255,.18), transparent 65%); animation: pulse 5s ease-in-out infinite; }
+  .vit-scene.voleur::before { background: radial-gradient(circle, rgba(170,110,255,.2), transparent 65%); }
+  @keyframes pulse { 0%,100% { opacity: .6; transform: translate(-50%,-50%) scale(.95); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.05); } }
+  .vit-rot { position: relative; transform-style: preserve-3d; touch-action: none; cursor: grab; width: min(78vw, 330px); z-index: 1; }
+  .vit-perso { animation: respire 4.2s ease-in-out infinite; transform-origin: 50% 95%; }
+  .vit-perso svg { width: 100%; height: auto; display: block; }
+  .vit-perso.salut { animation: salut .7s ease-out, respire 4.2s ease-in-out .7s infinite; }
+  @keyframes respire { 0%,100% { transform: scale(1,1) translateY(0); } 50% { transform: scale(1.008,1.022) translateY(-3px); } }
+  @keyframes salut { 0% { transform: translateY(0); } 30% { transform: translateY(-22px) rotate(-3deg); } 55% { transform: translateY(0) scale(1.03,.97); } 75% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+  .vit-ombre { position: absolute; bottom: 8px; left: 50%; width: 46%; height: 14px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.55), transparent 70%); animation: ombre 4.2s ease-in-out infinite; }
+  @keyframes ombre { 0%,100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(.94); } }
+  .vit-parts i { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #9fe4ff; box-shadow: 0 0 8px #9fe4ff; opacity: 0; animation: monte 6s linear infinite; }
+  .vit-scene.voleur .vit-parts i { background: #c79bff; box-shadow: 0 0 8px #c79bff; }
+  @keyframes monte { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateY(-420px); opacity: 0; } }
+  .vit-scene.calme *, .vit-scene.calme::before { animation: none !important; }
+  .vit-aide { text-align: center; font-size: 12px; color: var(--muted); margin: 6px 0 18px; }
+  .orn-slot h4 { margin: 14px 0 8px; font: 600 14px Georgia, serif; color: var(--gold); } .orn-slot h4 span { font: 400 12px system-ui, sans-serif; color: var(--muted); margin-left: 6px; }
+  .orn-liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; }
+  .orn-t { position: relative; }
+  .orn-b { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 4px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
+  .orn-b b { font-size: 10px; font-weight: 600; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .orn-t.eq .orn-b { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(212,173,60,.4) inset; background: rgba(212,173,60,.08); }
+  .orn-t.lock .orn-ic { opacity: .22; filter: grayscale(1); }
+  .orn-t.lock .orn-b b { color: var(--muted); }
+  .orn-b .cad { position: absolute; left: 5px; top: 4px; font-size: 9px; font-style: normal; }
+  .orn-q { position: absolute; top: 3px; right: 3px; width: 17px; height: 17px; border-radius: 50%; border: 1px solid var(--line); background: #241d30; color: var(--muted); font: 700 10px system-ui; line-height: 15px; padding: 0; cursor: pointer; }
+  .orn-ic svg { max-width: 34px; }
+  .evo-rang { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 4px; scrollbar-width: none; }
+  .evo-t { flex: 0 0 56px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
+  .evo-t span svg { width: 46px; height: auto; display: block; }
+  .evo-t b { font-size: 10px; } .evo-t.lock span { opacity: .25; filter: brightness(.3); } .evo-t.ici { border-color: var(--gold); }
+  .id-card.sans-av { grid-template-columns: 1fr !important; }
+  .orn-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 8px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; text-align: center; min-height: 64px; }
+  .orn-item b { font-size: 12.5px; } .orn-item small { font-size: 10.5px; color: var(--muted); line-height: 1.3; }
+  .orn-item.eq { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(212,173,60,.35) inset; }
+  .orn-item.lock { opacity: .55; }
+  .orn-ic { height: 34px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .mini-lueur { width: 26px; height: 26px; border-radius: 50%; background: #2a2433; display: inline-block; }
+  .mini-lueur.l-argent { box-shadow: 0 0 10px 3px rgba(220,230,245,.8); } .mini-lueur.l-or { box-shadow: 0 0 10px 3px rgba(240,200,90,.85); }
+  .mini-lueur.l-pourpre { box-shadow: 0 0 10px 3px rgba(190,50,110,.85); } .mini-lueur.l-aube { box-shadow: 0 0 10px 3px rgba(255,170,90,.8), 0 0 16px 4px rgba(170,140,255,.5); }
   .horsligne { margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; border: 1px dashed #6a5320; background: rgba(212,173,60,.07); font-size: 13px; line-height: 1.45; }
   .horsligne span { color: var(--muted); font-size: 12px; } .horsligne .btn { margin-top: 8px; }
   .d20.roule { animation: rouler .35s linear infinite; }
@@ -990,7 +1059,73 @@ function lookDe(txt) {
   if (c[2]) L.yeux = c[2];
   return L;
 }
-function avatar(st, id, s) { s = s || state; return classeDe(s).dessin(st, id, lookDe(s && s.look)); }
+function avatar(st, id, s) { s = s || state; return orner(classeDe(s).dessin(st, id, lookDe(s && s.look)), ornementsDe(s), id); }
+
+/* ---------- Ornements : petits cosmétiques gagnés en jouant (un par emplacement) ----------
+ * Tous se débloquent avec ce qui existe déjà (niveau, séries, titres) : rien de nouveau à suivre.
+ */
+const t_ = id => s => !!((s.titres && s.titres.liste) || []).find(x => x.id === id && x.obtenu);
+const recordMax = s => Math.max(0, ...(s.habitudes || []).map(h => Number(h.record) || 0));
+const EMPLACEMENTS = [
+  { id: 'familier', nom: 'Familier', aide: 'un petit compagnon à tes pieds' },
+  { id: 'sol', nom: 'Sol', aide: 'sous tes pas' },
+  { id: 'embleme', nom: 'Emblème', aide: 'au-dessus de ton épaule' },
+  { id: 'lueur', nom: 'Lueur', aide: 'un halo discret autour de toi' }
+];
+const ORNEMENTS = [
+  { id: 'luciole', slot: 'familier', nom: 'Luciole', cond: 'Atteindre le niveau 3', ok: s => s.niveau >= 3 },
+  { id: 'feufollet', slot: 'familier', nom: 'Feu follet', cond: 'Atteindre le niveau 5', ok: s => s.niveau >= 5 },
+  { id: 'corbeau', slot: 'familier', nom: 'Corbeau messager', cond: 'Abattre un premier boss (« Pourfendeur de Golems »)', ok: t_('golem') },
+  { id: 'chouette', slot: 'familier', nom: 'Chouette des veilles', cond: 'Une série de 30 jours (« Le Tenace »)', ok: t_('tenace') },
+  { id: 'dragonnet', slot: 'familier', nom: 'Dragonnet', cond: 'Abattre 3 boss du mois (« Briseur de Lunes »)', ok: t_('lunes') },
+  { id: 'petales', slot: 'sol', nom: 'Pétales de l\'aube', cond: 'Une série de 7 jours sur une quête', ok: s => recordMax(s) >= 7 },
+  { id: 'runes', slot: 'sol', nom: 'Cercle de runes', cond: 'Atteindre le niveau 10', ok: s => s.niveau >= 10 },
+  { id: 'braises', slot: 'sol', nom: 'Braises', cond: '4 semaines parfaites (« Main de fer »)', ok: t_('fer') },
+  { id: 'phenix', slot: 'sol', nom: 'Cendres du phénix', cond: 'Tomber à 0 PV et se relever (« Le Revenant »)', ok: t_('revenant') },
+  { id: 'flamme', slot: 'embleme', nom: 'Petite flamme', cond: 'Cumuler 1 000 XP', ok: s => Number(s.xpTotale) >= 1000 },
+  { id: 'etoile', slot: 'embleme', nom: 'Étoile de l\'Aube', cond: 'Atteindre le niveau 15', ok: s => s.niveau >= 15 },
+  { id: 'lune', slot: 'embleme', nom: 'Croissant d\'argent', cond: 'Titre secret « L\'Aube infaillible »', ok: t_('infaillible') },
+  { id: 'laurier', slot: 'embleme', nom: 'Couronne de lauriers', cond: 'Une série de 100 jours (« L\'Inébranlable »)', ok: t_('inebranlable') },
+  { id: 'argent', slot: 'lueur', nom: 'Lueur d\'argent', cond: 'Une série de 14 jours sur une quête', ok: s => recordMax(s) >= 14 },
+  { id: 'or', slot: 'lueur', nom: 'Lueur d\'or', cond: 'Atteindre le niveau 20', ok: s => s.niveau >= 20 },
+  { id: 'pourpre', slot: 'lueur', nom: 'Lueur pourpre', cond: 'Meilleur frappeur sur 5 boss (« Fléau du Crépuscule »)', ok: t_('fleau') },
+  { id: 'aube', slot: 'lueur', nom: 'Lueur de l\'aube', cond: 'Toute la Compagnie active 14 jours d\'affilée (titre secret)', ok: t_('freres') }
+];
+function ornementsDe(s) { return (s && (s.ornements || (s.reglages && s.reglages.ornements))) || {}; }
+function ornementDebloque(s, o) { try { return !!o.ok(s); } catch (e) { return false; } }
+/** Ajoute les ornements équipés au dessin du personnage (cadre 200 × 260, pieds vers y = 242). */
+function orner(svg, orn, id) {
+  if (!orn || !svg) return svg;
+  id = String(id || '').replace(/\W/g, '');
+  const fam = ORN_SVG[orn.familier], sol = ORN_SVG[orn.sol], emb = ORN_SVG[orn.embleme];
+  if (orn.lueur && ORN_LUEURS[orn.lueur]) svg = svg.replace('<svg ', `<svg data-lueur="${orn.lueur}" `);
+  if (sol) { const k = svg.indexOf('</defs>'); const i = k >= 0 ? k + 7 : svg.indexOf('>') + 1; svg = svg.slice(0, i) + `<g class="orn orn-sol">${sol(id)}</g>` + svg.slice(i); }
+  const avant = (fam ? `<g class="orn orn-fam">${fam(id)}</g>` : '') + (emb ? `<g class="orn orn-emb">${emb(id)}</g>` : '');
+  if (avant) { const j = svg.lastIndexOf('</svg>'); svg = svg.slice(0, j) + avant + svg.slice(j); }
+  return svg;
+}
+const ORN_LUEURS = { argent: 1, or: 1, pourpre: 1, aube: 1 };
+const lueurRad = (gid, c1, c2) => `<radialGradient id="${gid}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${c1}"/><stop offset="45%" stop-color="${c2}" stop-opacity=".8"/><stop offset="100%" stop-color="${c2}" stop-opacity="0"/></radialGradient>`;
+const ORN_SVG = {
+  luciole: id => `<defs>${lueurRad('olu' + id, '#fffbd0', '#ffd23a')}</defs><circle cx="40" cy="196" r="10" fill="url(#olu${id})"/><circle cx="40" cy="196" r="2.6" fill="#fffef0"/>`,
+  feufollet: id => `<defs>${lueurRad('off' + id, '#ffffff', '#7fe3ff')}</defs><path d="M40 206 q-9 6 -4 16 q2 -7 6 -9 z" fill="#7fe3ff" opacity=".35"/><circle cx="40" cy="198" r="13" fill="url(#off${id})"/><circle cx="40" cy="198" r="4" fill="#fff"/>`,
+  corbeau: () => `<g transform="translate(22 196)"><ellipse cx="18" cy="26" rx="11" ry="8" fill="#16131c"/><path d="M8 26 l-9 6 l10 -2 z" fill="#16131c"/><circle cx="27" cy="17" r="6.5" fill="#1c1824"/><path d="M33 16 l7 2 l-7 2 z" fill="#c9a24a"/><circle cx="28.5" cy="16" r="1.4" fill="#e9e3ff"/><path d="M12 22 q8 -6 14 0 q-6 2 -14 0 z" fill="#2a2433"/><path d="M15 34 v5 M20 34 v5" stroke="#c9a24a" stroke-width="1.4"/></g>`,
+  chouette: () => `<g transform="translate(22 190)"><ellipse cx="18" cy="30" rx="12" ry="14" fill="#7a5a3c"/><ellipse cx="18" cy="34" rx="7.5" ry="9" fill="#cfb18a"/><path d="M8 18 l3 -7 l4 6 z M28 18 l-3 -7 l-4 6 z" fill="#7a5a3c"/><circle cx="13.5" cy="22" r="4.6" fill="#f3e6b5"/><circle cx="22.5" cy="22" r="4.6" fill="#f3e6b5"/><circle cx="13.5" cy="22" r="2.1" fill="#2a1d12"/><circle cx="22.5" cy="22" r="2.1" fill="#2a1d12"/><path d="M18 25 l-1.6 2.6 h3.2 z" fill="#d9a43a"/><path d="M13 44 v3 M23 44 v3" stroke="#d9a43a" stroke-width="1.5"/></g>`,
+  dragonnet: () => `<g transform="translate(16 192)"><path d="M6 36 q-6 -2 -4 -9" stroke="#5b3b9e" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M14 22 l-10 -10 l4 14 z M28 22 l8 -12 l-2 14 z" fill="#8f6bd6" opacity=".9"/><ellipse cx="20" cy="31" rx="11" ry="9" fill="#6a46b8"/><ellipse cx="20" cy="34" rx="6" ry="5" fill="#b9a2f0"/><circle cx="31" cy="20" r="7" fill="#6a46b8"/><path d="M28 14 l1 -5 l2 5 M33 14 l2 -5 l1 5" stroke="#f0d68a" stroke-width="1.4" fill="none"/><circle cx="33" cy="19" r="1.5" fill="#ffe27a"/><path d="M37 22 q2 1 0 2" stroke="#3b2470" fill="none"/><path d="M15 39 v4 M24 39 v4" stroke="#3b2470" stroke-width="2"/></g>`,
+  petales: () => [[62, 244, '#f7b6c8'], [80, 249, '#ffd9a8'], [124, 248, '#f7b6c8'], [141, 243, '#ffe7b0'], [101, 252, '#f4a3bb'], [70, 238, '#ffd9a8'], [133, 238, '#f7b6c8']]
+    .map(([x, y, c], i) => `<ellipse class="pet" style="animation-delay:${i * .5}s" cx="${x}" cy="${y}" rx="3.4" ry="1.7" transform="rotate(${i * 37} ${x} ${y})" fill="${c}" opacity=".85"/>`).join(''),
+  runes: () => `<ellipse cx="100" cy="243" rx="64" ry="11" fill="none" stroke="#d4ad3c" stroke-opacity=".75" stroke-width="1.4" stroke-dasharray="6 4" class="tourne"/><ellipse cx="100" cy="243" rx="52" ry="8" fill="none" stroke="#f3dfa0" stroke-opacity=".45" stroke-width=".8"/>` +
+    [0, 1, 2, 3, 4, 5].map(k => { const a = k / 6 * Math.PI * 2, x = 100 + 58 * Math.cos(a), y = 243 + 9.5 * Math.sin(a); return `<text x="${x.toFixed(1)}" y="${(y + 2).toFixed(1)}" font-size="6" text-anchor="middle" fill="#f3dfa0" opacity=".8">${'ᚠᚢᚦᚨᚱᚲ'[k]}</text>`; }).join(''),
+  braises: id => `<defs>${lueurRad('obr' + id, '#ffb347', '#ff5a1f')}</defs><ellipse cx="100" cy="243" rx="60" ry="10" fill="url(#obr${id})" opacity=".45"/>` +
+    [[70, 0], [88, 1.1], [112, .5], [130, 1.6], [100, 2.2], [79, 2.8], [121, 3.3]].map(([x, d]) => `<circle class="braise" style="animation-delay:${d}s" cx="${x}" cy="240" r="1.6" fill="#ffb347"/>`).join(''),
+  phenix: id => `<defs>${lueurRad('oph' + id, '#ffe3a1', '#e8452c')}</defs><ellipse cx="100" cy="243" rx="66" ry="12" fill="url(#oph${id})" opacity=".5"/>` +
+    [[46, -1], [62, 1], [138, -1], [154, 1]].map(([x, sg]) => `<path class="flam" d="M${x} 246 q${-4 * sg} -10 ${2 * sg} -18 q${2 * sg} 8 ${6 * sg} 10 q${-1 * sg} -6 ${3 * sg} -9 q${3 * sg} 9 ${-3 * sg} 17 z" fill="#ff7a2f" opacity=".8"/>`).join(''),
+  flamme: () => `<g transform="translate(36 40)"><path class="flam" d="M8 22 q-9 -7 -2 -17 q1 6 4 6 q-2 -7 3 -11 q5 8 3 14 q4 -2 3 -6 q6 9 -3 14 z" fill="#ff9a3c"/><path d="M8 20 q-4 -4 0 -9 q2 5 3 4 q2 3 -3 5 z" fill="#ffe27a"/></g>`,
+  etoile: id => `<defs>${lueurRad('oet' + id, '#fffbe6', '#ffd75a')}</defs><g class="scint"><circle cx="42" cy="54" r="12" fill="url(#oet${id})" opacity=".55"/><path d="M42 42 L45 51 L54 54 L45 57 L42 66 L39 57 L30 54 L39 51 Z" fill="#ffe27a" stroke="#fff6cf" stroke-width=".6"/></g>`,
+  lune: () => `<g class="scint"><path d="M48 44 a11 11 0 1 0 0 20 a8.5 8.5 0 1 1 0 -20 z" fill="#dfe6f2"/><circle cx="35" cy="50" r="1" fill="#fff"/></g>`,
+  laurier: () => `<g transform="translate(42 54)">` + [-1, 1].map(sg => [0, 1, 2, 3, 4].map(k => { const a = (200 + k * 32) * Math.PI / 180, r = 10; const x = sg * r * Math.cos(a), y = r * Math.sin(a); return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="3.4" ry="1.6" transform="rotate(${(sg * (k * 32 - 60)).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${k % 2 ? '#8fbf5a' : '#d4ad3c'}"/>`; }).join('')).join('') + `</g>`
+};
+
 let state = null;
 let menuQuete = null;
 let busy = new Set();
@@ -1012,7 +1147,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-01-1';
+const VERSION_APP = '2026-11-01-2';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -1134,7 +1269,7 @@ let herosActif = '';
 try { herosActif = localStorage.getItem('heros') || ''; } catch (e) {}
 const ARITE = { getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
   decalerSeance: 3, annulerDecalage: 3, reglerRappel: 1, testerRappel: 0, changerDifficulte: 1, reglerConfort: 1, reglerDevise: 1,
-  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1 };
+  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, equiperOrnement: 2, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1 };
 function api(fn, ...args) {
   if (fn in ARITE) {
     args = args.slice(0, ARITE[fn]);
@@ -1523,7 +1658,7 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
-const VERSION_CARNET = '2026-11-01-1'; // change à chaque livraison : force le téléphone à recharger carnet.html
+const VERSION_CARNET = '2026-11-01-2'; // change à chaque livraison : force le téléphone à recharger carnet.html
 function afficherCarnet(oui) {
   const box = document.getElementById('carnetBox');
   if (!box) return;
@@ -1644,6 +1779,87 @@ function ouvrirEncouragement() {
     <button class="cancel" data-pal-close="1">Fermer</button>`;
   el.classList.add('on'); document.getElementById('sheetBg').classList.add('on');
 }
+
+/* ---------- Vitrine : le personnage en grand, animé, qu'on fait tourner du doigt ---------- */
+let vitrineCible = null; // null = moi ; sinon la fiche du compagnon (lecture seule)
+function ouvrirVitrine(comp) {
+  vitrineCible = comp || null;
+  let ov = document.getElementById('vitrine');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'vitrine'; document.body.appendChild(ov); }
+  dessinerVitrine();
+  ov.classList.add('on');
+}
+function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; }
+function dessinerVitrine() {
+  const ov = document.getElementById('vitrine'); if (!ov) return;
+  const moi = !vitrineCible, s = moi ? state : vitrineCible;
+  const cl = classeDe(s), pal = palierDe(Number(s.niveau) || 1, cl), P = cl.paliers[pal];
+  const orn = moi ? ornementsDe(state) : (s.ornements || {});
+  const svg = orner(cl.dessin(pal, 'vit', lookDe(s.look)), orn, 'vit');
+  const mage = !/voleur|assassin|roublard/i.test((s.classe || {}).nom || '');
+  const parts = Array.from({ length: 14 }, (_, i) => `<i style="left:${8 + (i * 61) % 84}%;animation-delay:${(i * .73) % 6}s;animation-duration:${5 + (i % 4)}s"></i>`).join('');
+  // petites tuiles : toucher = porter / retirer ; « ? » = comment on le gagne
+  const coll = moi ? EMPLACEMENTS.map(E => {
+    const items = ORNEMENTS.filter(o => o.slot === E.id);
+    return `<div class="orn-slot"><h4>${E.nom} <span>${E.aide}</span></h4><div class="orn-liste">
+      ${items.map(o => { const ok = ornementDebloque(state, o), eq = orn[E.id] === o.id; return `<div class="orn-t ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}">
+        <button class="orn-b" data-orn="${E.id}|${eq ? '' : o.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(o.nom)}"><span class="orn-ic">${miniOrnement(o)}</span><b>${esc(o.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>
+        <button class="orn-q" data-orn-info="${o.id}" aria-label="Comment le gagner">?</button></div>`; }).join('')}
+    </div></div>`;
+  }).join('') : '';
+  const evos = cl.paliers.map((e, i) => { const ok = (Number(s.niveau) || 1) >= e.n;
+    return `<button class="evo-t ${ok ? '' : 'lock'} ${i === pal ? 'ici' : ''}" data-evo="${i}"><span>${cl.dessin(i, 'ev' + i, lookDe(s.look))}</span><b>Niv ${e.n}</b></button>`; }).join('');
+  const nb = ORNEMENTS.filter(o => ornementDebloque(state, o)).length;
+  ov.innerHTML = `<div class="vit-box">
+    <button class="vit-x" data-vit-close="1" aria-label="Fermer">✕</button>
+    <div class="vit-nom"><b>${esc(s.heros || s.nom || '')}</b><span>${esc([s.titre, 'niveau ' + s.niveau, P && P.titre].filter(Boolean).join(' · '))}</span></div>
+    <div class="vit-scene ${mage ? 'mage' : 'voleur'} ${confort().animations ? '' : 'calme'}">
+      <div class="vit-parts">${parts}</div>
+      <div class="vit-rot" id="vitRot"><div class="vit-perso" id="vitPerso">${svg}</div></div>
+      <div class="vit-ombre"></div>
+    </div>
+    <p class="vit-aide">Fais-le tourner du doigt · touche-le pour le saluer</p>
+    <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · toucher</span></div>
+    <div class="evo-rang">${evos}</div>
+    ${moi ? `<div class="section"><h2>Ornements</h2><span>${nb} / ${ORNEMENTS.length} gagnés</span></div>
+    <p class="muted" style="font-size:12px;margin:-4px 0 6px">Touche pour porter ou retirer · « ? » pour savoir comment le gagner. Ton compagnon les voit aussi.</p>${coll}` : ''}
+  </div>`;
+  brancherRotation();
+}
+function miniOrnement(o) {
+  const f = ORN_SVG[o.id];
+  if (o.slot === 'lueur') return `<span class="mini-lueur l-${o.id}"></span>`;
+  const vb = o.slot === 'familier' ? '10 180 60 70' : o.slot === 'sol' ? '30 225 140 30' : '24 34 40 40';
+  return f ? `<svg viewBox="${vb}" width="34" height="${o.slot === 'sol' ? 14 : 34}">${f('m' + o.id)}</svg>` : '';
+}
+function brancherRotation() {
+  const rot = document.getElementById('vitRot'), perso = document.getElementById('vitPerso');
+  if (!rot) return;
+  let x0 = null, y0 = 0, ry = 0, rx = 0, bouge = false;
+  const poser = () => { rot.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`; };
+  rot.onpointerdown = e => { x0 = e.clientX; y0 = e.clientY; bouge = false; rot.setPointerCapture && rot.setPointerCapture(e.pointerId); rot.style.transition = 'none'; };
+  rot.onpointermove = e => { if (x0 === null) return; const dx = e.clientX - x0, dy = e.clientY - y0; if (Math.abs(dx) + Math.abs(dy) > 6) bouge = true; ry = Math.max(-40, Math.min(40, dx * .35)); rx = Math.max(-12, Math.min(12, -dy * .15)); poser(); };
+  rot.onpointerup = rot.onpointercancel = () => {
+    x0 = null; rot.style.transition = 'transform .6s cubic-bezier(.3,1.6,.5,1)'; ry = 0; rx = 0; poser();
+    if (!bouge && perso) { perso.classList.remove('salut'); void perso.offsetWidth; perso.classList.add('salut'); vib(20); }
+  };
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-vitrine]')) { ouvrirVitrine(); return; }
+  if (e.target.closest('[data-vitrine-comp]') && compVue) { ouvrirVitrine(compVue); return; }
+  if (e.target.closest('[data-vit-close]') || e.target.id === 'vitrine') { fermerVitrine(); return; }
+  const qi = e.target.closest('[data-orn-info]');
+  if (qi) { const o = ORNEMENTS.find(x => x.id === qi.dataset.ornInfo); if (o) toast((ornementDebloque(state, o) ? '✦ ' + o.nom + ' · gagné : ' : '🔒 ' + o.nom + ' · à gagner : ') + o.cond); return; }
+  const ev = e.target.closest('[data-evo]');
+  if (ev) { const sv = vitrineCible || state, c = classeDe(sv), P = c.paliers[Number(ev.dataset.evo)]; if (P) toast(`Niv ${P.n} · ${P.titre} : ${P.desc}${(Number(sv.niveau) || 1) >= P.n ? '' : ' (pas encore atteint)'}`); return; }
+  const b = e.target.closest('[data-orn]');
+  if (b) {
+    if (b.dataset.lock) { const o = ORNEMENTS.find(x => b.dataset.orn.endsWith('|' + x.id)); toast('🔒 À gagner : ' + (o ? o.cond : '')); return; }
+    const [slot, id] = b.dataset.orn.split('|');
+    regler('equiperOrnement', slot, id).then(() => dessinerVitrine());
+    dessinerVitrine();
+  }
+});
 
 /* ---------- Légende personnelle : un chapitre écrit par Claude à chaque évolution ---------- */
 const legendesDemandees = {};
@@ -2117,6 +2333,7 @@ function render() {
         </div>
         <span class="chev">›</span>
       </div>
+      <button class="engrenage" data-tab="profil" aria-label="Réglages">⚙️</button>
       <div class="bars">
         <div><div class="bar-label"><span>Expérience</span><span><b>${s.xpSuivant}</b> XP avant le niveau ${s.niveau + 1}</span></div>
           <div class="bar xp"><i style="width:${p}%"></i></div></div>
@@ -2169,7 +2386,7 @@ function render() {
   }).join('');
   const vueHeros = `
     <div class="hero-card">
-      <div>${avatar(pal, 'h', s)}</div>
+      <div class="hero-perso" data-vitrine="1" role="button" aria-label="Voir ton personnage en grand">${avatar(pal, 'h', s)}<span class="loupe">⤢ Vitrine</span></div>
       <div>
         <div class="classe">${esc(cl.nom || 'Magicien')}</div>
         <div class="classe-sub" style="color:var(--gold)">Veilleur de l'Aube</div>
@@ -2290,7 +2507,7 @@ function vueCompagnonDetail(c) {
   const pv = Math.max(0, Math.min(100, c.pv / (c.pvMax || 100) * 100));
   return `<div class="comp-detail">
     <button class="lien retour" data-retour="1">‹ La Compagnie</button>
-    <div class="comp moi"><div class="comp-av">${cl.dessin(pal, 'cd', lookDe(c.look))}</div>
+    <div class="comp moi"><div class="comp-av" data-vitrine-comp="1" role="button" aria-label="Voir en grand">${orner(cl.dessin(pal, 'cd', lookDe(c.look)), c.ornements, 'cd')}</div>
       <div class="comp-txt"><b>${esc(c.heros)}</b><span class="tt">${[c.titre, 'niveau ' + c.niveau, (c.classe || {}).nom].filter(Boolean).map(esc).join(' · ')}</span>
         <div class="bar pv"><i style="width:${pv}%"></i></div><span>${c.pv} PV · ${Math.round(Number(c.xpTotale)).toLocaleString('fr-FR')} XP${c.d20 ? ` · 🎲 ${c.d20.de} (${esc(c.d20.titre)})` : ''}</span></div></div>
     ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}
@@ -2325,7 +2542,7 @@ function vueCompagnie(s, faits, total) {
     const cl = classeDe({ classe: { nom: c.classe } }), pal = palierDe(Number(c.niveau) || 1, cl);
     const pv = Math.max(0, Math.min(100, (Number(c.pv) || 0) / (s.pvMax || 100) * 100));
     return `<div class="comp ${c.moi ? 'moi' : ''}" ${c.moi ? '' : `data-voir="${esc(c.nom)}" role="button"`}>
-      <div class="comp-av">${cl.dessin(pal, 'c' + esc(c.nom).replace(/\W/g, ''), lookDe(c.look))}</div>
+      <div class="comp-av">${orner(cl.dessin(pal, 'c' + esc(c.nom).replace(/\W/g, ''), lookDe(c.look)), c.moi ? ornementsDe(state) : c.ornements, 'c' + esc(c.nom))}</div>
       <div class="comp-txt">
         <b>${esc(c.nom)}${c.moi ? ' · toi' : ''}</b>
         <span class="tt">${esc(c.titre || '')} · niveau ${c.niveau || 1} · ${esc(c.classe || '')}</span>
@@ -2447,8 +2664,7 @@ function vueProfil(s) {
   return `
     <button class="back" data-tab="${ongletPrec}">‹ Retour</button>
     ${(s.compagnie || []).length > 1 ? '<button class="lien changer" data-pr="changer-heros">⇄ Changer de héros</button>' : ''}
-    <div class="id-card">
-      <div>${avatar(pal, 'p', s)}</div>
+    <div class="id-card sans-av">
       <div>
         <div class="nm">${esc(s.heros)}</div>
         <div class="tt">${esc(s.titre)} · niveau ${s.niveau} · ${esc((s.classe || {}).nom || 'Magicien')}</div>
@@ -2460,10 +2676,9 @@ function vueProfil(s) {
     ${grille}</details>
     ${records ? `<div class="section"><h2>Records</h2><span>depuis le début de l'aventure</span></div>${records}` : ''}
     ${histoire ? `<div class="section"><h2>Ton histoire</h2><span>modifiable dans le Sheet</span></div>${histoire}` : ''}
-    <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${CL.paliers.length} formes</span></div>
-    <div class="panel">${evos}</div>
     <div class="section"><h2>Réglages</h2><span>enregistrés dans le Sheet</span></div>
-    ${regVac}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}`;
+    ${regVac}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
+    <div class="version">La Compagnie de l'Aube · app ${VERSION_APP} · moteur ${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}${lireAttente().length ? ' · ' + lireAttente().length + ' saisie(s) en attente' : ''}</div>`;
 }
 
 function dessinerGrille() {
@@ -2526,6 +2741,7 @@ const EFFETS_REGLAGE = {
   annulerDecalage: (n, nom, de, a) => { const f = x => !(x.nom === nom && x.de === de && x.a === a); n.reglages.decalages = (n.reglages.decalages || []).filter(f);
     const h = n.habitudes.find(x => x.nom === nom); if (h) { h.decalages = (h.decalages || []).filter(f); if (a === n.today && !h.jour.fait) h.aFaire = false; if (de === n.today) h.aFaire = true; } },
   reglerRappel: (n, cfg) => { n.reglages.rappel = Object.assign({}, n.reglages.rappel, cfg); },
+  equiperOrnement: (n, slot, id) => { n.reglages.ornements = Object.assign({}, n.reglages.ornements, { [slot]: id || '' }); },
   sauvegarderMaintenant: n => { if (n.reglages.sauvegarde) n.reglages.sauvegarde.derniere = n.today; },
   proposerPacte: (n, id) => { if (n.camp) { const m = n.camp.modeles.find(x => x.id === id); if (m) n.camp.pacte = { id, texte: m.texte, par: n.heros, accepte: false }; } },
   accepterPacte: n => { if (n.camp && n.camp.pacte) Object.assign(n.camp.pacte, { accepte: true, ok: true, detail: 'pacte scellé' }); }

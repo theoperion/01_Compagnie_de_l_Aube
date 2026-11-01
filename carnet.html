@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><script>window.API_URL='https://script.google.com/macros/s/AKfycbynEOmY354fjOFKSGK0v7eL7NqG6KtNEFg1lpUBlWYacb_0kU7H-azT2bkFpaMEXNQs/exec';</script>
+<head><script>window.API_URL='https://script.google.com/macros/s/AKfycbxjQXmx2VCQP40ZFlz6AeSn8j-c4bZnnqqYIXmU0dR5styW85c0SLDdFTcA96w80Q9Z/exec';</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
@@ -315,6 +315,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
+const VERSION_CARNET_APP = '2026-11-01-2'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
@@ -1642,7 +1643,7 @@ function renderSet(){
   const D=state.run.days, opt=v=>DAYS.map((d,i)=>`<option value="${i}" ${i===v?"selected":""}>${d}${i===STR_DAY?" (renfo)":""}</option>`).join("");
   $("#p-set").innerHTML=`
   <div class="row" style="justify-content:space-between"><button class="btn sm" id="setBack">← Retour</button><h2>Réglages</h2></div>
-  <p class="small muted" style="text-align:right;margin:0">Version du Carnet : 28/10 (renfo A/B, montre, lexique avancé)</p>
+
   <div class="card" id="acct">${acctHTML()}</div>
   <div class="card" id="montre">${montreHTML()}</div>
   <div class="card"><h2>Course</h2>
@@ -1664,7 +1665,8 @@ function renderSet(){
     </div>
     <div class="row"><button class="btn sm" id="newl">Recréer la mission du monde actif</button></div>
   </div>
-  <div class="row"><button class="btn primary" id="sv">Enregistrer</button><span id="svm" class="small muted"></span></div>`;
+  <div class="row"><button class="btn primary" id="sv">Enregistrer</button><span id="svm" class="small muted"></span></div>
+  <p class="small muted" style="text-align:center;margin:18px 0 6px">Carnet de quêtes · version ${VERSION_CARNET_APP}${nonSync()?" · modifications en attente d'envoi":""}</p>`;
   $("#sv").onclick=()=>{
     state.run.goal=$("#sg").value.trim();state.run.ref=$("#sr").value.trim();state.run.start=mondayOf($("#ss").value||state.run.start);state.run.weeks=+$("#sw").value;
     state.run.days={q:+$("#dq").value,s:+$("#ds").value,l:+$("#dl").value};
