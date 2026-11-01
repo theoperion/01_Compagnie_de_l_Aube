@@ -328,7 +328,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
-const VERSION_CARNET_APP = '2026-11-02-3'; // affichée en bas des réglages
+const VERSION_CARNET_APP = '2026-11-02-4'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
@@ -1304,7 +1304,7 @@ function renderRun(){
   return `<details class="week ${i===wi?"cur":""}" ${i===wi||(wi<0&&i===0)?'open id="curweek"':""}>
     <summary><h3>Semaine ${w.n}${[3,7].includes(w.abs)||w.auto?" · allégée":""} <span class="small muted" style="font-family:var(--body);font-weight:400">· ${esc(regionOf(w)[0])}</span></h3><span class="small muted">${frDate(w.monday)} · ${wd}/3 ${wd===3?"✦":""}</span></summary>
     ${rows.map(s=>{
-      if(s.kind==="str") return `<div class="sess strrow ${s.date===todayISO()?"today":""}"><button class="check ${s.sl?"on":""}" data-gostr aria-label="Voir le renfo">${s.sl?"✓":""}</button><div class="detail"><span class="tag">${DAYS[STR_DAY]} · Renfo</span><div><b>${esc(s.st.phase)}</b> · ${s.st.rounds} tours de ${s.st.list.length} exercices</div><div class="small muted">Séance guidée dans l'onglet Renfo</div></div></div>`;
+      if(s.kind==="str") return `<div class="sess strrow ${s.date===todayISO()?"today":""}"><button class="check ${s.sl?"on":""}" data-gostr aria-label="Voir le renfo">${s.sl?"✓":""}</button><div class="detail"><span class="tag">${DAYS[STR_DAY]} · Renfo</span><div><b>Séance ${esc(s.st.seance)} · ${esc(s.st.phase)}</b> · ${s.st.blocs.length} blocs (${s.st.blocs.map(x=>x.tours).join(" + ")} tours) · ${s.st.list.length} exercices · ~${tlMinutes(s.st)} min</div><div class="small muted">Séance guidée dans l'onglet Renfo</div></div></div>`;
       const l=state.run.logs[s.key];return `<div class="sess ${s.date===todayISO()?"today":""}">
       <button class="check ${l?"on":""}" data-log="${s.key}" aria-label="Marquer comme faite">${l?"✓":""}</button>
       <div class="detail"><span class="tag">${DAYS[s.dow]} · ${esc(sessLabel(s,w))}</span><div><b>${esc(s.title)}</b></div>${foeLine(s,w)}<div class="small muted">${esc(s.detail)} <span class="mono">${valid?"· "+mmss(P[s.zone])+"/km":""}</span></div>
@@ -1627,8 +1627,8 @@ function renderStr(){
   ${cur.blocs.map((b,bi)=>`<div class="card"><div class="row" style="justify-content:space-between"><h3>Bloc ${bi+1}</h3><span class="pill neutral">${b.tours} tours</span></div>
     <div class="exgrid">${b.exos.map(x=>`<div class="ex"><div class="figbox">${figSVG(x.id)}</div><b>${esc(EX[x.id].name)}</b><span class="small"><b>${doseTxt(x)}</b> · effort ${esc(x.e)}</span><ul class="small muted">${EX[x.id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></div>`).join("")}
   <div class="card"><h3>Programme des jeudis</h3>
-    <div class="tbl"><table><thead><tr><th>Sem.</th><th>Date</th><th>Phase</th><th>Format</th><th></th></tr></thead><tbody>
-    ${S.map((w,i)=>`<tr class="${i===wi?"cur":""}"><td class="mono">${w.n}</td><td>${frDate(w.date)}</td><td>${esc(w.phase)}${w.light?" (allégée)":""}</td><td class="mono">Séance ${w.seance} · ${w.blocs.map(b=>b.tours).join(" + ")} tours</td><td>${state.str.logs[w.key]?'<span class="pill ok">fait</span>':""}</td></tr>`).join("")}
+    <div class="tbl"><table><thead><tr><th>Sem.</th><th>Date</th><th>Phase</th><th>Séance</th><th></th></tr></thead><tbody>
+    ${S.map((w,i)=>`<tr class="${i===wi?"cur":""}"><td class="mono">${w.n}</td><td>${frDate(w.date)}</td><td>${esc(w.phase)}${w.light?" (allégée)":""}</td><td class="mono">${w.seance} · ${w.blocs.map(b=>b.tours).join("+")} tours</td><td>${state.str.logs[w.key]?'<span class="pill ok">fait</span>':""}</td></tr>`).join("")}
     </tbody></table></div>
     <p class="small muted">Le renfo le jeudi tombe au lendemain de la séance de qualité : les jours durs restent groupés et la sortie longue arrive après 48 h de récupération.</p>
   </div>

@@ -698,6 +698,41 @@
   @keyframes rise { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.8); }
     20% { opacity: 1; transform: translate(-50%, 0) scale(1.1); }
     100% { opacity: 0; transform: translate(-50%, -70px) scale(1); } }
+  .lvl-ov { position: fixed; inset: 0; z-index: 150; display: grid; place-items: center; overflow: hidden; overscroll-behavior: contain;
+    background: radial-gradient(circle at 50% 24%, #3a2c12 0%, #120d1a 42%, #07050b 100%); animation: lvlIn .45s ease-out; }
+  .lvl-ov.sortie { animation: lvlOut .4s ease-in forwards; }
+  @keyframes lvlIn { from { opacity: 0; } } @keyframes lvlOut { to { opacity: 0; transform: scale(1.04); } }
+  .lvl-rayons { position: absolute; left: 50%; top: 24%; width: 900px; height: 900px; margin: -450px 0 0 -450px; opacity: .22;
+    background: repeating-conic-gradient(from 0deg, rgba(212,173,60,.5) 0 4deg, transparent 4deg 18deg); -webkit-mask: radial-gradient(circle, #000 0, transparent 60%); mask: radial-gradient(circle, #000 0, transparent 60%);
+    animation: lvlTourne 24s linear infinite, lvlIn 1.2s ease-out; }
+  @keyframes lvlTourne { to { transform: rotate(360deg); } }
+  .lvl-eclats { position: absolute; left: 50%; top: 24%; width: 0; height: 0; }
+  .lvl-eclats i { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #ffe6a0; box-shadow: 0 0 8px #ffd56a; opacity: 0;
+    animation: lvlEclat 1.4s cubic-bezier(.15,.7,.3,1) calc(1.05s + var(--d)) forwards; transform: rotate(var(--a)) translateY(0); }
+  @keyframes lvlEclat { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(1.4); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(-1 * var(--l))) scale(.4); } }
+  .lvl-box { position: relative; width: min(92vw, 380px); max-height: 92vh; overflow-y: auto; text-align: center; padding: 8px 4px 18px; }
+  .lvl-anneau { position: relative; width: 168px; height: 168px; margin: 0 auto 6px; }
+  .lvl-anneau svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .lvl-anneau circle { fill: none; stroke-width: 7; } .lvl-anneau .fond { stroke: rgba(255,255,255,.08); }
+  .lvl-anneau .plein { stroke: var(--gold); stroke-linecap: round; stroke-dasharray: 327; stroke-dashoffset: 327; filter: drop-shadow(0 0 6px rgba(212,173,60,.8));
+    animation: lvlRemplit 1s cubic-bezier(.4,.1,.2,1) .15s forwards; }
+  @keyframes lvlRemplit { to { stroke-dashoffset: 0; } }
+  .lvl-num { position: absolute; inset: 0; display: grid; place-content: center; font-family: var(--f-titre); color: var(--gold); }
+  .lvl-num small { font-size: 11px; letter-spacing: .25em; color: var(--muted); }
+  .lvl-num b { font-size: 64px; line-height: 1; font-weight: 800; text-shadow: 0 0 18px rgba(212,173,60,.6); }
+  .lvl-num b.pop { animation: lvlPop .6s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes lvlPop { 0% { transform: scale(.4); opacity: .2; } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  .lvl-perso { position: absolute; right: -22px; bottom: -6px; width: 64px; opacity: 0; animation: lvlMonte .6s ease-out 1.3s forwards; }
+  .lvl-perso svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+  @keyframes lvlMonte { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .lvl-box h2 { font-family: var(--f-titre); color: var(--gold); font-size: 24px; letter-spacing: .04em; margin: 6px 0 2px; opacity: 0; animation: lvlMonte .5s ease-out 1.2s forwards; }
+  .lvl-sous { color: var(--muted); font-size: 13px; margin: 0 0 12px; opacity: 0; animation: lvlMonte .5s ease-out 1.3s forwards; }
+  .lvl-recap { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 7px; text-align: left; }
+  .lvl-recap li { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: center; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 9px 11px; font-size: 14px; opacity: 0; animation: lvlMonte .45s ease-out calc(1.5s + var(--i) * .16s) forwards; }
+  .lvl-recap li i { font-style: normal; font-size: 18px; text-align: center; } .lvl-recap b { color: var(--gold); }
+  .lvl-recap small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .lvl-box .btn { opacity: 0; animation: lvlMonte .4s ease-out 2.2s forwards; min-width: 160px; }
   .levelup { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; pointer-events: none;
     background: radial-gradient(circle, rgba(212,173,60,.35), rgba(17,14,21,.9) 70%); animation: fade 2.6s forwards; }
   .levelup div { text-align: center; font-family: var(--f-titre); color: var(--gold); padding: 0 20px; }
@@ -1356,7 +1391,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-02-4';
+const VERSION_APP = '2026-11-02-5';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2262,7 +2297,7 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
-const VERSION_CARNET = '2026-11-02-3'; // change à chaque livraison : force le téléphone à recharger carnet.html
+const VERSION_CARNET = '2026-11-02-4'; // change à chaque livraison : force le téléphone à recharger carnet.html
 function afficherCarnet(oui) {
   const box = document.getElementById('carnetBox');
   if (!box) return;
@@ -3543,13 +3578,48 @@ function flotter(texte, couleur) {
   el.className = 'float'; el.textContent = texte; el.style.color = couleur;
   document.body.appendChild(el); setTimeout(() => el.remove(), 1200);
 }
-function niveauSup(n, titre, nouveauTitre) {
-  if (!confort().animations) { toast(`Niveau ${n}${nouveauTitre ? ' · ' + titre : ''}`); return; }
+/**
+ * Montée de niveau en plein écran : le chiffre grimpe dans un anneau qui se remplit, éclats dorés,
+ * puis un petit récap (titre, XP, capacité ou ornements débloqués, caractéristiques, prochaine évolution).
+ * `avant` = l'état juste avant la saisie (pour savoir ce qui vient de se débloquer).
+ */
+function niveauSup(n, titre, nouveauTitre, avant, apres, evolue) {
+  if (!confort().animations) { toast(`Niveau ${n}${nouveauTitre ? ' · ' + titre : ''}`); if (apres) setTimeout(apres, 1500); return; }
+  document.querySelectorAll('.lvl-ov').forEach(x => x.remove());
+  const s = state, CL = classeDe(s), pal = palierDe(n, CL);
+  const prochain = CL.paliers[pal + 1];
+  const capa = CL.capacites.find(c => c.n === n);
+  const orn = avant ? ORNEMENTS.filter(o => ornementDebloque(s, o) && !ornementDebloque(avant, o)) : [];
+  const stats = avant && avant.stats && s.stats ? s.stats.map(x => { const a = avant.stats.find(y => y.nom === x.nom); return a && Number(x.score) > Number(a.score) ? { nom: x.nom, de: a.score, a: x.score } : null; }).filter(Boolean) : [];
+  const ligne = (ic, html) => `<li><i>${ic}</i><span>${html}</span></li>`;
+  const recap = [
+    nouveauTitre ? ligne('👑', `Nouveau titre : <b>${esc(titre)}</b>`) : '',
+    ligne('⚡', `<b>${Math.round(Number(s.xpTotale) || 0).toLocaleString('fr-FR')} XP</b> au total`),
+    capa ? ligne('🔓', `Capacité débloquée : <b>${esc(capa.nom)}</b><small>${esc(capa.d)}</small>`) : '',
+    ...orn.map(o => ligne('✨', `Ornement gagné : <b>${esc(o.nom)}</b><small>à porter depuis la vitrine</small>`)),
+    ...stats.map(x => ligne(ICONES[x.nom] || '🧬', `${esc(x.nom)} <b>${x.de} → ${x.a}</b>`)),
+    prochain ? ligne('🌟', `Prochaine évolution : <b>${esc(prochain.titre)}</b><small>au niveau ${prochain.n}, encore ${prochain.n - n} niveau${prochain.n - n > 1 ? 'x' : ''}</small>`)
+      : ligne('🌟', '<b>Forme ultime</b> atteinte')
+  ].filter(Boolean);
+  const eclats = Array.from({ length: 28 }, (_, i) => `<i style="--a:${(i * 360 / 28).toFixed(0)}deg;--d:${(i % 7) * .05}s;--l:${90 + (i % 4) * 28}px"></i>`).join('');
   const el = document.createElement('div');
-  el.className = 'levelup';
-  el.innerHTML = `<div><b>NIVEAU ${n}</b><span>${nouveauTitre ? 'Nouveau titre : ' + esc(titre) : 'Tu montes en puissance'}</span></div>`;
-  document.body.appendChild(el); setTimeout(() => el.remove(), 2700);
-  vib([60, 40, 120]);
+  el.className = 'lvl-ov';
+  el.innerHTML = `<div class="lvl-rayons"></div><div class="lvl-eclats">${eclats}</div>
+    <div class="lvl-box">
+      <div class="lvl-anneau"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="fond"/><circle cx="60" cy="60" r="52" class="plein"/></svg>
+        <div class="lvl-num"><small>NIVEAU</small><b data-n="${n}">${n - 1}</b></div></div>
+      <h2>Niveau ${n} atteint</h2>
+      <p class="lvl-sous">${evolue ? `${esc(s.heros || '')} est devenu ${esc((CL.paliers[pal] || {}).titre || '')}` : `${esc(s.heros || '')} gagne en puissance`}</p>
+      <ul class="lvl-recap">${recap.map((l, i) => l.replace('<li>', `<li style="--i:${i}">`)).join('')}</ul>
+      <button class="btn or" data-lvl-fin="1">Continuer</button>
+    </div>`;
+  document.body.appendChild(el); document.body.classList.add('bloque');
+  const num = el.querySelector('.lvl-num b');
+  setTimeout(() => { num.textContent = n; num.classList.add('pop'); vib([60, 40, 140]); }, 1050);
+  const fin = () => { if (!el.isConnected) return; el.classList.add('sortie'); document.body.classList.remove('bloque'); setTimeout(() => el.remove(), 400); if (apres) setTimeout(apres, 450); };
+  el.addEventListener('click', e => { if (e.target.closest('[data-lvl-fin]') || el.classList.contains('fini')) fin(); });
+  setTimeout(() => el.classList.add('fini'), 1800);
+  setTimeout(fin, 15000);
 }
 function celebrer(liste) {
   (liste || []).filter(b => {
@@ -3566,10 +3636,10 @@ function celebrer(liste) {
     vib([40, 30, 40]);
   }, 900 + i * 2800));
 }
-function evolution(niveau) {
+function evolution(niveau, titre, nouveauTitre, avant) {
   const CL = classeDe(), pal = palierDe(niveau, CL), p = CL.paliers[pal];
   if (!confort().animations) { toast(`Évolution : ${p.titre}`); setTimeout(() => demanderLegende(p, true), 1500); return; }
-  cinematiqueEvolution(pal, false, () => demanderLegende(p, true));
+  cinematiqueEvolution(pal, false, () => niveauSup(niveau, titre || state.titre, !!nouveauTitre, avant, () => demanderLegende(p, true), true));
 }
 /**
  * Cinématique d'évolution, façon montée de niveau de jeu de rôle :
@@ -3718,8 +3788,8 @@ let niveauCelebre = 0;
 function celebrerChangements(avant, apres) {
   if (!avant || !apres) return;
   if (niveauCelebre && apres.niveau <= niveauCelebre) { celebrer(apres.nouveauxBonus); return; } // déjà fêté à la prédiction
-  if (palierDe(apres.niveau, classeDe(apres)) > palierDe(avant.niveau, classeDe(apres))) setTimeout(() => evolution(apres.niveau), 500);
-  else if (apres.niveau > avant.niveau) setTimeout(() => niveauSup(apres.niveau, apres.titre, apres.titre !== avant.titre), 500);
+  if (palierDe(apres.niveau, classeDe(apres)) > palierDe(avant.niveau, classeDe(apres))) setTimeout(() => evolution(apres.niveau, apres.titre, apres.titre !== avant.titre, avant), 500);
+  else if (apres.niveau > avant.niveau) setTimeout(() => niveauSup(apres.niveau, apres.titre, apres.titre !== avant.titre, avant), 500);
   celebrer(apres.nouveauxBonus);
 }
 
@@ -3733,6 +3803,7 @@ function agir(nom, statut) {
   const annexe = state.annexes.find(x => x.nom === nom);
   if (statut === 'Fait' && annexe && !annexe.repetable && annexe.jour.fait > 0) { toast('Quête unique : déjà accomplie ✔'); return; }
   if (!confirme) confirme = state;
+  const avantSaisie = state;
   const pred = predire(state, nom, statut);
   if (pred) {
     if (pred.trace) (histoSaisies[nom] = histoSaisies[nom] || []).push(pred.trace);
@@ -3749,8 +3820,8 @@ function agir(nom, statut) {
     if (pred.monte) { // montée de niveau fêtée tout de suite, sans attendre la réponse du Sheet
       niveauCelebre = pred.monte;
       const cl = classeDe(state);
-      if (palierDe(pred.monte, cl) > palierDe(pred.monte - 1, cl)) setTimeout(() => evolution(pred.monte), 350);
-      else setTimeout(() => niveauSup(pred.monte, state.titre, false), 350);
+      if (palierDe(pred.monte, cl) > palierDe(pred.monte - 1, cl)) setTimeout(() => evolution(pred.monte, state.titre, false, avantSaisie), 350);
+      else setTimeout(() => niveauSup(pred.monte, state.titre, false, avantSaisie), 350);
     }
   } else { busy.add(nom); render(); }
   const item = statut === 'undo' ? { id: nouvelId(), type: 'undo', quete: nom, date: isoLocal() }
