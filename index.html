@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Compagnie">
 <script>
   /* Adresse du moteur (Apps Script → Déployer → Gérer les déploiements → URL /exec) */
-  window.API_URL = 'https://script.google.com/macros/s/AKfycbw2Dl6xluaWijtjOscry_edJtjc_jxsev8XXGgELAwi0GqjNhaQkq5tcdWxTMa03uue/exec';
+  window.API_URL = 'https://script.google.com/macros/s/AKfycbw_eKBcTG1aNiKppaSDv3FFLRC8S1Kv7wiMbPipBiT7HkEEnysItWGbZIAsfsfz8V3J/exec';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
@@ -565,6 +565,11 @@
   .stat2 .bar > i { background: linear-gradient(90deg, #3d6fb3, #6aa3ef); }
   .stat2-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
   .md.neg { color: var(--pv); }
+  /* Défilement : les fenêtres défilent seules, sans entraîner la page derrière */
+  .sheet { max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  #vitrine, #bossVue, .cine, .d20-ov { overscroll-behavior: contain; }
+  body.bloque { overflow: hidden; }
+  .evo-rang, .orn-liste { overscroll-behavior-x: contain; }
   .vit-saut { transform-style: preserve-3d; }
   .vit-rot.fig .vit-perso { transform-style: preserve-3d; }
   .vit-saut.salut { animation: salut .8s cubic-bezier(.3,.7,.4,1); }
@@ -1342,7 +1347,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-01-5';
+const VERSION_APP = '2026-11-01-7';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2182,11 +2187,11 @@ function ouvrirBoss(type) {
   ov.innerHTML = `<div><div class="bv-av" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, 'vue')}</div>
     <h3>${esc(b.nom)}</h3><p>${esc(b.incarne || '')}</p><p>⚡ Faible : <b class="faible">${esc(b.faible)}</b> · 🛡 Résiste : ${esc(b.resiste)}</p>
     ${b.conseil ? `<p style="font-style:italic">« ${esc(b.conseil)} »</p>` : ''}<button class="btn or" data-boss-fermer="1" style="margin-top:14px">Retour au combat</button></div>`;
-  ov.classList.add('on');
+  ov.classList.add('on'); document.body.classList.add('bloque');
 }
 document.addEventListener('click', e => {
   const v = e.target.closest('[data-boss-vue]'); if (v) { ouvrirBoss(v.dataset.bossVue); return; }
-  if (e.target.closest('[data-boss-fermer]') || e.target.id === 'bossVue') { const ov = document.getElementById('bossVue'); if (ov) ov.classList.remove('on'); }
+  if (e.target.closest('[data-boss-fermer]') || e.target.id === 'bossVue') { const ov = document.getElementById('bossVue'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque'); }
 });
 /* Chaque boss a sa façon de bouger (respiration lourde, flottement, ondulation…) ; certaines parties s'animent aussi */
 const BOSS_MOUV = { golem: 'lourd', liche: 'flotte', spectre: 'flotte', basilic: 'ondule', harpie: 'vole', troll: 'lourd', hydre: 'balance', necro: 'flotte',
@@ -2241,7 +2246,7 @@ function carteBoss(b, s) {
          <div class="bar boss big"><i style="width:${pct}%"></i></div>`}
     ${b.statut === 'À venir' ? '' : `<div class="bc-dmg">Dégâts : ${noms.map(n => `<span style="color:${couleurHeros(n, s)}">${esc(n.split(' ')[0])} <b>${Math.round(b.degats[n]).toLocaleString('fr-FR')}</b></span>`).join(' · ')}${b.riposte ? ` · <span class="rip">riposte +${Math.round(b.riposte)}</span>` : ''}
       <div class="bar split">${noms.map(n => `<i style="width:${(b.degats[n] || 0) / tot * 100}%;background:${couleurHeros(n, s)}"></i>`).join('')}</div></div>`}
-    ${b.type === 'semaine' && textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')] ? `<div class="bc-parole">${esc(b.nom.split(' ').slice(-1)[0] === b.nom ? b.nom : b.nom)} : « ${esc(textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')])} »</div>` : ''}
+    ${b.type === 'semaine' && textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')] ? `<div class="bc-parole">${plie(b.nom + ' : « ' + textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')] + ' »', '', 2)}</div>` : ''}
     ${b.conseil ? `<div class="bc-tip">« ${esc(b.conseil)} »</div>` : ''}
     ${!vaincu && b.statut !== 'Trêve' ? `<div class="bc-xp">Récompense : +${b.xp} XP pour toi${mois ? ' + relique (+1 joker le mois prochain)' : ''}</div>` : ''}
   </div>`;
@@ -2382,9 +2387,9 @@ function ouvrirVitrine(comp) {
   let ov = document.getElementById('vitrine');
   if (!ov) { ov = document.createElement('div'); ov.id = 'vitrine'; document.body.appendChild(ov); }
   dessinerVitrine();
-  ov.classList.add('on');
+  ov.classList.add('on'); document.body.classList.add('bloque');
 }
-function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; }
+function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; document.body.classList.remove('bloque'); if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; } }
 function dessinerVitrine() {
   const ov = document.getElementById('vitrine'); if (!ov) return;
   const moi = !vitrineCible, s = moi ? state : vitrineCible;
@@ -2534,7 +2539,7 @@ function vueRetro(s) {
   const R = s.retro; if (!R) return '';
   if (!R.texte) return `<div class="saga"><div class="saga-t">🎆 Rétrospective ${esc(R.annee)}</div><p class="muted" style="font-size:13px;margin:6px 0 0">Le Maître du Jeu rassemble les souvenirs de l'année…</p></div>`;
   return `<div class="saga"><div class="saga-t">🎆 L'année ${esc(R.annee)} de la Compagnie</div>
-    ${plie(R.texte, 'saga-x', 6)}
+    ${plie(R.texte, 'saga-x', 2)}
     ${(R.heros || []).map(h => `<div class="camp-l"><b>${esc(h.nom.split(' ')[0])}</b><span>${h.faits} quêtes · ${Number(h.xp).toLocaleString('fr-FR')} XP${R.honneurs && R.honneurs[h.nom] ? ` · <span class="surnom">« ${esc(R.honneurs[h.nom])} »</span>` : ''}</span></div>`).join('')}
     ${R.boss && R.boss.length ? `<p class="muted" style="font-size:12.5px;margin:8px 0 0">⚔️ ${R.boss.length} boss abattus : ${esc(R.boss.slice(0, 6).join(', '))}${R.boss.length > 6 ? '…' : ''}</p>` : ''}</div>`;
 }
@@ -2543,7 +2548,7 @@ function vueRetro(s) {
 const textesOuverts = {};
 function plie(texte, cls, lignes) {
   const k = hash32(texte);
-  return `<div class="pliable ${textesOuverts[k] ? 'ouvert' : ''}" data-k="${k}" style="--l:${lignes || 4}"><p class="pl-t ${cls || ''}">${esc(texte)}</p><button class="pl-b" data-plie="${k}" hidden>${textesOuverts[k] ? 'Réduire' : 'Lire la suite ▾'}</button></div>`;
+  return `<div class="pliable ${textesOuverts[k] ? 'ouvert' : ''}" data-k="${k}" style="--l:${lignes || 2}"><p class="pl-t ${cls || ''}">${esc(texte)}</p><button class="pl-b" data-plie="${k}" hidden>${textesOuverts[k] ? 'Réduire' : 'Lire la suite ▾'}</button></div>`;
 }
 function hash32(t) { let h = 0; for (let i = 0; i < String(t).length; i++) h = (h * 31 + String(t).charCodeAt(i)) | 0; return 'p' + (h >>> 0); }
 function boutonsPlies() {
@@ -2603,7 +2608,7 @@ function vueSaga(s) {
     ${plie(m.texte, 'saga-x')}
     <div class="saga-q">${m.decision != null ? 'La bénédiction de la semaine' : 'Votre choix pour la semaine'}${autres.length && m.decision == null ? ' · ' + esc(autres[0].split(' ')[0]) + ' a voté' : ''}</div>${ch}
     ${m.decision == null ? '<p class="muted" style="font-size:11.5px;margin:6px 0 0">Votez tous les deux le même choix, sinon le Maître du Jeu tranche mercredi.</p>' : ''}
-    ${m.rebond ? `<div class="rebond"><b>⚡ Rebondissement</b>${plie(m.rebond.texte, '', 3)}<span>${esc(m.rebond.effetTexte)}</span></div>` : ''}</div>`;
+    ${m.rebond ? `<div class="rebond"><b>⚡ Rebondissement</b>${plie(m.rebond.texte, '', 2)}<span>${esc(m.rebond.effetTexte)}</span></div>` : ''}</div>`;
 }
 document.addEventListener('click', e => {
   const v = e.target.closest('[data-vote]');
@@ -2630,9 +2635,9 @@ function nouvellesDe(s, dimanche) {
   if (m && m.pret) L.push({ id: 'saga|' + m.lundi, html: `<button class="evt on" data-tab="compagnie" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">📜 Chapitre ${m.numero || ''} · ${esc(m.titre)}</div><div class="evt-e">${m.monVote == null ? 'Le Maître du Jeu attend ton choix pour la semaine ›' : 'Lire la Saga dans le camp ›'}</div></button>` });
   const B = beneditionActive(s);
   if (B) L.push({ id: 'bene|' + m.lundi + '|' + m.decision, html: `<div class="evt on"><div class="evt-t">🎁 Bénédiction de la semaine</div><div class="evt-e">${esc(B.texte)} · jusqu'à dimanche</div></div>` });
-  if (m && m.rebond) L.push({ id: 'rebond|' + m.lundi, html: `<div class="evt on"><div class="evt-t">⚡ Rebondissement</div><div class="evt-e">${esc(m.rebond.effetTexte)}</div>${m.rebond.texte ? plie(m.rebond.texte, 'evt-x', 3) : ''}</div>` });
+  if (m && m.rebond) L.push({ id: 'rebond|' + m.lundi, html: `<div class="evt on"><div class="evt-t">⚡ Rebondissement</div><div class="evt-e">${esc(m.rebond.effetTexte)}</div>${m.rebond.texte ? plie(m.rebond.texte, 'evt-x', 2) : ''}</div>` });
   const E = s.evenement, e = E && (E.actuel || E.prochain);
-  if (e) { const sansMJ = Object.assign({}, s, { mj: null }); L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), html: carteEvenement(sansMJ, 4) }); }
+  if (e) { const sansMJ = Object.assign({}, s, { mj: null }); L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), html: carteEvenement(sansMJ, 2) }); }
   if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, html: `<div class="section" style="margin-top:4px"><h2>Bilan du dimanche</h2><span>semaine du ${dateCourte(s.bilan.semaine.lundi)}</span></div>${carteBilan(s, true)}` });
   return L;
 }
@@ -2971,7 +2976,22 @@ function carteBilan(s, dimanche) {
   </div>`;
 }
 
+let renduEnAttente = false, dernierHtml = '';
+document.addEventListener('focusout', () => setTimeout(() => { if (renduEnAttente && !champActif()) { renduEnAttente = false; render(); } }, 60));
+function champActif() {
+  const f = document.activeElement;
+  return !!(f && f.closest && f.closest('#app') && (f.tagName === 'TEXTAREA' || (f.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|range)$/i.test(f.type))));
+}
+/** Écrit l'écran seulement s'il a changé : pas de clignotement, les animations ne repartent pas de zéro. */
+function poserApp(html) {
+  if (html === dernierHtml) return false;
+  dernierHtml = html;
+  document.getElementById('app').innerHTML = html;
+  return true;
+}
 function render() {
+  if (!state) return;
+  if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
   const s = state;
   document.body.classList.toggle('calme', !confort().animations);
   const p = Math.round((s.progression || 0) * 100);
@@ -3102,27 +3122,27 @@ function render() {
   const bs = s.boss && s.boss.semaine;
   const bossEnCours = bs && bs.statut === 'En cours' && bs.pvMax ? Math.min(100, Math.max(1, Math.round(bs.pv / bs.pvMax * 100))) : 0;
   if (onglet === 'compagnie' && compVue) {
-    document.getElementById('app').innerHTML = vueCompagnonDetail(compVue) + `
+    poserApp(vueCompagnonDetail(compVue) + `
     <nav class="tabs"><button data-tab="quetes"><span>⚔️</span>Quêtes</button>${distant && s.carnet ? '<button data-tab="carnet"><span>📖</span>Carnet</button>' : ''}${s.boss && (s.boss.semaine || s.boss.mois) ? '<button data-tab="combat"><span>🐉</span>Combat</button>' : ''}<button data-tab="heros"><span>🛡️</span>Héros</button>
-      <button data-tab="compagnie" class="on"><span>🤝</span>Compagnie</button></nav>`;
+      <button data-tab="compagnie" class="on"><span>🤝</span>Compagnie</button></nav>`);
     return;
   }
   if (onglet === 'carnet' && !(distant && s.carnet)) onglet = 'quetes';
   const vue = onglet === 'carnet' ? '' : onglet === 'heros' ? vueHeros : onglet === 'profil' ? vueProfil(s) : onglet === 'compagnie' ? vueCompagnie(s, faits, duJour.length) : onglet === 'combat' ? vueCombat(s) : vueQuetes;
-  document.getElementById('app').innerHTML = (onglet === 'carnet' ? '' : onglet === 'profil' ? entete.split('<header>')[0] : entete) + vue + `
+  const change = poserApp((onglet === 'carnet' ? '' : onglet === 'profil' ? entete.split('<header>')[0] : entete) + vue + `
     <nav class="tabs">
       <button data-tab="quetes" class="${onglet === 'quetes' ? 'on' : ''}"><span>⚔️</span>Quêtes${duJour.length - faits > 0 && !s.vacances ? `<i>${duJour.length - faits}</i>` : ''}</button>
       ${distant && s.carnet ? `<button data-tab="carnet" class="${onglet === 'carnet' ? 'on' : ''}"><span>📖</span>Carnet</button>` : ''}
       ${aBoss ? `<button data-tab="combat" class="${onglet === 'combat' ? 'on' : ''}"><span>🐉</span>Combat${bossEnCours ? `<i class="pvb">${bossEnCours}%</i>` : ''}</button>` : ''}
       <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros${dimanche ? '<i>!</i>' : ''}</button>
       ${coop ? `<button data-tab="compagnie" class="${onglet === 'compagnie' ? 'on' : ''}"><span>🤝</span>Compagnie</button>` : ''}
-    </nav>`;
-  if (onglet === 'profil') dessinerGrille();
+    </nav>`);
+  if (onglet === 'profil' && change) dessinerGrille();
   afficherCarnet(onglet === 'carnet');
   if (onglet === 'compagnie' && !compVue) prechargerFiches(s);
   demandesClaude(s);
   demanderMJ(s);
-  requestAnimationFrame(boutonsPlies);
+  if (change) requestAnimationFrame(boutonsPlies);
   memoriserEtat();
   document.getElementById('btnRepos').textContent = s.jokersRestants > 0
     ? `💤 Repos (utilise le joker, ${s.jokersRestants} restant)` : '💤 Repos (plus de joker cette semaine)';
@@ -4074,7 +4094,7 @@ const demo = (() => {
 
 /* ---------- Démarrage ---------- */
 function erreurChargement(e) {
-  document.getElementById('app').innerHTML = `<div class="loading">Impossible de charger les données.<br>${esc(e.message || e)}</div>`;
+  dernierHtml = ''; document.getElementById('app').innerHTML = `<div class="loading">Impossible de charger les données.<br>${esc(e.message || e)}</div>`;
 }
 /* Dernier état connu, gardé sur le téléphone : l'app s'affiche tout de suite, puis se met à jour */
 const cleEtat = () => 'etat|' + (herosActif || '');
@@ -4083,7 +4103,7 @@ function lancer() {
   let memo = null;
   try { memo = JSON.parse(localStorage.getItem(cleEtat()) || 'null'); } catch (e) {}
   if (memo && (enLigne || distant)) { state = memo; if (navigator.onLine === false) state = passerAuJour(state); render(); }
-  else document.getElementById('app').innerHTML = '<div class="loading">Chargement de ta feuille de personnage…</div>';
+  else { dernierHtml = ''; document.getElementById('app').innerHTML = '<div class="loading">Chargement de ta feuille de personnage…</div>'; }
   // des saisies faites hors connexion attendent : elles partent d'abord, et la réponse est l'état à jour
   const premier = lireAttente().length ? envoyerAttente(true).then(s => s || api('getState')) : api('getState');
   premier.then(s => {
@@ -4102,6 +4122,7 @@ function lancer() {
 }
 /** Écran « Qui rejoint la Compagnie ? » (seulement s'il y a plusieurs héros). */
 function choisirHerosEcran() {
+  dernierHtml = '';
   document.getElementById('app').innerHTML = '<div class="loading">La Compagnie se rassemble…</div>';
   api('getHeros').then(liste => {
     if (liste.length <= 1) { herosActif = liste[0] ? liste[0].nom : ''; lancer(); return; }
@@ -4124,6 +4145,7 @@ document.addEventListener('click', e => {
 });
 /** App installable : saisie de la clé secrète du héros (une seule fois par téléphone). */
 function ecranCle(msg) {
+  dernierHtml = '';
   document.getElementById('app').innerHTML = `<div class="choix"><h1>☀ La Compagnie de l'Aube</h1>
     <p>Entre ta clé de héros (une seule fois : ce téléphone s'en souviendra).</p>
     <input id="cleIn" autocomplete="off" autocapitalize="characters" placeholder="ABC-1234-WXYZ" value="${esc(cleHeros || '')}"
