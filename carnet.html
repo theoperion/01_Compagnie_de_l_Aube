@@ -40,6 +40,7 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
 .muted{color:var(--muted)} .small{font-size:.88rem}
 .mono{font-variant-numeric:lining-nums tabular-nums}
 .top{display:grid;justify-items:center;text-align:center;gap:2px;padding-top:6px;position:relative}
+.maison{position:absolute;right:0;top:0;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--gold);display:grid;place-items:center;cursor:pointer;padding:0}
 .gear{position:absolute;left:0;top:0;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--gold);display:grid;place-items:center;cursor:pointer}
 .gear:hover{border-color:var(--gold)} .gear[aria-pressed="true"]{background:var(--gold-soft)}
 .okc2{color:var(--ok)}
@@ -232,6 +233,7 @@ details.parcours summary{cursor:pointer;color:var(--gold,#d3a84a);font-size:.95r
 <div class="wrap">
   <header class="top">
     <button class="gear" id="gear" aria-label="Réglages" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <button class="maison" id="maison" aria-label="Retour à la Compagnie" title="Retour à la Compagnie"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></button>
     <div class="sigil" aria-hidden="true">✦</div>
     <h1>Carnet de quêtes</h1>
     <p class="sub">Theron Corvane · Magicien · Veilleur de l'Aube</p>
@@ -325,7 +327,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
-const VERSION_CARNET_APP = '2026-11-02-1'; // affichée en bas des réglages
+const VERSION_CARNET_APP = '2026-11-02-2'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
@@ -1773,6 +1775,8 @@ function bindAcct(){
    NAVIGATION
    ====================================================================== */
 let tab="en", lastTab="en";
+/* Bouton maison : revient à l'app de la Compagnie (onglet Quêtes) ; ouvert seul, le Carnet mène à l'app */
+document.getElementById("maison").onclick=()=>{try{if(window.parent!==window){window.parent.postMessage({t:"compagnie-retour"},"*");return}}catch(e){}location.href="./"};
 function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);try{localStorage.setItem("quetes-tab",t)}catch(e){}if(t==="run")setTimeout(()=>document.getElementById("curweek")?.scrollIntoView({block:"start",behavior:"smooth"}),50)}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setTab(b.dataset.go));
