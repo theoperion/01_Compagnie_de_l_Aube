@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><script>window.API_URL='https://script.google.com/macros/s/AKfycby91ddycJx5IaoDfgyEwl420wCD1U-zp3hLcKG29GS4KVVcDkaCPiWXzDfo983IBucH/exec';</script>
+<head>
+<script>window.API_URL='https://script.google.com/macros/s/AKfycbwO02BUkqfE5AEzBVw2xJHAgnLsNgwVrQYsn9FTnpGDbaPkU17haTB0e-qEN3-drNM1/exec';</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
@@ -106,6 +107,7 @@ label{font-weight:600;font-size:.92rem;display:grid;gap:4px;color:var(--muted)}
 .err{background:var(--bad-soft);border-radius:8px;padding:8px 10px}
 .err s{color:var(--bad)} .err b{color:var(--ok)}
 .miss{color:var(--bad);text-decoration:underline wavy;font-weight:700}
+.histo{border-collapse:collapse;width:100%;font-size:.85rem;margin-top:8px}.histo th,.histo td{padding:5px 4px;border-bottom:1px solid var(--line,rgba(255,255,255,.08));text-align:left}.histo th{font-weight:600;opacity:.7;font-size:.78rem}.histo tr.race td{color:var(--run);font-weight:600}
 .note{background:var(--warn-soft);border:1px solid rgba(232,176,75,.3);border-radius:10px;padding:10px 12px;font-size:.92rem}
 .chat{display:grid;gap:8px}
 .bub{max-width:85%;padding:9px 12px;border-radius:14px;white-space:pre-wrap}
@@ -323,7 +325,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
-const VERSION_CARNET_APP = '2026-11-01-3'; // affichée en bas des réglages
+const VERSION_CARNET_APP = '2026-11-02-1'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
@@ -1150,11 +1152,56 @@ function alleger(w){const red=t=>String(t).replace(/^(\d+) ×/,(m,n)=>`${Math.ma
 let VACANCES=[];
 window.majVacances=v=>{VACANCES=Array.isArray(v)?v:[];try{localStorage.setItem("quetes-vacances",JSON.stringify(VACANCES))}catch(e){}};
 try{VACANCES=JSON.parse(localStorage.getItem("quetes-vacances")||"[]")}catch(e){}
-function semaineVacances(mon){let n=0;for(let d=0;d<7;d++){const x=addDays(mon,d);if(VACANCES.some(v=>v.debut&&x>=v.debut&&(!v.fin||x<=v.fin)))n++}return n>=4}
+/* Pauses du plan (bouton « Décaler le plan ») : {debut, fin} en semaines entières */
+const pausesPlan=()=>Array.isArray(state.run.pauses)?state.run.pauses:[];
+function semaineVacances(mon){let n=0;const L=[...VACANCES,...pausesPlan()];for(let d=0;d<7;d++){const x=addDays(mon,d);if(L.some(v=>v.debut&&x>=v.debut&&(!v.fin||x<=v.fin)))n++}return n>=4}
+/* Pause en cours ou à venir posée avec « Décaler le plan » (la dernière qui finit après aujourd'hui) */
+function pausePlanActive(){const t=todayISO();return pausesPlan().filter(p=>p.fin>=t).sort((a,b)=>a.fin<b.fin?1:-1)[0]||null}
+/* Met le plan en pause jusqu'au lundi « reprise » : la semaine en cours est sautée si aucune séance n'y est cochée */
+function decalerPlan(reprise){
+  const r=mondayOf(reprise), t=todayISO(), lun=mondayOf(t);
+  const W=weeksPlan(), cur=W.find(w=>w.monday===lun);
+  const dejaFait=cur&&cur.s.some(s=>state.run.logs[s.key]);
+  let deb=dejaFait?addDays(lun,7):lun; if(deb<state.run.start) deb=state.run.start;
+  if(r<=deb) throw new Error("Choisis un lundi après le "+frDate(deb));
+  couperPauses(deb); // une seule pause à venir : la nouvelle remplace l'ancienne
+  state.run.pauses.push({debut:deb,fin:addDays(r,-1)});
+}
+/* Les semaines déjà passées en pause restent sautées ; la pause s'arrête avant « des » (un lundi) */
+function couperPauses(des){state.run.pauses=pausesPlan().map(p=>p.fin<des?p:p.debut<des?{debut:p.debut,fin:addDays(des,-1)}:null).filter(Boolean)}
+function annulerPausePlan(){const lun=mondayOf(todayISO()),W=weeksPlan(),cur=W.find(w=>w.monday===lun);
+  couperPauses(cur&&cur.s.some(s=>state.run.logs[s.key])?addDays(lun,7):lun)}
 function lundisPlan(n){const out=[];let m=state.run.start;for(let g=0;out.length<n&&g<200;g++,m=addDays(m,7)){if(!semaineVacances(m))out.push(m)}return out}
-function pauseVacances(){const mon=mondayOf(todayISO());if(todayISO()<state.run.start||!semaineVacances(mon))return"";
-  const W=weeksPlan(),suite=W.find(w=>w.monday>mon);
-  return `<p class="note">🏖️ Programme en pause pendant tes vacances${suite?` : il reprend le ${frDate(suite.monday)}, à la semaine ${suite.n}.`:"."}</p>`}
+function pauseVacances(){const mon=mondayOf(todayISO());if(addDays(mon,6)<state.run.start||!semaineVacances(mon))return"";
+  const W=weeksPlan(),suite=W.find(w=>w.monday>mon), pp=pausePlanActive();
+  const pourquoi=pp&&todayISO()>=pp.debut?"Plan décalé":"🏖️ Programme en pause pendant tes vacances ou ton voyage";
+  return `<p class="note">${pp&&todayISO()>=pp.debut?"⏸ ":""}${pourquoi}${suite?` : il reprend le ${frDate(suite.monday)}, à la semaine ${suite.n}.`:"."}</p>`}
+/* Bloc « Décaler le plan » de l'onglet Course */
+function decalerHTML(){const pp=pausePlanActive(), W=weeksPlan();
+  const propose=addDays(mondayOf(todayISO()),14);
+  return `<details class="parcours" id="decal"><summary>⏸ Décaler le plan${pp?` · reprise le ${frDate(addDays(pp.fin,1))}`:""}</summary>
+    <p class="small muted">Course officielle, blessure, voyage : les semaines sautées ne sont pas perdues, le plan reprend là où tu en étais. Les séances déjà envoyées sur ta montre pour ces semaines sont retirées.</p>
+    <div class="row"><label class="small">Reprendre le (un lundi)<input type="date" id="dcR" value="${pp?addDays(pp.fin,1):propose}"></label>
+    <button class="btn sm primary run" id="dcOk">Décaler</button>${pp?'<button class="btn sm" id="dcNo">Annuler le décalage</button>':""}</div>
+    <p class="small" id="dcMsg"></p></details>`}
+function bindDecaler(){
+  const ok=$("#dcOk"); if(!ok) return;
+  ok.onclick=async()=>{try{decalerPlan($("#dcR").value)}catch(e){$("#dcMsg").textContent=e.message;return}
+    save();renderAll();toast("⏸ Plan décalé : reprise le "+frDate(weeksPlan().find(w=>w.monday>=todayISO())?.monday||$("#dcR").value));await envoyerSeances(true)};
+  $("#dcNo")&&($("#dcNo").onclick=async()=>{annulerPausePlan();save();renderAll();toast("Décalage annulé");await envoyerSeances(true)});
+}
+/* Historique de toutes les sorties enregistrées par la montre (intervals.icu), dans le plan ou non */
+let histoMontre=null;
+function histoHTML(){
+  if(!montre?.ok) return "";
+  const L=histoMontre;
+  const lignes=!L?'<p class="small muted">Ouvre pour charger tes sorties…</p>':L.err?`<p class="small err">${esc(L.err)}</p>`:!L.length?'<p class="small muted">Aucune sortie sur les 90 derniers jours.</p>'
+    :`<table class="histo"><tr><th>Date</th><th>Sortie</th><th>km</th><th>Durée</th><th>Allure</th><th>FC</th></tr>${L.map(a=>`<tr${a.course?' class="race"':""}><td>${esc(frDate(a.date))}</td><td>${a.course?"🏅 ":""}${esc(a.nom||"Course")}</td><td>${a.km!=null?a.km.toFixed(1).replace(".",","):"–"}</td><td>${a.min!=null?(a.min>=60?Math.floor(a.min/60)+"h"+String(a.min%60).padStart(2,"0"):a.min+"'"):"–"}</td><td class="mono">${a.allure?mmss(a.allure):"–"}</td><td>${a.fc||"–"}</td></tr>`).join("")}</table>
+      <p class="small muted">${L.length} sortie${L.length>1?"s":""} · ${L.reduce((t,a)=>t+(a.km||0),0).toFixed(0)} km sur 90 jours</p>`;
+  return `<div class="card"><details id="histo"${L?" open":""}><summary><h2 style="display:inline">⌚ Historique de la montre</h2></summary>${lignes}</details></div>`}
+function bindHisto(){const d=$("#histo");if(!d)return;d.addEventListener("toggle",async()=>{if(!d.open||histoMontre&&!histoMontre.err)return;
+  const t=todayISO();try{histoMontre=await srv("intervals","historique",{oldest:addDays(t,-90),newest:t})}catch(e){histoMontre={err:"Montre : "+errTxt(e)}}
+  if(tab==="run") renderRun()})}
 function weeksPlan(){
   const n=Math.max(6,Math.min(12,state.run.weeks|0||12)); const off=PLAN.length-n; const D=state.run.days;
   const L=lundisPlan(n);
@@ -1168,8 +1215,8 @@ function weeksPlan(){
       :mk(2,D.l,{tag:"Sortie longue",title:`${w[2]}' en endurance`,detail:i+off>=4?"Option : les 10 dernières minutes à allure 10 km.":"Allure facile du début à la fin.",zone:"SL"})
   ].sort((a,b)=>a.dow-b.dow)}});
 }
-const curWeekIdx=()=>{const t=todayISO();if(t<state.run.start)return Math.floor(daysBetween(state.run.start,t)/7);
-  const W=weeksPlan();const i=W.findIndex(w=>t<addDays(w.monday,7));return i<0?W.length:i};
+const curWeekIdx=()=>{const t=todayISO();const W=weeksPlan();const d0=W[0]?.monday||state.run.start;if(t<d0)return Math.floor(daysBetween(d0,t)/7);
+  const i=W.findIndex(w=>t<addDays(w.monday,7));return i<0?W.length:i};
 function runWeekStatus(){
   const mon=mondayOf(todayISO());
   const count=a=>Object.values(state.run.logs).filter(l=>l.date>=a&&l.date<=addDays(a,6)).length;
@@ -1199,7 +1246,7 @@ const foeLine=(s,w)=>s.tag==="Qualité"||s.tag==="Course"?`<div class="small sto
 function renderQuestRun(){
   const {done,streak}=runWeekStatus(); const W=weeksPlan(); const wi=curWeekIdx();
   const w=W[Math.max(0,Math.min(W.length-1,wi))];
-  const label=wi<0?`Début le ${frDate(state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${wi+1} / ${W.length}`;
+  const label=wi<0?`Début le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${wi+1} / ${W.length}`;
   const today=W[wi]?.s.find(s=>s.date===todayISO());
   const pill=today?(state.run.logs[today.key]?'<span class="pill ok">Faite aujourd\'hui</span>':`<span class="pill warn">Aujourd'hui : ${esc(sessLabel(today,W[wi]).split(" · ")[0])}</span>`):"";
   $("#qRun").innerHTML=`<span class="k">Course · ${RUN_PER_WEEK} sorties / semaine</span>
@@ -1234,14 +1281,16 @@ function renderRun(){
   ${bilanCourseHTML()}
   <div class="card">
     <span class="kicker" style="color:var(--run)">Plan 10 km · ${esc(R[0])}</span>
-    <h2>${wi<0?`Début le ${frDate(state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${cw.n} sur ${W.length}`}</h2>
+    <h2>${wi<0?`Début le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${cw.n} sur ${W.length}`}</h2>
     <p class="story">${esc(R[2])}</p>
     <details class="parcours"><summary>🗺️ Voir le parcours · ${nDone} / ${nAll} étapes</summary>
     <div class="mapwrap">${mapSVG(W)}</div>
     <div class="row small muted"><span>cercle rouge : séance de qualité</span><span>·</span><span>grand cercle : sortie longue</span><span>·</span><span>losange : course</span></div></details>
     ${pauseVacances()}
+    ${decalerHTML()}
     ${epicHTML(EPICS.run,epicDone("run"))}
   </div>
+  ${histoHTML()}
   <div class="card"><h2>Tes allures</h2>
     ${valid?`<div class="paces">${Object.keys(zoneTxt).map(k=>`<div class="pace"><span class="small muted">${zoneTxt[k]}</span><b>${mmss(P[k])}/km</b></div>`).join("")}</div>`:'<p class="err">Objectif invalide : écris-le sous la forme 42:00 dans les réglages.</p>'}
     <p class="small muted">Calculées à partir de ton objectif (${esc(state.run.goal)}). Ton dernier 10 km : ${esc(state.run.ref)}. Si l'endurance te semble dure, ralentis : c'est l'erreur la plus courante.</p>
@@ -1261,6 +1310,7 @@ function renderRun(){
   </details>`}).join("")}`;
   p.querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>{const k=b.dataset.log;if(state.run.logs[k]){delete state.run.logs[k];save();renderAll()}else{openLog=k;renderRun()}});
   p.querySelectorAll("[data-gostr]").forEach(b=>b.onclick=()=>setTab("str"));
+  bindDecaler(); bindHisto();
   p.querySelectorAll("[data-rpe]").forEach(b=>b.onclick=()=>{const l=state.run.logs[b.dataset.rpe];if(l){l.rpe=+b.dataset.v;save();renderRun()}});
   p.querySelectorAll("[data-story]").forEach(b=>b.onclick=async()=>{
     const k=b.dataset.story, l=state.run.logs[k]; let ss=null, ww=null;
@@ -1579,8 +1629,9 @@ async function envoyerSeances(force){
     ev.push({category:"WORKOUT",type:"Run",start_date_local:s.date+"T00:00:00",name:`S${w.n} · ${s.tag} : ${s.title}`.slice(0,90),
       description:seanceTexte(s),external_id:`carnet-${s.date}-${s.dow}-${s.tag}`.replace(/\s/g,"")});
   }));
-  if(!ev.length) return;
-  try{await srv("intervals","envoyer",ev);try{localStorage.setItem("montre-envoi",t)}catch(e){};setSync(`${ev.length} séances envoyées sur ta montre`)}
+  // la période couverte : les séances du Carnet qui n'y sont plus prévues (plan décalé, jours changés) sont retirées du calendrier
+  try{const r=await srv("intervals","envoyer",{events:ev,oldest:t,newest:addDays(t,27)});try{localStorage.setItem("montre-envoi",t)}catch(e){}
+    const n=r&&r.retires||0; if(ev.length||n) setSync(`${ev.length} séance${ev.length>1?"s":""} envoyée${ev.length>1?"s":""} sur ta montre${n?` · ${n} retirée${n>1?"s":""} du calendrier`:""}`)}
   catch(e){setSync("Envoi sur la montre impossible : "+errTxt(e))}
 }
 /* Les sorties faites remontent et cochent la séance prévue la plus proche de la même semaine */
