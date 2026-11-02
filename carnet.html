@@ -227,6 +227,32 @@ label{font-weight:600;font-size:.92rem;display:grid;gap:4px;color:var(--muted)}
 @media (max-width:520px){.steps{grid-template-columns:repeat(2,1fr)} h1{font-size:1.45rem} .mods{grid-template-columns:1fr} .grades{grid-template-columns:repeat(2,1fr)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 details.parcours summary{cursor:pointer;color:var(--gold,#d3a84a);font-size:.95rem;margin:6px 0}
+/* Mode concentration (mission, révision, conversation) : seul l'exercice reste à l'écran */
+body.focus .top,body.focus .quests,body.focus .tabs{display:none}
+body.focus .wrap{padding-top:10px}
+body.focus .hud{position:sticky;top:0;z-index:6;background:linear-gradient(180deg,#241a40,var(--surface));padding:10px 14px;gap:8px}
+/* Micro intégré */
+.micbar{display:flex;gap:12px;align-items:center}
+.micbtn{width:60px;height:60px;flex:none;border-radius:50%;border:1px solid var(--en);background:radial-gradient(circle at 35% 30%,#d8caff,var(--en) 65%,#7a62c9);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 0 18px rgba(185,162,255,.35)}
+.micbtn svg{width:26px;height:26px}
+.micbtn.on{background:radial-gradient(circle at 35% 30%,#ffb3b8,var(--bad) 65%,#9e3640);border-color:var(--bad);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,115,122,.55)}50%{box-shadow:0 0 0 12px rgba(229,115,122,0)}}
+/* Conversation */
+.conv .chat{max-height:none}
+.bub .tools{white-space:normal;display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.bub .tools button{font-size:.8rem;padding:3px 9px}
+.bub .frtr{display:block;margin-top:6px;color:var(--muted);font-style:italic;font-size:.92rem}
+.flou{filter:blur(5px);cursor:pointer;user-select:none}
+.corr{justify-self:end;max-width:88%;background:var(--ok-soft);border:1px solid rgba(107,190,121,.35);border-radius:12px;padding:8px 10px;font-size:.92rem;display:grid;gap:4px}
+.corr b{color:var(--ok)}
+.composer{position:sticky;bottom:0;z-index:5;background:linear-gradient(180deg,rgba(31,23,54,.0),var(--surface) 18%);padding-top:14px;display:grid;gap:8px}
+.composer textarea{min-height:64px}
+.pistes{display:grid;gap:6px}
+.piste{text-align:left;border:1px dashed var(--en);background:var(--en-soft);color:var(--fg);border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer}
+.scen{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.scen button{text-align:left;border:1px solid var(--line2);background:var(--sunk);color:var(--fg);border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer;display:grid;gap:2px}
+.scen button[aria-pressed="true"]{border-color:var(--en);background:var(--en-soft)}
+.scen b{font-family:var(--display);font-size:.85rem}
 </style>
 <style>html,body{margin:0}body{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -306,14 +332,55 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
     const messages=typeof input==="string"?[{role:"user",content:input}]:input;
     const tier=opts.modelTier||"default";
     let text;
-    try{text=await run("askClaude",JSON.stringify({messages,tier,maxTokens:tier==="quick"?700:4000}))}catch(e){throw toErr(e)}
+    try{text=await run("askClaude",JSON.stringify({messages,tier,maxTokens:opts.maxTokens||(tier==="quick"?1200:4000)}))}catch(e){throw toErr(e)}
     if(opts.signal&&opts.signal.aborted) throw {code:"cancelled"};
     if(opts.onText) opts.onText({text,delta:text});
     return {text,truncated:false};
   }
-  sample.json=async(input,opts={})=>{const {text}=await sample(input,opts);const a=text.indexOf("{"),b=text.lastIndexOf("}");
-    if(a<0||b<a) throw {code:"invalid_json",message:"Réponse illisible"};
-    try{return JSON.parse(text.slice(a,b+1))}catch(e){throw {code:"invalid_json",message:"Réponse illisible"}}};
+  /* ---------- Lecture robuste du JSON renvoyé par Claude ----------
+     Cause n°1 des « réponses illisibles » : un retour à la ligne brut dans un texte, une virgule en trop,
+     des guillemets typographiques, un ```json autour, ou une réponse coupée faute de place.
+     On répare tout ça avant d'abandonner, puis on redemande UNE fois à Claude si c'est encore cassé. */
+  function reparerJSON(t){
+    t=String(t||"").replace(/```(?:json)?/gi,"").replace(/^﻿/,"");
+    const a=t.indexOf("{"); if(a<0) return null;
+    t=t.slice(a);
+    let out="",dansTexte=false,echap=false;const pile=[];
+    for(let i=0;i<t.length;i++){const c=t[i];
+      if(dansTexte){
+        if(echap){out+=c;echap=false;continue}
+        if(c==="\\"){out+=c;echap=true;continue}
+        if(c==='"'||(c==="”"&&/^\s*[,}\]:]/.test(t.slice(i+1,i+4)))){dansTexte=false;out+='"';continue}
+        if(c==="\n"){out+="\\n";continue} if(c==="\r")continue; if(c==="\t"){out+="\\t";continue}
+        out+=c;continue}
+      if(c==='"'){dansTexte=true;out+=c;continue}
+      if(c==="“"||c==="”"){dansTexte=true;out+='"';continue}
+      if(c==="{"||c==="["){pile.push(c==="{"?"}":"]");out+=c;continue}
+      if(c==="}"||c==="]"){pile.pop();out+=c;if(!pile.length)break;continue}
+      out+=c}
+    if(dansTexte) out+='"';                                  // réponse coupée au milieu d'un texte
+    out=out.replace(/,\s*$/,"").replace(/:\s*$/,':""');
+    while(pile.length) out+=pile.pop();                      // on referme ce qui est resté ouvert
+    return out.replace(/,\s*([}\]])/g,"$1");
+  }
+  function lireJSON(text){
+    const t=String(text||"").replace(/```(?:json)?/gi,"");const a=t.indexOf("{"),b=t.lastIndexOf("}");
+    if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1))}catch(e){}}
+    const r=reparerJSON(text); if(!r) return null;
+    try{return JSON.parse(r)}catch(e){return null}
+  }
+  window.lireJSON=lireJSON;
+  sample.json=async(input,opts={})=>{
+    const {text}=await sample(input,opts);
+    let o=lireJSON(text); if(o&&typeof o==="object") return o;
+    // 2e essai : on rappelle à Claude le format attendu
+    const rappel="\n\nIMPORTANT : réponds UNIQUEMENT avec l'objet JSON complet et valide, sans aucun texte avant ou après, sans ```.";
+    const msgs=typeof input==="string"?[{role:"user",content:input+rappel}]
+      :input.map((m,i)=>i===input.length-1&&m.role==="user"?{role:"user",content:m.content+rappel}:m);
+    const r2=await sample(msgs,opts);
+    o=lireJSON(r2.text); if(o&&typeof o==="object") return o;
+    toParent({t:"compagnie-erreur",msg:"Carnet : JSON illisible après 2 essais",detail:String(r2.text||"").slice(0,240)});
+    throw {code:"invalid_json",message:"Réponse illisible"}};
   const db={doc:()=>({
     get:async()=>{let j=await run("loadState");
       if(j&&typeof j==="object"){try{window.majVacances&&window.majVacances(j.vacances||[])}catch(e){}j=j.json}
@@ -328,7 +395,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
-const VERSION_CARNET_APP = '2026-11-02-4'; // affichée en bas des réglages
+const VERSION_CARNET_APP = '2026-11-02-5'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
@@ -475,7 +542,7 @@ function mondayOf(iso){const d=new Date(iso+"T12:00:00");const k=(d.getDay()+6)%
 const frDate = iso => new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
 
 function defaultState(){
-  return {v:2, ttsRate:0.85,
+  return {v:2, ttsRate:0.85, micLang:"en-GB",
     en:{active:"travail", mods:{travail:{unit:0,pack:null,stars:{}},voyage:{unit:0,pack:null,stars:{}},series:{unit:0,pack:null,stars:{}}},
         game:{xp:0,ear:0,spk:0,badges:{},stats:{missions:0,maxCombo:0,dictPerfect:0,speakPerfect:0,bossWins:0,noJoker:0,threeStars:0,worlds:{}}},
         sessions:[], avances:1, deck:STARTER.map(([en,fr],i)=>cardInit({id:"s"+i,en,fr,box:0,due:todayISO(),lvl:NIVEAUX_DEPART[en]||"A2"})).concat(AVANCES.map(([en,fr,ex,lvl],i)=>cardInit({id:"a"+i,en,fr,ex,lvl,due:todayISO()}))), errors:[], oubli:{rank:1,hp:150,max:150,kills:0}, newLog:{date:"",n:0}},
@@ -494,7 +561,7 @@ function migrate(s){
   s.en.game=Object.assign({},d.en.game,en.game||{}); s.en.game.stats=Object.assign({},d.en.game.stats,(en.game||{}).stats||{});
   s.run=Object.assign({},d.run,s.run||{}); s.run.days=Object.assign({},d.run.days,s.run.days||{});
   s.str=Object.assign({},d.str,s.str||{});
-  if(s.ttsRate==null) s.ttsRate=0.85; s.v=2; return s;
+  if(s.ttsRate==null) s.ttsRate=0.85; if(!s.micLang) s.micLang="en-GB"; s.v=2; return s;
 }
 let state = defaultState();
 try{const raw=localStorage.getItem("quetes-state");if(raw)state=migrate(JSON.parse(raw))}catch(e){}
@@ -568,6 +635,48 @@ function voiceMap(lines){const vs=enVoices();const spk=[...new Set(lines.map(l=>
 function speakDialogue(lines,rate,only){if(!hasTTS())return false;try{speechSynthesis.cancel();const m=voiceMap(lines);(only==null?lines:[lines[only]]).forEach(l=>speechSynthesis.speak(utter(l.line,{rate,...m[l.speaker]})));return true}catch(e){return false}}
 function speakFr(text){if(!hasTTS())return;try{speechSynthesis.cancel();const v=speechSynthesis.getVoices().find(v=>/^fr/i.test(v.lang));speechSynthesis.speak(utter(text,{voice:v,lang:"fr-FR",rate:1}))}catch(e){}}
 const stopTTS=()=>{try{speechSynthesis.cancel()}catch(e){}};
+
+/* ---------- Micro intégré : reconnaissance vocale du navigateur, réglée en ANGLAIS ----------
+   Plus besoin de changer la langue du clavier : on touche le gros bouton micro, on parle, le texte s'écrit.
+   L'accent reconnu (britannique ou américain) se règle dans ⚙️ Réglages → Anglais.
+   Sans reconnaissance vocale (certains navigateurs), on garde le micro du clavier. */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const hasSR=()=>!!SR;
+const EN_IN='lang="en" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="off"';
+let micEnCours=null;
+function micStop(annuler){if(!micEnCours)return;if(annuler)micEnCours.annule=true;try{annuler?micEnCours.rec.abort():micEnCours.rec.stop()}catch(e){}}
+function micHTML(id,label){
+  if(!hasSR()) return `<div class="mic small">${MIC}<span>Micro intégré indisponible dans ce navigateur : utilise le micro de ton clavier, réglé en anglais (aide dans ⚙️ Réglages).</span></div>`;
+  return `<div class="micbar"><button class="micbtn" id="${id}" type="button" aria-label="Parler en anglais">${MIC}</button><span class="small muted" id="${id}-st">${label||"Touche le micro et parle en anglais"}</span></div>`;
+}
+function bindMic(id,ta,opts={}){
+  const btn=document.getElementById(id); if(!btn||!ta) return;
+  const st=document.getElementById(id+"-st");
+  btn.onclick=()=>{
+    if(micEnCours&&micEnCours.btn===btn){micStop();return}
+    micStop(true); stopTTS(); ta.blur();
+    const rec=new SR(); rec.lang=state.micLang||"en-GB"; rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
+    const base=ta.value.trim(); let final="";
+    const moi={rec,btn,ta}; micEnCours=moi;
+    btn.classList.add("on"); if(st) st.textContent="Je t'écoute… (touche encore pour arrêter)";
+    rec.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)final+=r[0].transcript+" ";else interim+=r[0].transcript}
+      ta.value=[base,(final+interim).trim()].filter(Boolean).join(" ");ta.dispatchEvent(new Event("input",{bubbles:true}))};
+    rec.onerror=e=>{moi.err=true;const m={"not-allowed":"Micro refusé : autorise le micro pour ce site dans le navigateur.","service-not-allowed":"Reconnaissance vocale indisponible ici : utilise le micro du clavier réglé en anglais.","no-speech":"Je n'ai rien entendu : réessaie, un peu plus près du micro.","network":"Pas de réseau pour la reconnaissance vocale.","audio-capture":"Aucun micro détecté."}[e.error];if(st&&!moi.annule)st.textContent=m||"Le micro s'est arrêté : réessaie."};
+    rec.onend=()=>{if(micEnCours===moi)micEnCours=null;btn.classList.remove("on");
+      if(moi.annule) return;
+      if(!moi.err&&st) st.textContent=final.trim()?(opts.onFinal?"Envoi…":"Relis, corrige si besoin, puis valide."):"Touche le micro et parle en anglais";
+      if(!moi.err&&final.trim()&&opts.onFinal) opts.onFinal(ta.value.trim())};
+    try{rec.start()}catch(e){micEnCours=null;btn.classList.remove("on");if(st)st.textContent="Impossible de lancer le micro : "+e.message}
+  };
+}
+/* Clavier ouvert : on prévient la Compagnie, qui masque sa barre d'onglets du bas (c'est elle qui faisait sauter l'écran) */
+let clavierT=null;
+document.addEventListener("focusin",e=>{if(e.target.matches&&e.target.matches("textarea,input:not([type=checkbox]):not([type=date]):not([type=radio])")){clearTimeout(clavierT);toParent({t:"carnet-clavier",ouvert:true})}});
+document.addEventListener("focusout",()=>{clearTimeout(clavierT);clavierT=setTimeout(()=>{const a=document.activeElement;if(!a||!a.matches||!a.matches("input,textarea"))toParent({t:"carnet-clavier",ouvert:false})},300)});
+/* Mode concentration : pendant une mission, une révision ou une conversation, l'en-tête et les onglets disparaissent.
+   « Suivant » ramène en haut de l'EXERCICE, plus en haut de la page. */
+function majFocus(){document.body.classList.toggle("focus",!!ses&&tab==="en")}
+function hautExercice(){requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"auto"}))}
 
 /* ======================================================================
    QUÊTE ANGLAIS — mode jeu : priorité à l'écoute et à la parole
@@ -664,13 +773,15 @@ function playerCard(){
 }
 function renderEn(){
   const p=$("#p-en");
-  if(ses) return ses.kind==="vocab"?renderReview(p):renderMission(p);
+  micStop(true); majFocus();
+  if(ses) return ses.kind==="vocab"?renderReview(p):ses.kind==="conv"?renderConv(p):renderMission(p);
   const a=state.en.active, M=MODULES[a], u=modUnit(a), cur=state.en.mods[a].unit;
   const dueCount=state.en.deck.filter(c=>c.due<=todayISO()).length;
   const starsOf=i=>state.en.mods[a].stars?.[i]||0;
   p.innerHTML=`
   ${hasTTS()?"":'<p class="note">Ce navigateur ne sait pas lire l\'audio. Ouvre la page dans Safari ou Chrome pour les exercices d\'écoute.</p>'}
   ${playerCard()}
+  ${convCard()}
   <div class="card">${epicHTML(EPICS.en,epicDone("en"))}</div>
   <div class="mods">${Object.entries(MODULES).map(([k,m])=>`<button class="mod" data-mod="${k}" aria-pressed="${k===a}"><b>${m.name}</b><span class="small muted">${m.sub}</span><span class="small mono">chapitre ${state.en.mods[k].unit+1} / ${m.units.length}</span></button>`).join("")}</div>
   <div class="card mission">
@@ -685,14 +796,16 @@ function renderEn(){
   ${a==="series"?seriesExtras():""}
   <div class="card"><h3>Badges</h3><div class="badges">${BADGES.map(b=>`<div class="badge ${G().badges[b[0]]?"on":""}"><span class="medal">${b[1].replace(/[^A-Za-zÀ-ÿ0-9 ]/g,"").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()}</span><b class="small">${esc(b[1])}</b><span class="small muted">${esc(b[2])}</span></div>`).join("")}</div></div>
   <div class="card"><h3>Carte ${M.name}</h3><div class="hist small">${M.units.map((x,i)=>`<div><span class="mono">${String(i+1).padStart(2,"0")}</span><span style="flex:1">${esc(x[0])}</span><span class="starline">${i<cur||starsOf(i)?"★".repeat(starsOf(i))+"☆".repeat(3-starsOf(i)):i===cur?'<span class="pill warn">en cours</span>':'<span class="muted">verrouillé</span>'}</span></div>`).join("")}</div></div>
-  <div class="card"><h3>Dernières missions</h3><div class="hist small">${state.en.sessions.slice(-6).reverse().map(s=>`<div><span>${frDate(s.date)}</span><span class="muted" style="flex:1">${MODULES[s.mod||"travail"].name}</span><span class="starline">${s.stars!=null?"★".repeat(s.stars)+"☆".repeat(3-s.stars):""}</span><span class="mono">${s.xp!=null?"+"+s.xp+" XP":s.min+" min"}</span></div>`).join("")||'<p class="muted">Aucune mission pour l\'instant.</p>'}</div></div>`;
+  <div class="card"><h3>Dernières missions</h3><div class="hist small">${state.en.sessions.slice(-6).reverse().map(s=>`<div><span>${frDate(s.date)}</span><span class="muted" style="flex:1">${esc(nomMonde(s))}</span><span class="starline">${s.stars!=null?"★".repeat(s.stars)+"☆".repeat(3-s.stars):""}</span><span class="mono">${s.xp!=null?"+"+s.xp+" XP":s.min+" min"}</span></div>`).join("")||'<p class="muted">Aucune mission pour l\'instant.</p>'}</div></div>`;
   p.querySelectorAll("[data-mod]").forEach(b=>b.onclick=()=>{state.en.active=b.dataset.mod;save();renderEn();renderQuestEn()});
   $("#go").onclick=startMission;
   $("#snd").onclick=()=>{if(!speak("Hello Théo! If you can hear me, you're ready to play.",earRate()))toast("Audio indisponible dans ce navigateur")};
   $("#rev").onclick=startReview;
   $("#nwAdd").onclick=()=>{const en=$("#nwEn").value.trim(),fr=$("#nwFr").value.trim();if(!en||!fr)return;addWord(en,fr,($("#nwEx").value||"").trim());renderEn()};
   if(a==="series") bindSeriesExtras();
+  bindConvCard();
 }
+const nomMonde=s=>s.mod==="conv"?"Conversation"+(s.scen&&SCENARIOS.find(x=>x.id===s.scen)?" · "+SCENARIOS.find(x=>x.id===s.scen).nom:""):(MODULES[s.mod||"travail"]||{name:s.mod||"?"}).name;
 
 /* ---------- Module Séries : outils hors mission ---------- */
 function seriesExtras(){return `
@@ -809,7 +922,7 @@ function renderReview(p){
   let face;
   if(mode==="new") face=`<span class="w">${esc(c.en)}</span>${shown?`<span class="fr">${esc(c.fr)}</span>${exl}`:'<span class="small muted">Nouveau mot : devine son sens, puis révèle.</span>'}`;
   else if(mode==="ecoute") face=shown?`<span class="w">${esc(c.en)}</span><span class="fr">${esc(c.fr)}</span>${exl}`:`<button class="play" id="pl2" aria-label="Écouter">▶</button><span class="small muted">Écoute, trouve le sens dans ta tête, puis révèle.</span>`;
-  else if(mode==="prod") face=`<span class="fr">${esc(c.fr)}</span>${shown?`<span class="w">${esc(c.en)}</span>${ses.check?`<span class="small ${ses.check.ok?"okc":"badc2"}">${ses.check.ok?"Juste !":"Tu as dit : "+esc(ses.check.said)}</span>`:""}${exl}`:`<div class="mic small">${MIC}<span>Dis-le avec le micro du clavier</span></div><input id="prodIn" autocomplete="off" autocapitalize="off" placeholder="En anglais…">`}`;
+  else if(mode==="prod") face=`<span class="fr">${esc(c.fr)}</span>${shown?`<span class="w">${esc(c.en)}</span>${ses.check?`<span class="small ${ses.check.ok?"okc":"badc2"}">${ses.check.ok?"Juste !":"Tu as dit : "+esc(ses.check.said)}</span>`:""}${exl}`:`${micHTML("micP","Touche le micro et dis-le en anglais")}<input id="prodIn" ${EN_IN} placeholder="En anglais…">`}`;
   else face=`<span class="w">${esc(c.en)}</span>${shown?`<span class="fr">${esc(c.fr)}</span>${exl}`:'<span class="small muted">Que veut dire ce mot ?</span>'}`;
   const grades=GRADES.map(([g,cls],k)=>`<button class="grade ${cls}" data-g="${k}"><b>${g}</b><span class="small muted">${ivlLabel(nextState(c,k).ivl)}</span></button>`).join("");
   p.innerHTML=`<div class="card game">
@@ -828,6 +941,7 @@ function renderReview(p){
   const chk=()=>{const v=$("#prodIn").value.trim();const r=diffHTML(c.en,v);ses.check={ok:norm(v)===norm(c.en)||r.score>=85,said:v||"(rien)"};reveal()};
   $("#chk")?.addEventListener("click",chk);
   $("#prodIn")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();chk()}});
+  if($("#prodIn")) bindMic("micP",$("#prodIn"));
   $("#say")?.addEventListener("click",()=>speak(c.en));
   $("#sayex")?.addEventListener("click",()=>speak(c.ex,earRate()));
   p.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const g=+b.dataset.g;
@@ -839,7 +953,10 @@ function renderReview(p){
 }
 
 /* ---------- Création de la mission par Claude ---------- */
-function packPrompt(mod){
+/* La mission est créée en DEUX demandes envoyées en même temps (Écoute d'un côté ; Parole + boss + mots de l'autre) :
+   chaque réponse est deux fois plus courte, donc plus rapide et jamais coupée en plein milieu (cause des « réponses illisibles »).
+   Chaque partie est vérifiée : si un morceau manque, seule cette partie est redemandée. */
+function packContexte(mod){
   const M=state.en.mods[mod], u=modUnit(mod);
   const errs=state.en.errors.slice(-8).map(e=>`"${e.faux}" → "${e.correct}"`).join("; ")||"aucune pour l'instant";
   const words=state.en.deck.filter(c=>(c.stab||0)<3).slice(0,10).map(c=>c.en).join(", ")||"aucun";
@@ -850,33 +967,78 @@ Difficulté écoute ${diffOf(earLvl())}/10 et difficulté expression ${diffOf(sp
 Ses erreurs récentes, à faire retravailler discrètement : ${errs}.
 Mots qu'il apprend, à réutiliser si possible : ${words}.
 Ton : vivant, situations concrètes, un peu d'humour. Il joue Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy) : le titre et le briefing en français peuvent y faire un clin d'œil, mais les situations, le boss et l'anglais restent modernes, réalistes et utiles.
-Réponds UNIQUEMENT avec un objet JSON valide :
-{"title":"nom de mission accrocheur en anglais",
- "brief":"briefing de mission en français, 1 ou 2 phrases, ton de jeu",
- "tip":{"point":"la structure","explication":"3 lignes max en français, très concrètes","exemple":"1 phrase anglaise"},
- "listen":[
-   {"type":"qcm","audio":[{"speaker":"prénom","line":"réplique anglaise"}] (1 à 3 répliques),"question":"question en français sur le sens ou un détail précis","choices":["4 propositions en français, toutes plausibles"],"answer":index de la bonne réponse 0-3},
-   … 3 éléments "qcm" de difficulté croissante, puis
-   {"type":"dictee","audio":"phrase anglaise de 6 à 14 mots selon la difficulté"} … 3 éléments "dictee"
- ],
- "speak":[
-   {"type":"dis","fr":"phrase française naturelle à dire en anglais, qui utilise la structure","ref":"traduction anglaise de référence"} … 3 éléments,
-   {"type":"repond","audio":"question en anglais posée à l'oral, liée au thème, appelant une réponse personnelle"} … 2 éléments,
-   {"type":"repete","audio":"phrase anglaise naturelle avec des sons difficiles pour un francophone (th, h aspiré, voyelles longues)"} … 1 élément
- ],
- "boss":{"role":"personnage en anglais","situation":"situation en français, dramatisée et fun","objectif":"ce qu'il doit obtenir, précis et vérifiable","opening":"première réplique du personnage, en anglais"},
- "vocab":[{"en":"mot ou expression utile du thème, de niveau B2 ou C1 (jamais de mot transparent ou de base : pas de sample, data, to increase)","fr":"traduction","ex":"courte phrase anglaise d'exemple","lvl":"B2 ou C1"}] (5 éléments)}`;
+FORMAT : un seul objet JSON valide, rien avant ni après. Pas de retour à la ligne à l'intérieur des textes. Utilise des apostrophes (') dans les textes, jamais de guillemets doubles.`;
+}
+function packPromptA(mod){return `${packContexte(mod)}
+Cette demande : le titre, le briefing, le point de structure et la partie ÉCOUTE (6 défis : 3 "qcm" de difficulté croissante, 3 "dictee").
+Modèle exact à suivre (remplace les valeurs) :
+{"title":"Catchy mission name in English","brief":"Briefing en français, 1 ou 2 phrases, ton de jeu","tip":{"point":"la structure","explication":"3 lignes max en français, très concrètes","exemple":"One English example sentence."},
+"listen":[
+{"type":"qcm","audio":[{"speaker":"Anna","line":"English line one."},{"speaker":"Tom","line":"English line two."}],"question":"Question en français sur le sens ou un détail précis","choices":["proposition A","proposition B","proposition C","proposition D"],"answer":2},
+{"type":"dictee","audio":"An English sentence of 6 to 14 words depending on difficulty."}
+]}
+Règles : "audio" d'un qcm = 1 à 3 répliques ; "choices" = 4 propositions en français, toutes plausibles ; "answer" = index 0 à 3 de la bonne ; la liste "listen" contient exactement 6 éléments.`}
+function packPromptB(mod){return `${packContexte(mod)}
+Cette demande : la partie PAROLE (6 défis), le BOSS (jeu de rôle oral) et 5 mots à apprendre.
+Modèle exact à suivre (remplace les valeurs) :
+{"speak":[
+{"type":"dis","fr":"Phrase française naturelle à dire en anglais, qui utilise la structure","ref":"English reference translation."},
+{"type":"repond","audio":"An English question asked out loud, linked to the theme, calling for a personal answer?"},
+{"type":"repete","audio":"A natural English sentence with sounds that are hard for French speakers (th, aspirated h, long vowels)."}
+],
+"boss":{"role":"Character in English","situation":"Situation en français, dramatisée et fun","objectif":"Ce qu'il doit obtenir, précis et vérifiable","opening":"The character's first line, in English."},
+"vocab":[{"en":"useful word or expression","fr":"traduction","ex":"Short English example sentence.","lvl":"B2"}]}
+Règles : "speak" contient exactement 6 éléments : 3 "dis", 2 "repond", 1 "repete". "vocab" contient 5 mots du thème de niveau B2 ou C1 (jamais de mot transparent ou de base comme sample, data, to increase), "lvl" vaut "B2" ou "C1".`}
+const txt=v=>typeof v==="string"?v.trim():"";
+function nettoyerA(o){
+  if(!o||typeof o!=="object") return null;
+  const listen=(Array.isArray(o.listen)?o.listen:[]).map(x=>{
+    if(!x||typeof x!=="object") return null;
+    if(x.type==="qcm"){
+      let audio=Array.isArray(x.audio)?x.audio.map(l=>l&&typeof l==="object"?{speaker:txt(l.speaker)||"Speaker",line:txt(l.line)}:{speaker:"Speaker",line:txt(l)}).filter(l=>l.line)
+        :txt(x.audio)?[{speaker:"Speaker",line:txt(x.audio)}]:[];
+      const choices=(Array.isArray(x.choices)?x.choices:[]).map(c=>String(c??"").trim()).filter(Boolean).slice(0,4);
+      const answer=Number(x.answer);
+      if(!audio.length||choices.length<2||!txt(x.question)||!(answer>=0&&answer<choices.length)) return null;
+      return {type:"qcm",audio,question:txt(x.question),choices,answer};
+    }
+    if(x.type==="dictee"){const a=Array.isArray(x.audio)?x.audio.map(l=>l&&l.line||l).join(" "):txt(x.audio);return a?{type:"dictee",audio:a}:null}
+    return null;
+  }).filter(Boolean);
+  if(listen.length<4) return null;
+  const tip=o.tip&&typeof o.tip==="object"?o.tip:{};
+  return {title:txt(o.title)||"Mission",brief:txt(o.brief),tip:{point:txt(tip.point),explication:txt(tip.explication),exemple:txt(tip.exemple)},listen};
+}
+function nettoyerB(o){
+  if(!o||typeof o!=="object") return null;
+  const speak=(Array.isArray(o.speak)?o.speak:[]).map(x=>{
+    if(!x||typeof x!=="object") return null;
+    if(x.type==="dis") return txt(x.fr)&&txt(x.ref)?{type:"dis",fr:txt(x.fr),ref:txt(x.ref)}:null;
+    if(x.type==="repond"||x.type==="repete") return txt(x.audio)?{type:x.type,audio:txt(x.audio)}:null;
+    return null;
+  }).filter(Boolean);
+  const b=o.boss&&typeof o.boss==="object"?o.boss:null;
+  if(speak.length<4||!b||!txt(b.role)||!txt(b.opening)) return null;
+  const vocab=(Array.isArray(o.vocab)?o.vocab:[]).filter(v=>v&&txt(v.en)&&txt(v.fr)).map(v=>({en:txt(v.en),fr:txt(v.fr),ex:txt(v.ex),lvl:txt(v.lvl)})).slice(0,6);
+  return {speak,boss:{role:txt(b.role),situation:txt(b.situation),objectif:txt(b.objectif)||"Atteindre ton but dans la conversation",opening:txt(b.opening)},vocab};
+}
+async function partiePack(prompt,nettoyer){
+  let derniere=null;
+  for(let essai=0;essai<2;essai++){
+    try{const o=nettoyer(await sample.json(prompt,{modelTier:"default",maxTokens:3500}));if(o)return o;derniere={code:"invalid_json"}}
+    catch(e){derniere=e;if(e&&/no_key|bad_key|cancelled/.test(e.code))break}
+  }
+  throw derniere||{code:"invalid_json"};
 }
 let packJobs={};
 function getPack(mod){
   const M=state.en.mods[mod];
-  if(M.pack&&M.pack.unit===M.unit) return Promise.resolve(M.pack);
+  if(M.pack&&M.pack.unit===M.unit&&M.pack.v===2) return Promise.resolve(M.pack);
   if(!sample) return Promise.reject({code:"absent"});
   if(packJobs[mod]) return packJobs[mod];
   const unit=M.unit;
-  packJobs[mod]=sample.json(packPrompt(mod),{modelTier:"default",cache:false}).then(out=>{
-    if(!out||!Array.isArray(out.listen)||!Array.isArray(out.speak)||!out.boss) throw {code:"upstream_error"};
-    out.unit=unit; state.en.mods[mod].pack=out; save(); return out;
+  packJobs[mod]=Promise.all([partiePack(packPromptA(mod),nettoyerA),partiePack(packPromptB(mod),nettoyerB)]).then(([A,B])=>{
+    const out=Object.assign({v:2,unit},A,B); state.en.mods[mod].pack=out; save(); return out;
   }).finally(()=>{delete packJobs[mod]});
   return packJobs[mod];
 }
@@ -890,7 +1052,7 @@ function startMission(){
 }
 function loadPack(){
   const b=$("#stepBody"); const mod=ses.mod;
-  b.innerHTML=`<div class="card game"><span class="kicker">Préparation</span><h3>Claude prépare ta mission…</h3><p class="muted">Souvent 20 à 60 secondes. Pendant ce temps, vérifie que le son est monté et que ton clavier a bien le micro en anglais.</p><div class="bar"><i class="indet"></i></div></div>`;
+  b.innerHTML=`<div class="card game"><span class="kicker">Préparation</span><h3>Claude prépare ta mission…</h3><p class="muted">En général 15 à 40 secondes. Pendant ce temps, monte le son : tout se joue à l'oreille et à la voix.</p><div class="bar"><i class="indet"></i></div></div>`;
   getPack(mod).then(P=>{if(!ses||ses.kind!=="mission"||ses.mod!==mod)return;
     ses.pack=P; ses.L=interleave(P.listen,["qcm","dictee","qcm","dictee","qcm","dictee"]); ses.S=interleave(P.speak,["dis","repond","dis","repete","dis","repond"]); renderEn();
   }).catch(e=>{if(!ses)return;b.innerHTML=`<div class="card"><p class="err">${esc(sampleErr(e.code))}</p><button class="btn" id="rt">Réessayer</button></div>`;$("#rt").onclick=loadPack});
@@ -914,7 +1076,7 @@ function advance(){
   if(ses.round===2&&!ses.S.length) ses.round=3;
   if(ses.round===3&&!ses.boss) ses.boss={hearts:3,turns:[{role:"assistant",content:ses.pack.boss.opening}],notes:{},show:false,over:null,started:false};
   if(ses.round<=3) autoPlay();
-  renderEn(); window.scrollTo({top:0,behavior:"smooth"});
+  renderEn(); hautExercice();
 }
 function renderMission(p){
   const m=ses.m, R=["Intro","Écoute","Parole","Boss"];
@@ -963,7 +1125,7 @@ function renderListen(b){
       ${it.done?"":`<div class="row"><button class="btn sm" id="slow">Ralentir −5</button>${isQ&&!it.textShown?'<button class="btn sm" id="txt">Voir le texte −8</button>':""}</div>`}</div></div>
     ${it.textShown||it.done?`<div class="transcript">${tr}</div>`:""}
     ${isQ?`<b>${esc(x.question)}</b><div class="choices">${(x.choices||[]).map((c,k)=>`<button class="choice ${it.done?(k===x.answer?"good":k===it.pick?"badc":""):""}" data-c="${k}" ${it.done?"disabled":""}>${esc(c)}</button>`).join("")}</div>`
-      :`<input id="dic" placeholder="Écris (ou dicte) exactement ce que tu entends…" autocomplete="off" autocapitalize="off" ${it.done?"disabled":""} value="${esc(it.val||"")}">${it.done?`<div class="small">${it.res}</div>`:`<button class="btn primary" id="val">Valider</button>`}`}
+      :`${it.done?"":micHTML("micD","Touche le micro et répète ce que tu as entendu (ou écris-le)")}<textarea id="dic" rows="2" ${EN_IN} placeholder="Écris (ou dis) exactement ce que tu entends…" ${it.done?"disabled":""}>${esc(it.val||"")}</textarea>${it.done?`<div class="small">${it.res}</div>`:`<button class="btn primary" id="val">Valider</button>`}`}
     ${verdictHTML(it)}${it.done?'<button class="btn primary" id="nx">Continuer</button>':""}
   </div>`;
   $("#pl").onclick=()=>{playAudio(x);renderEn()};
@@ -978,7 +1140,9 @@ function renderListen(b){
     else{miss();it.cls="bad";it.msg=`${r.score} % : réécoute en lisant, puis répète la phrase à voix haute.`}
     renderEn()};
   $("#val")?.addEventListener("click",val);
+  $("#dic")?.addEventListener("input",e=>it.val=e.target.value);
   $("#dic")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();val()}});
+  if($("#dic")&&!it.done) bindMic("micD",$("#dic"));
   $("#nx")?.addEventListener("click",advance);
 }
 async function judge(x,ans){
@@ -1005,8 +1169,8 @@ function renderSpeak(b){
   b.innerHTML=`<div class="card game">
     <span class="kicker">Parole · ${ses.i+1}/${ses.S.length} · ${head}</span>
     ${audioBlock}
-    <div class="mic small">${MIC}<span>Touche le micro de ton clavier (en anglais) et parle. Évite de taper : c'est ta voix qu'on entraîne.</span></div>
-    <textarea id="sp" rows="2" placeholder="Ta phrase apparaît ici quand tu parles…" ${it.done||it.wait?"disabled":""}>${esc(it.val||"")}</textarea>
+    ${it.done||it.wait?"":micHTML("micS","Touche le micro et parle : c'est ta voix qu'on entraîne")}
+    <textarea id="sp" rows="2" ${EN_IN} placeholder="Ta phrase apparaît ici quand tu parles…" ${it.done||it.wait?"disabled":""}>${esc(it.val||"")}</textarea>
     ${it.wait?'<p class="muted">Le jury écoute…</p>':""}
     ${it.err?`<p class="err small">${esc(it.err)}</p>`:""}
     ${it.done?`${verdictHTML(it)}${it.fb||""}<button class="btn primary" id="nx">Continuer</button>`:it.wait?"":`<div class="row"><button class="btn primary" id="val">Valider</button><button class="btn sm" id="skip">Je passe</button></div>`}
@@ -1015,6 +1179,7 @@ function renderSpeak(b){
   $("#slow")?.addEventListener("click",()=>{playAudio(x,true);renderEn()});
   $("#txt")?.addEventListener("click",()=>{spend(5,"question");it.textShown=true;renderEn()});
   $("#sp")?.addEventListener("input",e=>it.val=e.target.value);
+  if($("#sp")&&!it.done&&!it.wait) bindMic("micS",$("#sp"));
   const fbHTML=(good,astuce)=>`<div class="transcript"><span class="small muted">Version juste</span><br><b>${esc(good)}</b></div>${astuce?`<p class="small">${esc(astuce)}</p>`:""}<div><button class="btn sm" id="hear">▶ Écouter la version juste</button></div>`;
   $("#skip")?.addEventListener("click",()=>{miss();it.done=true;it.cls="bad";it.msg="Passé. Écoute la version juste et répète-la à voix haute.";
     it.good=x.type==="dis"?x.ref:x.type==="repete"?x.audio:"";it.fb=it.good?fbHTML(it.good,""):"";renderEn()});
@@ -1053,8 +1218,8 @@ function renderBoss(b){
       :`<div class="bub u">${esc(t.content)}</div>${B.notes[i]?`<div class="bnote small ${B.notes[i].lost?"bad":""}">${esc(B.notes[i].txt)}</div>`:""}`).join("")}
       ${B.wait?'<div class="bub a muted">…</div>':""}</div>
     ${B.over?`<div class="verdict ${B.over==="win"?"perfect":"bad"}">${B.over==="win"?`Boss vaincu ! +${B.bonus} XP`:B.overMsg}</div><button class="btn primary" id="nx">Voir le bilan</button>`
-      :`<div class="mic small">${MIC}<span>Réponds avec le micro du clavier.</span></div>
-      <textarea id="bsIn" rows="2" placeholder="Ta réponse…" ${B.wait?"disabled":""}>${esc(B.draft||"")}</textarea>
+      :`${B.wait?"":micHTML("micB","Touche le micro et réponds : c'est envoyé dès que tu as fini de parler")}
+      <textarea id="bsIn" rows="2" ${EN_IN} placeholder="Ta réponse…" ${B.wait?"disabled":""}>${esc(B.draft||"")}</textarea>
       ${B.err?`<p class="err small">${esc(B.err)}</p>`:""}
       <div class="row"><button class="btn primary" id="bsSend" ${B.wait?"disabled":""}>Répondre</button>${B.show?"":'<button class="btn sm" id="bsShow">Afficher les répliques −10</button>'}</div>`}
   </div>`;
@@ -1062,8 +1227,8 @@ function renderBoss(b){
   $("#bsIn")?.addEventListener("input",e=>B.draft=e.target.value);
   $("#bsShow")?.addEventListener("click",()=>{spend(10,"texte");B.show=true;renderEn()});
   $("#nx")?.addEventListener("click",advance);
-  $("#bsSend")?.addEventListener("click",async()=>{
-    const ans=($("#bsIn").value||"").trim(); if(!ans) return;
+  const envoyer=async()=>{
+    const ans=($("#bsIn")?.value||"").trim(); if(!ans||B.wait) return;
     if(!sample){B.err=sampleErr("absent");return renderEn()}
     B.turns.push({role:"user",content:ans}); const ui=B.turns.length-1; B.draft=""; B.wait=true; B.err=null; renderEn();
     const rules=`Jeu de rôle vocal pour apprendre l'anglais. Tu joues : ${R.role}. Situation : ${R.situation}. L'apprenant (francophone, niveau A2 qui vise B1) doit : ${R.objectif}.
@@ -1071,7 +1236,7 @@ Ses messages viennent de la dictée vocale : ignore ponctuation et majuscules.
 Reste dans ton rôle, en anglais naturel, 1 ou 2 phrases courtes, difficulté ${diffOf(spkLvl())}/10. Sois un peu exigeant : ne lui accorde pas l'objectif trop vite, pose des questions, ajoute un petit obstacle, mais reste juste.
 Réponds UNIQUEMENT en JSON : {"reply":"ta réplique dans le rôle","compris":true si un anglophone comprendrait son message, false s'il est incompréhensible ou hors sujet,"erreur":"sa phrase corrigée s'il y a une faute, sinon chaîne vide","objectif_atteint":true seulement si l'objectif est vraiment atteint}`;
     try{
-      const r=await sample.json([{role:"user",content:rules},...B.turns],{modelTier:"quick",cache:false});
+      const r=await sample.json([{role:"user",content:rules},...B.turns.map(t=>t.role==="assistant"?{role:"assistant",content:JSON.stringify({reply:t.content})}:t)],{modelTier:"quick",cache:false});
       if(!ses||ses.boss!==B) return;
       B.wait=false; B.turns.push({role:"assistant",content:String(r.reply||"…")});
       if(r.compris===false){B.hearts--;miss();B.notes[ui]={lost:true,txt:`Il ne t'a pas compris (−1 ♥)${r.erreur?" · Plus juste : "+r.erreur:""}`}}
@@ -1083,8 +1248,10 @@ Réponds UNIQUEMENT en JSON : {"reply":"ta réplique dans le rôle","compris":tr
       else if(nU>=8){B.over="lose";B.overMsg="8 répliques écoulées sans atteindre l'objectif."}
       save(); speak(B.turns[B.turns.length-1].content,earRate());
     }catch(e){B.wait=false;B.turns.pop();B.draft=ans;B.err=sampleErr(e.code)}
-    renderEn();
-  });
+    renderEn(); ($("#micB")||$("#nx"))?.scrollIntoView({block:"center",behavior:"smooth"});
+  };
+  $("#bsSend")?.addEventListener("click",envoyer);
+  if($("#bsIn")&&!B.wait) bindMic("micB",$("#bsIn"),{onFinal:()=>{B.draft=$("#bsIn").value;envoyer()}});
 }
 function renderEnd(b){
   const m=ses.m, B=ses.boss||{}, won=B.over==="win", acc=m.total?m.ok/m.total:0;
@@ -1116,7 +1283,196 @@ function renderEnd(b){
   b.querySelectorAll("[data-er]").forEach(x=>x.onclick=()=>speak(m.errors[+x.dataset.er].correct,earRate()));
   b.querySelector("details")?.setAttribute("open","");
   bindAdd(b,P.vocab||[]);
-  $("#back").onclick=()=>{ses=null;renderAll();window.scrollTo({top:0,behavior:"smooth"})};
+  $("#back").onclick=()=>{ses=null;renderAll();hautExercice()};
+}
+
+/* ======================================================================
+   CONVERSATION ORALE AVEC CLAUDE — une vraie discussion, à la voix
+   Claude joue un interlocuteur (amie, collègue, chercheur en congrès…), répond à voix haute,
+   rebondit sur ce que tu dis et glisse sous chacune de tes phrases sa version naturelle.
+   CONV_QUETE répliques ou plus = séance d'anglais comptée (quête « Anglais » validée dans la Compagnie).
+   ====================================================================== */
+const CONV_QUETE=8;            // répliques pour valider la quête
+const CONV_MEMOIRE=18;         // nombre de répliques renvoyées à Claude à chaque tour (les plus récentes)
+const SCENARIOS=[
+ {id:"libre",nom:"Discussion libre",sub:"Ta journée, tes projets, ce que tu veux",role:"Emma, une amie anglaise de Manchester, chaleureuse et curieuse",cadre:"Vous discutez comme deux amis qui se retrouvent : sa journée, son travail, ses loisirs, ses projets, l'actualité légère."},
+ {id:"labo",nom:"Nouvelle collègue au labo",sub:"Elle découvre la plateforme LC-MS",role:"Sarah, une post-doctorante britannique qui vient d'arriver sur la plateforme de métabolomique",cadre:"Elle lui pose des questions sur son travail, l'instrument LC-MS, la préparation des échantillons, les QC, le traitement des données, l'organisation de l'équipe."},
+ {id:"congres",nom:"Questions après ton talk",sub:"Congrès international, on t'interroge",role:"le Dr James Miller, chercheur en spectrométrie de masse, dans le public d'un congrès international",cadre:"Théo vient de présenter ses travaux en métabolomique non ciblée. Tu poses des questions précises mais bienveillantes sur sa méthode, ses résultats, ses limites et ses perspectives, une à la fois."},
+ {id:"cafe",nom:"Pause café en congrès",sub:"Small talk et réseautage",role:"Priya, une chercheuse qui travaille à Londres, rencontrée à la machine à café d'un congrès",cadre:"Small talk : d'où il vient, son labo, la ville du congrès, les présentations du jour, une éventuelle collaboration."},
+ {id:"visio",nom:"Visio avec un partenaire",sub:"Organiser une collaboration",role:"Mark, chef de projet dans un labo partenaire aux Pays-Bas",cadre:"Visio de travail : organiser une collaboration (envoi d'échantillons, nombre d'échantillons, planning, délais, format des données, prochaines étapes)."},
+ {id:"voyage",nom:"En voyage",sub:"Hôtel, resto, imprévus",role:"plusieurs interlocuteurs successifs pendant un voyage à Édimbourg (réceptionniste, serveur, chauffeur de taxi…)",cadre:"Fais vivre de petites situations de voyage réalistes, avec parfois un petit imprévu à régler. Annonce en une demi-phrase quand tu changes de personnage."},
+ {id:"passions",nom:"Tes passions",sub:"Films, séries, sport, jeux…",role:"Jake, un ami américain fan de cinéma, de séries et de sport",cadre:"Vous parlez de films et séries, de sport, de jeux, de voyages : ses goûts, ses recommandations, ses souvenirs."},
+ {id:"sujet",nom:"Sujet au choix",sub:"Tu choisis le thème",role:"un interlocuteur anglophone sympathique et adapté au sujet",cadre:""}
+];
+const scenOf=id=>SCENARIOS.find(x=>x.id===id)||SCENARIOS[0];
+const convPrefs=()=>Object.assign({texte:true,auto:true,voix:true},state.en.convPrefs||{});
+function convSauvee(){try{const c=JSON.parse(localStorage.getItem("quetes-conv")||"null");return c&&c.kind==="conv"&&!c.fini&&c.date===todayISO()&&c.turns&&c.turns.length?c:null}catch(e){return null}}
+function convSauver(){try{if(ses&&ses.kind==="conv"&&!ses.fini)localStorage.setItem("quetes-conv",JSON.stringify(Object.assign({},ses,{wait:false,err:null})))}catch(e){}}
+function convOublier(){try{localStorage.removeItem("quetes-conv")}catch(e){}}
+
+function convCard(){
+  const sv=convSauvee(), sel=state.en.convScen||"libre";
+  return `<div class="card game"><span class="kicker">Parler avec Claude</span><h2>Conversation orale</h2>
+   <p class="muted">Une vraie discussion à la voix : Claude te répond à voix haute, rebondit sur ce que tu dis et te montre la version naturelle de tes phrases. À partir de ${CONV_QUETE} répliques, la quête « Anglais » est validée.</p>
+   ${sv?`<div class="note row" style="justify-content:space-between"><span>Conversation en cours : ${esc(scenOf(sv.scen).nom)} · ${sv.turns.filter(t=>t.role==="user").length} réplique(s)</span><button class="btn sm" id="cvResume">Reprendre</button></div>`:""}
+   <div class="scen">${SCENARIOS.map(x=>`<button data-sc="${x.id}" aria-pressed="${x.id===sel}"><b>${esc(x.nom)}</b><span class="small muted">${esc(x.sub)}</span></button>`).join("")}</div>
+   ${sel==="sujet"?`<input id="cvSujet" maxlength="160" placeholder="Ton sujet (en français ou en anglais)" value="${esc(state.en.convSujet||"")}">`:""}
+   <div class="row"><button class="btn primary" id="cvGo">Commencer à parler</button></div>
+   ${sample?"":'<p class="note">Il faut la clé API Claude (réglages ⚙️).</p>'}</div>`}
+function bindConvCard(){
+  document.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{state.en.convScen=b.dataset.sc;save();renderEn()});
+  $("#cvSujet")?.addEventListener("input",e=>{state.en.convSujet=e.target.value});
+  $("#cvGo")&&($("#cvGo").onclick=()=>{const sc=state.en.convScen||"libre";if(sc==="sujet"&&!String(state.en.convSujet||"").trim()){$("#cvSujet")?.focus();return}save();startConv(sc,sc==="sujet"?String(state.en.convSujet).trim():"")});
+  $("#cvResume")&&($("#cvResume").onclick=()=>{const c=convSauvee();if(!c)return;ses=c;clearInterval(tick);tick=setInterval(updTimer,1000);renderEn();hautExercice()});
+}
+function startConv(scen,sujet){
+  const P=convPrefs();
+  ses={kind:"conv",scen,sujet:sujet||"",date:todayISO(),startedAt:Date.now(),turns:[],pistes:[],mots:[],draft:"",texte:P.texte,auto:P.auto,voix:P.voix,
+    m:{xp:0,combo:0,ok:0,total:0,jokers:0,errors:[],newBadges:[]}};
+  convOublier(); clearInterval(tick); tick=setInterval(updTimer,1000); renderEn(); hautExercice(); convTour();
+}
+function convMessages(){
+  const C=ses, S=scenOf(C.scen);
+  const regles=`Tu es ${S.role}. Tu as une VRAIE conversation orale en anglais avec Théo, ingénieur de recherche français (plateforme de métabolomique LC-MS à Toulouse), niveau A2 qui vise B1. ${S.cadre}${C.sujet?" Sujet choisi par Théo : "+C.sujet+".":""}
+But : le faire parler le plus possible, avec plaisir, comme dans une vraie discussion.
+- Réagis vraiment à ce qu'il dit (intérêt, humour, surprise), rebondis, partage parfois une courte anecdote à toi, puis pose UNE question ouverte pour relancer. Ne pose jamais deux questions d'affilée.
+- 1 à 3 phrases courtes, anglais parlé naturel avec contractions, difficulté ${diffOf(spkLvl())}/10 (1 = très simple et lent ; 10 = natif). Pas de liste, pas d'émoji, pas de markdown.
+- Ses messages viennent de la dictée vocale : ignore ponctuation et majuscules ; un mot étrange est sans doute un mot mal prononcé ou mal reconnu : devine le sens.
+- S'il écrit en français ou bloque, aide-le en anglais très simple et propose-lui un début de phrase.
+- Ne corrige JAMAIS dans "reply" : les corrections vont dans "correction".
+Réponds UNIQUEMENT avec cet objet JSON, sans retour à la ligne dans les textes et sans guillemets doubles à l'intérieur des textes :
+{"reply":"ta réplique en anglais","fr":"traduction française de ta réplique","correction":"son DERNIER message réécrit en anglais correct et naturel, au plus près de ce qu'il voulait dire ; chaîne vide s'il était déjà correct ou s'il n'a encore rien dit","astuce":"1 phrase courte en français sur son erreur principale ; chaîne vide sinon","pistes":["réponse possible 1 en anglais simple (15 mots max)","réponse possible 2"],"mot":{"en":"un mot ou une expression utile (niveau B1-B2) pour continuer cette conversation","fr":"traduction"}}`;
+  let T=C.turns.slice(-CONV_MEMOIRE); while(T.length&&T[0].role!=="assistant") T=T.slice(1);
+  const msgs=[{role:"user",content:regles+"\n\nCommence la conversation : une première réplique naturelle, qui le met à l'aise et finit par une question simple."}];
+  T.forEach(t=>msgs.push(t.role==="assistant"?{role:"assistant",content:JSON.stringify({reply:t.content})}:{role:"user",content:"Message de Théo (dictée vocale) : "+t.content}));
+  return msgs;
+}
+const finConvScroll=()=>requestAnimationFrame(()=>{($("#cvWait")||$("#micC")||$("#cvIn"))?.scrollIntoView({block:"end",behavior:"smooth"})});
+async function convTour(){
+  const C=ses; if(!C||C.kind!=="conv"||C.wait) return;
+  if(!sample){C.err=sampleErr("absent");return renderEn()}
+  C.wait=true; C.err=null; renderEn(); finConvScroll();
+  try{
+    const r=await sample.json(convMessages(),{modelTier:"quick",maxTokens:1000});
+    if(ses!==C) return;
+    const reply=txt(r.reply); if(!reply) throw {code:"invalid_json"};
+    const last=C.turns[C.turns.length-1];
+    if(last&&last.role==="user"){
+      const corr=txt(r.correction);
+      C.m.total++;
+      if(corr&&norm(corr)!==norm(last.content)){
+        last.corr=corr; last.astuce=txt(r.astuce); C.m.errors.push({faux:last.content,correct:corr});
+        state.en.errors.push({faux:last.content,correct:corr,pourquoi:last.astuce,date:todayISO()}); state.en.errors=state.en.errors.slice(-40);
+        addXP(Math.round(4*(C.d20m||1)),"spk");
+      } else {C.m.ok++;addXP(8,"spk")}
+    }
+    C.turns.push({role:"assistant",content:reply,fr:txt(r.fr)});
+    C.pistes=(Array.isArray(r.pistes)?r.pistes:[]).map(txt).filter(Boolean).slice(0,3); C.pistesVues=false;
+    if(r.mot&&txt(r.mot.en)&&txt(r.mot.fr)&&!C.mots.some(w=>norm(w.en)===norm(r.mot.en))) C.mots.push({en:txt(r.mot.en),fr:txt(r.mot.fr)});
+    C.wait=false; save(); convSauver();
+    if(C.voix) speak(reply,earRate());
+  }catch(e){if(ses!==C)return;C.wait=false;C.err=sampleErr(e.code)}
+  renderEn(); finConvScroll();
+}
+function convEnvoyer(){
+  const C=ses; if(!C||C.wait) return;
+  const v=String(($("#cvIn")?.value)||C.draft||"").trim(); if(!v) return;
+  stopTTS(); C.turns.push({role:"user",content:v}); C.draft=""; C.pistes=[]; convSauver(); convTour();
+}
+function renderConv(p){
+  const C=ses, S=scenOf(C.scen), nU=C.turns.filter(t=>t.role==="user").length;
+  if(C.fini) return renderConvFin(p);
+  const bulles=C.turns.map((t,i)=>t.role==="assistant"
+    ?`<div class="bub a"><span class="${!C.texte&&!t.vu?"flou":""}" data-reveal="${i}">${esc(t.content)}</span>${t.showFr&&t.fr?`<span class="frtr">${esc(t.fr)}</span>`:""}<div class="tools"><button class="btn sm" data-say="${i}">▶ Écouter</button><button class="btn sm" data-slow="${i}">Plus lent</button>${t.fr?`<button class="btn sm" data-fr="${i}">${t.showFr?"Masquer le français":"Français"}</button>`:""}</div></div>`
+    :`<div class="bub u">${esc(t.content)}</div>${t.corr?`<div class="corr"><span class="small muted">Plus naturel :</span><b>${esc(t.corr)}</b>${t.astuce?`<span class="small">${esc(t.astuce)}</span>`:""}<div><button class="btn sm" data-sayc="${i}">▶ Écouter et répéter</button></div></div>`:""}`).join("");
+  p.innerHTML=`<div class="card hud">
+    <div class="row" style="justify-content:space-between"><span class="small muted">Conversation · ${esc(S.nom)}</span><span class="mono small" id="tm">00:00</span></div>
+    <div class="row" style="justify-content:space-between"><span class="xp sm">+${C.m.xp} XP</span><span class="pill ${nU>=CONV_QUETE?"ok":"neutral"}">${nU>=CONV_QUETE?"Quête Anglais : validée à la fin":`Quête Anglais : ${nU} / ${CONV_QUETE} répliques`}</span></div>
+    <div class="row small"><label style="display:flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="cvTxt" style="width:auto" ${C.texte?"checked":""}>Texte visible</label>
+      <label style="display:flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="cvVoix" style="width:auto" ${C.voix?"checked":""}>Lecture à voix haute</label>
+      ${hasSR()?`<label style="display:flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="cvAuto" style="width:auto" ${C.auto?"checked":""}>Envoi auto</label>`:""}</div>
+  </div>
+  <div class="card conv">
+    <div class="chat">${bulles}${C.wait?`<div class="bub a muted" id="cvWait">${C.turns.length?"…":"Ton interlocuteur arrive…"}</div>`:""}</div>
+    ${C.err?`<div class="err small row" style="justify-content:space-between"><span>${esc(C.err)}</span><button class="btn sm" id="cvRetry">Réessayer</button></div>`:""}
+    <div class="composer">
+      ${C.pistesVues&&C.pistes.length?`<div class="pistes"><span class="small muted">Idées de réponse : touche pour l'écouter, puis dis-la (ou adapte-la) avec le micro.</span>${C.pistes.map((x,i)=>`<button class="piste" data-pi="${i}">${esc(x)}</button>`).join("")}</div>`:""}
+      ${C.wait?"":micHTML("micC",C.auto&&hasSR()?"Touche le micro et parle : c'est envoyé quand tu t'arrêtes":"Touche le micro et parle")}
+      <textarea id="cvIn" rows="2" ${EN_IN} placeholder="Ta réponse en anglais…" ${C.wait?"disabled":""}>${esc(C.draft||"")}</textarea>
+      <div class="row"><button class="btn primary" id="cvSend" ${C.wait?"disabled":""}>Envoyer</button>
+        <button class="btn sm" id="cvHelp" ${C.pistes.length&&!C.pistesVues&&!C.wait?"":"disabled"}>Je bloque</button>
+        <button class="btn sm" id="cvEnd" ${C.wait?"disabled":""}>Terminer</button></div>
+    </div>
+  </div>`;
+  updTimer();
+  const ta=$("#cvIn");
+  ta?.addEventListener("input",e=>C.draft=e.target.value);
+  ta?.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();convEnvoyer()}});
+  if(ta&&!C.wait) bindMic("micC",ta,C.auto?{onFinal:()=>convEnvoyer()}:{});
+  $("#cvSend")?.addEventListener("click",convEnvoyer);
+  $("#cvRetry")?.addEventListener("click",()=>{C.err=null;convTour()});
+  $("#cvHelp")?.addEventListener("click",()=>{C.pistesVues=true;renderEn();finConvScroll()});
+  $("#cvEnd")?.addEventListener("click",finConv);
+  const pref=(k,v)=>{C[k]=v;state.en.convPrefs=Object.assign(convPrefs(),{[k]:v});save();convSauver();renderEn()};
+  $("#cvTxt")?.addEventListener("change",e=>pref("texte",e.target.checked));
+  $("#cvVoix")?.addEventListener("change",e=>{if(!e.target.checked)stopTTS();pref("voix",e.target.checked)});
+  $("#cvAuto")?.addEventListener("change",e=>pref("auto",e.target.checked));
+  p.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(C.turns[+b.dataset.say].content,earRate()));
+  p.querySelectorAll("[data-slow]").forEach(b=>b.onclick=()=>speak(C.turns[+b.dataset.slow].content,Math.max(.6,earRate()-.25)));
+  p.querySelectorAll("[data-sayc]").forEach(b=>b.onclick=()=>speak(C.turns[+b.dataset.sayc].corr,earRate()));
+  p.querySelectorAll("[data-fr]").forEach(b=>b.onclick=()=>{const t=C.turns[+b.dataset.fr];t.showFr=!t.showFr;renderEn()});
+  p.querySelectorAll("[data-reveal]").forEach(b=>b.onclick=()=>{const t=C.turns[+b.dataset.reveal];if(!t.vu&&!C.texte){t.vu=true;renderEn()}});
+  p.querySelectorAll("[data-pi]").forEach(b=>b.onclick=()=>speak(C.pistes[+b.dataset.pi],Math.max(.6,earRate()-.1)));
+}
+async function finConv(){
+  const C=ses; if(!C) return;
+  const nU=C.turns.filter(t=>t.role==="user").length;
+  stopTTS();
+  if(!nU){clearInterval(tick);convOublier();ses=null;renderAll();hautExercice();return}
+  C.fini=true; C.recapWait=true; convOublier();
+  const min=Math.max(1,Math.round((Date.now()-C.startedAt)/60000));
+  if(!C.recorded){
+    C.recorded=true; clearInterval(tick);
+    C.compte=nU>=CONV_QUETE;
+    if(C.compte){state.en.sessions.push({date:todayISO(),mod:"conv",scen:C.scen,unit:0,min,xp:C.m.xp,tours:nU});addXP(20,"spk");G().stats.convs=(G().stats.convs||0)+1;checkBadges();confetti()}
+    save();
+  }
+  renderEn(); hautExercice();
+  try{
+    const r=await sample.json(`Voici une conversation orale en anglais entre Théo, apprenant francophone (niveau A2 qui vise B1, messages issus de la dictée vocale : ignore ponctuation et majuscules), et son interlocuteur. Fais-lui un bilan bienveillant mais honnête, en français.
+Conversation :
+${C.turns.map(t=>(t.role==="user"?"THÉO : ":"INTERLOCUTEUR : ")+t.content).join("\n")}
+Réponds UNIQUEMENT avec cet objet JSON (pas de retour à la ligne dans les textes) :
+{"bilan":"2 ou 3 phrases en français : ce qui marche, ce qui progresse","points_forts":["point fort concret 1","point fort concret 2"],"a_travailler":[{"faux":"extrait fautif exact de Théo","correct":"version correcte","pourquoi":"explication courte en français"}],"mots":[{"en":"mot ou expression utile qu'il aurait pu employer","fr":"traduction","ex":"exemple court en anglais","lvl":"B1, B2 ou C1"}],"defi":"un défi en français pour sa prochaine conversation"}
+"a_travailler" : les 3 à 5 erreurs les plus utiles (les récurrentes d'abord ; liste vide s'il n'y en a pas). "mots" : 5 éléments.`,{modelTier:"default",maxTokens:2500});
+    if(ses!==C) return;
+    C.recap={bilan:txt(r.bilan),forts:(r.points_forts||[]).map(txt).filter(Boolean).slice(0,3),
+      erreurs:(Array.isArray(r.a_travailler)?r.a_travailler:[]).filter(e=>e&&txt(e.faux)&&txt(e.correct)).slice(0,6).map(e=>({faux:txt(e.faux),correct:txt(e.correct),pourquoi:txt(e.pourquoi)})),
+      mots:(Array.isArray(r.mots)?r.mots:[]).filter(w=>w&&txt(w.en)&&txt(w.fr)).slice(0,6).map(w=>({en:txt(w.en),fr:txt(w.fr),ex:txt(w.ex),lvl:/^(B1|B2|C1|C2)$/.test(txt(w.lvl))?txt(w.lvl):undefined})),defi:txt(r.defi)};
+  }catch(e){if(ses!==C)return;C.recapErr=sampleErr(e.code)}
+  C.recapWait=false; renderEn();
+}
+function renderConvFin(p){
+  const C=ses, R=C.recap, nU=C.turns.filter(t=>t.role==="user").length;
+  const mots=R?R.mots.concat(C.mots.filter(w=>!R.mots.some(x=>norm(x.en)===norm(w.en)))):C.mots;
+  const erreurs=R&&R.erreurs.length?R.erreurs:C.m.errors.map(e=>({faux:e.faux,correct:e.correct,pourquoi:""}));
+  p.innerHTML=`<div class="card game" style="text-align:center;justify-items:center">
+    <span class="kicker">Bilan de la conversation</span>
+    <h2>${esc(scenOf(C.scen).nom)}</h2>
+    <div class="row" style="justify-content:center"><span class="pill ok">+${C.m.xp} XP</span><span class="pill neutral">${nU} réplique${nU>1?"s":""}</span>
+      <span class="pill ${C.compte?"ok":"warn"}">${C.compte?"Quête Anglais validée":`Pas comptée (il fallait ${CONV_QUETE} répliques)`}</span></div>
+  </div>
+  ${C.recapWait?'<div class="card"><p class="muted">Claude prépare ton bilan…</p><div class="bar"><i class="indet"></i></div></div>':""}
+  ${C.recapErr?`<p class="err small">Bilan indisponible : ${esc(C.recapErr)}</p>`:""}
+  ${R?`<div class="card"><h3>Ce qu'en pense Claude</h3><p>${esc(R.bilan)}</p>${R.forts.length?`<ul class="small">${R.forts.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}${R.defi?`<p class="small story">Défi pour la prochaine fois : ${esc(R.defi)}</p>`:""}</div>`:""}
+  ${erreurs.length?`<div class="card"><h3>À retenir</h3><div class="gap">${erreurs.map((e,i)=>`<div class="err small" style="display:grid;gap:4px"><div class="row" style="justify-content:space-between"><span><s>${esc(e.faux)}</s> → <b>${esc(e.correct)}</b></span><button class="btn sm" data-ce="${i}">▶</button></div>${e.pourquoi?`<span class="muted">${esc(e.pourquoi)}</span>`:""}</div>`).join("")}</div><p class="small muted">Dis chaque version juste à voix haute deux fois.</p></div>`:""}
+  ${mots.length?`<div class="card"><h3>Mots à garder</h3>${glossaryHTML(mots)}</div>`:""}
+  <div class="row"><button class="btn primary" id="cvBack">Terminer</button><button class="btn" id="cvAgain">Nouvelle conversation</button></div>`;
+  p.querySelectorAll("[data-ce]").forEach(x=>x.onclick=()=>speak(erreurs[+x.dataset.ce].correct,earRate()));
+  p.querySelector("details")?.setAttribute("open","");
+  bindAdd(p,mots);
+  $("#cvBack").onclick=()=>{ses=null;renderAll();hautExercice()};
+  $("#cvAgain").onclick=()=>{const sc=C.scen,su=C.sujet;ses=null;startConv(sc,su)};
 }
 
 /* ---------- Briques communes ---------- */
@@ -1763,7 +2119,14 @@ function renderSet(){
     <div class="grid2">
       ${Object.entries(MODULES).map(([k,m])=>`<label>Unité ${m.name}<select id="su-${k}">${m.units.map((u,i)=>`<option value="${i}" ${i===state.en.mods[k].unit?"selected":""}>${i+1}. ${esc(u[0])}</option>`).join("")}</select></label>`).join("")}
       <label>Vitesse de lecture audio<select id="st">${[0.75,0.85,1].map(r=>`<option ${Number(state.ttsRate)===r?"selected":""}>${r}</option>`).join("")}</select></label>
+      <label>Micro intégré : anglais reconnu<select id="sml">${[["en-GB","Britannique (en-GB)"],["en-US","Américain (en-US)"]].map(([v,t])=>`<option value="${v}" ${state.micLang===v?"selected":""}>${t}</option>`).join("")}</select></label>
     </div>
+    <p class="small muted">${hasSR()?"Ton navigateur reconnaît la voix : le gros bouton micro violet écrit directement en anglais, sans toucher au clavier. Si ta phrase est mal reconnue, essaie l'autre accent.":"Ce navigateur n'a pas de reconnaissance vocale intégrée : utilise le micro de ton clavier, réglé en anglais (voir ci-dessous)."}</p>
+    <details><summary>Mettre le micro du clavier en anglais (au cas où)</summary><div class="small" style="margin-top:8px;display:grid;gap:6px">
+      <p><b>Android (Gboard)</b> : Paramètres Gboard → Langues → Ajouter un clavier → English (UK). Ensuite, appui long sur la barre d'espace (ou la touche 🌐) pour passer en anglais : la dictée du micro suit la langue affichée sur la barre d'espace.</p>
+      <p><b>iPhone</b> : Réglages → Général → Clavier → Claviers → Ajouter un clavier → English (UK). Dans le Carnet, touche 🌐 en bas du clavier pour choisir English, puis le micro : la dictée passe en anglais.</p>
+      <p>L'app ne peut pas changer elle-même la langue de ton clavier (le téléphone l'interdit) : c'est pour ça que le micro intégré existe.</p>
+    </div></details>
     <div class="row"><button class="btn sm" id="newl">Recréer la mission du monde actif</button></div>
   </div>
   <div class="row"><button class="btn primary" id="sv">Enregistrer</button><span id="svm" class="small muted"></span></div>
@@ -1772,7 +2135,7 @@ function renderSet(){
     state.run.goal=$("#sg").value.trim();state.run.ref=$("#sr").value.trim();state.run.start=mondayOf($("#ss").value||state.run.start);state.run.weeks=+$("#sw").value;
     state.run.days={q:+$("#dq").value,s:+$("#ds").value,l:+$("#dl").value};
     for(const k in MODULES){const u=+$("#su-"+k).value;if(u!==state.en.mods[k].unit){state.en.mods[k].unit=u;state.en.mods[k].pack=null}}
-    state.ttsRate=+$("#st").value;save();renderAll();$("#svm").textContent="Enregistré";
+    state.ttsRate=+$("#st").value;state.micLang=$("#sml").value;save();renderAll();$("#svm").textContent="Enregistré";
   };
   $("#newl").onclick=()=>{state.en.mods[state.en.active].pack=null;save();$("#svm").textContent="Une nouvelle mission sera créée au prochain lancement."};
   $("#setBack").onclick=()=>setTab(lastTab);
@@ -1817,7 +2180,7 @@ function bindAcct(){
 let tab="en", lastTab="en";
 /* Bouton maison : revient à l'app de la Compagnie (onglet Quêtes) ; ouvert seul, le Carnet mène à l'app */
 document.getElementById("maison").onclick=()=>{try{if(window.parent!==window){window.parent.postMessage({t:"compagnie-retour"},"*");return}}catch(e){}location.href="./"};
-function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);try{localStorage.setItem("quetes-tab",t)}catch(e){}}
+function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);majFocus();try{localStorage.setItem("quetes-tab",t)}catch(e){}}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setTab(b.dataset.go));
 $("#gear").onclick=()=>setTab(tab==="set"?lastTab:"set");

@@ -531,6 +531,9 @@
   body { padding-bottom: 96px; }
   #carnetBox { position: fixed; left: 0; right: 0; top: 0; z-index: 8; background: #120d22; }
   #carnetBox iframe { display: block; width: 100%; height: 100%; border: 0; background: #120d22; }
+  /* Clavier ouvert dans le Carnet : la barre d'onglets s'efface pour laisser toute la place (sinon l'écran saute) */
+  body.clavier-carnet nav.tabs { display: none; }
+  body.clavier-carnet #carnetBox { bottom: 0 !important; }
   #carnetBox .ld { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); pointer-events: none; }
   .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; display: flex; justify-content: center; gap: 8px;
     padding: 8px 16px calc(10px + env(safe-area-inset-bottom)); background: rgba(17,14,21,.94);
@@ -1391,7 +1394,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-02-5';
+const VERSION_APP = '2026-11-02-6';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2297,11 +2300,11 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
-const VERSION_CARNET = '2026-11-02-4'; // change à chaque livraison : force le téléphone à recharger carnet.html
+const VERSION_CARNET = '2026-11-02-5'; // change à chaque livraison : force le téléphone à recharger carnet.html
 function afficherCarnet(oui) {
   const box = document.getElementById('carnetBox');
   if (!box) return;
-  if (!oui) { box.hidden = true; return; }
+  if (!oui) { box.hidden = true; document.body.classList.remove('clavier-carnet'); return; }
   const nav = document.querySelector('nav.tabs');
   box.style.bottom = Math.max(56, nav ? nav.offsetHeight : 0) + 'px';
   if (!box.querySelector('iframe')) {
@@ -2315,6 +2318,7 @@ window.addEventListener('message', e => {
   if (!fr || e.source !== fr.contentWindow) return; // seulement le Carnet de cette app
   const m = e.data || {};
   if (m.t === 'compagnie-erreur') { signaler({ ou: 'carnet', msg: m.msg, detail: m.detail }); return; }
+  if (m.t === 'carnet-clavier') { document.body.classList.toggle('clavier-carnet', !!m.ouvert && onglet === 'carnet'); return; }
   if (m.t === 'compagnie-retour') { onglet = 'quetes'; try { localStorage.setItem('onglet', onglet); } catch (err) {} render(); window.scrollTo(0, 0); return; }
   if (m.t !== 'compagnie-etat' || !m.etat) return;
   const avant = state;
@@ -3498,12 +3502,22 @@ function dessinerGrille() {
   for (let d = 10; d < 80; d += 10) g.fillRect(0, d * t - 1, 52 * t, 1);
 }
 
+/* Profil : la dernière version connue (gardée sur le téléphone) s'affiche tout de suite,
+   la version à jour arrive ensuite en arrière-plan. Plus d'écran « Chargement… » à chaque ouverture. */
+const cleProfil = () => 'profilCache|' + String(cleHeros || 'demo').slice(0, 6);
+try { const c = JSON.parse(localStorage.getItem(cleProfil()) || 'null'); if (c && c.records) profil = c; } catch (e) {}
 async function chargerProfil(force) {
   if (profilCharge && !force) return;
   profilCharge = true;
   profilErreur = '';
-  try { profil = await api('getProfil'); if (onglet === 'profil') render(); }
-  catch (e) { profilCharge = false; profilErreur = String((e && e.message) || e); if (onglet === 'profil') render(); }
+  try {
+    const p = await api('getProfil');
+    const change = JSON.stringify(p) !== JSON.stringify(profil);
+    profil = p;
+    try { localStorage.setItem(cleProfil(), JSON.stringify(p)); } catch (e) {}
+    if (onglet === 'profil' && change) render();
+  }
+  catch (e) { profilCharge = false; if (!profil) { profilErreur = String((e && e.message) || e); if (onglet === 'profil') render(); } }
 }
 
 /** Appel d'un réglage : met à jour l'état et réaffiche. */
