@@ -294,6 +294,17 @@
   .mini-lueur { width: 26px; height: 26px; border-radius: 50%; background: #2a2433; display: inline-block; }
   .mini-lueur.l-argent { box-shadow: 0 0 10px 3px rgba(220,230,245,.8); } .mini-lueur.l-or { box-shadow: 0 0 10px 3px rgba(240,200,90,.85); }
   .mini-lueur.l-pourpre { box-shadow: 0 0 10px 3px rgba(190,50,110,.85); } .mini-lueur.l-aube { box-shadow: 0 0 10px 3px rgba(255,170,90,.8), 0 0 16px 4px rgba(170,140,255,.5); }
+  .horsligne.nouveau-jour { border-style: solid; border-color: rgba(212,173,60,.35); }
+  .jjour { margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
+  .jtete { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; margin-bottom: 6px; }
+  .jtete b { font-family: var(--f-titre); color: var(--gold); font-size: 14.5px; }
+  .jtete span { color: var(--muted); font-size: 12px; text-align: right; }
+  .jl { display: flex; gap: 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); }
+  .jl .ji { width: 24px; height: 24px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+  .jl.ok .ji { background: rgba(110,190,120,.18); color: #7fcf8a; } .jl.ko .ji { background: rgba(229,115,122,.18); color: #ec8a90; }
+  .jl.jk .ji { background: rgba(212,173,60,.15); } .jl.bo .ji { background: rgba(201,162,255,.16); color: #c9a2ff; }
+  .jl .jt { flex: 1; min-width: 0; display: grid; } .jl .jt b { font-size: 14px; font-weight: 600; } .jl .jt small { color: var(--muted); font-size: 12px; }
+  .joubli { display: flex; gap: 8px; margin-top: 8px; } .joubli select { flex: 1; min-width: 0; padding: 7px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: 13px var(--f-texte); }
   .horsligne { margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; border: 1px dashed #6a5320; background: rgba(212,173,60,.07); font-size: 13px; line-height: 1.45; }
   .horsligne span { color: var(--muted); font-size: 12px; } .horsligne .btn { margin-top: 8px; }
   .d20.roule { animation: rouler .35s linear infinite; }
@@ -1394,9 +1405,9 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-02-6';
+const VERSION_APP = '2026-11-03-1';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
-const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle']);
+const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
 async function appelDistant(fn, args) {
   if (!cleHeros && fn !== 'verifierCle') { if (!cleRefusee) { cleRefusee = true; setTimeout(() => ecranCle(), 0); } throw new Error('Clé de héros manquante'); }
@@ -1492,6 +1503,7 @@ function isoPlusLocal(iso, k) { const d = versDate(iso); d.setDate(d.getDate() +
 function bandeauHorsLigne(s) {
   const n = lireAttente().length, off = navigator.onLine === false;
   if (!n && !off && !s.estime) return '';
+  if (!n && !off && s.estime) return `<div class="horsligne nouveau-jour">☀ <b>Nouveau jour</b> · tu peux déjà valider tes quêtes, les chiffres exacts arrivent dans quelques secondes.</div>`;
   return `<div class="horsligne">${off ? '📴 <b>Hors connexion</b>' : '📶 <b>En ligne</b>'}${n ? ` · ⏳ ${n} saisie${n > 1 ? 's' : ''} en attente d'envoi` : ' · tes saisies seront gardées sur le téléphone'}${s.estime ? '<br><span>Fiche estimée depuis ta dernière connexion : les chiffres exacts arrivent avec le réseau.</span>' : ''}
     ${n && !off ? '<button class="btn mini or" data-envoyer="1">Envoyer maintenant</button>' : ''}</div>`;
 }
@@ -1516,7 +1528,7 @@ let herosActif = '';
 try { herosActif = localStorage.getItem('heros') || ''; } catch (e) {}
 const ARITE = { getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
   decalerSeance: 3, annulerDecalage: 3, reglerRappel: 1, testerRappel: 0, changerDifficulte: 1, reglerConfort: 1, reglerDevise: 1,
-  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, equiperOrnement: 2, planifierVoyage: 3, annulerVoyage: 2, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1 };
+  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, equiperOrnement: 2, planifierVoyage: 3, annulerVoyage: 2, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1, journalRecent: 1, corrigerJour: 3, retirerSaisie: 2 };
 function api(fn, ...args) {
   if (fn in ARITE) {
     args = args.slice(0, ARITE[fn]);
@@ -2727,6 +2739,75 @@ document.addEventListener('click', e => {
   try { localStorage.setItem('sousOnglet', sousOnglet); } catch (err) {}
   render(); window.scrollTo(0, 0);
   if (sousOnglet === 'nouvelles' && state) setTimeout(() => marquerVues(nouvellesDe(state, indexJour(state.today) === 6).map(n => n.id)), 1500);
+  if (sousOnglet === 'journal') chargerJournal(true);
+});
+
+/* ---------- Journal des quêtes : les 8 derniers jours, et la correction des oublis sans passer par le Sheet ---------- */
+const cleJournal = () => 'journalQ|' + (herosActif || '');
+let journalQ = null, journalEnCours = false, journalErreur = '', journalOccupe = '';
+try { journalQ = JSON.parse(localStorage.getItem(cleJournal()) || 'null'); } catch (e) {}
+function garderJournal(j) { journalQ = j; journalErreur = ''; try { localStorage.setItem(cleJournal(), JSON.stringify(j)); } catch (e) {} }
+function chargerJournal(force) {
+  if (journalEnCours) return;
+  if (journalQ && !force && journalQ.today === isoLocal()) return;
+  journalEnCours = true;
+  apiFond('journalRecent', 8).then(j => { garderJournal(j); }).catch(e => { journalErreur = String((e && e.message) || e); })
+    .finally(() => { journalEnCours = false; if (onglet === 'quetes' && sousOnglet === 'journal') render(); });
+}
+/** Ratés et jokers automatiques d'hier, à vérifier (pastille sur l'onglet Journal). */
+function ratesACorriger(s) {
+  if (!journalQ || !s) return 0;
+  const hier = isoPlusLocal(s.today, -1), j = journalQ.jours.find(x => x.date === hier);
+  return j ? j.saisies.filter(x => x.auto && (x.statut === 'Raté' || x.statut === 'Repos')).length : 0;
+}
+function vueJournal(s) {
+  if (!journalQ && journalEnCours) return '<div class="empty">Ouverture du journal…</div>';
+  if (!journalQ) return `<div class="empty">${journalErreur ? 'Journal indisponible : ' + esc(journalErreur) : 'Ouverture du journal…'}<br><button class="btn mini or" data-sous="journal" style="margin-top:8px">Réessayer</button></div>`;
+  const J = journalQ, aujourd = s.today, hier = isoPlusLocal(aujourd, -1);
+  const icone = { 'Fait': ['✓', 'ok'], 'Raté': ['✗', 'ko'], 'Repos': ['🃏', 'jk'], 'Bonus': ['★', 'bo'] };
+  const jours = J.jours.map(j => {
+    const age = Math.round((versDate(aujourd) - versDate(j.date)) / 864e5), modifiable = age >= 0 && age <= 7;
+    const faites = new Set(j.saisies.filter(x => x.statut === 'Fait').map(x => x.quete));
+    const fait = j.saisies.filter(x => x.statut === 'Fait').length, rate = j.saisies.filter(x => x.statut === 'Raté').length;
+    const xp = j.saisies.reduce((t, x) => t + (x.xp || 0), 0);
+    const lignes = j.saisies.map(x => {
+      const ic = icone[x.statut] || ['·', ''], occupe = journalOccupe === j.date + '|' + x.quete;
+      const action = !modifiable || x.statut === 'Bonus' || age === 0 && x.statut === 'Fait' ? ''
+        : x.statut === 'Raté' || x.statut === 'Repos' ? (faites.has(x.quete) ? '' : `<button class="btn mini or" data-jfait="${esc(x.quete)}" data-jdate="${j.date}" ${occupe ? 'disabled' : ''}>${occupe ? '…' : 'Je l\'avais faite'}</button>`)
+        : `<button class="btn mini" data-jretire="${esc(x.quete)}" data-jdate="${j.date}" ${occupe ? 'disabled' : ''}>${occupe ? '…' : 'Retirer'}</button>`;
+      return `<div class="jl ${ic[1]}"><span class="ji">${ic[0]}</span><div class="jt"><b>${esc(x.quete)}</b><small>${esc(x.statut === 'Repos' ? 'Joker' + (x.auto ? ' automatique' : '') : x.statut === 'Raté' && x.auto ? 'Raté automatique (rien de saisi ce jour-là)' : x.statut === 'Bonus' ? x.note || 'Bonus' : x.note || x.statut)}${x.xp ? ' · ' + (x.xp > 0 ? '+' : '') + x.xp + ' XP' : ''}</small></div>${action}</div>`;
+    }).join('');
+    const oubliables = modifiable && age > 0 ? J.quotidiennes.concat(J.annexes).filter((q, i, a) => a.indexOf(q) === i && !faites.has(q)) : [];
+    const oubli = oubliables.length ? `<div class="joubli"><select id="jsel-${j.date}" aria-label="Quête oubliée"><option value="">Une quête faite mais pas saisie ?</option>${oubliables.map(q => `<option>${esc(q)}</option>`).join('')}</select>
+      <button class="btn mini or" data-joubli="${j.date}" ${journalOccupe ? 'disabled' : ''}>Valider</button></div>` : '';
+    return `<div class="jjour"><div class="jtete"><b>${j.date === aujourd ? 'Aujourd\'hui' : j.date === hier ? 'Hier' : esc(dateLongue(j.date))}</b>
+      <span>${fait} faite${fait > 1 ? 's' : ''}${rate ? ` · ${rate} ratée${rate > 1 ? 's' : ''}` : ''}${xp ? ` · ${xp > 0 ? '+' : ''}${xp} XP` : ''}</span></div>
+      ${lignes || '<div class="muted" style="font-size:13px;padding:4px 0">Rien de saisi ce jour-là.</div>'}${oubli}</div>`;
+  }).join('');
+  return `<p class="muted" style="font-size:12.5px;margin:0 0 10px">Les 8 derniers jours. Une quête oubliée ? Corrige-la ici jusqu'à 7 jours en arrière : le raté (ou le joker) automatique disparaît, la série et les PV sont recalculés.${journalEnCours ? ' <i>Mise à jour…</i>' : ''}</p>${jours}`;
+}
+async function actionJournal(fn, args, cle, message) {
+  if (journalOccupe) return;
+  if (navigator.onLine === false) { toast('📴 Pas de réseau : la correction du journal demande une connexion'); return; }
+  journalOccupe = cle; render();
+  try {
+    const r = await api(fn, ...args);
+    if (r && r.journalQuetes) { garderJournal(r.journalQuetes); delete r.journalQuetes; }
+    const avant = state;
+    if (envoisEnCours === 0) { state = r; confirme = null; } else confirme = r;
+    journalOccupe = ''; render(); toast(message);
+    celebrer(r.nouveauxBonus);
+    if (typeof celebrerChangements === 'function') celebrerChangements(avant, r);
+  } catch (e) { journalOccupe = ''; render(); toast('Correction impossible : ' + ((e && e.message) || e)); }
+}
+document.addEventListener('click', e => {
+  const f = e.target.closest('[data-jfait]');
+  if (f) { actionJournal('corrigerJour', [f.dataset.jfait, 'Fait', f.dataset.jdate], f.dataset.jdate + '|' + f.dataset.jfait, '✓ « ' + f.dataset.jfait + ' » comptée faite le ' + dateCourte(f.dataset.jdate)); return; }
+  const r = e.target.closest('[data-jretire]');
+  if (r) { if (confirm('Retirer « ' + r.dataset.jretire + ' » du ' + dateCourte(r.dataset.jdate) + ' ?')) actionJournal('retirerSaisie', [r.dataset.jretire, r.dataset.jdate], r.dataset.jdate + '|' + r.dataset.jretire, 'Saisie retirée'); return; }
+  const o = e.target.closest('[data-joubli]');
+  if (o) { const sel = document.getElementById('jsel-' + o.dataset.joubli), q = sel && sel.value; if (!q) { toast('Choisis d\'abord la quête'); return; }
+    actionJournal('corrigerJour', [q, 'Fait', o.dataset.joubli], o.dataset.joubli + '|' + q, '✓ « ' + q + ' » comptée faite le ' + dateCourte(o.dataset.joubli)); }
 });
 
 /* ---------- Événements saisonniers (récit écrit par Claude) ---------- */
@@ -3132,8 +3213,9 @@ function render() {
     : '<div class="empty">Rien de neuf pour l\'instant. Le Maître du Jeu écrit chaque lundi, les événements arrivent au fil des saisons.</div>';
   const vueQuetes = `
     <div class="sous-onglets"><button class="${sousOnglet === 'quetes' ? 'on' : ''}" data-sous="quetes">⚔ Quêtes</button>
-      <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles">📜 Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button></div>
-    ${sousOnglet === 'nouvelles' ? vueNouvelles + '<div style="height:20px"></div>' : `
+      <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles">📜 Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button>
+      <button class="${sousOnglet === 'journal' ? 'on' : ''}" data-sous="journal">📖 Journal${ratesACorriger(s) ? ` <i class="pastille">${ratesACorriger(s)}</i>` : ''}</button></div>
+    ${sousOnglet === 'journal' ? vueJournal(s) + '<div style="height:20px"></div>' : sousOnglet === 'nouvelles' ? vueNouvelles + '<div style="height:20px"></div>' : `
     ${bandeauHorsLigne(s)}
     ${bandeauMontre(s)}
     ${effetsActifs(s)}
@@ -4153,6 +4235,15 @@ const demo = (() => {
         : [{ nom: 'Ton nom de héros', classe: 'Magicien', titre: 'le Vagabond', niveau: 12, look: '' }];
     },
     toggleVacances() { vacDemo = !vacDemo; return etat(); },
+    journalRecent() {
+      const j = k => ilYa(k);
+      return { today, quotidiennes: ['Anglais 20 min', 'Course', 'Coucher avant minuit'], annexes: ['Ranger le bureau'], jours: [0, 1, 2, 3, 4, 5, 6, 7].map(k => ({ date: j(k),
+        saisies: k === 1 ? [{ quete: 'Course', statut: 'Fait', note: '', xp: 45 }, { quete: 'Coucher avant minuit', statut: 'Raté', note: 'Raté (auto)', xp: 0, auto: true }]
+          : k === 2 ? [{ quete: 'Anglais 20 min', statut: 'Repos', note: 'Joker (auto)', xp: 0, auto: true }, { quete: 'Course', statut: 'Bonus', note: 'Série 3 jours', xp: 30 }]
+          : k === 0 ? [] : [{ quete: 'Coucher avant minuit', statut: 'Fait', note: '', xp: 23 }] })) };
+    },
+    corrigerJour() { const e = etat(); e.journalQuetes = demo.journalRecent(); return e; },
+    retirerSaisie() { const e = etat(); e.journalQuetes = demo.journalRecent(); return e; },
     getProfil() {
       const naiss = '1998-11-30', sem = Math.floor(ecartJours(naiss, today) / 7) + 1;
       let g = '';
@@ -4232,7 +4323,9 @@ function memoriserEtat() { try { if (state && (enLigne || distant)) localStorage
 function lancer() {
   let memo = null;
   try { memo = JSON.parse(localStorage.getItem(cleEtat()) || 'null'); } catch (e) {}
-  if (memo && (enLigne || distant)) { state = memo; if (navigator.onLine === false) state = passerAuJour(state); render(); }
+  // Nouveau jour : la fiche d'hier est tout de suite « passée au jour » sur le téléphone (compteurs du jour remis à zéro),
+  // en attendant les chiffres exacts du Sheet. Plus d'écran d'hier pendant 10 secondes.
+  if (memo && (enLigne || distant)) { state = passerAuJour(memo); render(); }
   else { dernierHtml = ''; document.getElementById('app').innerHTML = '<div class="loading">Chargement de ta feuille de personnage…</div>'; }
   // des saisies faites hors connexion attendent : elles partent d'abord, et la réponse est l'état à jour
   const premier = lireAttente().length ? envoyerAttente(true).then(s => s || api('getState')) : api('getState');
@@ -4242,6 +4335,7 @@ function lancer() {
     render(); celebrer(s.nouveauxBonus);
     if (!s.d20 && !d20Vu) setTimeout(ouvrirD20, 350);
     setTimeout(() => prechargerFiches(state || s), 4000); // fiche du compagnon prête avant même d'ouvrir l'onglet
+    setTimeout(() => chargerJournal(false), 6000); // journal du jour (pastille des ratés d'hier à vérifier)
   }).catch(e => {
     // Dernière version déjà affichée : on la garde et on prévient, au lieu d'effacer l'écran
     premierEtatRecu = true;
@@ -4250,6 +4344,19 @@ function lancer() {
     else erreurChargement(e);
   });
 }
+/* App laissée ouverte (téléphone en veille) : au retour, on passe au jour tout de suite si la date a changé,
+   puis on recharge la fiche en arrière-plan (après 10 minutes d'absence, ou un changement de jour). */
+let cacheLe = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { cacheLe = Date.now(); return; }
+  if (!state || !premierEtatRecu || !(enLigne || distant)) return;
+  const nouveauJour = state.today && state.today < isoLocal();
+  if (nouveauJour) { state = passerAuJour(state); render(); }
+  if ((nouveauJour || Date.now() - cacheLe > 10 * 60000) && envoisEnCours === 0 && navigator.onLine !== false) {
+    apiFond('getState').then(st => { if (envoisEnCours === 0 && st) { state = st; render(); celebrer(st.nouveauxBonus); } }).catch(() => {});
+    if (sousOnglet === 'journal') chargerJournal(true);
+  }
+});
 /** Écran « Qui rejoint la Compagnie ? » (seulement s'il y a plusieurs héros). */
 function choisirHerosEcran() {
   dernierHtml = '';
