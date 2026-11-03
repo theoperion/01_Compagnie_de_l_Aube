@@ -295,6 +295,8 @@
   .mini-lueur.l-argent { box-shadow: 0 0 10px 3px rgba(220,230,245,.8); } .mini-lueur.l-or { box-shadow: 0 0 10px 3px rgba(240,200,90,.85); }
   .mini-lueur.l-pourpre { box-shadow: 0 0 10px 3px rgba(190,50,110,.85); } .mini-lueur.l-aube { box-shadow: 0 0 10px 3px rgba(255,170,90,.8), 0 0 16px 4px rgba(170,140,255,.5); }
   .horsligne.nouveau-jour { border-style: solid; border-color: rgba(212,173,60,.35); }
+  .reg-lien { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer; color: var(--text); font: inherit; }
+  .reg-lien > span { font-size: 22px; } .reg-lien div { flex: 1; display: grid; } .reg-lien small { color: var(--muted); font-size: 12px; } .reg-lien i { color: var(--gold); font-style: normal; font-size: 20px; }
   .jjour { margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
   .jtete { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; margin-bottom: 6px; }
   .jtete b { font-family: var(--f-titre); color: var(--gold); font-size: 14.5px; }
@@ -670,6 +672,11 @@
   .nouv { position: relative; } .nouv .new { position: absolute; top: 6px; right: 8px; z-index: 1; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 99px; background: var(--pv); color: #fff; letter-spacing: .05em; }
   .effets { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; padding: 0; margin: 0 0 8px; border: 0; background: none; cursor: pointer; text-align: left; }
   .effets span { font-size: 11.5px; padding: 4px 9px; border-radius: 99px; border: 1px solid rgba(212,173,60,.35); background: rgba(212,173,60,.08); color: var(--gold); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  #app > *:not(nav) { zoom: var(--zoom-texte, 1); } /* la barre d'onglets du bas garde sa taille (le Carnet s'y cale) */
+  .opt-titre { margin: 12px 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .opts button { padding: 7px 11px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-size: 13px; cursor: pointer; }
+  .opts button.on { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
   .themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
   .theme { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); cursor: pointer; text-align: left; min-width: 0; }
   .theme b { font-size: 13px; line-height: 1.15; } .theme small { font-size: 10px; opacity: .7; line-height: 1.2; }
@@ -1292,28 +1299,76 @@ const THEMES = [
     v: { bg: '#140c0a', panel: '#21140f', card: '#2b1913', 'card-done': '#23291a', line: '#47291c', text: '#f6e9e1', muted: '#b39384', gold: '#ff9c45', haut: '#3a1a10', 'f-titre': 'MedievalSharp, serif', 'f-recit': '"Alegreya Sans", sans-serif', 'f-texte': '"Alegreya Sans", system-ui, sans-serif' } },
   { id: 'pixel', nom: 'Rétro 8-bit', aide: 'pixels et néons', police: 'Pixelify+Sans:wght@400;600',
     v: { bg: '#0e0e1a', panel: '#16162a', card: '#1e1e38', 'card-done': '#183028', line: '#35355e', text: '#ecebff', muted: '#9c9cc4', gold: '#ffd34d', haut: '#24244a', 'f-titre': '"Pixelify Sans", monospace', 'f-recit': '"Pixelify Sans", monospace', 'f-texte': '"Pixelify Sans", system-ui, monospace' } },
-  { id: 'sobre', nom: 'Sobre', aide: 'gris neutre, lisible', v: { bg: '#121212', panel: '#1b1b1b', card: '#232323', 'card-done': '#1d2a22', line: '#343434', text: '#efefef', muted: '#9d9d9d', gold: '#d9b45a', haut: '#222222', 'f-titre': 'Inter, system-ui, sans-serif', 'f-recit': 'Inter, system-ui, sans-serif' } }
+  { id: 'sobre', nom: 'Sobre', aide: 'gris neutre, lisible', v: { bg: '#121212', panel: '#1b1b1b', card: '#232323', 'card-done': '#1d2a22', line: '#343434', text: '#efefef', muted: '#9d9d9d', gold: '#d9b45a', haut: '#222222', 'f-titre': 'Inter, system-ui, sans-serif', 'f-recit': 'Inter, system-ui, sans-serif' } },
+  /* Nouveaux thèmes : tous disponibles tout de suite, sans niveau à atteindre */
+  { id: 'aurore', nom: 'Aurore boréale', aide: 'nuit polaire, vert d\'aurore', police: 'Marcellus&family=Nunito+Sans:wght@400;600;700',
+    v: { bg: '#071318', panel: '#0d1f26', card: '#132a33', 'card-done': '#123628', line: '#1f3d47', text: '#e3f6f4', muted: '#8fb2b0', gold: '#5ee6c1', haut: '#0f3a3a', xp: '#3fb6d8', xp2: '#8ff0d6', 'f-titre': 'Marcellus, serif', 'f-recit': 'Marcellus, serif', 'f-texte': '"Nunito Sans", system-ui, sans-serif' } },
+  { id: 'abysses', nom: 'Abysses', aide: 'océan profond, cyan', police: 'Spectral:wght@500;700',
+    v: { bg: '#050c16', panel: '#0b1626', card: '#0f1f35', 'card-done': '#0f2f33', line: '#1b3150', text: '#e2eefc', muted: '#8399b8', gold: '#42d3e6', haut: '#0b2a4a', xp: '#2f7fe0', xp2: '#6fd7ff', 'f-titre': 'Spectral, serif', 'f-recit': 'Spectral, serif' } },
+  { id: 'sakura', nom: 'Cerisier', aide: 'prune et fleurs roses', police: 'Cormorant+SC:wght@600;700&family=Cormorant+Garamond:wght@500;700',
+    v: { bg: '#140b12', panel: '#21131d', card: '#2b1926', 'card-done': '#20292a', line: '#45293b', text: '#fbe9f1', muted: '#b493a6', gold: '#ff9ec7', haut: '#3d1730', xp: '#d36cb0', xp2: '#ffb6d9', 'f-titre': '"Cormorant SC", serif', 'f-recit': '"Cormorant Garamond", serif' } },
+  { id: 'vampire', nom: 'Crypte', aide: 'noir et pourpre gothique', police: 'UnifrakturMaguntia&family=Crimson+Pro:wght@400;600',
+    v: { bg: '#0b0709', panel: '#160d11', card: '#1f1217', 'card-done': '#1a2620', line: '#3a1c25', text: '#f3e3e6', muted: '#a88a91', gold: '#e0425a', haut: '#2e0a14', xp: '#7b4bc4', xp2: '#b98cff', 'f-titre': '"UnifrakturMaguntia", serif', 'f-recit': '"Crimson Pro", serif' } },
+  { id: 'desert', nom: 'Sables d\'Orient', aide: 'ambre, ocre, soleil', police: 'Marcellus+SC&family=Lora:wght@400;600',
+    v: { bg: '#15100a', panel: '#22190f', card: '#2c2114', 'card-done': '#222b19', line: '#47351f', text: '#f8ecd8', muted: '#b7a184', gold: '#f2b95c', haut: '#3d2a12', xp: '#d9822b', xp2: '#f6c27a', 'f-titre': '"Marcellus SC", serif', 'f-recit': 'Lora, serif' } },
+  { id: 'cyber', nom: 'Néon 2077', aide: 'cyberpunk, magenta, cyan', police: 'Orbitron:wght@500;700&family=Rajdhani:wght@500;600;700',
+    v: { bg: '#08060f', panel: '#110d1d', card: '#181229', 'card-done': '#0f2a2a', line: '#2c2148', text: '#efeaff', muted: '#9a90bf', gold: '#ff3ea5', haut: '#25103d', xp: '#00d1ff', xp2: '#7cf3ff', ok: '#2ff3a0', 'f-titre': 'Orbitron, sans-serif', 'f-recit': 'Rajdhani, sans-serif', 'f-texte': 'Rajdhani, system-ui, sans-serif' } },
+  { id: 'taverne', nom: 'Taverne', aide: 'bois, chandelle, bière', police: 'IM+Fell+English+SC&family=IM+Fell+English',
+    v: { bg: '#130d08', panel: '#1f150d', card: '#291c11', 'card-done': '#1f2716', line: '#43301d', text: '#f4e6cf', muted: '#ad9879', gold: '#e8a94a', haut: '#352210', xp: '#b8742c', xp2: '#e8b46a', 'f-titre': '"IM Fell English SC", serif', 'f-recit': '"IM Fell English", serif' } },
+  { id: 'astral', nom: 'Voie lactée', aide: 'indigo, lilas, étoiles', police: 'Philosopher:wght@400;700',
+    v: { bg: '#0a0918', panel: '#121029', card: '#191637', 'card-done': '#142a2e', line: '#2b2756', text: '#ecebff', muted: '#9a97c7', gold: '#c9b6ff', haut: '#211c52', xp: '#7c6cff', xp2: '#b9a8ff', 'f-titre': 'Philosopher, sans-serif', 'f-recit': 'Philosopher, sans-serif' } },
+  { id: 'cristal', nom: 'Givre', aide: 'glace, bleu pâle, argent', police: 'Cinzel+Decorative:wght@700&family=Nunito:wght@400;600;700',
+    v: { bg: '#0b1116', panel: '#121b23', card: '#18242e', 'card-done': '#16302c', line: '#2a3a47', text: '#eef6fb', muted: '#97aab8', gold: '#a8e1ff', haut: '#1b2f3e', xp: '#6fb6e8', xp2: '#c4ecff', 'f-titre': '"Cinzel Decorative", serif', 'f-recit': 'Nunito, sans-serif', 'f-texte': 'Nunito, system-ui, sans-serif' } },
+  { id: 'contraste', nom: 'Contraste fort', aide: 'noir, blanc, jaune : lisibilité max', police: 'Atkinson+Hyperlegible:wght@400;700',
+    v: { bg: '#000000', panel: '#0d0d0d', card: '#161616', 'card-done': '#0f2a17', line: '#5a5a5a', text: '#ffffff', muted: '#cfcfcf', gold: '#ffd400', haut: '#000000', 'f-titre': '"Atkinson Hyperlegible", sans-serif', 'f-recit': '"Atkinson Hyperlegible", sans-serif', 'f-texte': '"Atkinson Hyperlegible", system-ui, sans-serif' } }
 ];
+/* Police des textes et taille : réglables à part, par-dessus le thème (gardées sur ce téléphone) */
+const POLICES_TEXTE = [
+  { id: '', nom: 'Celle du thème', css: '' },
+  { id: 'inter', nom: 'Moderne', css: 'Inter, system-ui, sans-serif', g: '' },
+  { id: 'lora', nom: 'Livre', css: 'Lora, Georgia, serif', g: 'Lora:wght@400;600' },
+  { id: 'nunito', nom: 'Douce', css: 'Nunito, system-ui, sans-serif', g: 'Nunito:wght@400;600;700' },
+  { id: 'atkinson', nom: 'Très lisible', css: '"Atkinson Hyperlegible", system-ui, sans-serif', g: 'Atkinson+Hyperlegible:wght@400;700' },
+  { id: 'mono', nom: 'Machine', css: '"JetBrains Mono", ui-monospace, monospace', g: 'JetBrains+Mono:wght@400;600' }
+];
+const TAILLES = [{ id: '', nom: 'Normale', z: 1 }, { id: 'grand', nom: 'Grande', z: 1.08 }, { id: 'tgrand', nom: 'Très grande', z: 1.16 }];
+function lireOpt(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
 function themeChoisi() { try { return localStorage.getItem('theme') || 'aube'; } catch (e) { return 'aube'; } }
 function appliquerTheme(id) {
   const T = THEMES.find(t => t.id === id) || THEMES[0], r = document.documentElement;
+  const PT = POLICES_TEXTE.find(x => x.id === lireOpt('policeTexte')) || POLICES_TEXTE[0];
+  const TA = TAILLES.find(x => x.id === lireOpt('tailleTexte')) || TAILLES[0];
   THEMES.forEach(t => Object.keys(t.v).forEach(k => r.style.removeProperty('--' + k)));
   Object.keys(T.v).forEach(k => r.style.setProperty('--' + k, T.v[k]));
+  if (PT.css) r.style.setProperty('--f-texte', PT.css);
+  r.style.setProperty('--zoom-texte', TA.z);
+  const familles = [T.police, PT.g].filter(Boolean).join('&family=');
   let l = document.getElementById('policeTheme');
-  if (T.police) {
+  if (familles) {
     if (!l) { l = document.createElement('link'); l.id = 'policeTheme'; l.rel = 'stylesheet'; document.head.appendChild(l); }
-    l.href = 'https://fonts.googleapis.com/css2?family=' + T.police + '&display=swap';
+    const href = 'https://fonts.googleapis.com/css2?family=' + familles + '&display=swap';
+    if (l.href !== href) l.href = href;
   } else if (l) l.remove();
   const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = T.v.bg || '#110e15';
   // le Carnet (même site) lit ce thème et l'applique aussi
   const V = Object.assign({ bg: '#110e15', panel: '#1c1722', card: '#241e2c', line: '#362e40', text: '#ece6f2', muted: '#9a90a6', gold: '#d4ad3c' }, T.v);
-  try { localStorage.setItem('theme', T.id); localStorage.setItem('themeCarnet', JSON.stringify(T.id === 'aube' ? {} : { '--bg': V.bg, '--surface': V.panel, '--surface2': V.card, '--sunk': V.bg, '--line2': V.line, '--fg': V.text, '--muted': V.muted, '--gold': V.gold, '--gold2': V.gold, police: T.police || '', titre: V['f-titre'] || '', texte: V['f-texte'] || '' })); } catch (e) {}
+  const texte = PT.css || V['f-texte'] || '';
+  try { localStorage.setItem('theme', T.id); localStorage.setItem('themeCarnet', JSON.stringify(T.id === 'aube' && !PT.css ? {} : { '--bg': V.bg, '--surface': V.panel, '--surface2': V.card, '--sunk': V.bg, '--line2': V.line, '--fg': V.text, '--muted': V.muted, '--gold': V.gold, '--gold2': V.gold, police: familles, titre: T.id === 'aube' ? '' : (V['f-titre'] || ''), texte: texte })); } catch (e) {}
 }
 appliquerTheme(themeChoisi());
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-theme]');
   if (!b) return;
   appliquerTheme(b.dataset.theme); render(); toast('🎨 Thème « ' + (THEMES.find(t => t.id === b.dataset.theme) || {}).nom + ' »');
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-opt-police],[data-opt-taille]');
+  if (!b) return;
+  try {
+    if (b.dataset.optPolice !== undefined) localStorage.setItem('policeTexte', b.dataset.optPolice);
+    else localStorage.setItem('tailleTexte', b.dataset.optTaille);
+  } catch (err) {}
+  appliquerTheme(themeChoisi()); render();
 });
 
 /* ---------- Ornements : petits cosmétiques gagnés en jouant (un par emplacement) ----------
@@ -1405,7 +1460,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-03-1';
+const VERSION_APP = '2026-11-03-3';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2684,6 +2739,7 @@ function carteSagaMini(s) {
 /* ---------- Nouvelles : saga, bénédiction, rebondissement, événement, rétrospective, bilan du dimanche ---------- */
 let sousOnglet = 'quetes';
 try { sousOnglet = localStorage.getItem('sousOnglet') || 'quetes'; } catch (e) {}
+if (sousOnglet !== 'nouvelles') sousOnglet = 'quetes';
 const cleVues = () => 'vues|' + (herosActif || '');
 let vuesCache = null;
 function vues() { if (!vuesCache) { try { vuesCache = JSON.parse(localStorage.getItem(cleVues()) || '[]'); } catch (e) { vuesCache = []; } } return vuesCache; }
@@ -2739,7 +2795,6 @@ document.addEventListener('click', e => {
   try { localStorage.setItem('sousOnglet', sousOnglet); } catch (err) {}
   render(); window.scrollTo(0, 0);
   if (sousOnglet === 'nouvelles' && state) setTimeout(() => marquerVues(nouvellesDe(state, indexJour(state.today) === 6).map(n => n.id)), 1500);
-  if (sousOnglet === 'journal') chargerJournal(true);
 });
 
 /* ---------- Journal des quêtes : les 8 derniers jours, et la correction des oublis sans passer par le Sheet ---------- */
@@ -2751,40 +2806,36 @@ function chargerJournal(force) {
   if (journalEnCours) return;
   if (journalQ && !force && journalQ.today === isoLocal()) return;
   journalEnCours = true;
-  apiFond('journalRecent', 8).then(j => { garderJournal(j); }).catch(e => { journalErreur = String((e && e.message) || e); })
-    .finally(() => { journalEnCours = false; if (onglet === 'quetes' && sousOnglet === 'journal') render(); });
-}
-/** Ratés et jokers automatiques d'hier, à vérifier (pastille sur l'onglet Journal). */
-function ratesACorriger(s) {
-  if (!journalQ || !s) return 0;
-  const hier = isoPlusLocal(s.today, -1), j = journalQ.jours.find(x => x.date === hier);
-  return j ? j.saisies.filter(x => x.auto && (x.statut === 'Raté' || x.statut === 'Repos')).length : 0;
+  apiFond('journalRecent', 7).then(j => { garderJournal(j); }).catch(e => { journalErreur = String((e && e.message) || e); })
+    .finally(() => { journalEnCours = false; if (onglet === 'profil' && modeProfil === 'journal') render(); });
 }
 function vueJournal(s) {
-  if (!journalQ && journalEnCours) return '<div class="empty">Ouverture du journal…</div>';
-  if (!journalQ) return `<div class="empty">${journalErreur ? 'Journal indisponible : ' + esc(journalErreur) : 'Ouverture du journal…'}<br><button class="btn mini or" data-sous="journal" style="margin-top:8px">Réessayer</button></div>`;
+  if (!journalQ) return `<div class="empty">${journalErreur && !journalEnCours ? 'Journal indisponible : ' + esc(journalErreur) + '<br><button class="btn mini or" data-tab="profil" data-mode="journal" style="margin-top:8px">Réessayer</button>' : 'Ouverture du journal…'}</div>`;
   const J = journalQ, aujourd = s.today, hier = isoPlusLocal(aujourd, -1);
   const icone = { 'Fait': ['✓', 'ok'], 'Raté': ['✗', 'ko'], 'Repos': ['🃏', 'jk'], 'Bonus': ['★', 'bo'] };
-  const jours = J.jours.map(j => {
-    const age = Math.round((versDate(aujourd) - versDate(j.date)) / 864e5), modifiable = age >= 0 && age <= 7;
-    const faites = new Set(j.saisies.filter(x => x.statut === 'Fait').map(x => x.quete));
+  const occ = journalOccupe ? 'disabled' : '';
+  const jours = J.jours.slice(0, 7).map(j => {
+    const age = Math.round((versDate(aujourd) - versDate(j.date)) / 864e5), modifiable = age >= 0 && age <= 6;
+    const vues = new Set(j.saisies.filter(x => x.statut !== 'Bonus').map(x => x.quete));
     const fait = j.saisies.filter(x => x.statut === 'Fait').length, rate = j.saisies.filter(x => x.statut === 'Raté').length;
-    const xp = j.saisies.reduce((t, x) => t + (x.xp || 0), 0);
     const lignes = j.saisies.map(x => {
-      const ic = icone[x.statut] || ['·', ''], occupe = journalOccupe === j.date + '|' + x.quete;
-      const action = !modifiable || x.statut === 'Bonus' || age === 0 && x.statut === 'Fait' ? ''
-        : x.statut === 'Raté' || x.statut === 'Repos' ? (faites.has(x.quete) ? '' : `<button class="btn mini or" data-jfait="${esc(x.quete)}" data-jdate="${j.date}" ${occupe ? 'disabled' : ''}>${occupe ? '…' : 'Je l\'avais faite'}</button>`)
-        : `<button class="btn mini" data-jretire="${esc(x.quete)}" data-jdate="${j.date}" ${occupe ? 'disabled' : ''}>${occupe ? '…' : 'Retirer'}</button>`;
-      return `<div class="jl ${ic[1]}"><span class="ji">${ic[0]}</span><div class="jt"><b>${esc(x.quete)}</b><small>${esc(x.statut === 'Repos' ? 'Joker' + (x.auto ? ' automatique' : '') : x.statut === 'Raté' && x.auto ? 'Raté automatique (rien de saisi ce jour-là)' : x.statut === 'Bonus' ? x.note || 'Bonus' : x.note || x.statut)}${x.xp ? ' · ' + (x.xp > 0 ? '+' : '') + x.xp + ' XP' : ''}</small></div>${action}</div>`;
+      const ic = icone[x.statut] || ['·', ''], ici = journalOccupe === j.date + '|' + x.quete;
+      const q = esc(x.quete), d = j.date;
+      const action = !modifiable || x.statut === 'Bonus' ? ''
+        : ici ? '<span class="muted">…</span>'
+        : x.statut === 'Fait' ? `<button class="btn mini" data-jstat="Raté" data-jq="${q}" data-jdate="${d}" ${occ}>✗ Ratée</button>`
+        : `<button class="btn mini or" data-jstat="Fait" data-jq="${q}" data-jdate="${d}" ${occ}>✓ Faite</button>`;
+      const detail = x.statut === 'Repos' ? 'Joker' + (x.auto ? ' automatique' : '') : x.statut === 'Raté' && x.auto ? 'Raté automatique' : x.statut === 'Bonus' ? (x.note || 'Bonus') : (x.note || x.statut);
+      return `<div class="jl ${ic[1]}"><span class="ji">${ic[0]}</span><div class="jt"><b>${q}</b><small>${esc(detail)}${x.xp ? ' · +' + x.xp + ' XP' : ''}</small></div>${action}</div>`;
     }).join('');
-    const oubliables = modifiable && age > 0 ? J.quotidiennes.concat(J.annexes).filter((q, i, a) => a.indexOf(q) === i && !faites.has(q)) : [];
-    const oubli = oubliables.length ? `<div class="joubli"><select id="jsel-${j.date}" aria-label="Quête oubliée"><option value="">Une quête faite mais pas saisie ?</option>${oubliables.map(q => `<option>${esc(q)}</option>`).join('')}</select>
-      <button class="btn mini or" data-joubli="${j.date}" ${journalOccupe ? 'disabled' : ''}>Valider</button></div>` : '';
+    const restantes = modifiable ? J.quotidiennes.concat(J.annexes).filter((q, i, a) => a.indexOf(q) === i && !vues.has(q)) : [];
+    const ajout = restantes.length ? `<div class="joubli"><select id="jsel-${j.date}" aria-label="Quête à corriger"><option value="">Autre quête…</option>${restantes.map(q => `<option>${esc(q)}</option>`).join('')}</select>
+      <button class="btn mini or" data-jajout="Fait" data-jdate="${j.date}" ${occ}>✓</button><button class="btn mini" data-jajout="Raté" data-jdate="${j.date}" ${occ}>✗</button></div>` : '';
     return `<div class="jjour"><div class="jtete"><b>${j.date === aujourd ? 'Aujourd\'hui' : j.date === hier ? 'Hier' : esc(dateLongue(j.date))}</b>
-      <span>${fait} faite${fait > 1 ? 's' : ''}${rate ? ` · ${rate} ratée${rate > 1 ? 's' : ''}` : ''}${xp ? ` · ${xp > 0 ? '+' : ''}${xp} XP` : ''}</span></div>
-      ${lignes || '<div class="muted" style="font-size:13px;padding:4px 0">Rien de saisi ce jour-là.</div>'}${oubli}</div>`;
+      <span>${fait} faite${fait > 1 ? 's' : ''}${rate ? ` · ${rate} ratée${rate > 1 ? 's' : ''}` : ''}</span></div>
+      ${lignes || '<div class="muted" style="font-size:13px;padding:4px 0">Rien de saisi.</div>'}${ajout}</div>`;
   }).join('');
-  return `<p class="muted" style="font-size:12.5px;margin:0 0 10px">Les 8 derniers jours. Une quête oubliée ? Corrige-la ici jusqu'à 7 jours en arrière : le raté (ou le joker) automatique disparaît, la série et les PV sont recalculés.${journalEnCours ? ' <i>Mise à jour…</i>' : ''}</p>${jours}`;
+  return `<p class="muted" style="font-size:12.5px;margin:0 0 10px">7 derniers jours. Passe une quête en faite ou en ratée après coup : séries, PV et XP sont recalculés.${journalEnCours ? ' <i>Mise à jour…</i>' : ''}</p>${jours}`;
 }
 async function actionJournal(fn, args, cle, message) {
   if (journalOccupe) return;
@@ -2801,13 +2852,12 @@ async function actionJournal(fn, args, cle, message) {
   } catch (e) { journalOccupe = ''; render(); toast('Correction impossible : ' + ((e && e.message) || e)); }
 }
 document.addEventListener('click', e => {
-  const f = e.target.closest('[data-jfait]');
-  if (f) { actionJournal('corrigerJour', [f.dataset.jfait, 'Fait', f.dataset.jdate], f.dataset.jdate + '|' + f.dataset.jfait, '✓ « ' + f.dataset.jfait + ' » comptée faite le ' + dateCourte(f.dataset.jdate)); return; }
-  const r = e.target.closest('[data-jretire]');
-  if (r) { if (confirm('Retirer « ' + r.dataset.jretire + ' » du ' + dateCourte(r.dataset.jdate) + ' ?')) actionJournal('retirerSaisie', [r.dataset.jretire, r.dataset.jdate], r.dataset.jdate + '|' + r.dataset.jretire, 'Saisie retirée'); return; }
-  const o = e.target.closest('[data-joubli]');
-  if (o) { const sel = document.getElementById('jsel-' + o.dataset.joubli), q = sel && sel.value; if (!q) { toast('Choisis d\'abord la quête'); return; }
-    actionJournal('corrigerJour', [q, 'Fait', o.dataset.joubli], o.dataset.joubli + '|' + q, '✓ « ' + q + ' » comptée faite le ' + dateCourte(o.dataset.joubli)); }
+  const b = e.target.closest('[data-jstat]'), c = e.target.closest('[data-jajout]');
+  if (!b && !c) return;
+  const date = (b || c).dataset.jdate, statut = (b || c).dataset.jstat || (c && c.dataset.jajout);
+  let q = b ? b.dataset.jq : (document.getElementById('jsel-' + date) || {}).value;
+  if (!q) { toast('Choisis d\'abord la quête'); return; }
+  actionJournal('corrigerJour', [q, statut, date], date + '|' + q, (statut === 'Fait' ? '✓ « ' : '✗ « ') + q + ' » ' + (statut === 'Fait' ? 'faite' : 'ratée') + ' le ' + dateCourte(date));
 });
 
 /* ---------- Événements saisonniers (récit écrit par Claude) ---------- */
@@ -3213,9 +3263,8 @@ function render() {
     : '<div class="empty">Rien de neuf pour l\'instant. Le Maître du Jeu écrit chaque lundi, les événements arrivent au fil des saisons.</div>';
   const vueQuetes = `
     <div class="sous-onglets"><button class="${sousOnglet === 'quetes' ? 'on' : ''}" data-sous="quetes">⚔ Quêtes</button>
-      <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles">📜 Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button>
-      <button class="${sousOnglet === 'journal' ? 'on' : ''}" data-sous="journal">📖 Journal${ratesACorriger(s) ? ` <i class="pastille">${ratesACorriger(s)}</i>` : ''}</button></div>
-    ${sousOnglet === 'journal' ? vueJournal(s) + '<div style="height:20px"></div>' : sousOnglet === 'nouvelles' ? vueNouvelles + '<div style="height:20px"></div>' : `
+      <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles">📜 Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button></div>
+    ${sousOnglet === 'nouvelles' ? vueNouvelles + '<div style="height:20px"></div>' : `
     ${bandeauHorsLigne(s)}
     ${bandeauMontre(s)}
     ${effetsActifs(s)}
@@ -3470,7 +3519,11 @@ function vueProfil(s) {
       <div class="themes">${THEMES.map(t => { const V = Object.assign({ bg: '#110e15', card: '#241e2c', gold: '#d4ad3c', text: '#ece6f2', 'f-titre': 'Cinzel, serif' }, t.v);
         return `<button class="theme ${themeChoisi() === t.id ? 'on' : ''}" data-theme="${t.id}" style="background:${V.bg};color:${V.text}">
           <span class="th-pal"><i style="background:${V.card}"></i><i style="background:${V.gold}"></i><i style="background:${V.text}"></i></span>
-          <b style="font-family:${V['f-titre'].replace(/"/g, '&quot;')};color:${V.gold}">${esc(t.nom)}</b><small>${esc(t.aide)}</small></button>`; }).join('')}</div></div>`;
+          <b style="font-family:${V['f-titre'].replace(/"/g, '&quot;')};color:${V.gold}">${esc(t.nom)}</b><small>${esc(t.aide)}</small></button>`; }).join('')}</div>
+      <div class="opt-titre">Police des textes</div>
+      <div class="opts">${POLICES_TEXTE.map(x => `<button class="${lireOpt('policeTexte') === x.id ? 'on' : ''}" data-opt-police="${x.id}" style="${x.css ? 'font-family:' + x.css.replace(/"/g, '&quot;') : ''}">${esc(x.nom)}</button>`).join('')}</div>
+      <div class="opt-titre">Taille du texte</div>
+      <div class="opts">${TAILLES.map(x => `<button class="${lireOpt('tailleTexte') === x.id ? 'on' : ''}" data-opt-taille="${x.id}" style="font-size:${Math.round(13 * x.z)}px">${esc(x.nom)}</button>`).join('')}</div></div>`;
   const vac = R.vacances || [];
   const enCours = vac.find(v => v.enCours);
   const regVac = `<div class="reg"><h3>🏖️ Vacances</h3>
@@ -3547,10 +3600,14 @@ function vueProfil(s) {
       ${sv.dossier ? `<a class="lien" href="${esc(sv.dossier)}" target="_blank">📁 Ouvrir le dossier des sauvegardes</a>` : ''}
     </div>`;
 
+  if (modeProfil === 'journal') return `
+    <button class="back" data-tab="profil" data-mode="reglages">‹ Réglages</button>
+    <div class="section"><h2>📖 Journal</h2><span>7 jours glissants</span></div>
+    ${vueJournal(s)}<div style="height:20px"></div>`;
   if (modeProfil === 'reglages') return `
     <button class="back" data-tab="${ongletPrec}">‹ Retour</button>
     <div class="section"><h2>⚙️ Réglages</h2><span>enregistrés dans le Sheet</span></div>
-    ${regTheme}${regVac}${regVoyage}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
+    ${regTheme}<button class="reg reg-lien" data-tab="profil" data-mode="journal"><span>📖</span><div><b>Journal des 7 derniers jours</b><small>Valider ou passer en raté une quête après coup</small></div><i>›</i></button>${regVac}${regVoyage}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
     ${(s.compagnie || []).length > 1 ? '<button class="lien changer" data-pr="changer-heros" style="position:static;display:block;margin:10px auto">⇄ Changer de héros sur ce téléphone</button>' : ''}
     <div class="version">La Compagnie de l'Aube · app ${VERSION_APP} · moteur ${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}${lireAttente().length ? ' · ' + lireAttente().length + ' saisie(s) en attente' : ''}</div>`;
   return `
@@ -4037,11 +4094,12 @@ document.addEventListener('click', e => {
   if (t) {
     const cible = t.dataset.tab;
     if (cible === 'profil' && onglet !== 'profil') ongletPrec = onglet;
-    if (cible === 'profil') modeProfil = t.dataset.mode === 'reglages' ? 'reglages' : 'profil';
+    if (cible === 'profil') modeProfil = t.dataset.mode === 'reglages' || t.dataset.mode === 'journal' ? t.dataset.mode : 'profil';
     onglet = cible;
     try { localStorage.setItem('onglet', onglet === 'profil' ? ongletPrec : onglet); } catch (err) {}
     render(); window.scrollTo(0, 0);
     if (onglet === 'profil' && modeProfil === 'profil') chargerProfil();
+    if (onglet === 'profil' && modeProfil === 'journal') chargerJournal(true);
     return;
   }
   const pr = e.target.closest('[data-pr]');
@@ -4335,7 +4393,6 @@ function lancer() {
     render(); celebrer(s.nouveauxBonus);
     if (!s.d20 && !d20Vu) setTimeout(ouvrirD20, 350);
     setTimeout(() => prechargerFiches(state || s), 4000); // fiche du compagnon prête avant même d'ouvrir l'onglet
-    setTimeout(() => chargerJournal(false), 6000); // journal du jour (pastille des ratés d'hier à vérifier)
   }).catch(e => {
     // Dernière version déjà affichée : on la garde et on prévient, au lieu d'effacer l'écran
     premierEtatRecu = true;
@@ -4354,7 +4411,7 @@ document.addEventListener('visibilitychange', () => {
   if (nouveauJour) { state = passerAuJour(state); render(); }
   if ((nouveauJour || Date.now() - cacheLe > 10 * 60000) && envoisEnCours === 0 && navigator.onLine !== false) {
     apiFond('getState').then(st => { if (envoisEnCours === 0 && st) { state = st; render(); celebrer(st.nouveauxBonus); } }).catch(() => {});
-    if (sousOnglet === 'journal') chargerJournal(true);
+    if (onglet === 'profil' && modeProfil === 'journal') chargerJournal(true);
   }
 });
 /** Écran « Qui rejoint la Compagnie ? » (seulement s'il y a plusieurs héros). */
