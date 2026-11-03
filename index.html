@@ -673,6 +673,7 @@
   .effets { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; padding: 0; margin: 0 0 8px; border: 0; background: none; cursor: pointer; text-align: left; }
   .effets span { font-size: 11.5px; padding: 4px 9px; border-radius: 99px; border: 1px solid rgba(212,173,60,.35); background: rgba(212,173,60,.08); color: var(--gold); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
   #app > *:not(nav) { zoom: var(--zoom-texte, 1); } /* la barre d'onglets du bas garde sa taille (le Carnet s'y cale) */
+  .voir-themes { display: block; width: 100%; margin-top: 8px; padding: 8px; border-radius: 10px; border: 1px dashed var(--line); background: transparent; color: var(--gold); font: 600 13px var(--f-texte); cursor: pointer; }
   .opt-titre { margin: 12px 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
   .opts { display: flex; flex-wrap: wrap; gap: 6px; }
   .opts button { padding: 7px 11px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-size: 13px; cursor: pointer; }
@@ -1333,6 +1334,14 @@ const POLICES_TEXTE = [
 ];
 const TAILLES = [{ id: '', nom: 'Normale', z: 1 }, { id: 'grand', nom: 'Grande', z: 1.08 }, { id: 'tgrand', nom: 'Très grande', z: 1.16 }];
 function lireOpt(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+/* Réglages : 3 thèmes affichés (dont celui choisi), les autres derrière « Voir plus » */
+let themesOuverts = false;
+function themesVisibles() {
+  if (themesOuverts) return THEMES;
+  const choisi = THEMES.find(t => t.id === themeChoisi()) || THEMES[0];
+  return [choisi].concat(THEMES.filter(t => t !== choisi).slice(0, 2));
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-themes-plus]')) { themesOuverts = !themesOuverts; render(); } });
 function themeChoisi() { try { return localStorage.getItem('theme') || 'aube'; } catch (e) { return 'aube'; } }
 function appliquerTheme(id) {
   const T = THEMES.find(t => t.id === id) || THEMES[0], r = document.documentElement;
@@ -1460,7 +1469,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-03-3';
+const VERSION_APP = '2026-11-03-4';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -3516,10 +3525,11 @@ function vueProfil(s) {
   // Réglages
   const regTheme = `<div class="reg"><h3>🎨 Apparence de l'app</h3>
       <div class="aide">Couleurs et polices, sur ce téléphone. Le Carnet suit le même thème.</div>
-      <div class="themes">${THEMES.map(t => { const V = Object.assign({ bg: '#110e15', card: '#241e2c', gold: '#d4ad3c', text: '#ece6f2', 'f-titre': 'Cinzel, serif' }, t.v);
+      <div class="themes">${themesVisibles().map(t => { const V = Object.assign({ bg: '#110e15', card: '#241e2c', gold: '#d4ad3c', text: '#ece6f2', 'f-titre': 'Cinzel, serif' }, t.v);
         return `<button class="theme ${themeChoisi() === t.id ? 'on' : ''}" data-theme="${t.id}" style="background:${V.bg};color:${V.text}">
           <span class="th-pal"><i style="background:${V.card}"></i><i style="background:${V.gold}"></i><i style="background:${V.text}"></i></span>
           <b style="font-family:${V['f-titre'].replace(/"/g, '&quot;')};color:${V.gold}">${esc(t.nom)}</b><small>${esc(t.aide)}</small></button>`; }).join('')}</div>
+      <button class="voir-themes" data-themes-plus="1">${themesOuverts ? '▴ Moins de thèmes' : `▾ Voir les ${THEMES.length - 3} autres thèmes`}</button>
       <div class="opt-titre">Police des textes</div>
       <div class="opts">${POLICES_TEXTE.map(x => `<button class="${lireOpt('policeTexte') === x.id ? 'on' : ''}" data-opt-police="${x.id}" style="${x.css ? 'font-family:' + x.css.replace(/"/g, '&quot;') : ''}">${esc(x.nom)}</button>`).join('')}</div>
       <div class="opt-titre">Taille du texte</div>
