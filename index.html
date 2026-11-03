@@ -1469,7 +1469,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-03-4';
+const VERSION_APP = '2026-11-03-5';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -3930,6 +3930,7 @@ function predire(s, nom, statut) {
     if (statut === 'Raté' || (statut === 'undo' && res.annule === 'rate')) {
       const sens = statut === 'Raté' ? 1 : -1;
       b.riposte = Math.max(0, (b.riposte || 0) + sens * rip); b.pv = Math.max(0, b.pv + sens * rip);
+      if (sens > 0 && t === 'semaine') res.ripBoss = rip;
       if (b.coups && sens > 0) b.coups.unshift({ date: n.today, heros: n.heros, quete: q.nom, type: 'riposte', valeur: rip });
       if (b.coups && sens < 0) { const k = b.coups.findIndex(c => c.type === 'riposte' && c.quete === q.nom && c.heros === n.heros); if (k >= 0) b.coups.splice(k, 1); }
     }
@@ -3974,7 +3975,8 @@ function agir(nom, statut) {
     state = pred.etat; render();
     if (pred.annule) { toast('↩️ Saisie annulée'); if (pred.dXp < 0) flotter(`${pred.dXp} XP${pred.dPv ? ` · ${pred.dPv > 0 ? '+' : ''}${pred.dPv} PV` : ''}`, 'var(--muted)'); else if (pred.dPv) flotter(`+${pred.dPv} PV`, 'var(--ok)'); }
     if (!pred.annule && pred.dXp > 0) flotter(`+${pred.dXp} XP${pred.dPv > 0 ? ` · +${pred.dPv} PV` : ''}`, 'var(--xp2)');
-    else if (!pred.annule && pred.dPv < 0) flotter(`${pred.dPv} PV`, 'var(--pv)');
+    else if (!pred.annule && pred.dPv < 0) flotter(`Toi : ${pred.dPv} PV${pred.ripBoss ? ` · 🐉 boss +${pred.ripBoss} PV` : ''}`, 'var(--pv)');
+    else if (!pred.annule && pred.ripBoss) flotter(`🐉 Le boss se soigne : +${pred.ripBoss} PV`, 'var(--pv)');
     else if (statut === 'Repos') flotter('Repos', 'var(--rest)');
     if (pred.dXp > 0) vib(25);
     if (pred.coups && pred.coups.length) setTimeout(() => flotter(`⚔ −${pred.coups[0].d} PV au boss`, '#ff8b7a'), 450);
@@ -4013,7 +4015,7 @@ function agir(nom, statut) {
     if (!pred) { // saisie non prédite : retour visuel à l'arrivée
       const dXp = apres.xpTotale - avant.xpTotale, dPv = apres.pv - avant.pv;
       if (dXp > 0) flotter(`+${Math.round(dXp)} XP${dPv > 0 ? ` · +${dPv} PV` : ''}`, 'var(--xp2)');
-      else if (dPv < 0) flotter(`${dPv} PV`, 'var(--pv)');
+      else if (dPv < 0) flotter(`Toi : ${dPv} PV`, 'var(--pv)');
     }
     celebrerChangements(avant, apres);
     if (envoisEnCours === 0) { state = apres; confirme = null; render(); }
