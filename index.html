@@ -1469,7 +1469,7 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-03-5';
+const VERSION_APP = '2026-11-04-1';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -1667,7 +1667,7 @@ function gains(q, xp) {
   return `<div class="gains">${chip(q.carac, x, true)}${chip(q.carac2, Math.round(x * part), false)}${pas != null ? `<span class="g montre ${pas >= 10000 ? 'ok' : ''}">⌚ ${Number(pas).toLocaleString('fr-FR')} / 10 000 pas</span>` : ''}</div>`;
 }
 
-const sortSur = nom => state && state.capacites && state.capacites.sortPrepare === nom ? ' · <span class="sort">✨ sort préparé</span>' : '';
+const sortSur = nom => state && state.capacites && state.capacites.sortPrepare === nom ? ' · <span class="sort">✨ sort préparé : XP ×1,5 à la validation</span>' : '';
 
 /* ---------- d20 du jour ---------- */
 function d20Svg(n, cls) {
