@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Compagnie">
 <script>
   /* Adresse du moteur (Apps Script → Déployer → Gérer les déploiements → URL /exec) */
-  window.API_URL = 'https://script.google.com/macros/s/AKfycbwkO5eNjPedyA5iIS8NhCZsy2nHaWOr4Dwa5ZIdGigffWtIRl2PX8putuXau096-19L/exec';
+  window.API_URL = 'https://script.google.com/macros/s/AKfycbxFI9eEgrFJLsMuQo-TXD2m2REmXnyWEcTmxK1LTydm4f5fJdepE_qB93W6j2cqepSX/exec';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
@@ -225,7 +225,7 @@
   .d20 text { font-family: var(--f-titre); font-weight: 800; }
   .engrenage { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.04); font-size: 17px; line-height: 1; cursor: pointer; color: inherit; }
   header { position: relative; }
-  .version { margin: 22px 0 8px; text-align: center; font-size: 11.5px; color: var(--muted); opacity: .8; }
+  .version { margin: 22px 0 8px; text-align: center; font-size: 11.5px; color: var(--muted); opacity: .85; display: grid; gap: 2px; line-height: 1.45; } .version b { color: var(--text); font-weight: 600; }
   .hero-perso { position: relative; cursor: pointer; }
   .hero-perso .loupe { position: absolute; right: 4px; bottom: 6px; font-size: 10.5px; padding: 2px 7px; border-radius: 99px; background: rgba(0,0,0,.45); color: var(--gold); border: 1px solid rgba(212,173,60,.4); }
   svg[data-lueur="argent"] { filter: drop-shadow(0 0 4px rgba(220,230,245,.75)); }
@@ -1515,7 +1515,8 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-04-2';
+const VERSION_APP = '2026-11-04-3';
+const NUMERO_APP = '3.1'; // numéro de version de l'app Compagnie : +0.1 à chaque livraison
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2422,7 +2423,8 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
-const VERSION_CARNET = '2026-11-02-5'; // change à chaque livraison : force le téléphone à recharger carnet.html
+const VERSION_CARNET = '2026-11-04-1';
+const NUMERO_CARNET = '2.1'; // numéro de version du Carnet (le même que dans carnet.html) // change à chaque livraison : force le téléphone à recharger carnet.html
 function afficherCarnet(oui) {
   const box = document.getElementById('carnetBox');
   if (!box) return;
@@ -3699,7 +3701,11 @@ function vueProfil(s) {
     <div class="section"><h2>⚙️ Réglages</h2><span>enregistrés dans le Sheet</span></div>
     ${regTheme}<button class="reg reg-lien" data-tab="profil" data-mode="journal"><span>📖</span><div><b>Journal des 7 derniers jours</b><small>Valider ou passer en raté une quête après coup</small></div><i>›</i></button>${regVac}${regVoyage}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
     ${(s.compagnie || []).length > 1 ? '<button class="lien changer" data-pr="changer-heros" style="position:static;display:block;margin:10px auto">⇄ Changer de héros sur ce téléphone</button>' : ''}
-    <div class="version">La Compagnie de l'Aube · app ${VERSION_APP} · moteur ${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}${lireAttente().length ? ' · ' + lireAttente().length + ' saisie(s) en attente' : ''}</div>`;
+    <div class="version"><b>La Compagnie de l'Aube</b>
+      <span>App <b>v${NUMERO_APP}</b> · ${VERSION_APP}</span>
+      <span>Moteur ${(s.reglages && s.reglages.numeroMoteur) ? `<b>v${esc(s.reglages.numeroMoteur)}</b> · ` : ''}${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}</span>
+      <span>Carnet <b>v${NUMERO_CARNET}</b> · ${VERSION_CARNET}</span>
+      ${lireAttente().length ? `<span>${lireAttente().length} saisie(s) en attente</span>` : ''}</div>`;
   return `
     <button class="back" data-tab="${ongletPrec}">‹ Retour</button>
     <div class="id-card">
