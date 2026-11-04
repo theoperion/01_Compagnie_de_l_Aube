@@ -1515,8 +1515,8 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-04-3';
-const NUMERO_APP = '3.1'; // numéro de version de l'app Compagnie : +0.1 à chaque livraison
+const VERSION_APP = '2026-11-04-4';
+const NUMERO_APP = '3.2'; // numéro de version de l'app Compagnie : +0.1 à chaque livraison
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -1538,7 +1538,8 @@ async function appelDistant(fn, args) {
       throw /Failed to fetch|NetworkError|Load failed/i.test(String(e && e.message)) ? new Error('Pas de connexion au Sheet (réseau)') : e;
     }
     // Sheet occupé par une autre action : rien n'a été fait, on réessaie tout seul
-    if (!j.ok && /^OCCUPE/.test(j.message || '') && essai < 3) { await pause(1500 * (essai + 1)); continue; }
+    // ou panne passagère de Google (« Une erreur est survenue sur le serveur… ») sur une simple lecture
+    if (!j.ok && (/^OCCUPE/.test(j.message || '') || (LECTURES.has(fn) && /erreur est survenue sur le serveur|server error|try again later|trop de fois|too many times/i.test(j.message || ''))) && essai < 3) { await pause(1500 * (essai + 1)); continue; }
     break;
   }
   if (!j.ok) {
