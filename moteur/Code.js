@@ -2521,7 +2521,7 @@ function carnetHistorique_(ss, st) {
 }
 
 /* ---------- Montre Garmin via intervals.icu (clé personnelle, jamais sur le téléphone) ---------- */
-const QUETE_PAS = /10[ .  ]?000 pas/i;
+const QUETE_PAS = /10[ .  ]?000 pas/i;
 /**
  * Pas du jour lus sur la montre (données « wellness » d'intervals.icu) : une quête « 10 000 pas » du héros
  * se valide toute seule dès 10 000 pas (aujourd'hui, et hier si la montre a synchronisé en retard).
