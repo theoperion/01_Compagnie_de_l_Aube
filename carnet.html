@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<script>window.API_URL='https://script.google.com/macros/s/AKfycbxFI9eEgrFJLsMuQo-TXD2m2REmXnyWEcTmxK1LTydm4f5fJdepE_qB93W6j2cqepSX/exec';</script>
+<script src="config.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
@@ -395,8 +395,8 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
 /* ======================================================================
    RÉGLAGES DE BASE
    ====================================================================== */
-const VERSION_CARNET_APP = '2026-11-04-1';
-const NUMERO_CARNET_APP = '2.1'; // numéro de version du Carnet : +0.1 à chaque livraison // affichée en bas des réglages
+const VERSION_CARNET_APP = (window.COMPAGNIE || {}).VERSION_CARNET || '?'; // réglages communs : config.js
+const NUMERO_CARNET_APP = (window.COMPAGNIE || {}).NUMERO_CARNET || '?'; // affichée en bas des réglages
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine

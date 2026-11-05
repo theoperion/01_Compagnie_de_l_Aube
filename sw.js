@@ -3,8 +3,11 @@
  * manque ou traîne plus de 4 s. Icônes et polices : copie locale d'abord.
  * Les échanges avec le Sheet (POST vers Apps Script) ne passent jamais par ici.
  */
-const CACHE = 'compagnie-2026-11-01';
-const COQUILLE = ['./', 'index.html', 'carnet.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable.png'];
+/* Réglages communs (config.js) : une nouvelle version dans config.js renouvelle aussi cette copie. */
+try { importScripts('config.js'); } catch (e) {}
+const C = self.COMPAGNIE || {};
+const CACHE = 'compagnie-' + (C.VERSION_APP || 'x') + '-' + (C.VERSION_CARNET || 'x');
+const COQUILLE = ['./', 'index.html', 'carnet.html', 'config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(COQUILLE.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));

@@ -10,9 +10,9 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Compagnie">
+<script src="config.js"></script>
 <script>
-  /* Adresse du moteur (Apps Script → Déployer → Gérer les déploiements → URL /exec) */
-  window.API_URL = 'https://script.google.com/macros/s/AKfycbxFI9eEgrFJLsMuQo-TXD2m2REmXnyWEcTmxK1LTydm4f5fJdepE_qB93W6j2cqepSX/exec';
+  /* Adresse du moteur et versions : dans config.js (réglages communs) */
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
@@ -1515,8 +1515,9 @@ const distant = !enLigne && !!API_URL;
 let cleHeros = '';
 try { cleHeros = localStorage.getItem('cle') || ''; } catch (e) {}
 let cleRefusee = false;
-const VERSION_APP = '2026-11-04-4';
-const NUMERO_APP = '3.2'; // numéro de version de l'app Compagnie : +0.1 à chaque livraison
+const CONFIG = (typeof window !== 'undefined' && window.COMPAGNIE) || {}; // réglages communs : config.js
+const VERSION_APP = CONFIG.VERSION_APP || '?';
+const NUMERO_APP = CONFIG.NUMERO_APP || '?';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
@@ -2424,8 +2425,8 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
-const VERSION_CARNET = '2026-11-04-1';
-const NUMERO_CARNET = '2.1'; // numéro de version du Carnet (le même que dans carnet.html) // change à chaque livraison : force le téléphone à recharger carnet.html
+const VERSION_CARNET = CONFIG.VERSION_CARNET || String(Date.now()); // config.js : changer la version force le téléphone à recharger carnet.html
+const NUMERO_CARNET = CONFIG.NUMERO_CARNET || '?';
 function afficherCarnet(oui) {
   const box = document.getElementById('carnetBox');
   if (!box) return;
