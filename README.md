@@ -10,7 +10,7 @@ Adresse de l'app : https://theoperion.github.io/01_Compagnie_de_l_Aube/
 ```
 Téléphone                                        Google
 ┌──────────────────────────────┐                 ┌──────────────────────────────┐
-│ index.html   l'app Compagnie │  ── envoie ──▶  │ moteur/Code.js (Apps Script) │
+│ index.html   l'app Compagnie │  ── envoie ──▶  │ Moteur (Apps Script)         │
 │ carnet.html  le Carnet       │  ◀─ l'état ───  │   lit et écrit dans          │
 │ config.js    réglages communs│                 │   la Google Sheet            │
 │ sw.js        copie hors ligne│                 └──────────────────────────────┘
@@ -24,10 +24,12 @@ Téléphone                                        Google
 | `config.js` | **Les réglages communs, à un seul endroit** : adresse du moteur et numéros de version de l'app et du Carnet. |
 | `sw.js` | Garde une copie de l'app sur le téléphone pour l'ouvrir sans réseau. |
 | `manifest.webmanifest`, `icon-*.png` | Nom, couleurs et icônes de l'app installée. |
-| `moteur/Code.js` | Le moteur (Google Apps Script) relié à la Google Sheet : règles du jeu, sauvegardes, appels à Claude et à intervals.icu. |
-| `moteur/appsscript.json`, `moteur/.clasp.json` | Réglages du projet Apps Script, pour l'outil clasp. |
 
-Les clés secrètes (Claude, intervals.icu) et l'e-mail du rappel ne sont **jamais** dans ce dépôt :
+**Le moteur** (Google Apps Script relié à la Google Sheet : règles du jeu, sauvegardes, appels à Claude et à intervals.icu)
+est rangé avec les moteurs des autres applis dans le dépôt **privé** `theoperion/app_scripts`, dossier `compagnie-de-l-aube/`.
+L'audit de novembre 2026 y est aussi : `audits/compagnie-2026-11.md`.
+
+Les clés secrètes (Claude, intervals.icu) et l'e-mail du rappel ne sont **jamais** dans un dépôt :
 ils sont dans Apps Script → Paramètres du projet → Propriétés du script.
 
 ## Mettre à jour
@@ -39,23 +41,10 @@ ils sont dans Apps Script → Paramètres du projet → Propriétés du script.
    Changer la version force les téléphones à recharger, et renouvelle la copie hors ligne.
 3. Mettre sur la branche `main` : GitHub Pages publie l'app en une minute ou deux.
 
-### Le moteur (avec clasp)
+### Le moteur
 
-Depuis le dossier `moteur/`, une fois connecté (`clasp login --no-localhost`) :
-
-```bash
-clasp push --force
-```
-
-```bash
-clasp deploy -i AKfycbxFI9eEgrFJLsMuQo-TXD2m2REmXnyWEcTmxK1LTydm4f5fJdepE_qB93W6j2cqepSX -d "moteur X.Y : ce qui change"
-```
-
-Le déploiement garde la même adresse : rien à changer dans l'app.
-Avant chaque livraison, monter `VERSION_MOTEUR` et `NUMERO_MOTEUR` en haut de `Code.js` (affichés en bas des réglages de l'app).
-
-**Revenir en arrière** : `clasp list-deployments` montre le numéro de version en service (ex. `@59`).
-Pour remettre l'ancienne : `clasp deploy -i <même identifiant> -V <ancien numéro>`.
+Il se met à jour depuis le dépôt privé `app_scripts` (dossier `compagnie-de-l-aube/`) : voir son README.
+La mise en ligne garde toujours la même adresse : rien à changer dans `config.js`.
 
 ## Suivi du chantier
 
