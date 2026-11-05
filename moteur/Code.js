@@ -29,11 +29,11 @@ const COLS_JOURNAL = 14;
 
 const CODES_JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 /** Version du moteur (affichée en bas des réglages de l'app, avec celle de l'app). */
-const VERSION_MOTEUR = '2026-11-04-4';
-const NUMERO_MOTEUR = '3.2'; // numéro de version du moteur : +0.1 à chaque livraison
+const VERSION_MOTEUR = '2026-11-05-1';
+const NUMERO_MOTEUR = '3.3'; // numéro de version du moteur : +0.1 à chaque livraison
 
 /** Adresse de l'app installable (GitHub Pages). Le lien des e-mails de rappel y mène. */
-const APP_PUBLIC_URL = 'https://theoperion.github.io/Compagnie_de_l_Aube/';
+const APP_PUBLIC_URL = 'https://theoperion.github.io/01_Compagnie_de_l_Aube/';
 
 /* ====================== API de l'app installable ======================
  * L'app (hébergée sur GitHub Pages) envoie { fn, args, cle } en POST.
