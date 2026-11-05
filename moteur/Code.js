@@ -29,8 +29,8 @@ const COLS_JOURNAL = 14;
 
 const CODES_JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 /** Version du moteur (affichée en bas des réglages de l'app, avec celle de l'app). */
-const VERSION_MOTEUR = '2026-11-05-3';
-const NUMERO_MOTEUR = '3.5'; // numéro de version du moteur : +0.1 à chaque livraison
+const VERSION_MOTEUR = '2026-11-05-4';
+const NUMERO_MOTEUR = '3.6'; // numéro de version du moteur : +0.1 à chaque livraison
 
 /** Adresse de l'app installable (GitHub Pages). Le lien des e-mails de rappel y mène. */
 const APP_PUBLIC_URL = 'https://theoperion.github.io/01_Compagnie_de_l_Aube/';
@@ -2577,10 +2577,11 @@ function pasMontre_(ss) {
   const pas = { aujourdhui: lire(today) };
   props.setProperty(cle_('pasDuJour'), JSON.stringify({ date: today, pas: pas.aujourdhui }));
   if (!quetes.length) return pas;
-  const ctx = contexteJournal_(ss, tz_(ss));
+  let ctx = null; // le Journal n'est lu que si un jour a atteint 10 000 pas (avant : à chaque ouverture)
   [isoPlus_(today, -1), today].forEach(function (d) {
     const n = d === today ? pas.aujourdhui : lire(d);
     if (n < 10000) return;
+    if (!ctx) ctx = contexteJournal_(ss, tz_(ss));
     quetes.forEach(function (q) {
       if (ctx.entrees.some(function (e) { return e.quete === q && e.date === d && e.statut === 'Fait'; })) return;
       if (!quetePossibleCeJour_(ss, q, d)) return;
@@ -2608,6 +2609,8 @@ function montreActivites_(ss) {
   const k = cle_('montreRecu');
   let recus = []; try { recus = JSON.parse(P.getProperty(k) || '[]'); } catch (e) {}
   const vus = {}; recus.forEach(function (x) { vus[x.id] = true; });
+  // Rien de nouveau sur la montre (cas le plus courant) : ni les quêtes ni le Journal ne sont relus
+  if (!liste.some(function (a) { return !vus[String(a.id)] && /run|weight|strength/i.test(String(a.type || '')); })) return;
   const habs = lireHabitudes_(ss);
   const ctx = contexteJournal_(ss, tz_(ss));
   let change = false;
