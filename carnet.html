@@ -704,7 +704,7 @@ const EN_IN='lang="en" spellcheck="false" autocorrect="off" autocomplete="off" a
 let micEnCours=null;
 function micStop(annuler){if(!micEnCours)return;const m=micEnCours;m.fini=true;if(annuler)m.annule=true;clearTimeout(m.silence);try{annuler?m.rec.abort():m.rec.stop()}catch(e){}if(annuler&&micEnCours===m){micEnCours=null;m.btn.classList.remove("on")}}
 function micHTML(id,label){
-  if(!hasSR()) return `<div class="mic small">${MIC}<span>Micro intégré indisponible dans ce navigateur : utilise le micro de ton clavier, réglé en anglais (aide dans ⚙️ Réglages).</span></div>`;
+  if(!hasSR()&&!micPrecisActif()) return `<div class="mic small">${MIC}<span>Micro intégré indisponible dans ce navigateur : utilise le micro de ton clavier, réglé en anglais (aide dans ⚙️ Réglages).</span></div>`;
   return `<div class="micbar"><button class="micbtn" id="${id}" type="button" aria-label="Parler en anglais">${MIC}</button><span class="small muted" id="${id}-st">${label||"Touche le micro et parle en anglais"}</span></div>`;
 }
 /* Micro v2 (Carnet 2.3) :
@@ -714,6 +714,63 @@ function micHTML(id,label){
    - avec une phrase attendue (dictée, répétition, mot), on garde la proposition du téléphone la plus proche parmi 5 ;
    - le champ n'est jamais sélectionné : le clavier ne s'ouvre pas. */
 const MIC_SILENCE_MS=2500, MIC_ATTENTE_MS=8000, MIC_MAX_MS=60000;
+/* ---------- Micro précis (Carnet 2.6) : la voix est enregistrée puis transcrite par Google Gemini via le moteur ----------
+   Activé dans ⚙️ Réglages → Compte et IA (clé Gemini gratuite). Si la transcription échoue, retour au micro classique. */
+let micPrecisPanne=false;
+const micPrecisActif=()=>!!(state.micPrecis&&!micPrecisPanne&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&(window.AudioContext||window.webkitAudioContext));
+function wav16k(morceaux,taux){
+  let n=0;morceaux.forEach(m=>n+=m.length);const tout=new Float32Array(n);let o=0;morceaux.forEach(m=>{tout.set(m,o);o+=m.length});
+  const r=taux/16000,l=Math.floor(n/r),pcm=new Int16Array(l);
+  for(let i=0;i<l;i++){const a=Math.floor(i*r),b=Math.min(n,Math.floor((i+1)*r));let s=0;for(let k=a;k<b;k++)s+=tout[k];const v=Math.max(-1,Math.min(1,s/Math.max(1,b-a)));pcm[i]=v<0?v*32768:v*32767}
+  const buf=new ArrayBuffer(44+pcm.length*2),dv=new DataView(buf),txt=(p,t)=>{for(let i=0;i<t.length;i++)dv.setUint8(p+i,t.charCodeAt(i))};
+  txt(0,"RIFF");dv.setUint32(4,36+pcm.length*2,true);txt(8,"WAVE");txt(12,"fmt ");dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);
+  dv.setUint32(24,16000,true);dv.setUint32(28,32000,true);dv.setUint16(32,2,true);dv.setUint16(34,16,true);txt(36,"data");dv.setUint32(40,pcm.length*2,true);
+  new Int16Array(buf,44).set(pcm);
+  const octets=new Uint8Array(buf);let bin="";for(let i=0;i<octets.length;i+=0x8000)bin+=String.fromCharCode.apply(null,octets.subarray(i,i+0x8000));
+  return btoa(bin);
+}
+async function micPrecis(moi,st,opts){
+  const fin=async b64=>{
+    if(micEnCours===moi)micEnCours=null; moi.btn.classList.remove("on");
+    if(moi.annule) return;
+    if(!b64){if(st)st.textContent="Je n'ai rien entendu : touche le micro et réessaie.";return}
+    if(st)st.textContent="Je transcris ta voix…"; moi.btn.disabled=true;
+    try{
+      const r=await srv("carnetTranscrire",b64,"audio/wav"); const t=String((r&&r.texte)||"").trim();
+      moi.btn.disabled=false;
+      if(!document.body.contains(moi.ta)) return; // on a changé d'exercice entre-temps
+      moi.ta.value=t; moi.ta.dispatchEvent(new Event("input",{bubbles:true}));
+      if(st) st.textContent=t?(opts.onFinal?"Envoi…":"Relis, corrige si besoin, puis valide."):"Je n'ai rien entendu : touche le micro et réessaie.";
+      if(t&&opts.onFinal) opts.onFinal(t);
+    }catch(e){
+      moi.btn.disabled=false; micPrecisPanne=true;
+      if(st) st.textContent="Transcription impossible ("+errTxt(e).slice(0,90)+") : touche le micro, le micro classique prend le relais.";
+    }
+  };
+  let flux,ac;
+  try{
+    flux=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}});
+    ac=new (window.AudioContext||window.webkitAudioContext)();
+  }catch(e){micEnCours=null;moi.btn.classList.remove("on");if(st)st.textContent=/denied|NotAllowed/i.test(String(e&&e.name||e))?"Micro refusé : autorise le micro pour ce site dans le navigateur.":"Micro indisponible : "+(e.message||e);return}
+  const src=ac.createMediaStreamSource(flux), proc=ac.createScriptProcessor(4096,1,1), morceaux=[];
+  let parle=false; const debut=Date.now(); let dernierSon=debut;
+  proc.onaudioprocess=e=>{
+    if(moi.arrete) return;
+    const d=e.inputBuffer.getChannelData(0); morceaux.push(new Float32Array(d));
+    let s=0; for(let i=0;i<d.length;i++) s+=d[i]*d[i];
+    const t=Date.now(); if(Math.sqrt(s/d.length)>0.015){parle=true;dernierSon=t}
+    if((parle&&t-dernierSon>MIC_SILENCE_MS)||(!parle&&t-debut>MIC_ATTENTE_MS)||t-debut>MIC_MAX_MS) moi.arreter();
+  };
+  src.connect(proc); proc.connect(ac.destination);
+  moi.arreter=()=>{
+    if(moi.arrete) return; moi.arrete=true;
+    try{proc.disconnect();src.disconnect()}catch(e){} flux.getTracks().forEach(t=>t.stop());
+    const taux=ac.sampleRate; try{ac.close()}catch(e){}
+    fin(!moi.annule&&parle?wav16k(morceaux,taux):null);
+  };
+  moi.rec={stop:()=>moi.arreter(),abort:()=>{moi.annule=true;moi.arreter()}};
+  if(moi.fini||moi.annule) moi.arreter(); // arrêté pendant l'ouverture du micro
+}
 function micChoisir(r,attendu){
   if(!attendu||r.length<2) return r[0].transcript;
   let best=r[0].transcript,bs=-1;
@@ -736,6 +793,11 @@ function bindMic(id,ta,opts={}){
     if(micEnCours&&micEnCours.btn===btn){micStop();return}
     micStop(true); stopTTS(); ta.blur(); if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
     const moi={btn,ta,base:"",courant:"",debut:Date.now(),dernier:Date.now()}; micEnCours=moi;
+    if(micPrecisActif()){ // micro précis (Gemini) : on enregistre, puis on transcrit
+      btn.classList.add("on"); if(st) st.textContent="Je t'écoute (micro précis)… prends ton temps (touche encore pour arrêter)";
+      ta.value=""; ta.dispatchEvent(new Event("input",{bubbles:true}));
+      micPrecis(moi,st,opts); return;
+    }
     const attendu=typeof opts.attendu==="function"?opts.attendu():opts.attendu;
     const texte=()=>[moi.base,moi.courant].filter(Boolean).join(" ").replace(/\s+/g," ").trim();
     const arme=()=>{clearTimeout(moi.silence);moi.silence=setTimeout(()=>{if(micEnCours===moi){moi.fini=true;try{moi.rec.stop()}catch(e){}}},texte()?MIC_SILENCE_MS:MIC_ATTENTE_MS)};
@@ -2316,7 +2378,7 @@ function renderSet(){
 
 /* ---------- Compte : clé API, vitesse des missions, code d'accès (stockés côté Google) ---------- */
 let acct=null, acctMsg="";
-const ERRS={KEY_REFUSED:"Clé refusée par Claude : vérifie-la (elle commence par sk-ant-).",BAD_CODE:"Le code doit faire au moins 8 caractères (lettres et chiffres).",NO_KEY:"Aucune clé API enregistrée.",BAD_TOKEN:"Code d'accès refusé.",LOCKED:"Trop d'essais : réessaie dans 15 minutes."};
+const ERRS={GEMINI_REFUSE:"Clé Gemini refusée : vérifie-la (aistudio.google.com → Get API key).",NO_GEMINI:"Aucune clé Gemini enregistrée.",KEY_REFUSED:"Clé refusée par Claude : vérifie-la (elle commence par sk-ant-).",BAD_CODE:"Le code doit faire au moins 8 caractères (lettres et chiffres).",NO_KEY:"Aucune clé API enregistrée.",BAD_TOKEN:"Code d'accès refusé.",LOCKED:"Trop d'essais : réessaie dans 15 minutes."};
 const errTxt=e=>{const m=String((e&&e.message)||e);const k=Object.keys(ERRS).find(x=>m.includes(x));return k?ERRS[k]:"Erreur : "+m.replace(/^Error:\s*/,"").slice(0,160)};
 function acctHTML(){
   if(!acct) return '<h2>Compte et IA</h2><p class="muted">Chargement…</p>';
@@ -2325,6 +2387,12 @@ function acctHTML(){
     <span class="small ${acct.hasKey?"okc2":"badc2"}">${acct.hasKey?"Enregistrée (se termine par …"+esc(acct.keyEnd)+")":"Aucune clé : les missions ne peuvent pas être créées."}</span>
     <input id="akey" type="password" autocomplete="off" placeholder="${acct.hasKey?"Remplacer par une nouvelle clé":"Colle ta clé (sk-ant-…)"}">
     <div class="row"><button class="btn sm" id="akeySave">Enregistrer la clé</button><button class="btn sm" id="atest" ${acct.hasKey?"":"disabled"}>Tester Claude</button></div></div>
+  <div class="gap"><b>Micro précis (Google Gemini, gratuit)</b>
+    <span class="small ${acct.hasGemini?"okc2":"muted"}">${acct.hasGemini?"Clé enregistrée (se termine par …"+esc(acct.geminiEnd)+")":"Aucune clé : le micro classique du navigateur est utilisé."}</span>
+    <p class="small muted">Ta voix est enregistrée puis transcrite par Google (2 à 4 s après la fin de ta phrase), bien plus fidèlement. Clé gratuite : sur aistudio.google.com, connecte-toi avec ton compte Google, puis « Get API key » → « Create API key », et colle-la ici.</p>
+    <input id="gkey" type="password" autocomplete="off" placeholder="${acct.hasGemini?"Remplacer par une nouvelle clé":"Colle ta clé Gemini (AIza…)"}">
+    <div class="row"><button class="btn sm" id="gkeySave">Enregistrer la clé</button></div>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" id="gprec" style="width:auto" ${state.micPrecis?"checked":""} ${acct.hasGemini?"":"disabled"}>Utiliser le micro précis</label></div>
   <label>Création des missions<select id="amode">
     <option value="fast" ${acct.mission==="fast"?"selected":""}>Rapide (Haiku, environ 15 s, conseillé)</option>
     <option value="quality" ${acct.mission==="quality"?"selected":""}>Soignée (Sonnet, 30 à 60 s)</option></select></label>
@@ -2340,6 +2408,9 @@ function bindAcct(){
     try{acct=await srv("setConfig",{apiKey:v});paintAcct('<span class="okc2">Clé enregistrée et acceptée par Claude.</span>')}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
   $("#atest").onclick=async e=>{busy(e.target,"Test en cours…");
     try{const r=await srv("testClaude");paintAcct(`<span class="okc2">Claude répond : ${(r.ms/1000).toFixed(1).replace(".",",")} s pour une mission type (${esc(r.model)}).</span>`)}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
+  $("#gkeySave").onclick=async e=>{const v=$("#gkey").value.trim();if(!v)return;busy(e.target,"Vérification…");
+    try{acct=await srv("setConfig",{geminiKey:v});state.micPrecis=true;micPrecisPanne=false;save();paintAcct('<span class="okc2">Clé Gemini acceptée : micro précis activé.</span>')}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
+  $("#gprec").onchange=e=>{state.micPrecis=e.target.checked;micPrecisPanne=false;save();paintAcct(state.micPrecis?"Micro précis activé.":"Micro classique du navigateur.")};
   $("#amode").onchange=async e=>{try{acct=await srv("setConfig",{mission:e.target.value});for(const k in MODULES)state.en.mods[k].pack=null;save();paintAcct("Réglage enregistré.")}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
 
 }
