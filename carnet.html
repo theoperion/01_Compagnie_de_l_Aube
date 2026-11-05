@@ -645,29 +645,76 @@ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const hasSR=()=>!!SR;
 const EN_IN='lang="en" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="off"';
 let micEnCours=null;
-function micStop(annuler){if(!micEnCours)return;if(annuler)micEnCours.annule=true;try{annuler?micEnCours.rec.abort():micEnCours.rec.stop()}catch(e){}}
+function micStop(annuler){if(!micEnCours)return;const m=micEnCours;m.fini=true;if(annuler)m.annule=true;clearTimeout(m.silence);try{annuler?m.rec.abort():m.rec.stop()}catch(e){}if(annuler&&micEnCours===m){micEnCours=null;m.btn.classList.remove("on")}}
 function micHTML(id,label){
   if(!hasSR()) return `<div class="mic small">${MIC}<span>Micro intégré indisponible dans ce navigateur : utilise le micro de ton clavier, réglé en anglais (aide dans ⚙️ Réglages).</span></div>`;
   return `<div class="micbar"><button class="micbtn" id="${id}" type="button" aria-label="Parler en anglais">${MIC}</button><span class="small muted" id="${id}-st">${label||"Touche le micro et parle en anglais"}</span></div>`;
+}
+/* Micro v2 (Carnet 2.3) :
+   - écoute en continu : une pause ne coupe plus la phrase ; arrêt après MIC_SILENCE_MS de silence, ou quand on touche le bouton ;
+     si Chrome coupe de lui-même avant, l'écoute repart aussitôt et le texte continue ;
+   - le texte est reconstruit à chaque fois à partir de TOUS les résultats (plus de mots en double), et remplace l'essai précédent ;
+   - avec une phrase attendue (dictée, répétition, mot), on garde la proposition du téléphone la plus proche parmi 5 ;
+   - le champ n'est jamais sélectionné : le clavier ne s'ouvre pas. */
+const MIC_SILENCE_MS=2500, MIC_ATTENTE_MS=8000, MIC_MAX_MS=60000;
+function micChoisir(r,attendu){
+  if(!attendu||r.length<2) return r[0].transcript;
+  let best=r[0].transcript,bs=-1;
+  for(let k=0;k<r.length;k++){const t=r[k].transcript,s=diffHTML(attendu,t).score;if(s>bs){bs=s;best=t}}
+  return best;
+}
+/* Android renvoie parfois le même début de phrase dans plusieurs résultats : on ne garde que la version la plus longue */
+function micAssembler(parts){
+  const out=[];
+  parts.map(p=>String(p||"").trim()).filter(Boolean).forEach(p=>{
+    const n=norm(p),prev=out.length?norm(out[out.length-1]):"";
+    if(prev&&n.startsWith(prev)) out[out.length-1]=p; else if(prev&&prev.endsWith(n)) return; else out.push(p);
+  });
+  return out.join(" ").replace(/\s+/g," ").trim();
 }
 function bindMic(id,ta,opts={}){
   const btn=document.getElementById(id); if(!btn||!ta) return;
   const st=document.getElementById(id+"-st");
   btn.onclick=()=>{
     if(micEnCours&&micEnCours.btn===btn){micStop();return}
-    micStop(true); stopTTS(); ta.blur();
-    const rec=new SR(); rec.lang=state.micLang||"en-GB"; rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
-    const base=ta.value.trim(); let final="";
-    const moi={rec,btn,ta}; micEnCours=moi;
-    btn.classList.add("on"); if(st) st.textContent="Je t'écoute… (touche encore pour arrêter)";
-    rec.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)final+=r[0].transcript+" ";else interim+=r[0].transcript}
-      ta.value=[base,(final+interim).trim()].filter(Boolean).join(" ");ta.dispatchEvent(new Event("input",{bubbles:true}))};
-    rec.onerror=e=>{moi.err=true;const m={"not-allowed":"Micro refusé : autorise le micro pour ce site dans le navigateur.","service-not-allowed":"Reconnaissance vocale indisponible ici : utilise le micro du clavier réglé en anglais.","no-speech":"Je n'ai rien entendu : réessaie, un peu plus près du micro.","network":"Pas de réseau pour la reconnaissance vocale.","audio-capture":"Aucun micro détecté."}[e.error];if(st&&!moi.annule)st.textContent=m||"Le micro s'est arrêté : réessaie."};
-    rec.onend=()=>{if(micEnCours===moi)micEnCours=null;btn.classList.remove("on");
+    micStop(true); stopTTS(); ta.blur(); if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+    const moi={btn,ta,base:"",courant:"",debut:Date.now(),dernier:Date.now()}; micEnCours=moi;
+    const attendu=typeof opts.attendu==="function"?opts.attendu():opts.attendu;
+    const texte=()=>[moi.base,moi.courant].filter(Boolean).join(" ").replace(/\s+/g," ").trim();
+    const arme=()=>{clearTimeout(moi.silence);moi.silence=setTimeout(()=>{if(micEnCours===moi){moi.fini=true;try{moi.rec.stop()}catch(e){}}},texte()?MIC_SILENCE_MS:MIC_ATTENTE_MS)};
+    const finir=()=>{
+      clearTimeout(moi.silence); if(micEnCours===moi) micEnCours=null; btn.classList.remove("on");
       if(moi.annule) return;
-      if(!moi.err&&st) st.textContent=final.trim()?(opts.onFinal?"Envoi…":"Relis, corrige si besoin, puis valide."):"Touche le micro et parle en anglais";
-      if(!moi.err&&final.trim()&&opts.onFinal) opts.onFinal(ta.value.trim())};
-    try{rec.start()}catch(e){micEnCours=null;btn.classList.remove("on");if(st)st.textContent="Impossible de lancer le micro : "+e.message}
+      const t=texte();
+      if(moi.err&&!t){if(st)st.textContent=moi.err;return}
+      if(st) st.textContent=t?(opts.onFinal?"Envoi…":"Relis, corrige si besoin, puis valide."):"Je n'ai rien entendu : touche le micro et réessaie.";
+      if(t&&opts.onFinal) opts.onFinal(t);
+    };
+    const lancer=()=>{
+      const rec=new SR(); rec.lang=state.micLang||"en-GB"; rec.interimResults=true; rec.continuous=true; rec.maxAlternatives=attendu?5:1;
+      moi.rec=rec; moi.courant="";
+      rec.onresult=e=>{
+        const parts=[]; for(let i=0;i<e.results.length;i++) parts.push(micChoisir(e.results[i],attendu));
+        moi.courant=micAssembler(parts); moi.dernier=Date.now();
+        ta.value=texte(); ta.dispatchEvent(new Event("input",{bubbles:true})); arme();
+      };
+      rec.onerror=e=>{
+        if(e.error==="no-speech"||e.error==="aborted") return; // silence : géré par onend
+        moi.fini=true;
+        moi.err={"not-allowed":"Micro refusé : autorise le micro pour ce site dans le navigateur.","service-not-allowed":"Reconnaissance vocale indisponible ici : utilise le micro du clavier réglé en anglais.","network":"Pas de réseau pour la reconnaissance vocale.","audio-capture":"Aucun micro détecté."}[e.error]||"Le micro s'est arrêté : réessaie.";
+      };
+      rec.onend=()=>{
+        moi.base=texte(); moi.courant="";
+        const maintenant=Date.now(), limite=moi.base?MIC_SILENCE_MS:MIC_ATTENTE_MS;
+        // Chrome a coupé tout seul avant la fin du silence voulu : on relance l'écoute, le texte continue
+        if(!moi.fini&&!moi.annule&&micEnCours===moi&&maintenant-moi.dernier<limite&&maintenant-moi.debut<MIC_MAX_MS){try{lancer();return}catch(x){}}
+        finir();
+      };
+      rec.start();
+    };
+    btn.classList.add("on"); if(st) st.textContent="Je t'écoute… prends ton temps (touche encore pour arrêter)";
+    ta.value=""; ta.dispatchEvent(new Event("input",{bubbles:true}));
+    try{lancer();arme()}catch(e){micEnCours=null;btn.classList.remove("on");if(st)st.textContent="Impossible de lancer le micro : "+e.message}
   };
 }
 /* Clavier ouvert : on prévient la Compagnie, qui masque sa barre d'onglets du bas (c'est elle qui faisait sauter l'écran) */
@@ -733,7 +780,10 @@ function addXP(n,skill){const before=levelOf(G().xp,XP_BASE);G().xp+=n;if(skill)
   const after=levelOf(G().xp,XP_BASE);if(after>before){setTimeout(()=>{sfx("level");toast(`Niveau ${after} ! Rang : ${rankOf(after)}`);confetti()},350)}}
 function gain(base,skill,perfect){const m=ses.m;m.combo++;m.ok++;m.total++;G().stats.maxCombo=Math.max(G().stats.maxCombo,m.combo);
   const xp=Math.round(base*mult(m.combo)*(ses.d20m||1));addXP(xp,skill);sfx(perfect?"perfect":"ok");save();checkBadges();return xp}
-function miss(){const m=ses.m;m.combo=0;m.total++;sfx("bad");save()}
+function miss(){const m=ses.m;ses.dernierRate={combo:m.combo,total:m.total};m.combo=0;m.total++;sfx("bad");save()}
+/* « Le micro s'est trompé » : la pénalité du dernier raté est annulée et on peut redire sa réponse (une fois par exercice, deux fois par boss) */
+function annulerRate(){const d=ses&&ses.dernierRate;if(!d)return;ses.m.combo=d.combo;ses.m.total=d.total;ses.dernierRate=null;save()}
+const BTN_MICRO=`<button class="btn sm" id="micTrompe">🎤 Le micro s'est trompé : je redis</button>`;
 function spend(cost,label){ses.m.jokers++;G().xp=Math.max(0,G().xp-cost);ses.m.xp-=cost;toast(`Joker ${label} : −${cost} XP`);save()}
 function checkBadges(){const s=G().stats;BADGES.forEach(([id,name,,f])=>{if(!G().badges[id]&&f(s)){G().badges[id]=todayISO();ses?.m?.newBadges.push(name);setTimeout(()=>{sfx("badge");toast(`Badge débloqué : ${name}`)},700)}})}
 
@@ -942,7 +992,7 @@ function renderReview(p){
   const chk=()=>{const v=$("#prodIn").value.trim();const r=diffHTML(c.en,v);ses.check={ok:norm(v)===norm(c.en)||r.score>=85,said:v||"(rien)"};reveal()};
   $("#chk")?.addEventListener("click",chk);
   $("#prodIn")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();chk()}});
-  if($("#prodIn")) bindMic("micP",$("#prodIn"));
+  if($("#prodIn")) bindMic("micP",$("#prodIn"),{attendu:c.en});
   $("#say")?.addEventListener("click",()=>speak(c.en));
   $("#sayex")?.addEventListener("click",()=>speak(c.ex,earRate()));
   p.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const g=+b.dataset.g;
@@ -1127,9 +1177,10 @@ function renderListen(b){
     ${it.textShown||it.done?`<div class="transcript">${tr}</div>`:""}
     ${isQ?`<b>${esc(x.question)}</b><div class="choices">${(x.choices||[]).map((c,k)=>`<button class="choice ${it.done?(k===x.answer?"good":k===it.pick?"badc":""):""}" data-c="${k}" ${it.done?"disabled":""}>${esc(c)}</button>`).join("")}</div>`
       :`${it.done?"":micHTML("micD","Touche le micro et répète ce que tu as entendu (ou écris-le)")}<textarea id="dic" rows="2" ${EN_IN} placeholder="Écris (ou dis) exactement ce que tu entends…" ${it.done?"disabled":""}>${esc(it.val||"")}</textarea>${it.done?`<div class="small">${it.res}</div>`:`<button class="btn primary" id="val">Valider</button>`}`}
-    ${verdictHTML(it)}${it.done?'<button class="btn primary" id="nx">Continuer</button>':""}
+    ${verdictHTML(it)}${it.done?`<div class="row"><button class="btn primary" id="nx">Continuer</button>${!isQ&&it.cls==="bad"&&!it.reessai?BTN_MICRO:""}</div>`:""}
   </div>`;
   $("#pl").onclick=()=>{playAudio(x);renderEn()};
+  $("#micTrompe")?.addEventListener("click",()=>{annulerRate();ses.it={reessai:true,plays:it.plays};renderEn()});
   $("#slow")?.addEventListener("click",()=>{playAudio(x,true);renderEn()});
   $("#txt")?.addEventListener("click",()=>{spend(8,"texte");it.textShown=true;renderEn()});
   b.querySelectorAll("[data-c]").forEach(btn=>btn.onclick=()=>{it.pick=+btn.dataset.c;it.done=true;
@@ -1143,11 +1194,11 @@ function renderListen(b){
   $("#val")?.addEventListener("click",val);
   $("#dic")?.addEventListener("input",e=>it.val=e.target.value);
   $("#dic")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();val()}});
-  if($("#dic")&&!it.done) bindMic("micD",$("#dic"));
+  if($("#dic")&&!it.done) bindMic("micD",$("#dic"),{attendu:audioText(x)});
   $("#nx")?.addEventListener("click",advance);
 }
 async function judge(x,ans){
-  const base=`Jeu d'expression orale en anglais pour un francophone (niveau A2 qui vise B1). Sa réponse vient de la dictée vocale du téléphone : ignore ponctuation et majuscules ; si la dictée a écrit un autre mot que celui attendu, considère qu'il l'a mal prononcé et signale-le.`;
+  const base=`Jeu d'expression orale en anglais pour un francophone (niveau A2 qui vise B1). Sa réponse vient de la dictée vocale du téléphone, qui se trompe souvent : ignore ponctuation et majuscules ; un mot qui sonne comme le bon (homophone, nombre écrit en chiffres, mot coupé ou collé) est une erreur de la dictée, pas de lui : devine ce qu'il a voulu dire et juge cette intention. Ne parle de prononciation que si le mot reconnu est vraiment éloigné du bon.`;
   const q=x.type==="dis"?`Phrase française à dire en anglais : « ${x.fr} ». Exemple de bonne réponse : "${x.ref}". Toute traduction naturelle et correcte est acceptée.`
     :`Question qu'on lui a posée à l'oral : "${x.audio}". Il doit montrer qu'il a compris la question et répondre par une phrase complète et correcte.`;
   return sample.json(`${base}
@@ -1174,15 +1225,16 @@ function renderSpeak(b){
     <textarea id="sp" rows="2" ${EN_IN} placeholder="Ta phrase apparaît ici quand tu parles…" ${it.done||it.wait?"disabled":""}>${esc(it.val||"")}</textarea>
     ${it.wait?'<p class="muted">Le jury écoute…</p>':""}
     ${it.err?`<p class="err small">${esc(it.err)}</p>`:""}
-    ${it.done?`${verdictHTML(it)}${it.fb||""}<button class="btn primary" id="nx">Continuer</button>`:it.wait?"":`<div class="row"><button class="btn primary" id="val">Valider</button><button class="btn sm" id="skip">Je passe</button></div>`}
+    ${it.done?`${verdictHTML(it)}${it.fb||""}<div class="row"><button class="btn primary" id="nx">Continuer</button>${it.cls==="bad"&&it.val&&!it.passe&&!it.reessai?BTN_MICRO:""}</div>`:it.wait?"":`<div class="row"><button class="btn primary" id="val">Valider</button><button class="btn sm" id="skip">Je passe</button></div>`}
   </div>`;
   $("#pl")?.addEventListener("click",()=>{playAudio(x);renderEn()});
   $("#slow")?.addEventListener("click",()=>{playAudio(x,true);renderEn()});
   $("#txt")?.addEventListener("click",()=>{spend(5,"question");it.textShown=true;renderEn()});
   $("#sp")?.addEventListener("input",e=>it.val=e.target.value);
-  if($("#sp")&&!it.done&&!it.wait) bindMic("micS",$("#sp"));
+  if($("#sp")&&!it.done&&!it.wait) bindMic("micS",$("#sp"),x.type==="repete"?{attendu:String(x.audio)}:{});
   const fbHTML=(good,astuce)=>`<div class="transcript"><span class="small muted">Version juste</span><br><b>${esc(good)}</b></div>${astuce?`<p class="small">${esc(astuce)}</p>`:""}<div><button class="btn sm" id="hear">▶ Écouter la version juste</button></div>`;
-  $("#skip")?.addEventListener("click",()=>{miss();it.done=true;it.cls="bad";it.msg="Passé. Écoute la version juste et répète-la à voix haute.";
+  $("#micTrompe")?.addEventListener("click",()=>{annulerRate();if(it.erreurNotee){ses.m.errors.pop();state.en.errors.pop();save()}ses.it={reessai:true,plays:it.plays,textShown:it.textShown};renderEn()});
+  $("#skip")?.addEventListener("click",()=>{miss();it.done=true;it.passe=true;it.cls="bad";it.msg="Passé. Écoute la version juste et répète-la à voix haute.";
     it.good=x.type==="dis"?x.ref:x.type==="repete"?x.audio:"";it.fb=it.good?fbHTML(it.good,""):"";renderEn()});
   $("#val")?.addEventListener("click",async()=>{
     const ans=($("#sp").value||"").trim(); if(!ans) return; it.val=ans; it.err=null;
@@ -1198,7 +1250,7 @@ function renderSpeak(b){
     try{
       const r=await judge(x,ans); if(!ses||ses.S?.[ses.i]!==x) return;
       it.wait=false; it.done=true; it.good=r.correction||x.ref||"";
-      if(r.erreur&&r.erreur.faux){ses.m.errors.push(r.erreur);state.en.errors.push({...r.erreur,pourquoi:r.astuce||"",date:todayISO()});state.en.errors=state.en.errors.slice(-40)}
+      if(r.erreur&&r.erreur.faux){ses.m.errors.push(r.erreur);state.en.errors.push({...r.erreur,pourquoi:r.astuce||"",date:todayISO()});state.en.errors=state.en.errors.slice(-40);it.erreurNotee=true}
       if(r.verdict==="parfait"){G().stats.speakPerfect++;const xp=gain(15,"spk",true);it.cls="perfect";it.msg=`Parfait ! +${xp} XP`}
       else if(r.verdict==="correct"){const xp=gain(8,"spk");it.cls="ok";it.msg=`Compris, avec une petite erreur. +${xp} XP`}
       else{miss();it.cls="bad";it.msg="Pas encore : regarde la version juste et redis-la."}
@@ -1211,12 +1263,13 @@ function renderSpeak(b){
 }
 function renderBoss(b){
   const B=ses.boss, R=ses.pack.boss, nUser=B.turns.filter(t=>t.role==="user").length;
+  const dernierU=B.turns.map(t=>t.role).lastIndexOf("user"), annulable=i=>i===dernierU&&B.notes[i]&&B.notes[i].lost&&!B.wait&&(B.micUndo||0)<2&&B.over!=="win";
   b.innerHTML=`<div class="card game boss"><span class="kicker">Boss · ${nUser}/8 répliques</span><h2>${esc(R.role)}</h2>
     <p>${esc(R.situation)}</p><p><b>Mission :</b> ${esc(R.objectif)}</p>
     <p class="small muted">Tout se passe à l'oral : écoute, puis réponds avec le micro. S'il ne te comprend pas, tu perds un cœur.</p>
     <div class="chat">${B.turns.map((t,i)=>t.role==="assistant"
       ?`<div class="bub a"><button class="btn sm" data-bt="${i}" aria-label="Écouter">▶</button> ${B.show||B.over?esc(t.content):'<span class="muted">réplique audio</span>'}</div>`
-      :`<div class="bub u">${esc(t.content)}</div>${B.notes[i]?`<div class="bnote small ${B.notes[i].lost?"bad":""}">${esc(B.notes[i].txt)}</div>`:""}`).join("")}
+      :`<div class="bub u">${esc(t.content)}</div>${B.notes[i]?`<div class="bnote small ${B.notes[i].lost?"bad":""}">${esc(B.notes[i].txt)}${annulable(i)?`<div style="margin-top:6px">${BTN_MICRO}</div>`:""}</div>`:""}`).join("")}
       ${B.wait?'<div class="bub a muted">…</div>':""}</div>
     ${B.over?`<div class="verdict ${B.over==="win"?"perfect":"bad"}">${B.over==="win"?`Boss vaincu ! +${B.bonus} XP`:B.overMsg}</div><button class="btn primary" id="nx">Voir le bilan</button>`
       :`${B.wait?"":micHTML("micB","Touche le micro et réponds : c'est envoyé dès que tu as fini de parler")}
@@ -1227,13 +1280,14 @@ function renderBoss(b){
   b.querySelectorAll("[data-bt]").forEach(x=>x.onclick=()=>speak(B.turns[+x.dataset.bt].content,earRate()));
   $("#bsIn")?.addEventListener("input",e=>B.draft=e.target.value);
   $("#bsShow")?.addEventListener("click",()=>{spend(10,"texte");B.show=true;renderEn()});
+  $("#micTrompe")?.addEventListener("click",()=>{if(!annulable(dernierU))return;B.hearts++;annulerRate();B.turns.splice(dernierU);delete B.notes[dernierU];B.over=null;B.overMsg=null;B.micUndo=(B.micUndo||0)+1;B.draft="";save();renderEn()});
   $("#nx")?.addEventListener("click",advance);
   const envoyer=async()=>{
     const ans=($("#bsIn")?.value||"").trim(); if(!ans||B.wait) return;
     if(!sample){B.err=sampleErr("absent");return renderEn()}
     B.turns.push({role:"user",content:ans}); const ui=B.turns.length-1; B.draft=""; B.wait=true; B.err=null; renderEn();
     const rules=`Jeu de rôle vocal pour apprendre l'anglais. Tu joues : ${R.role}. Situation : ${R.situation}. L'apprenant (francophone, niveau A2 qui vise B1) doit : ${R.objectif}.
-Ses messages viennent de la dictée vocale : ignore ponctuation et majuscules.
+Ses messages viennent de la dictée vocale, qui se trompe souvent : ignore ponctuation et majuscules ; un mot étrange est sans doute mal reconnu : devine le sens. Mets "compris" à false seulement si, même en devinant, un anglophone ne comprendrait vraiment pas ce qu'il veut dire.
 Reste dans ton rôle, en anglais naturel, 1 ou 2 phrases courtes, difficulté ${diffOf(spkLvl())}/10. Sois un peu exigeant : ne lui accorde pas l'objectif trop vite, pose des questions, ajoute un petit obstacle, mais reste juste.
 Réponds UNIQUEMENT en JSON : {"reply":"ta réplique dans le rôle","compris":true si un anglophone comprendrait son message, false s'il est incompréhensible ou hors sujet,"erreur":"sa phrase corrigée s'il y a une faute, sinon chaîne vide","objectif_atteint":true seulement si l'objectif est vraiment atteint}`;
     try{
@@ -1479,10 +1533,63 @@ function renderConvFin(p){
 /* ---------- Briques communes ---------- */
 function glossaryHTML(list){return `<details><summary>Liste (${(list||[]).length})</summary><div class="hist small" style="margin-top:8px">${(list||[]).map((g,i)=>`<div><b>${esc(g.en)}</b><span class="muted" style="flex:1">${esc(g.fr)}</span><button class="btn sm" data-add="${i}">+ révisions</button></div>`).join("")}</div></details>`}
 function bindAdd(root,list){root.querySelectorAll("[data-add]").forEach(x=>x.onclick=()=>{const g=list[+x.dataset.add];addWord(g.en,g.fr,g.ex,g.lvl);x.textContent="ajouté";x.disabled=true})}
+/* Comparaison tolérante (Carnet 2.3) : ce que la dictée écrit autrement sans que ce soit une faute ne compte plus faux.
+   Les deux textes passent par la même mise en forme : nombres en lettres (20 = twenty), formes courtes dépliées (I'm = I am,
+   gonna = going to), orthographe britannique ou américaine (colour = color), traits d'union et heures (5:30 = five thirty).
+   Puis chaque mot attendu est cherché dans la réponse, avec une lettre d'écart permise sur les mots de 6 lettres ou plus (deux à partir de 8), et singulier = pluriel. */
+const NB_U=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const NB_D=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+const ORD={one:"first",two:"second",three:"third",five:"fifth",eight:"eighth",nine:"ninth",twelve:"twelfth"};
+function nbLettres(n){
+  n=Math.floor(n); if(n<20) return NB_U[n];
+  if(n<100) return NB_D[Math.floor(n/10)]+(n%10?" "+NB_U[n%10]:"");
+  if(n<1000) return NB_U[Math.floor(n/100)]+" hundred"+(n%100?" "+nbLettres(n%100):"");
+  if(n<1000000) return nbLettres(Math.floor(n/1000))+" thousand"+(n%1000?" "+nbLettres(n%1000):"");
+  return String(n);
+}
+function ordLettres(n){const w=nbLettres(n).split(" "),d=w.pop();return w.concat([ORD[d]||(d.endsWith("y")?d.slice(0,-1)+"ieth":d+"th")]).join(" ")}
+const COURTES={"i'm":"i am","you're":"you are","we're":"we are","they're":"they are","it's":"it is","he's":"he is","she's":"she is","that's":"that is","what's":"what is","there's":"there is","here's":"here is","who's":"who is","where's":"where is","how's":"how is","let's":"let us",lets:"let us","can't":"can not","cannot":"can not","won't":"will not","shan't":"shall not","ain't":"is not",
+  gonna:"going to",wanna:"want to",gotta:"got to",kinda:"kind of",sorta:"sort of",gimme:"give me",lemme:"let me",dunno:"do not know",ok:"okay",alright:"all right",
+  grey:"gray",mum:"mom",programme:"program",programmes:"programs",cheque:"check",tyre:"tire",tyres:"tires",aluminium:"aluminum",defence:"defense",offence:"offense",licence:"license",practise:"practice",
+  travelled:"traveled",travelling:"traveling",traveller:"traveler",cancelled:"canceled",cancelling:"canceling",labelled:"labeled",modelling:"modeling",fuelled:"fueled"};
+function motsCompares(s){
+  let t=String(s||"").toLowerCase().replace(/[’‘`]/g,"'");
+  t=t.replace(/\b([ap])\.\s?m\.?/g,"$1m").replace(/(\d),(\d{3})\b/g,"$1$2").replace(/(\d)\.(\d)/g,"$1 point $2");
+  t=t.replace(/(\d+)(st|nd|rd|th)\b/g,(m,n)=>" "+ordLettres(+n)+" ").replace(/\d+/g,n=>" "+nbLettres(+n)+" ").replace(/%/g," percent ");
+  t=t.replace(/[^a-z' ]+/g," ").replace(/\s'|'\s|^'|'$/g," ");
+  const out=[];
+  t.split(/\s+/).filter(Boolean).forEach(w=>{
+    if(COURTES[w]){out.push(...COURTES[w].split(" "));return}
+    w=w.replace(/n't$/," not").replace(/'re$/," are").replace(/'ve$/," have").replace(/'ll$/," will").replace(/'d$/," would").replace(/'m$/," am");
+    w.split(" ").forEach(x=>{
+      x=x.replace(/'/g,"");
+      x=x.replace(/^(.{3,})our(s|ed|ing|ite|ites|able|ful)?$/,"$1or$2").replace(/^(.{3,})is(e|es|ed|ing|ation|ations)$/,"$1iz$2").replace(/^(.{2,})ys(e|es|ed|ing)$/,"$1yz$2").replace(/^(.{2,})tre(s)?$/,"$1ter$2").replace(/^(.{3,})ogue(s)?$/,"$1og$2");
+      if(x) out.push(x);
+    });
+  });
+  return out;
+}
+function presque(a,b){
+  if(a===b) return true;
+  if(a+"s"===b||b+"s"===a) return true; // singulier / pluriel
+  const n=Math.min(a.length,b.length), tol=n>=8?2:n>=6?1:0;
+  if(!tol||Math.abs(a.length-b.length)>tol) return false;
+  let prev=Array.from({length:b.length+1},(_,j)=>j);
+  for(let i=1;i<=a.length;i++){const cur=[i];let m=i;for(let j=1;j<=b.length;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));m=Math.min(m,cur[j])}if(m>tol)return false;prev=cur}
+  return prev[b.length]<=tol;
+}
 function diffHTML(expected,typed){
-  const ex=String(expected).split(/\s+/), ty=norm(typed).split(" "); let j=0, ok=0;
-  const html=ex.map(w=>{const n=norm(w);if(!n)return esc(w);const k=ty.indexOf(n,j);if(k>=0&&k-j<=3){j=k+1;ok++;return esc(w)}return `<span class="miss">${esc(w)}</span>`}).join(" ");
-  return {html,score:Math.round(ok/Math.max(1,ex.filter(w=>norm(w)).length)*100)};
+  const ex=String(expected||"").split(/\s+/).filter(Boolean), ty=motsCompares(typed); let j=0, ok=0, total=0;
+  const html=ex.map(w=>{
+    const toks=motsCompares(w); if(!toks.length) return esc(w);
+    total++;
+    // chaque morceau du mot attendu doit se retrouver dans l'ordre, au plus 3 mots plus loin que le précédent
+    let k=j, trouve=true;
+    for(const t of toks){let f=-1;for(let q=k;q<Math.min(ty.length,k+4);q++){if(presque(t,ty[q])){f=q;break}}if(f<0){trouve=false;break}k=f+1}
+    if(trouve){j=k;ok++;return esc(w)}
+    return `<span class="miss">${esc(w)}</span>`;
+  }).join(" ");
+  return {html,score:Math.round(ok/Math.max(1,total)*100)};
 }
 
 /* ======================================================================
