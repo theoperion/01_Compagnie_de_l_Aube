@@ -716,7 +716,7 @@ function micHTML(id,label){
 const MIC_SILENCE_MS=2500, MIC_ATTENTE_MS=8000, MIC_MAX_MS=60000;
 /* ---------- Micro précis (Carnet 2.6) : la voix est enregistrée puis transcrite par Google Gemini via le moteur ----------
    Activé dans ⚙️ Réglages → Compte et IA (clé Gemini gratuite). Si la transcription échoue, retour au micro classique. */
-let micPrecisPanne=false;
+let micPrecisPanne=false, micPrecisEchecs=0;
 const micPrecisActif=()=>!!(state.micPrecis&&!micPrecisPanne&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&(window.AudioContext||window.webkitAudioContext));
 function wav16k(morceaux,taux){
   let n=0;morceaux.forEach(m=>n+=m.length);const tout=new Float32Array(n);let o=0;morceaux.forEach(m=>{tout.set(m,o);o+=m.length});
@@ -737,14 +737,17 @@ async function micPrecis(moi,st,opts){
     if(st)st.textContent="Je transcris ta voix…"; moi.btn.disabled=true;
     try{
       const r=await srv("carnetTranscrire",b64,"audio/wav"); const t=String((r&&r.texte)||"").trim();
-      moi.btn.disabled=false;
+      moi.btn.disabled=false; micPrecisEchecs=0;
       if(!document.body.contains(moi.ta)) return; // on a changé d'exercice entre-temps
       moi.ta.value=t; moi.ta.dispatchEvent(new Event("input",{bubbles:true}));
       if(st) st.textContent=t?(opts.onFinal?"Envoi…":"Relis, corrige si besoin, puis valide."):"Je n'ai rien entendu : touche le micro et réessaie.";
       if(t&&opts.onFinal) opts.onFinal(t);
     }catch(e){
-      moi.btn.disabled=false; micPrecisPanne=true;
-      if(st) st.textContent="Transcription impossible ("+errTxt(e).slice(0,90)+") : touche le micro, le micro classique prend le relais.";
+      moi.btn.disabled=false; micPrecisEchecs++;
+      const m=String((e&&e.message)||e), definitif=/GEMINI_REFUSE|NO_GEMINI/.test(m);
+      // Google surchargé (503) : passager, on garde le micro précis ; clé refusée ou 2 échecs de suite : micro classique
+      if(definitif||micPrecisEchecs>=2){micPrecisPanne=true;if(st)st.textContent="Transcription impossible ("+errTxt(e).slice(0,90)+") : touche le micro, le micro classique prend le relais."}
+      else if(st) st.textContent=(/503|surcharg|demand/i.test(m)?"Google est surchargé en ce moment":"Transcription impossible ("+errTxt(e).slice(0,70)+")")+" : touche le micro pour redire ta phrase.";
     }
   };
   let flux,ac;
