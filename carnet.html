@@ -311,11 +311,16 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
   const API=window.API_URL||"";
   const cle=()=>{try{return localStorage.getItem("cle")||""}catch(e){return ""}};
   const NOMS={intervals:"carnetIntervals",askClaude:"carnetClaude",loadState:"carnetCharger",saveState:"carnetSauver",getConfig:"carnetConfig",setConfig:"carnetReglages",testClaude:"carnetTest"};
+  /* Délai maximum (lot 3.2) : sans réponse, on abandonne au lieu de rester bloqué (« Le jury écoute… »). Claude : plus long. */
+  const delai=fn=>fn==="askClaude"||fn==="testClaude"?120000:60000;
   async function run(fn,...args){
     let j;
     for(let essai=0;;essai++){
-      const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn:NOMS[fn]||fn,args,cle:cle()})});
-      const brut=await r.text();
+      const ctrl=typeof AbortController!=="undefined"?new AbortController():null, minuteur=ctrl&&setTimeout(()=>ctrl.abort(),delai(fn));
+      let r,brut;
+      try{r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn:NOMS[fn]||fn,args,cle:cle()}),signal:ctrl?ctrl.signal:undefined});brut=await r.text()}
+      catch(e){if(e&&e.name==="AbortError")throw new Error("Délai dépassé : le moteur n'a pas répondu en "+Math.round(delai(fn)/1000)+" s");throw e}
+      finally{if(minuteur)clearTimeout(minuteur)}
       try{j=JSON.parse(brut)}catch(e){throw new Error("Réponse inattendue de Google ("+r.status+")")}
       if(!j.ok&&/^OCCUPE/.test(j.message||"")&&essai<3){await new Promise(ok=>setTimeout(ok,1500*(essai+1)));continue}
       break;
@@ -385,7 +390,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
     get:async()=>{let j=await run("loadState");
       if(j&&typeof j==="object"){try{window.majVacances&&window.majVacances(j.vacances||[])}catch(e){}j=j.json}
       return {exists:!!j,data:()=>j?{json:j}:undefined}},
-    set:async(d)=>{await run("saveState",d.json)}})};
+    set:async(d)=>run("saveState",d.json)})};
   const user={id:async()=>"moi",isOwner:()=>true,canEdit:()=>true};
   window.srv=run;
   window.claude={use:async n=>n==="sample"?sample:n==="db"?db:n==="user"?user:null};
@@ -567,24 +572,81 @@ function migrate(s){
 let state = defaultState();
 try{const raw=localStorage.getItem("quetes-state");if(raw)state=migrate(JSON.parse(raw))}catch(e){}
 
-let dbDoc=null, saveTimer=null;
+let dbDoc=null, saveTimer=null, charge=false, conflits=0;
+/* Synchronisation (lot 3.1) :
+   - rien ne part vers la Sheet tant que la version de la Sheet n'a pas été lue (plus d'écrasement au démarrage) ;
+   - chaque envoi dit sur quelle version il se base (_base) ; si la Sheet a reçu entre-temps une version plus récente
+     (autre appareil), le moteur refuse et renvoie la sienne : on FUSIONNE les deux, puis on renvoie. */
+function idSeance(x){return x.id||[x.date,x.mod,x.unit,x.min,x.xp,x.tours].join("|")}
+function fusionCarnet(srvS,loc){
+  const f=migrate(JSON.parse(JSON.stringify(loc)));
+  // séances d'anglais : toutes celles des deux côtés
+  const vues=new Set((f.en.sessions||[]).map(idSeance));
+  (srvS.en.sessions||[]).forEach(x=>{if(!vues.has(idSeance(x))){f.en.sessions.push(x);vues.add(idSeance(x))}});
+  f.en.sessions.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  // mots : union ; pour un même mot, la version la plus révisée
+  const parId={};(f.en.deck||[]).forEach(c=>parId[c.id]=c);
+  (srvS.en.deck||[]).forEach(c=>{const l=parId[c.id];if(!l){f.en.deck.push(c);parId[c.id]=c}else if((c.reps||0)>(l.reps||0)||((c.reps||0)===(l.reps||0)&&String(c.last||"")>String(l.last||""))){Object.assign(l,c)}});
+  // course et renfo : toutes les séances notées des deux côtés
+  ["run","str"].forEach(k=>{f[k].logs=Object.assign({},(srvS[k]||{}).logs||{},f[k].logs||{})});
+  f.run.bilans=Object.assign({},srvS.run.bilans||{},f.run.bilans||{});
+  // jeu : on garde le meilleur des deux
+  const g=f.en.game,gs=srvS.en.game||{};g.xp=Math.max(g.xp||0,gs.xp||0);g.badges=Object.assign({},gs.badges||{},g.badges||{});
+  Object.keys(gs.stats||{}).forEach(k=>{if(typeof gs.stats[k]==="number")g.stats[k]=Math.max(g.stats[k]||0,gs.stats[k])});
+  return f;
+}
 function save(){
   try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}
   if(!dbDoc) return;
   try{localStorage.setItem("quetes-nonSync","1")}catch(e){}
+  if(!charge) return; // la version de la Sheet n'est pas encore lue : l'envoi attendra (chargerServeur)
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
     if(navigator.onLine===false){setSync("📴 Hors connexion : gardé sur le téléphone, envoi au retour du réseau");return}
-    try{await dbDoc.set({json:JSON.stringify(state),updatedAt:new Date().toISOString()});try{localStorage.removeItem("quetes-nonSync")}catch(e){}setSync("Sauvegardé dans la Compagnie")}
-    catch(e){setSync("📴 Pas de réseau : gardé sur le téléphone, envoi au retour du réseau")}
+    try{
+      const r=await dbDoc.set({json:JSON.stringify(state)});
+      if(r&&r.conflit&&r.json&&conflits<3){ // une version plus récente est arrivée d'un autre appareil : fusion puis nouvel envoi
+        conflits++; const srvS=migrate(JSON.parse(r.json)); state=fusionCarnet(srvS,state); state._base=r.maj||0; renderAll(); save(); return;
+      }
+      conflits=0;
+      if(r&&r.maj){state._base=r.maj;try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}}
+      try{localStorage.removeItem("quetes-nonSync")}catch(e){}setSync("Sauvegardé dans la Compagnie");
+    }catch(e){
+      const m=String((e&&e.message)||e);
+      setSync(navigator.onLine===false||/Failed to fetch|NetworkError|Load failed|Délai dépassé|Réponse inattendue/i.test(m)
+        ?"📴 Pas de réseau : gardé sur le téléphone, envoi au retour du réseau"
+        :"⚠️ Sauvegarde refusée par la Compagnie : "+m.slice(0,140)+" (gardé sur le téléphone, nouvel essai dans 1 min)");
+    }
   },700);
 }
 /* Hors connexion : ce qui a été fait sans réseau part dès que le réseau revient */
 const nonSync=()=>{try{return localStorage.getItem("quetes-nonSync")==="1"}catch(e){return false}};
-window.addEventListener("online",()=>{if(nonSync()&&dbDoc)save()});
-setInterval(()=>{if(nonSync()&&dbDoc&&navigator.onLine!==false)save()},60000);
+window.addEventListener("online",()=>{if(!dbDoc)return;if(!charge)chargerServeur();else if(nonSync())save()});
+setInterval(()=>{if(!dbDoc||navigator.onLine===false)return;if(!charge)chargerServeur();else if(nonSync())save()},60000);
 function setSync(t){document.getElementById("sync").textContent=t}
 
+let chargement=null;
+function chargerServeur(){
+  if(chargement||charge||!dbDoc) return chargement;
+  chargement=(async()=>{
+    try{
+      const snap=await dbDoc.get();
+      const brut=snap.exists&&snap.data()?.json?JSON.parse(snap.data().json):null;
+      if(brut){
+        const srvS=migrate(brut);
+        // modifications faites sur le téléphone sans être envoyées (hors connexion, ou pendant le chargement) : fusion
+        state=nonSync()?fusionCarnet(srvS,state):srvS; state._base=brut._maj||0;
+        try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}
+        renderAll(); setSync(nonSync()?"Fusion avec la copie du téléphone…":"Sauvegardé dans la Compagnie"); setTimeout(evaluerNiveaux,3000);
+      }
+      charge=true;
+      if(!brut||nonSync()) save();
+      setTimeout(initMontre,1500);
+    }catch(e){setSync(navigator.onLine===false?"📴 Hors connexion : tu travailles sur la copie du téléphone":"Sheet injoignable : copie du téléphone (nouvel essai dans 1 min)")}
+    finally{chargement=null}
+  })();
+  return chargement;
+}
 let sample=null;
 (async()=>{
   if(!window.claude?.use) return;
@@ -596,12 +658,7 @@ let sample=null;
       if(id){
         dbDoc=db.doc("data/users/"+id+"/state");
         if(navigator.onLine===false){setSync("📴 Hors connexion : tu travailles sur la copie du téléphone");return}
-        // des séances faites hors connexion pas encore envoyées : la copie du téléphone est la plus récente
-        if(nonSync()&&localStorage.getItem("quetes-state")){save();setTimeout(initMontre,1500);return}
-        const snap=await dbDoc.get();
-        if(snap.exists&&snap.data()?.json){state=migrate(JSON.parse(snap.data().json));renderAll();setSync("Sauvegardé dans la Compagnie");setTimeout(evaluerNiveaux,3000)}
-        else save();
-        setTimeout(initMontre,1500);
+        await chargerServeur();
       }
     }
   }catch(e){setSync(navigator.onLine===false?"📴 Hors connexion : copie du téléphone":"Sauvegarde locale")}
@@ -792,8 +849,8 @@ function enStatus(){
   const s=state.en.sessions; const last=s.length?s[s.length-1].date:null;
   const due=last?addDays(last,EN_EVERY_DAYS):todayISO();
   const left=daysBetween(todayISO(),due);
-  let streak=0;
-  if(last&&daysBetween(last,todayISO())<=EN_EVERY_DAYS){streak=1;for(let i=s.length-1;i>0;i--){if(daysBetween(s[i-1].date,s[i].date)<=EN_EVERY_DAYS)streak++;else break}}
+  let streak=0; const j=[...new Set(s.map(x=>x.date))].sort(); // deux séances le même jour comptent pour un seul jour de série
+  if(last&&daysBetween(last,todayISO())<=EN_EVERY_DAYS){streak=1;for(let i=j.length-1;i>0;i--){if(daysBetween(j[i-1],j[i])<=EN_EVERY_DAYS)streak++;else break}}
   return {last,due,left,streak,doneToday:last===todayISO()};
 }
 const modUnit=m=>{const M=MODULES[m];return M.units[Math.min(state.en.mods[m].unit,M.units.length-1)]};
@@ -1618,7 +1675,7 @@ function alleger(w){const red=t=>String(t).replace(/^(\d+) ×/,(m,n)=>`${Math.ma
 /* Vacances de la Compagnie : une semaine avec 4 jours de vacances ou plus est sautée, le programme reprend après. */
 let VACANCES=[];
 window.majVacances=v=>{VACANCES=Array.isArray(v)?v:[];try{localStorage.setItem("quetes-vacances",JSON.stringify(VACANCES))}catch(e){}};
-try{VACANCES=JSON.parse(localStorage.getItem("quetes-vacances")||"[]")}catch(e){}
+try{const v=JSON.parse(localStorage.getItem("quetes-vacances")||"[]");VACANCES=Array.isArray(v)?v:[]}catch(e){}
 /* Pauses du plan (bouton « Décaler le plan ») : {debut, fin} en semaines entières */
 const pausesPlan=()=>Array.isArray(state.run.pauses)?state.run.pauses:[];
 function semaineVacances(mon){let n=0;const L=[...VACANCES,...pausesPlan()];for(let d=0;d<7;d++){const x=addDays(mon,d);if(L.some(v=>v.debut&&x>=v.debut&&(!v.fin||x<=v.fin)))n++}return n>=4}
@@ -2016,10 +2073,13 @@ function renderQuestStr(){
 
 /* ---------- Lecteur de séance guidée ---------- */
 let pl=null, plTick=null, actx=null, wake=null;
+/* Écran allumé pendant la séance (lot 3.4) : Android le relâche quand on change d'app ; on le redemande au retour */
+async function garderEcran(){try{if(wake&&!wake.released)return;wake=await navigator.wakeLock?.request("screen");wake?.addEventListener?.("release",()=>{wake=null})}catch(e){wake=null}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&pl)garderEcran()});
 function beep(f=880,d=0.15){try{if(!actx)return;const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(0.25,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+d);o.start();o.stop(actx.currentTime+d)}catch(e){}}
 async function startPlayer(W){
   try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume?.()}catch(e){}
-  try{wake=await navigator.wakeLock?.request("screen")}catch(e){wake=null}
+  await garderEcran();
   pl={W,tl:buildTimeline(W),i:0,paused:false,startedAt:Date.now()};
   enterInterval(0); clearInterval(plTick); plTick=setInterval(plStep,200); setTab("str");
 }
@@ -2127,6 +2187,7 @@ function seanceTexte(s){
 }
 async function envoyerSeances(force){
   if(!montre?.ok) return;
+  if(isNaN(toSec(state.run.goal))){setSync("⚠️ Objectif 10 km illisible (réglages) : aucune séance envoyée à la montre");return} // jamais d'allure « NaN » sur la montre
   const t=todayISO(); try{if(!force&&localStorage.getItem("montre-envoi")===t)return}catch(e){}
   const W=weeksPlan(), wi=Math.max(0,curWeekIdx());
   const ev=[];
@@ -2161,6 +2222,7 @@ async function synchroMontre(){
 }
 /* Adaptation : une fois par semaine terminée. Règles prudentes, ±1 % d'allure au plus par semaine, ±5 % au total. */
 async function adapterPlan(){
+  let aRenvoyer=false;
   const W=weeksPlan(), wi=curWeekIdx(); state.run.bilans=state.run.bilans||{}; state.run.allege=state.run.allege||{};
   for(let i=0;i<Math.min(wi,W.length);i++){
     if(state.run.bilans[i]) continue;
@@ -2179,10 +2241,10 @@ async function adapterPlan(){
     const f0=Number(state.run.facteur)||1; state.run.facteur=Math.min(1.05,Math.max(0.95,f0*(1+delta)));
     if(allege&&i+1<W.length) state.run.allege[i+1]=1;
     const bilan={n:w.n,faites:logs.length,rpe,ratio,raison,facteur:state.run.facteur,texte:""};
-    state.run.bilans[i]=bilan; save();
+    state.run.bilans[i]=bilan; save(); aRenvoyer=true;
     if(sample){try{const {text}=await sample(`Tu es le coach de course de Theron (prépa 10 km, objectif ${state.run.goal}). En 3 phrases courtes, en français, tutoiement, ton encourageant mais honnête : résume sa semaine ${w.n} (${logs.length}/3 sorties${rpe?", effort moyen "+rpe.toFixed(1)+"/10":""}${ratio?", fractions à "+Math.round((1-ratio)*100)+" % de la cible":""}), puis explique la décision : ${raison}. Pas de markdown.`,{modelTier:"quick"});bilan.texte=text.trim();save()}catch(e){}}
-    envoyerSeances(true);
   }
+  if(aRenvoyer) await envoyerSeances(true); // une seule fois après toutes les semaines (avant : un envoi par semaine, en même temps)
   renderAll();
 }
 async function initMontre(){try{montre=await srv("intervals","etat",{});if(montre?.ok){await synchroMontre();await envoyerSeances()}}catch(e){montre=null}}
@@ -2240,7 +2302,9 @@ function renderSet(){
   <div class="row"><button class="btn primary" id="sv">Enregistrer</button><span id="svm" class="small muted"></span></div>
   <p class="small muted" style="text-align:center;margin:18px 0 6px"><b>Carnet de quêtes</b><br>Version <b>v${NUMERO_CARNET_APP}</b> · ${VERSION_CARNET_APP}${nonSync()?"<br>modifications en attente d'envoi":""}</p>`;
   $("#sv").onclick=()=>{
-    state.run.goal=$("#sg").value.trim();state.run.ref=$("#sr").value.trim();state.run.start=mondayOf($("#ss").value||state.run.start);state.run.weeks=+$("#sw").value;
+    const but=$("#sg").value.trim();
+    if(isNaN(toSec(but))){$("#svm").innerHTML='<span class="err">Objectif 10 km illisible : écris-le en minutes:secondes, par exemple 55:00. Rien n\'a été enregistré.</span>';$("#sg").focus();return}
+    state.run.goal=but;state.run.ref=$("#sr").value.trim();state.run.start=mondayOf($("#ss").value||state.run.start);state.run.weeks=+$("#sw").value;
     state.run.days={q:+$("#dq").value,s:+$("#ds").value,l:+$("#dl").value};
     for(const k in MODULES){const u=+$("#su-"+k).value;if(u!==state.en.mods[k].unit){state.en.mods[k].unit=u;state.en.mods[k].pack=null}}
     state.ttsRate=+$("#st").value;state.micLang=$("#sml").value;save();renderAll();$("#svm").textContent="Enregistré";

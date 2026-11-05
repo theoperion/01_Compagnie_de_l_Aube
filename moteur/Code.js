@@ -29,8 +29,8 @@ const COLS_JOURNAL = 14;
 
 const CODES_JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 /** Version du moteur (affichée en bas des réglages de l'app, avec celle de l'app). */
-const VERSION_MOTEUR = '2026-11-05-1';
-const NUMERO_MOTEUR = '3.3'; // numéro de version du moteur : +0.1 à chaque livraison
+const VERSION_MOTEUR = '2026-11-05-2';
+const NUMERO_MOTEUR = '3.4'; // numéro de version du moteur : +0.1 à chaque livraison
 
 /** Adresse de l'app installable (GitHub Pages). Le lien des e-mails de rappel y mène. */
 const APP_PUBLIC_URL = 'https://theoperion.github.io/01_Compagnie_de_l_Aube/';
@@ -2403,11 +2403,20 @@ function carnetSauver(json, heros) {
   const ss = carnetGarde_(heros);
   if (typeof json !== 'string' || json.length > 5000000) throw new Error('Sauvegarde invalide');
   const neuf = JSON.parse(json);
-  let ancien = null;
+  let ancien = null, brutAncien = '';
   const lock = LockService.getScriptLock();
-  lock.waitLock(15000);
+  if (!lock.tryLock(20000)) throw new Error('OCCUPE : le Sheet termine une autre action, réessaie dans un instant.');
   try {
-    try { ancien = JSON.parse(carnetLire_(ss) || 'null'); } catch (e) {}
+    brutAncien = carnetLire_(ss);
+    try { ancien = JSON.parse(brutAncien || 'null'); } catch (e) {}
+    // Version de base (Carnet 2.4) : un appareil qui envoie une copie plus ancienne que celle de la Sheet ne l'écrase plus.
+    // On lui renvoie la version de la Sheet : il fusionne les deux et renvoie le tout.
+    const majAncien = (ancien && Number(ancien._maj)) || 0;
+    if (majAncien && neuf._base !== undefined && neuf._base !== null && Number(neuf._base) < majAncien) {
+      return { conflit: true, json: brutAncien, maj: majAncien, valides: [] };
+    }
+    neuf._maj = Math.max(Date.now(), majAncien + 1);
+    json = JSON.stringify(neuf);
     carnetEcrire_(ss, json);
   } finally { lock.releaseLock(); }
   // Quêtes de la Compagnie à valider : une entrée nouvelle aujourd'hui (ou hier) dans le Carnet
@@ -2425,8 +2434,8 @@ function carnetSauver(json, heros) {
   if (changeHisto || !ss.getSheetByName(CARNET_HISTORIQUE)) { try { carnetHistorique_(ss, neuf); } catch (e) {} }
   // Lexique avancé : paliers d'XP d'Intelligence (25, 50, 100 puis tous les 100 mots B2+ maîtrisés)
   const lexique = carnetLexique_(ss, neuf, heros);
-  if (!aValider.length && !lexique.length) return { valides: [] };
-  if (!aValider.length) return { valides: lexique, etat: getState(heros) };
+  if (!aValider.length && !lexique.length) return { valides: [], maj: neuf._maj };
+  if (!aValider.length) return { valides: lexique, etat: getState(heros), maj: neuf._maj };
   // Quelles quêtes, et pas déjà faites ce jour-là
   const choix = avecHeros_(heros, function () {
     const ctx = contexteJournal_(ss, tz_(ss));
@@ -2447,7 +2456,7 @@ function carnetSauver(json, heros) {
       valides.push(c.nom);
     } catch (e) {}
   });
-  return { valides: valides.concat(lexique), etat: etat || getState(heros) };
+  return { valides: valides.concat(lexique), etat: etat || getState(heros), maj: neuf._maj };
 }
 
 /** Séance faite il y a 2 à 6 jours (montre synchronisée en retard) : le raté ou le joker automatique est remplacé. */
