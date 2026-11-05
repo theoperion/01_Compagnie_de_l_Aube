@@ -713,7 +713,7 @@ function micHTML(id,label){
    - le texte est reconstruit à chaque fois à partir de TOUS les résultats (plus de mots en double), et remplace l'essai précédent ;
    - avec une phrase attendue (dictée, répétition, mot), on garde la proposition du téléphone la plus proche parmi 5 ;
    - le champ n'est jamais sélectionné : le clavier ne s'ouvre pas. */
-const MIC_SILENCE_MS=2500, MIC_ATTENTE_MS=8000, MIC_MAX_MS=60000;
+const MIC_SILENCE_PRECIS_MS=1500, MIC_SILENCE_MS=2500, MIC_ATTENTE_MS=8000, MIC_MAX_MS=60000;
 /* ---------- Micro précis (Carnet 2.6) : la voix est enregistrée puis transcrite par Google Gemini via le moteur ----------
    Activé dans ⚙️ Réglages → Compte et IA (clé Gemini gratuite). Si la transcription échoue, retour au micro classique. */
 let micPrecisPanne=false, micPrecisEchecs=0;
@@ -744,7 +744,7 @@ async function micPrecis(moi,st,opts){
       if(t&&opts.onFinal) opts.onFinal(t);
     }catch(e){
       moi.btn.disabled=false; micPrecisEchecs++;
-      const m=String((e&&e.message)||e), definitif=/GEMINI_REFUSE|NO_GEMINI/.test(m);
+      const m=String((e&&e.message)||e), definitif=/GEMINI_REFUSE|OPENAI_REFUSE|NO_GEMINI/.test(m);
       // Google surchargé (503) : passager, on garde le micro précis ; clé refusée ou 2 échecs de suite : micro classique
       if(definitif||micPrecisEchecs>=2){micPrecisPanne=true;if(st)st.textContent="Transcription impossible ("+errTxt(e).slice(0,90)+") : touche le micro, le micro classique prend le relais."}
       else if(st) st.textContent=(/503|surcharg|demand/i.test(m)?"Google est surchargé en ce moment":"Transcription impossible ("+errTxt(e).slice(0,70)+")")+" : touche le micro pour redire ta phrase.";
@@ -762,7 +762,7 @@ async function micPrecis(moi,st,opts){
     const d=e.inputBuffer.getChannelData(0); morceaux.push(new Float32Array(d));
     let s=0; for(let i=0;i<d.length;i++) s+=d[i]*d[i];
     const t=Date.now(); if(Math.sqrt(s/d.length)>0.015){parle=true;dernierSon=t}
-    if((parle&&t-dernierSon>MIC_SILENCE_MS)||(!parle&&t-debut>MIC_ATTENTE_MS)||t-debut>MIC_MAX_MS) moi.arreter();
+    if((parle&&t-dernierSon>MIC_SILENCE_PRECIS_MS)||(!parle&&t-debut>MIC_ATTENTE_MS)||t-debut>MIC_MAX_MS) moi.arreter();
   };
   src.connect(proc); proc.connect(ac.destination);
   moi.arreter=()=>{
@@ -2381,7 +2381,7 @@ function renderSet(){
 
 /* ---------- Compte : clé API, vitesse des missions, code d'accès (stockés côté Google) ---------- */
 let acct=null, acctMsg="";
-const ERRS={GEMINI_REFUSE:"Clé Gemini refusée : vérifie-la (aistudio.google.com → Get API key).",NO_GEMINI:"Aucune clé Gemini enregistrée.",KEY_REFUSED:"Clé refusée par Claude : vérifie-la (elle commence par sk-ant-).",BAD_CODE:"Le code doit faire au moins 8 caractères (lettres et chiffres).",NO_KEY:"Aucune clé API enregistrée.",BAD_TOKEN:"Code d'accès refusé.",LOCKED:"Trop d'essais : réessaie dans 15 minutes."};
+const ERRS={OPENAI_REFUSE:"Clé OpenAI refusée : vérifie-la (platform.openai.com → API keys).",OPENAI_CREDIT:"Crédit OpenAI épuisé : recharge-le sur platform.openai.com (Billing).",GEMINI_REFUSE:"Clé Gemini refusée : vérifie-la (aistudio.google.com → Get API key).",NO_GEMINI:"Aucune clé de transcription enregistrée (OpenAI ou Gemini).",KEY_REFUSED:"Clé refusée par Claude : vérifie-la (elle commence par sk-ant-).",BAD_CODE:"Le code doit faire au moins 8 caractères (lettres et chiffres).",NO_KEY:"Aucune clé API enregistrée.",BAD_TOKEN:"Code d'accès refusé.",LOCKED:"Trop d'essais : réessaie dans 15 minutes."};
 const errTxt=e=>{const m=String((e&&e.message)||e);const k=Object.keys(ERRS).find(x=>m.includes(x));return k?ERRS[k]:"Erreur : "+m.replace(/^Error:\s*/,"").slice(0,160)};
 function acctHTML(){
   if(!acct) return '<h2>Compte et IA</h2><p class="muted">Chargement…</p>';
@@ -2390,12 +2390,17 @@ function acctHTML(){
     <span class="small ${acct.hasKey?"okc2":"badc2"}">${acct.hasKey?"Enregistrée (se termine par …"+esc(acct.keyEnd)+")":"Aucune clé : les missions ne peuvent pas être créées."}</span>
     <input id="akey" type="password" autocomplete="off" placeholder="${acct.hasKey?"Remplacer par une nouvelle clé":"Colle ta clé (sk-ant-…)"}">
     <div class="row"><button class="btn sm" id="akeySave">Enregistrer la clé</button><button class="btn sm" id="atest" ${acct.hasKey?"":"disabled"}>Tester Claude</button></div></div>
-  <div class="gap"><b>Micro précis (Google Gemini, gratuit)</b>
+  <div class="gap"><b>Micro précis : OpenAI (ChatGPT, payant, rapide)</b>
+    <span class="small ${acct.hasOpenai?"okc2":"muted"}">${acct.hasOpenai?"Clé enregistrée (se termine par …"+esc(acct.openaiEnd)+") : utilisée en premier":"Aucune clé OpenAI."}</span>
+    <p class="small muted">Environ 0,3 centime la minute de voix. Sur platform.openai.com : Billing → ajoute du crédit, puis API keys → « Create new secret key », et colle-la ici. Si OpenAI ne répond pas, Gemini prend le relais.</p>
+    <input id="okey" type="password" autocomplete="off" placeholder="${acct.hasOpenai?"Remplacer par une nouvelle clé":"Colle ta clé OpenAI (sk-…)"}">
+    <div class="row"><button class="btn sm" id="okeySave">Enregistrer la clé OpenAI</button></div></div>
+  <div class="gap"><b>Micro précis : Google Gemini (gratuit, parfois surchargé)</b>
     <span class="small ${acct.hasGemini?"okc2":"muted"}">${acct.hasGemini?"Clé enregistrée (se termine par …"+esc(acct.geminiEnd)+")":"Aucune clé : le micro classique du navigateur est utilisé."}</span>
     <p class="small muted">Ta voix est enregistrée puis transcrite par Google (2 à 4 s après la fin de ta phrase), bien plus fidèlement. Clé gratuite : sur aistudio.google.com, connecte-toi avec ton compte Google, puis « Get API key » → « Create API key », et colle-la ici.</p>
     <input id="gkey" type="password" autocomplete="off" placeholder="${acct.hasGemini?"Remplacer par une nouvelle clé":"Colle ta clé Gemini (AIza…)"}">
     <div class="row"><button class="btn sm" id="gkeySave">Enregistrer la clé</button></div>
-    <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" id="gprec" style="width:auto" ${state.micPrecis?"checked":""} ${acct.hasGemini?"":"disabled"}>Utiliser le micro précis</label></div>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" id="gprec" style="width:auto" ${state.micPrecis?"checked":""} ${acct.hasGemini||acct.hasOpenai?"":"disabled"}>Utiliser le micro précis</label></div>
   <label>Création des missions<select id="amode">
     <option value="fast" ${acct.mission==="fast"?"selected":""}>Rapide (Haiku, environ 15 s, conseillé)</option>
     <option value="quality" ${acct.mission==="quality"?"selected":""}>Soignée (Sonnet, 30 à 60 s)</option></select></label>
@@ -2413,6 +2418,8 @@ function bindAcct(){
     try{const r=await srv("testClaude");paintAcct(`<span class="okc2">Claude répond : ${(r.ms/1000).toFixed(1).replace(".",",")} s pour une mission type (${esc(r.model)}).</span>`)}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
   $("#gkeySave").onclick=async e=>{const v=$("#gkey").value.trim();if(!v)return;busy(e.target,"Vérification…");
     try{acct=await srv("setConfig",{geminiKey:v});state.micPrecis=true;micPrecisPanne=false;save();paintAcct('<span class="okc2">Clé Gemini acceptée : micro précis activé.</span>')}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
+  $("#okeySave").onclick=async e=>{const v=$("#okey").value.trim();if(!v)return;busy(e.target,"Vérification…");
+    try{acct=await srv("setConfig",{openaiKey:v});state.micPrecis=true;micPrecisPanne=false;micPrecisEchecs=0;save();paintAcct('<span class="okc2">Clé OpenAI acceptée : micro précis activé (OpenAI en premier).</span>')}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
   $("#gprec").onchange=e=>{state.micPrecis=e.target.checked;micPrecisPanne=false;save();paintAcct(state.micPrecis?"Micro précis activé.":"Micro classique du navigateur.")};
   $("#amode").onchange=async e=>{try{acct=await srv("setConfig",{mission:e.target.value});for(const k in MODULES)state.en.mods[k].pack=null;save();paintAcct("Réglage enregistré.")}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
 
