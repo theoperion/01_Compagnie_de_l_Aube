@@ -3675,7 +3675,6 @@ function vueProfil(s) {
     <button class="back" data-tab="${ongletPrec}">‹ Retour</button>
     <div class="section"><h2>⚙️ Réglages</h2><span>enregistrés dans le Sheet</span></div>
     ${regTheme}<button class="reg reg-lien" data-tab="profil" data-mode="journal"><span>📖</span><div><b>Journal des 7 derniers jours</b><small>Valider ou passer en raté une quête après coup</small></div><i>›</i></button>${regVac}${regVoyage}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
-    ${(s.compagnie || []).length > 1 ? '<button class="lien changer" data-pr="changer-heros" style="position:static;display:block;margin:10px auto">⇄ Changer de héros sur ce téléphone</button>' : ''}
     <div class="version"><b>La Compagnie de l'Aube</b>
       <span>App <b>v${NUMERO_APP}</b> · ${VERSION_APP}</span>
       <span>Moteur ${(s.reglages && s.reglages.numeroMoteur) ? `<b>v${esc(s.reglages.numeroMoteur)}</b> · ` : ''}${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}</span>
@@ -4232,17 +4231,6 @@ document.getElementById('sheetBg').addEventListener('click', fermerMenu);
 function actionProfil(b) {
   const a = b.dataset.pr;
   if (b.disabled) return;
-  if (a === 'changer-heros') {
-    const enAttente = lireAttente().length + lireEnVol().length;
-    if (enAttente) { // la clé change : ces saisies ne pourraient plus jamais partir
-      toast(`⏳ ${enAttente} saisie(s) attendent encore d'être envoyées au Sheet. Reconnecte-toi au réseau, attends l'envoi, puis change de héros.`, 'erreur');
-      if (navigator.onLine !== false) envoyerAttente();
-      return;
-    }
-    if (distant) { if (confirm('Changer de héros sur ce téléphone ? Il faudra entrer l\'autre clé.')) { try { localStorage.removeItem('cle'); } catch (e) {} cleHeros = ''; state = null; profil = null; profilCharge = false; ecranCle(); } }
-    else choisirHerosEcran();
-    return;
-  }
   if (a === 'profil-retry') { chargerProfil(true); render(); return; }
   if (a === 'cle-mod') { cleRefusee = true; ecranCle('Entre ta clé (elle remplace celle de ce téléphone).'); return; }
   if (a === 'sort') {
