@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>La Compagnie de l'Aube</title>
 <meta name="theme-color" content="#110e15">
 <link rel="manifest" href="manifest.webmanifest">
@@ -3663,6 +3663,7 @@ function vueProfil(s) {
       <div class="ligne"><span>Dernière copie</span><b>${sv.derniere ? (ilYaJ === 0 ? 'aujourd\'hui' : ilYaJ === 1 ? 'hier' : `${dateCourte(sv.derniere).replace(/\.$/, '')} (il y a ${ilYaJ} j)`) : 'aucune pour l\'instant'}</b></div>
       ${ilYaJ !== null && ilYaJ > 8 ? '<div class="aide" style="color:var(--pv)">⚠️ Plus d\'une semaine sans copie : la sauvegarde automatique n\'est peut-être pas installée.</div>' : ''}
       <button class="btn plein" data-pr="sauver">💾 Sauvegarder maintenant</button>
+      <button class="btn plein" data-pr="exporter" style="margin-top:8px">📥 Exporter mes données (fichier sur ce téléphone)</button>
       ${sv.dossier ? `<a class="lien" href="${esc(sv.dossier)}" target="_blank">📁 Ouvrir le dossier des sauvegardes</a>` : ''}
     </div>`;
 
@@ -3798,6 +3799,21 @@ async function regler(fn, ...args) {
   }
 }
 
+/* Export (lot 5.1) : une copie de ta fiche, des saisies en attente et du Carnet, enregistrée sur le téléphone (fichier JSON).
+   Utile pour garder une trace à toi, ou pour dépanner si le Sheet était inaccessible. */
+function exporterDonnees() {
+  const lire = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+  const donnees = { exporteLe: new Date().toISOString(), app: NUMERO_APP + ' · ' + VERSION_APP, carnet: NUMERO_CARNET + ' · ' + VERSION_CARNET,
+    heros: herosActif || (state && state.heros) || '', fiche: state, saisiesEnAttente: lireAttente(), saisiesEnCoursEnvoi: lireEnVol(),
+    carnetDeQuetes: lire('quetes-state'), vacancesCarnet: lire('quetes-vacances') };
+  const nom = 'compagnie-' + String(donnees.heros || 'heros').split(' ')[0].toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '') + '-' + isoLocal() + '.json';
+  try {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(donnees, null, 2)], { type: 'application/json' }));
+    const a = document.createElement('a'); a.href = url; a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    toast('📥 ' + nom + ' enregistré dans tes Téléchargements');
+  } catch (e) { toast('Export impossible : ' + ((e && e.message) || e), 'erreur'); }
+}
 /* ---------- Actions ---------- */
 function flotter(texte, couleur) {
   const el = document.createElement('div');
@@ -4217,6 +4233,12 @@ function actionProfil(b) {
   const a = b.dataset.pr;
   if (b.disabled) return;
   if (a === 'changer-heros') {
+    const enAttente = lireAttente().length + lireEnVol().length;
+    if (enAttente) { // la clé change : ces saisies ne pourraient plus jamais partir
+      toast(`⏳ ${enAttente} saisie(s) attendent encore d'être envoyées au Sheet. Reconnecte-toi au réseau, attends l'envoi, puis change de héros.`, 'erreur');
+      if (navigator.onLine !== false) envoyerAttente();
+      return;
+    }
     if (distant) { if (confirm('Changer de héros sur ce téléphone ? Il faudra entrer l\'autre clé.')) { try { localStorage.removeItem('cle'); } catch (e) {} cleHeros = ''; state = null; profil = null; profilCharge = false; ecranCle(); } }
     else choisirHerosEcran();
     return;
@@ -4233,6 +4255,7 @@ function actionProfil(b) {
     if (confirm(`Restauration arcanique : effacer le raté de « ${q} » ? PV rendus et série intacte. (1 fois par mois)`)) regler('utiliserRestauration', q).then(ok => ok && toast('✨ Le raté s\'efface : la magie opère'));
     return;
   }
+  if (a === 'exporter') { exporterDonnees(); return; }
   if (a === 'sauver') {
     b.disabled = true; b.textContent = '💾 Copie en cours…';
     toast('Sauvegarde lancée dans ton Drive 💾'); regler('sauvegarderMaintenant');
