@@ -1530,20 +1530,32 @@ const NUMERO_APP = CONFIG.NUMERO_APP || '?';
 /* Lectures sans effet : on peut les renvoyer sans risque si le réseau a coupé */
 const LECTURES = new Set(['getState', 'getProfil', 'voirCompagnon', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'maitreDuJeu', 'rebondissement', 'retrospective', 'chapitreEvolution', 'verifierCle', 'journalRecent']);
 const pause = ms => new Promise(r => setTimeout(r, ms));
+/* Délai maximum d'un appel (lot 2.2) : sans réponse, on abandonne au lieu de figer l'app. Une saisie repart alors par la file
+   hors connexion (le Sheet ne la compte jamais deux fois, même si la première a fini par arriver). Textes de Claude : plus long. */
+const LENTS = new Set(['maitreDuJeu', 'rebondissement', 'chroniqueSemaine', 'paroleBoss', 'motDuCoach', 'recitEvenement', 'chapitreEvolution', 'retrospective', 'testerRappel', 'sauvegarderMaintenant']);
+const delaiAppel = fn => LENTS.has(fn) ? 90000 : 45000;
 async function appelDistant(fn, args) {
   if (!cleHeros && fn !== 'verifierCle') { if (!cleRefusee) { cleRefusee = true; setTimeout(() => ecranCle(), 0); } throw new Error('Clé de héros manquante'); }
   let j = null;
   for (let essai = 0; ; essai++) {
     try {
-      const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, cle: cleHeros }) });
-      const brut = await r.text();
+      const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const minuteur = ctrl && setTimeout(() => ctrl.abort(), delaiAppel(fn));
+      let r, brut;
+      try {
+        r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, cle: cleHeros }), signal: ctrl ? ctrl.signal : undefined });
+        brut = await r.text();
+      } catch (e) {
+        if (e && e.name === 'AbortError') { const x = new Error('Pas de connexion au Sheet (aucune réponse après ' + Math.round(delaiAppel(fn) / 1000) + ' s)'); x.delai = true; throw x; }
+        throw e;
+      } finally { if (minuteur) clearTimeout(minuteur); }
       try { j = JSON.parse(brut); }
       catch (e) { // Google a renvoyé une page (connexion, quota, déploiement) au lieu de la réponse
         const titre = (brut.match(/<title>([^<]*)/i) || [])[1] || brut.replace(/<[^>]+>/g, ' ').trim().slice(0, 80);
         throw new Error('Réponse inattendue de Google (' + r.status + ' ' + titre + ')');
       }
     } catch (e) {
-      if (essai < 2 && LECTURES.has(fn)) { await pause(1200 * (essai + 1)); continue; }
+      if (essai < 2 && LECTURES.has(fn) && !(e && e.delai)) { await pause(1200 * (essai + 1)); continue; }
       if (fn !== 'signalerErreurs' && navigator.onLine !== false) signaler({ ou: 'réseau', fn, msg: String((e && e.message) || e) });
       throw /Failed to fetch|NetworkError|Load failed/i.test(String(e && e.message)) ? new Error('Pas de connexion au Sheet (réseau)') : e;
     }
@@ -1579,8 +1591,38 @@ const nouvelId = () => Date.now().toString(36) + Math.random().toString(36).slic
 function estHorsLigne(e) { return (typeof navigator !== 'undefined' && navigator.onLine === false) || /Pas de connexion|Failed to fetch|NetworkError|Load failed|Réponse inattendue/i.test(String((e && e.message) || e)); }
 const cleAttente = () => 'attente|' + (herosActif || '');
 function lireAttente() { try { return JSON.parse(localStorage.getItem(cleAttente()) || '[]'); } catch (e) { return []; } }
-function ecrireAttente(l) { try { localStorage.setItem(cleAttente(), JSON.stringify(l)); } catch (e) {} }
+function ecrireAttente(l) {
+  try { localStorage.setItem(cleAttente(), JSON.stringify(l)); return true; }
+  catch (e) { toast('⚠️ Mémoire du téléphone pleine : la saisie n\'a pas pu être gardée. Libère de la place, puis refais-la avec du réseau.', 'erreur'); return false; }
+}
 function mettreEnAttente(item) { const l = lireAttente(); l.push(item); ecrireAttente(l); if (state) { memoriserEtat(); render(); } }
+/* Saisie en cours d'envoi (lot 2.1) : notée sur le téléphone AVANT de partir, effacée quand le Sheet a répondu.
+   Si l'app est fermée entre les deux, elle repart à la prochaine ouverture (le Sheet ne la compte jamais deux fois). */
+const cleEnVol = () => 'envol|' + (herosActif || '');
+function lireEnVol() { try { return JSON.parse(localStorage.getItem(cleEnVol()) || '[]'); } catch (e) { return []; } }
+function ecrireEnVol(l) { try { if (l.length) localStorage.setItem(cleEnVol(), JSON.stringify(l)); else localStorage.removeItem(cleEnVol()); return true; } catch (e) { return false; } }
+function ajouterEnVol(item) { const l = lireEnVol(); l.push(item); return ecrireEnVol(l); }
+function retirerEnVol(id) { ecrireEnVol(lireEnVol().filter(x => x.id !== id)); }
+function recupererEnVol() {
+  const v = lireEnVol(); if (!v.length) return;
+  const l = lireAttente(), ids = new Set(l.map(x => x.id));
+  v.forEach(x => { if (!ids.has(x.id)) l.push(x); });
+  if (ecrireAttente(l)) ecrireEnVol([]);
+}
+/* Saisies encore en attente : leur effet est réappliqué sur chaque nouvelle fiche reçue du Sheet (lot 2.3),
+   sinon elles disparaissaient de l'écran jusqu'à leur envoi (et on risquait de les refaire). */
+function avecAttente(s) {
+  const l = lireAttente(); if (!s || !s.today || !l.length) return s;
+  let n = s;
+  l.forEach(x => {
+    if (x.type !== 'saisie' && x.type !== 'undo') return;
+    const st = x.type === 'undo' ? 'undo' : x.hier ? 'hier' : x.statut;
+    const jour = x.hier ? isoPlusLocal(n.today, -1) === x.date : x.date === n.today;
+    if (!jour) return;
+    try { const p = predire(n, x.quete, st); if (p) n = p.etat; } catch (e) {}
+  });
+  return n;
+}
 let envoiAttente = null;
 /** Envoie la file d'attente au Sheet. Renvoie l'état du Sheet (ou null si rien à envoyer / pas de réseau). */
 function envoyerAttente(silencieux) {
@@ -1596,8 +1638,8 @@ function envoyerAttente(silencieux) {
     const ok = res.filter(r => r.ok && !r.deja).length;
     if (refus.length) toast(`${refus.length} saisie(s) hors connexion refusée(s) : ${refus[0].message}`);
     else if (ok && !silencieux) toast(`📶 De retour en ligne : ${ok} saisie${ok > 1 ? 's' : ''} envoyée${ok > 1 ? 's' : ''} au Sheet`);
-    if (envoisEnCours === 0) { state = etat; confirme = null; render(); } else confirme = etat;
-    if (lireAttente().length) setTimeout(() => envoyerAttente(true), 500); // il en reste (plus de 60)
+    if (envoisEnCours === 0) { state = avecAttente(etat); confirme = null; render(); } else confirme = etat;
+    if (lireAttente().length && traites.size) setTimeout(() => envoyerAttente(true), 500); // il en reste (plus de 60) ; sans réponse exploitable, on attend le prochain essai (30 s)
     return etat;
   }).catch(e => { if (!estHorsLigne(e)) toast('Envoi des saisies en attente impossible : ' + ((e && e.message) || e)); return null; })
     .finally(() => { envoiAttente = null; });
@@ -2457,7 +2499,7 @@ window.addEventListener('message', e => {
   if (m.t === 'compagnie-retour') { onglet = 'quetes'; try { localStorage.setItem('onglet', onglet); } catch (err) {} render(); window.scrollTo(0, 0); return; }
   if (m.t !== 'compagnie-etat' || !m.etat) return;
   const avant = state;
-  if (envoisEnCours === 0) { state = m.etat; confirme = null; } else confirme = m.etat;
+  if (envoisEnCours === 0) { state = avecAttente(m.etat); confirme = null; } else confirme = m.etat;
   render();
   (m.valides || []).forEach((n, i) => setTimeout(() => toast(/^Lexique/.test(n) ? '📖 ' + n : '✓ « ' + n + ' » validée dans la Compagnie'), i * 2200));
   celebrerChangements(avant, m.etat);
@@ -2775,7 +2817,7 @@ function demanderMJ(s) {
     if (!m || !m.pret || !state) return;
     state.mj = m; render(); toast('📜 Un nouveau chapitre de la Saga vous attend');
     // la Quête du destin apparaît dans les annexes : on recharge l'état complet en arrière-plan
-    if (envoisEnCours === 0) apiFond('getState').then(st => { if (envoisEnCours === 0) { state = st; render(); } }).catch(() => {});
+    if (envoisEnCours === 0) apiFond('getState').then(st => { if (envoisEnCours === 0) { state = avecAttente(st); render(); } }).catch(() => {});
   }).catch(() => {});
 }
 function vueSaga(s) {
@@ -2913,7 +2955,7 @@ async function actionJournal(fn, args, cle, message) {
     const r = await api(fn, ...args);
     if (r && r.journalQuetes) { garderJournal(r.journalQuetes); delete r.journalQuetes; }
     const avant = state;
-    if (envoisEnCours === 0) { state = r; confirme = null; } else confirme = r;
+    if (envoisEnCours === 0) { state = avecAttente(r); confirme = null; } else confirme = r;
     journalOccupe = ''; render(); toast(message);
     celebrer(r.nouveauxBonus);
     if (typeof celebrerChangements === 'function') celebrerChangements(avant, r);
@@ -3149,7 +3191,7 @@ async function lancerDe() {
   render();
   envoi.then(res => {
     const d = res && res.d20;
-    if (envoisEnCours === 0) { state = res; confirme = null; } else confirme = res;
+    if (envoisEnCours === 0) { state = avecAttente(res); confirme = null; } else confirme = res;
     if (d && (d.de !== local.de || d.texte !== local.texte)) {
       if (document.getElementById('d20ov').classList.contains('on')) afficherD20(d);
       if (d.de !== local.de) toast('Ton dé du jour avait déjà été lancé sur un autre appareil : ' + d.de);
@@ -3822,7 +3864,7 @@ async function regler(fn, ...args) {
   fileEnvois = p.catch(() => {});
   try {
     const s = await p; envoisEnCours--;
-    if (envoisEnCours === 0) { state = s; confirme = null; render(); } else confirme = s;
+    if (envoisEnCours === 0) { state = avecAttente(s); confirme = null; render(); } else confirme = s;
     return true;
   } catch (e) {
     envoisEnCours--;
@@ -4115,13 +4157,14 @@ function agir(nom, statut) {
     return;
   }
   envoisEnCours++;
+  ajouterEnVol(item);
   const appel = () => api('saisirHorsLigne', [Object.assign({ direct: true }, item)]).then(etat => {
     const r = (etat.horsLigne || [])[0];
     if (r && !r.ok) throw new Error(r.message);
     return etat;
   });
   fileEnvois = fileEnvois.then(appel).then(apres => {
-    envoisEnCours--; busy.delete(nom);
+    envoisEnCours--; busy.delete(nom); retirerEnVol(item.id);
     const avant = confirme; confirme = apres;
     if (!pred) { // saisie non prédite : retour visuel à l'arrivée
       const dXp = apres.xpTotale - avant.xpTotale, dPv = apres.pv - avant.pv;
@@ -4129,18 +4172,19 @@ function agir(nom, statut) {
       else if (dPv < 0) flotter(`Toi : ${dPv} PV`, 'var(--pv)');
     }
     celebrerChangements(avant, apres);
-    if (envoisEnCours === 0) { state = apres; confirme = null; render(); }
+    if (envoisEnCours === 0) { state = avecAttente(apres); confirme = null; render(); }
   }).catch(e => {
     envoisEnCours--; busy.delete(nom);
     if (estHorsLigne(e)) { // pas de réseau : la saisie est gardée, l'écran garde son effet
-      mettreEnAttente(item);
+      mettreEnAttente(item); retirerEnVol(item.id);
       toast('📴 Hors connexion : saisie gardée sur le téléphone, elle partira au retour du réseau');
       if (envoisEnCours === 0 && confirme) confirme = null;
       return;
     }
+    retirerEnVol(item.id);
     toast('Échec de l\'enregistrement : ' + (e && e.message ? e.message : e));
     // On revient à la vérité du Sheet
-    return api('getState').then(s => { if (envoisEnCours === 0) { state = s; confirme = null; } else confirme = s; render(); })
+    return api('getState').then(s => { if (envoisEnCours === 0) { state = avecAttente(s); confirme = null; } else confirme = s; render(); })
       .catch(() => { if (confirme && envoisEnCours === 0) { state = confirme; confirme = null; render(); } });
   });
 }
@@ -4500,7 +4544,21 @@ function erreurChargement(e) {
 }
 /* Dernier état connu, gardé sur le téléphone : l'app s'affiche tout de suite, puis se met à jour */
 const cleEtat = () => 'etat|' + (herosActif || '');
-function memoriserEtat() { try { if (state && (enLigne || distant)) localStorage.setItem(cleEtat(), JSON.stringify(state)); } catch (e) {} }
+let dernierMemo = '';
+function memoriserEtat() { try { if (state && (enLigne || distant)) { const t = JSON.stringify(state); if (t !== dernierMemo) { localStorage.setItem(cleEtat(), t); dernierMemo = t; } } } catch (e) {} }
+/* App laissée ouverte à l'écran au passage de minuit (lot 2.4) : elle passe au nouveau jour toute seule */
+function planifierMinuit() {
+  const d = new Date(), m = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 0, 0, 30);
+  setTimeout(() => {
+    if (state && premierEtatRecu && state.today && state.today < isoLocal() && (enLigne || distant)) {
+      state = passerAuJour(state); render();
+      if (envoisEnCours === 0 && navigator.onLine !== false)
+        apiFond('getState').then(st => { if (envoisEnCours === 0 && st) { state = avecAttente(st); render(); celebrer(st.nouveauxBonus); } }).catch(() => {});
+    }
+    planifierMinuit();
+  }, Math.max(1000, m - d));
+}
+planifierMinuit();
 function lancer() {
   let memo = null;
   try { memo = JSON.parse(localStorage.getItem(cleEtat()) || 'null'); } catch (e) {}
@@ -4508,10 +4566,11 @@ function lancer() {
   // en attendant les chiffres exacts du Sheet. Plus d'écran d'hier pendant 10 secondes.
   if (memo && (enLigne || distant)) { state = passerAuJour(memo); render(); }
   else { dernierHtml = ''; document.getElementById('app').innerHTML = '<div class="loading">Chargement de ta feuille de personnage…</div>'; }
-  // des saisies faites hors connexion attendent : elles partent d'abord, et la réponse est l'état à jour
+  // une saisie interrompue (app fermée pendant l'envoi) rejoint la file ; puis la file part d'abord, et la réponse est l'état à jour
+  recupererEnVol();
   const premier = lireAttente().length ? envoyerAttente(true).then(s => s || api('getState')) : api('getState');
   premier.then(s => {
-    state = s; premierEtatRecu = true;
+    state = avecAttente(s); premierEtatRecu = true;
     if (s.heros && herosActif !== String(s.heros)) { herosActif = String(s.heros); try { localStorage.setItem('heros', herosActif); } catch (e) {} }
     render(); celebrer(s.nouveauxBonus);
     if (!s.d20 && !d20Vu) setTimeout(ouvrirD20, 350);
@@ -4533,7 +4592,7 @@ document.addEventListener('visibilitychange', () => {
   const nouveauJour = state.today && state.today < isoLocal();
   if (nouveauJour) { state = passerAuJour(state); render(); }
   if ((nouveauJour || Date.now() - cacheLe > 10 * 60000) && envoisEnCours === 0 && navigator.onLine !== false) {
-    apiFond('getState').then(st => { if (envoisEnCours === 0 && st) { state = st; render(); celebrer(st.nouveauxBonus); } }).catch(() => {});
+    apiFond('getState').then(st => { if (envoisEnCours === 0 && st) { state = avecAttente(st); render(); celebrer(st.nouveauxBonus); } }).catch(() => {});
     if (onglet === 'profil' && modeProfil === 'journal') chargerJournal(true);
   }
 });
