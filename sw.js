@@ -42,7 +42,8 @@ self.addEventListener('fetch', e => {
 
   // pages et scripts du site : réseau d'abord, copie si hors connexion
   e.respondWith(caches.open(CACHE).then(async c => {
-    const reseau = fetch(req).then(r => { if (r && r.ok) c.put(cleCopie(req.url), r.clone()); return r; });
+    // « no-cache » : le navigateur redemande toujours à GitHub si le fichier a changé (sinon il resservait jusqu'à 10 min l'ancienne version)
+    const reseau = fetch(new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' })).then(r => { if (r && r.ok) c.put(cleCopie(req.url), r.clone()); return r; });
     try { return await avecDelai(reseau, 4000); }
     catch (err) {
       const copie = await c.match(cleCopie(req.url)) || (req.mode === 'navigate' ? (await c.match(new URL('index.html', self.location).href) || await c.match(new URL('./', self.location).href)) : null);

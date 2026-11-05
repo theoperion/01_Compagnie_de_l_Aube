@@ -13,7 +13,16 @@
 <script src="config.js"></script>
 <script>
   /* Adresse du moteur et versions : dans config.js (réglages communs) */
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  if ('serviceWorker' in navigator) {
+    /* Nouvelle version publiée : la page se recharge d'elle-même une fois la nouvelle copie prête (pas au tout premier lancement) */
+    const avaitCopie = !!navigator.serviceWorker.controller;
+    let recharge = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (avaitCopie && !recharge) { recharge = true; location.reload(); } });
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+      // Android garde l'app en mémoire : on revérifie les mises à jour à chaque retour sur l'app
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+    }).catch(() => {});
+  }
 </script>
 
 
