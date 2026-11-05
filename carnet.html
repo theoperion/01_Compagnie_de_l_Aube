@@ -2341,8 +2341,6 @@ function bindAcct(){
   $("#atest").onclick=async e=>{busy(e.target,"Test en cours…");
     try{const r=await srv("testClaude");paintAcct(`<span class="okc2">Claude répond : ${(r.ms/1000).toFixed(1).replace(".",",")} s pour une mission type (${esc(r.model)}).</span>`)}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
   $("#amode").onchange=async e=>{try{acct=await srv("setConfig",{mission:e.target.value});for(const k in MODULES)state.en.mods[k].pack=null;save();paintAcct("Réglage enregistré.")}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
-  if($("#acodeSave")) $("#acodeSave").onclick=async e=>{const v=$("#acode").value.trim().toUpperCase();if(!v)return;busy(e.target,"…");
-    try{await srv("changeCode",v);paintAcct(`<span class="okc2">Nouveau code : ${esc(v)}. Note-le : il faudra le taper sur tes autres appareils.</span>`);setTimeout(()=>toParent({t:"quetes-code",code:v}),2500)}catch(er){paintAcct('<span class="badc2">'+esc(errTxt(er))+'</span>')}};
 
 }
 
@@ -2356,7 +2354,7 @@ function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").se
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setTab(b.dataset.go));
 $("#gear").onclick=()=>setTab(tab==="set"?lastTab:"set");
-function renderAll(){renderQuestEn();renderQuestRun();renderQuestStr();if(!ses)renderEn();renderRun();if(!pl)renderStr();renderSet()}
+function renderAll(){renderQuestEn();renderQuestRun();renderQuestStr();if(!ses)renderEn();renderRun();if(!pl)renderStr();if(!document.querySelector("#p-set :focus"))renderSet()} // réglages : pas redessinés pendant qu'on tape (sinon la saisie s'effaçait)
 renderAll();
 try{const t=localStorage.getItem("quetes-tab");if(t&&t!=="en"&&t!=="set")setTab(t)}catch(e){}
 try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}

@@ -24,41 +24,6 @@
     }).catch(() => {});
   }
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<base target="_top">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>La Compagnie de l'Aube</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -336,8 +301,6 @@
   .d20-table { color: var(--muted); font-size: 11.5px; margin-top: 12px; line-height: 1.5; }
   .d20-res .mult.malus, .d20-card.malus b { color: #e07a6f; }
   .d20-res .mult.malus { border-color: #6b2a25; background: #2a1414; }
-  .d20-vol { position: fixed; left: 0; top: 0; width: 110px; height: 110px; z-index: 41; pointer-events: none; }
-  .d20-vol svg { width: 110px; height: 110px; margin: 0; filter: drop-shadow(0 10px 14px rgba(0,0,0,.6)); }
   .d20-later { background: none; border: 0; color: var(--muted); font-size: 13px; margin-top: 8px; text-decoration: underline; }
   .d20-card { display: flex; align-items: center; gap: 10px; width: 100%; margin: 4px 0 12px; padding: 12px 14px; border-radius: 14px; text-align: left;
     border: 1px solid #6a5320; background: linear-gradient(135deg, #2b2410, #1c1726); color: var(--gold); font: 700 15px var(--f-titre); }
@@ -581,12 +544,7 @@
   .capa.lock { opacity: .45; }
   .capa b { display: block; margin-bottom: 2px; }
   .capa span.d { color: var(--muted); font-size: 12px; line-height: 1.45; }
-  .evolution { position: fixed; inset: 0; z-index: 31; display: grid; place-items: center; pointer-events: none;
     background: radial-gradient(circle, rgba(201,162,255,.35), rgba(17,14,21,.95) 70%); animation: fade 3.2s forwards; }
-  .evolution div { text-align: center; font-family: var(--f-titre); color: var(--gold); }
-  .evolution svg { width: 220px; display: block; margin: 0 auto 8px; }
-  .evolution b { display: block; font-size: 30px; font-weight: 800; }
-  .evolution span { font-size: 16px; color: var(--text); }
   /* Onglets */
   body { padding-bottom: 96px; }
   #carnetBox { position: fixed; left: 0; right: 0; top: 0; z-index: 8; background: #120d22; }
@@ -643,19 +601,10 @@
   body.bloque { overflow: hidden; }
   .evo-rang, .orn-liste { overscroll-behavior-x: contain; }
   .vit-saut { transform-style: preserve-3d; }
-  .vit-rot.fig .vit-perso { transform-style: preserve-3d; }
   .vit-saut.salut { animation: salut .8s cubic-bezier(.3,.7,.4,1); }
   .vit-mode { display: flex; justify-content: center; gap: 4px; margin: 4px auto 0; padding: 3px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); width: max-content; }
   .vit-mode button { border: 0; background: transparent; color: var(--muted); font: 600 12px var(--f-texte); padding: 6px 12px; border-radius: 9px; cursor: pointer; }
   .vit-mode button.on { background: var(--card); color: var(--gold); }
-  .vit-rot.fig { width: min(70vw, 300px); }
-  .fig3d { position: relative; transform-style: preserve-3d; }
-  .fig3d .couche { position: absolute; inset: 0; backface-visibility: hidden; }
-  .fig3d .couche.avant { position: relative; }
-  .fig3d .couche.tranche { backface-visibility: visible; filter: brightness(.22) saturate(.5); }
-  .fig3d .couche.dos { filter: brightness(.45) saturate(.6); }
-  .fig3d svg { width: 100%; height: auto; display: block; }
-  .socle { position: absolute; left: 50%; bottom: -4%; width: 78%; height: 13%; transform: translateX(-50%) rotateX(78deg); border-radius: 50%;
     background: radial-gradient(ellipse, #3a2f48 0%, #241c30 60%, #120e18 100%); box-shadow: 0 0 0 3px #d4ad3c55, 0 10px 24px rgba(0,0,0,.6); }
   .etincelle { position: absolute; left: 50%; top: 55%; width: 6px; height: 6px; border-radius: 50%; background: #ffe7a0; box-shadow: 0 0 10px #ffd34d; pointer-events: none;
     animation: etinc .9s ease-out forwards; }
@@ -804,11 +753,7 @@
   .lvl-recap li i { font-style: normal; font-size: 18px; text-align: center; } .lvl-recap b { color: var(--gold); }
   .lvl-recap small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
   .lvl-box .btn { opacity: 0; animation: lvlMonte .4s ease-out 2.2s forwards; min-width: 160px; }
-  .levelup { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; pointer-events: none;
     background: radial-gradient(circle, rgba(212,173,60,.35), rgba(17,14,21,.9) 70%); animation: fade 2.6s forwards; }
-  .levelup div { text-align: center; font-family: var(--f-titre); color: var(--gold); padding: 0 20px; }
-  .levelup b { display: block; font-size: 40px; font-weight: 800; letter-spacing: .05em; }
-  .levelup span { font-size: 18px; color: var(--text); }
   @keyframes fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
   .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 200; max-width: min(92vw, 440px); width: max-content;
     background: #3a1f1f; color: #ffc2c2; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.4; display: none; text-align: center;
@@ -1724,7 +1669,7 @@ function prevu(h, iso) {
   const decs = h.decalages || [];
   if (decs.some(x => x.a === iso)) return true;
   if (decs.some(x => x.de === iso)) return false;
-  return h.jours.split(',').map(s => s.trim()).includes(JOURS[indexJour(iso)]);
+  return String(h.jours || '').split(',').map(s => s.trim()).includes(JOURS[indexJour(iso)]);
 }
 function prochaine(h) {
   if (h.prochaine !== undefined) { // calculée par le serveur avec la règle unique
@@ -2588,7 +2533,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-enc]')) { ouvrirEncouragement(); return; }
   const m = e.target.closest('[data-msg]');
   if (m) { fermerMenu(); const txt = m.dataset.msg === '_' ? (document.getElementById('encLibre').value || '').trim() : m.dataset.msg;
-    if (state.camp) state.camp.encourage = true; render();
+    if (!txt) { toast('Écris un mot, ou choisis un des messages proposés'); return; }
     regler('encourager', txt).then(ok => ok && toast('Encouragement envoyé ⚔️')); return; }
   const pa = e.target.closest('[data-pacte]');
   if (pa) { regler('proposerPacte', pa.dataset.pacte).then(ok => ok && toast('Pacte proposé : ton compagnon doit le sceller')); return; }
@@ -2623,7 +2568,6 @@ function dessinerVitrine() {
   const orn = moi ? ornementsDe(state) : (s.ornements || {});
   const svg = orner(cl.dessin(pal, 'vit', lookDe(s.look)), orn, 'vit', true);
   const mage = !/voleur|assassin|roublard/i.test((s.classe || {}).nom || '');
-  const mode3d = false; // figurine 3D retirée (rendu jugé raté) : vitrine 2D seule
   const parts = Array.from({ length: 14 }, (_, i) => `<i style="left:${8 + (i * 61) % 84}%;animation-delay:${(i * .73) % 6}s;animation-duration:${5 + (i % 4)}s"></i>`).join('');
   // petites tuiles : toucher = porter / retirer ; « ? » = comment on le gagne
   const coll = moi ? EMPLACEMENTS.map(E => {
@@ -2642,10 +2586,10 @@ function dessinerVitrine() {
     <div class="vit-nom"><b>${esc(s.heros || s.nom || '')}</b><span>${esc([s.titre, 'niveau ' + s.niveau, P && P.titre].filter(Boolean).join(' · '))}</span></div>
     <div class="vit-scene ${mage ? 'mage' : 'voleur'} ${confort().animations ? '' : 'calme'}">
       <div class="vit-parts">${parts}</div>
-      <div class="vit-rot ${mode3d ? 'fig' : ''}" id="vitRot"><div class="vit-saut" id="vitSaut"><div class="vit-perso" id="vitPerso">${mode3d ? figurine3d(svg) : svg}</div></div></div>
+      <div class="vit-rot" id="vitRot"><div class="vit-saut" id="vitSaut"><div class="vit-perso" id="vitPerso">${svg}</div></div></div>
       <div class="vit-ombre"></div>
     </div>
-    <p class="vit-aide">${mode3d ? 'Fais tourner la figurine du doigt · touche-la pour la saluer' : 'Incline-le du doigt · touche-le pour le saluer'}</p>
+    <p class="vit-aide">Incline-le du doigt · touche-le pour le saluer</p>
     <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche une forme atteinte pour revoir son évolution' : 'toucher'}</span></div>
     <div class="evo-rang">${evos}</div>
     ${moi ? `<div class="section"><h2>Ornements</h2><span>${nb} / ${ORNEMENTS.length} gagnés</span></div>
@@ -2659,30 +2603,11 @@ function miniOrnement(o) {
   const vb = o.slot === 'familier' ? '10 180 60 70' : o.slot === 'sol' ? '30 225 140 30' : '24 34 40 40';
   return f ? `<svg viewBox="${vb}" width="34" height="${o.slot === 'sol' ? 14 : 34}">${f('m' + o.id)}</svg>` : '';
 }
-function vue3d() { try { return localStorage.getItem('vue3d') === '1'; } catch (e) { return false; } }
-/** Figurine : le dessin en plusieurs épaisseurs (tranche sombre) + un dos, pour tourner en vrai 3D sans perdre le détail */
-function figurine3d(svg) {
-  const N = 9, pas = 1.5, demi = (N * pas) / 2;
-  let h = `<div class="couche avant" style="transform:translateZ(${demi}px)">${svg}</div>`;
-  for (let i = 1; i < N; i++) h += `<div class="couche tranche" style="transform:translateZ(${(demi - i * pas).toFixed(1)}px)">${svg}</div>`;
-  h += `<div class="couche dos" style="transform:translateZ(${-demi}px) rotateY(180deg)">${svg}</div>`;
-  return `<div class="fig3d">${h}</div><div class="socle"></div>`;
-}
 let figAnim = null;
 function brancherRotation() {
   const rot = document.getElementById('vitRot'), saut = document.getElementById('vitSaut');
   if (!rot) return;
   if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; }
-  if (rot.classList.contains('fig')) { // figurine : tourne seule, le doigt la fait pivoter (360°)
-    let ang = -20, v = .25, x0 = null, a0 = 0, bouge = false, lache = 0, tilt = -8;
-    const pose = () => { rot.style.transform = `rotateX(${tilt}deg) rotateY(${ang}deg)`; };
-    const boucle = () => { if (x0 === null) { if (Math.abs(v) > .25) v *= .96; else v = v < 0 ? -.25 : .25; if (confort().animations) ang += v; } pose(); figAnim = requestAnimationFrame(boucle); };
-    rot.onpointerdown = e => { x0 = e.clientX; a0 = ang; bouge = false; lache = e.clientX; rot.setPointerCapture && rot.setPointerCapture(e.pointerId); };
-    rot.onpointermove = e => { if (x0 === null) return; const dx = e.clientX - x0; if (Math.abs(dx) > 6) bouge = true; v = (e.clientX - lache) * .5; lache = e.clientX; ang = a0 + dx * .6; };
-    rot.onpointerup = rot.onpointercancel = () => { x0 = null; if (!bouge) saluer(saut); };
-    boucle();
-    return;
-  }
   let x0 = null, y0 = 0, ry = 0, rx = 0, bouge = false;
   const poser = () => { rot.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`; };
   rot.onpointerdown = e => { x0 = e.clientX; y0 = e.clientY; bouge = false; rot.setPointerCapture && rot.setPointerCapture(e.pointerId); rot.style.transition = 'none'; };
@@ -2702,8 +2627,6 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-vitrine]')) { ouvrirVitrine(); return; }
   if (e.target.closest('[data-vitrine-comp]') && compVue) { ouvrirVitrine(compVue); return; }
   if (e.target.closest('[data-vit-close]') || e.target.id === 'vitrine') { fermerVitrine(); return; }
-  const v3 = e.target.closest('[data-vue3d]');
-  if (v3) { try { localStorage.setItem('vue3d', v3.dataset.vue3d); } catch (err) {} dessinerVitrine(); return; }
   const qi = e.target.closest('[data-orn-info]');
   if (qi) {
     const o = ORNEMENTS.find(x => x.id === qi.dataset.ornInfo); if (!o) return;
@@ -3031,7 +2954,7 @@ function vueCombat(s) {
   return `
     <div class="section"><h2>Boss du Crépuscule</h2><span>à abattre ensemble</span></div>
     ${B.semaine || B.mois ? carteBoss(B.semaine, s) + carteBoss(B.mois, s)
-      : '<div class="empty">Aucun boss en ce moment. Le premier attaque le lundi 2 novembre.</div>'}
+      : '<div class="empty">Aucun boss en ce moment : le prochain arrive bientôt.</div>'}
     ${B.semaine && B.semaine.statut !== 'À venir' ? `<div class="section"><h2>Journal des coups</h2><span>cette semaine</span></div>
     <div class="panel coups">${coups.length ? coups.map(ligne).join('') : '<div class="muted">Aucun coup porté pour l\'instant. À toi d\'ouvrir le combat !</div>'}</div>` : ''}
     ${B.regles ? regleBoss(s) : ''}`;
@@ -3110,7 +3033,7 @@ function carteD20(s) {
   const d = s.d20;
   return `<button class="d20-card fait ${d.mult < 1 ? 'malus' : ''}" data-d20="1">${d20Svg(d.de)}<div><b>${esc(d.titre)}</b><br>${d.mult !== 1 ? `XP ×${String(d.mult).replace('.', ',')} sur tes quêtes du jour` : 'Ni bonus ni malus aujourd\'hui'}</div></button>`;
 }
-let d20Vu = false, d20Promesse = null; // d20Promesse : gardé pour compatibilité
+let d20Vu = false;
 function ouvrirD20() {
   d20Vu = true;
   const s = state, ov = document.getElementById('d20ov');
@@ -3307,6 +3230,7 @@ function carteEpique(o) {
 }
 
 function carteBilan(s, dimanche) {
+  if (!s.bilan || !s.bilan.semaine || !s.bilan.precedente) return '';
   const b = s.bilan.semaine, pr = s.bilan.precedente;
   const delta = pr.xp ? Math.round((b.xp - pr.xp) / pr.xp * 100) : null;
   const tendance = delta === null ? '' : `<div class="${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)} % vs sem. dern.</div>`;
@@ -3689,7 +3613,7 @@ function vueProfil(s) {
   const nomJour = d => (d === s.today ? 'aujourd\'hui' : JOURS_LONGS[indexJour(d)]) + ' ' + versDate(d).getDate();
   const regPause = `<div class="reg"><h3>⏸️ Quêtes en pause</h3>
       <div class="aide">Blessure, période chargée, saison : la quête disparaît de l'app, aucun raté, série gelée. Elle reprend d'un tap.</div>
-      ${s.habitudes.map(h => `<div class="ligne"><span>${ICONES[h.carac] || '⭐'} ${esc(h.nom)}${h.enPause ? ` <span class="muted">· en pause depuis le ${dateCourte((R.pauses.find(x => x.nom === h.nom) || {}).depuis || s.today)}</span>` : ''}</span>
+      ${s.habitudes.map(h => `<div class="ligne"><span>${ICONES[h.carac] || '⭐'} ${esc(h.nom)}${h.enPause ? ` <span class="muted">· en pause depuis le ${dateCourte(((R.pauses || []).find(x => x.nom === h.nom) || {}).depuis || s.today)}</span>` : ''}</span>
         <button class="btn mini ${h.enPause ? 'or' : ''}" data-pr="pause" data-q="${esc(h.nom)}">${h.enPause ? 'Reprendre' : 'Pause'}</button></div>`).join('')}
     </div>`;
   const voy = R.voyages || [];
@@ -4238,7 +4162,7 @@ document.addEventListener('click', e => {
   const nom = document.getElementById('sheetPal').dataset.q;
   if (ok) {
     const de = document.getElementById('cjDe').value, a = document.getElementById('cjA').value;
-    fermerMenu(); toast('Séance déplacée 📅'); regler('decalerSeance', nom, de, a);
+    fermerMenu(); regler('decalerSeance', nom, de, a).then(ok => ok && toast('Séance déplacée 📅'));
   } else {
     const [de, a] = an.dataset.jourAnnul.split('|');
     fermerMenu(); toast('Décalage annulé'); regler('annulerDecalage', nom, de, a);
@@ -4318,7 +4242,7 @@ function actionProfil(b) {
   } else if (a === 'vac-add') {
     const deb = document.getElementById('vacDeb').value, fin = document.getElementById('vacFin').value;
     if (!deb || !fin) { toast('Choisis une date de départ et de retour'); return; }
-    toast('Vacances planifiées 🏖️'); regler('planifierVacances', deb, fin);
+    regler('planifierVacances', deb, fin).then(ok => ok && toast('Vacances planifiées 🏖️'));
   } else if (a === 'vac-now') {
     if (confirm('Mode vacances dès aujourd\'hui : plus aucun raté ni perte de PV, séries gelées. Activer ?')) regler('toggleVacances');
   } else if (a === 'vac-del') {
@@ -4616,7 +4540,7 @@ document.addEventListener('click', e => {
   if (!c) return;
   herosActif = c.dataset.choix;
   try { localStorage.setItem('heros', herosActif); } catch (err) {}
-  onglet = 'quetes'; state = null; profil = null; profilCharge = false; d20Vu = false; d20Promesse = null;
+  onglet = 'quetes'; state = null; profil = null; profilCharge = false; d20Vu = false;
   lancer();
 });
 /** App installable : saisie de la clé secrète du héros (une seule fois par téléphone). */

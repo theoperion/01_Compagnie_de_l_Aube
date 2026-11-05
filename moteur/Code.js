@@ -29,8 +29,8 @@ const COLS_JOURNAL = 14;
 
 const CODES_JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 /** Version du moteur (affichée en bas des réglages de l'app, avec celle de l'app). */
-const VERSION_MOTEUR = '2026-11-05-2';
-const NUMERO_MOTEUR = '3.4'; // numéro de version du moteur : +0.1 à chaque livraison
+const VERSION_MOTEUR = '2026-11-05-3';
+const NUMERO_MOTEUR = '3.5'; // numéro de version du moteur : +0.1 à chaque livraison
 
 /** Adresse de l'app installable (GitHub Pages). Le lien des e-mails de rappel y mène. */
 const APP_PUBLIC_URL = 'https://theoperion.github.io/01_Compagnie_de_l_Aube/';
@@ -64,6 +64,7 @@ function doPost(e) {
   try {
     PROPS_ = null;
     var q = JSON.parse((e && e.postData && e.postData.contents) || '{}'), t0 = Date.now();
+    T0_ = t0; TEMPS_ = [];
     var h = herosParCle_(q.cle);
     if (!h) {
       rep = { ok: false, erreur: 'CLE', message: 'Clé de héros inconnue' };
@@ -80,7 +81,7 @@ function doPost(e) {
         args.push(h.nom); // le héros vient toujours de la clé, jamais de l'app
         rep = { ok: true, data: f.apply(null, args) };
         const duree = Date.now() - t0;
-        if (duree > 20000 && !/^(signalerErreurs|maitreDuJeu|rebondissement|retrospective|chapitreEvolution|chroniqueSemaine|paroleBoss|motDuCoach|recitEvenement|carnetClaude|carnetTest)$/.test(q.fn)) journalErreur_('serveur', h.nom, q.fn, 'Lent : ' + Math.round(duree / 1000) + ' s', '');
+        if (duree > 20000 && !/^(signalerErreurs|maitreDuJeu|rebondissement|retrospective|chapitreEvolution|chroniqueSemaine|paroleBoss|motDuCoach|recitEvenement|carnetClaude|carnetTest)$/.test(q.fn)) journalErreur_('serveur', h.nom, q.fn, 'Lent : ' + Math.round(duree / 1000) + ' s', TEMPS_.join(' · '));
       }
     }
   } catch (err) {
@@ -296,6 +297,9 @@ function versDateSheet_(iso, tz) { return Utilities.parseDate(iso, tz, 'yyyy-MM-
  * par requête, et on garde le résultat ici. La mémoire repart de zéro à chaque appel de l'app.
  */
 let MEMO_ = {};
+/* Chronométrage d'une requête : noté dans « Erreurs de l'app » quand elle dépasse 20 s, pour savoir quelle étape traîne */
+let T0_ = 0, TEMPS_ = [];
+function marque_(etape) { if (T0_) TEMPS_.push(etape + ' ' + ((Date.now() - T0_) / 1000).toFixed(1) + ' s'); }
 /* Réglages du script (ScriptProperties) lus en UNE fois par requête puis gardés en mémoire :
  * une trentaine d'appels lents en moins à chaque ouverture. Les écritures partent tout de suite. */
 let PROPS_ = null;
@@ -653,13 +657,20 @@ function xpHeros_(ss, dd, type, carac, annexe, defaut) {
   // Équilibrage : coefficient du héros (Paramètres → Fiches des héros, colonne O) pour que chacun progresse au même rythme
   return Math.round(dd * B.xpDD * m * fav * (annexe ? H.annexes : 1) * (H.equilibrage || 1));
 }
+/** Onglet « Quêtes annexes » lu UNE fois par requête (40 lignes × 15 colonnes) : il était relu jusqu'à 6 fois. */
+function annexesBrut_(ss) {
+  return memo_('annexesBrut', function () {
+    const sh = ss.getSheetByName(ONGLET_ANNEXES), n = Math.min(15, sh.getMaxColumns());
+    return sh.getRange(LIGNE_QUETES, 1, 40, n).getValues().map(function (r) { while (r.length < 15) r.push(''); return r; });
+  });
+}
 /** Catalogue des quêtes (quotidien + annexes) : ce qu'on fige dans le Journal à chaque saisie. */
 function catalogue_(ss) {
   return memo_('catalogue', function () {
     const cat = {};
-    [[ONGLET_HABITUDES, 30, false], [ONGLET_ANNEXES, 40, true]].forEach(function (o) {
-      ss.getSheetByName(o[0]).getRange(LIGNE_QUETES, 1, o[1], 9).getValues().forEach(function (r) {
-        if (r[0] !== '' && !cat[r[0]]) cat[r[0]] = { cat: r[1], c1: r[2], c2: r[3], xp: Number(r[8]) || 0, dd: Number(r[4]) || 0, type: r[5], annexe: o[2] };
+    [[ss.getSheetByName(ONGLET_HABITUDES).getRange(LIGNE_QUETES, 1, 30, 9).getValues(), false], [annexesBrut_(ss), true]].forEach(function (o) {
+      o[0].forEach(function (r) {
+        if (r[0] !== '' && !cat[r[0]]) cat[r[0]] = { cat: r[1], c1: r[2], c2: r[3], xp: Number(r[8]) || 0, dd: Number(r[4]) || 0, type: r[5], annexe: o[1] };
       });
     });
     try {
@@ -689,7 +700,7 @@ function ajouter_(ctx, iso, quete, statut, note, bonus, mult) {
     for (let r = avant + 1; r <= avant + 500; r++) ctx.vides.push(r);
   }
   const ligne = ctx.vides.shift();
-  ctx.sale = true;
+  ctx.sale = true; ctx.version = (ctx.version || 0) + 1;
   const ss = SpreadsheetApp.getActive();
   const fige = figer_(ss, quete, statut);
   const rang = statut === 'Fait' ? rangDuJour_(ctx, iso, quete, heros_()) : '';
@@ -702,7 +713,7 @@ function ajouter_(ctx, iso, quete, statut, note, bonus, mult) {
 
 /** Efface une ligne du Journal et la rend disponible. */
 function effacer_(ctx, entree) {
-  ctx.sale = true;
+  ctx.sale = true; ctx.version = (ctx.version || 0) + 1;
   ctx.journal.getRange(entree.ligne, 1, 1, 9).clearContent();
   ctx.journal.getRange(entree.ligne, 12, 1, 3).clearContent();
   ctx.entrees.splice(ctx.entrees.indexOf(entree), 1);
@@ -760,7 +771,7 @@ function assouplirValidation_(journal) {
 function nomsAnnexes_(ss) {
   return memo_('nomsAnnexes', function () {
     const noms = {};
-    ss.getSheetByName(ONGLET_ANNEXES).getRange(LIGNE_QUETES, 1, 40, 1).getValues()
+    annexesBrut_(ss)
       .forEach(function (r) { if (r[0] !== '') noms[r[0]] = true; });
     return noms;
   });
@@ -772,6 +783,13 @@ function nomsAnnexes_(ss) {
  * À 0 PV : arc d'entraînement. Il faut X jours avec au moins une quête faite pour se relever.
  */
 function simulerPV_(ctx, P, annexes, debut, jusqua) {
+  // Même question, même Journal (ctx.version change à chaque ajout ou effacement) : réponse gardée, pas de nouveau calcul
+  if (!ctx._pv || ctx._pv.P !== P || ctx._pv.v !== (ctx.version || 0)) ctx._pv = { P: P, v: ctx.version || 0, r: {} };
+  const kpv = debut + '|' + jusqua;
+  if (ctx._pv.r[kpv]) return ctx._pv.r[kpv];
+  return (ctx._pv.r[kpv] = simulerPVCalcul_(ctx, P, annexes, debut, jusqua));
+}
+function simulerPVCalcul_(ctx, P, annexes, debut, jusqua) {
   let pv = P.pvMax, arc = null;
   // Journal compacté : on repart de l'état des PV mémorisé à la date de coupure (le détail d'avant n'existe plus)
   try {
@@ -1017,6 +1035,7 @@ function entretien_(ss) {
   const habs = lireHabitudes_(ss);
   const ctx = contexteJournal_(ss, tz);
   const annexes = nomsAnnexes_(ss);
+  marque_('Journal lu');
 
   // Lignes à moitié effacées (date sans quête) : on les vide pour de bon
   (ctx.orphelins || []).forEach(function (l) { ctx.journal.getRange(l, 1, 1, COLS_JOURNAL).clearContent(); ctx.sale = true; });
@@ -1045,7 +1064,9 @@ function entretien_(ss) {
     props.setProperty(cle_('verifie'), hier);
   }
 
+  marque_('ratés auto');
   const res = calculerSeries_(ctx, habs, P, today);
+  marque_('séries');
   // Échéance du jour, par la règle unique
   const echeances = {};
   habs.forEach(function (h) {
@@ -1081,6 +1102,7 @@ function entretien_(ss) {
   try { titresEtat = titres_(ss, { ctx: ctx, habs: habs, P: P, series: res.series, echeances: echeances, debut: debut, props: props }, today, res.nouveaux); }
   catch (e) { console.warn('Titres : ' + e); }
   // Bloc Personnage B4:G24 lu en une fois, après toutes les écritures du Journal
+  marque_('boss et titres');
   const perso = ss.getSheetByName(ongletHeros_(ONGLET_PERSONNAGE));
   if (!perso) throw new Error('Onglet « ' + ongletHeros_(ONGLET_PERSONNAGE) + ' » introuvable : il faut créer le moteur de ce héros.');
   const blocPerso = perso.getRange('B4:G24').getValues();
@@ -1140,8 +1162,7 @@ function etat_(ss, nouveauxEnPlus) {
     };
   });
 
-  const shA = ss.getSheetByName(ONGLET_ANNEXES);
-  const lignesA = shA.getRange(LIGNE_QUETES, 1, 40, Math.min(15, shA.getMaxColumns())).getValues();
+  const lignesA = annexesBrut_(ss);
   // Colonne L « Palier de » : les quêtes d'un même groupe s'excluent (un seul palier validé par mois)
   const groupeFait = {};
   lignesA.forEach(function (r) {
@@ -1914,10 +1935,11 @@ function calendrierSeries_(ent, today) {
     jours.push({ d: d, f: j.f, r: j.r, v: enVacances_(ent.P.vacances, d) ? 1 : 0, futur: ecart_(today, d) > 0 ? 1 : 0, avant: estIso_(ent.debut) && ecart_(d, ent.debut) > 0 ? 1 : 0 });
   }
   // jours d'affilée sans raté (vacances comprises, depuis le début du suivi)
+  const joursRates = {}; ent.ctx.entrees.forEach(function (e) { if (e.statut === 'Raté') joursRates[e.date] = (joursRates[e.date] || 0) + 1; });
   let sansRate = 0;
   for (let d = today, i = 0; i < 400; i++, d = isoPlus_(d, -1)) {
     if (estIso_(ent.debut) && ecart_(d, ent.debut) > 0) break;
-    const j = par[d] || ent.ctx.entrees.filter(function (e) { return e.date === d && e.statut === 'Raté'; }).length;
+    const j = par[d] || joursRates[d] || 0;
     const r = typeof j === 'number' ? j : j.r;
     if (r) break; sansRate++;
   }
@@ -2017,8 +2039,9 @@ function camp_(ss, ent, today) {
   });
   // Jours d'affilée où toute la Compagnie a agi
   let ensemble = 0;
+  const actifs = {}; E.forEach(function (e) { if (e.statut === 'Fait') actifs[e.date + '|' + herosDe_(e, premier)] = 1; });
   for (let d = today, i = 0; i < 60; i++, d = isoPlus_(d, -1)) {
-    const tous = heros.every(function (h) { return E.some(function (e) { return e.date === d && e.statut === 'Fait' && herosDe_(e, premier) === h.nom; }); });
+    const tous = heros.every(function (h) { return actifs[d + '|' + h.nom]; });
     if (tous) ensemble++; else if (i > 0) break;
   }
   // Fil des faits marquants (14 derniers jours)
@@ -2622,13 +2645,13 @@ function compteeAilleurs_(ctx, quete, d) {
 /** La quête appartient-elle au héros courant (quotidienne ou annexe) ? */
 function estAMoiQuete_(ss, nom) {
   if (lireHabitudes_(ss).some(function (h) { return h.nom === nom; })) return true;
-  const r = ss.getSheetByName(ONGLET_ANNEXES).getRange(LIGNE_QUETES, 1, 40, 15).getValues().filter(function (x) { return x[0] === nom; })[0];
+  const r = annexesBrut_(ss).filter(function (x) { return x[0] === nom; })[0];
   return !!r && estAMoi_(r[12]);
 }
 /** Une annexe d'événement n'est validable que dans sa fenêtre (« dès le » → échéance). */
 function quetePossibleCeJour_(ss, nom, d) {
   const tz = tz_(ss);
-  const r = ss.getSheetByName(ONGLET_ANNEXES).getRange(LIGNE_QUETES, 1, 40, 15).getValues().filter(function (x) { return x[0] === nom; })[0];
+  const r = annexesBrut_(ss).filter(function (x) { return x[0] === nom; })[0];
   if (!r) return true; // quête quotidienne
   const des = versIso_(r[14], tz), ech = versIso_(r[6], tz);
   if (estIso_(des) && ecart_(des, d) < 0) return false;
@@ -3132,7 +3155,7 @@ function renommerQuete(ancien, nouveau, heros) {
       renommer(Rh);
       ecrireReglages_(props, Rh, h);
     });
-    oublier_('catalogue', 'nomsAnnexes');
+    oublier_('catalogue', 'nomsAnnexes', 'annexesBrut');
   }, heros);
 }
 
@@ -3930,7 +3953,7 @@ function journalPour_(ss, n) {
     });
   });
   const habs = lireHabitudes_(ss).map(function (h) { return h.nom; });
-  const annexes = ss.getSheetByName(ONGLET_ANNEXES).getRange(LIGNE_QUETES, 1, 40, 13).getValues()
+  const annexes = annexesBrut_(ss)
     .filter(function (r) { return r[0] !== '' && estAMoi_(r[12]); }).map(function (r) { return String(r[0]); });
   const jours = [];
   for (let k = 0; k < n; k++) {
