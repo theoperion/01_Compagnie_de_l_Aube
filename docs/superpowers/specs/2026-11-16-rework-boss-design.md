@@ -194,3 +194,14 @@ Quand un boss revient dans le calendrier, il revient **évolué** :
 - Textes exacts des intentions et noms des stades II et III (Claude peut les écrire une fois, puis ils sont gardés).
 - Palettes de couleurs et attributs visuels des stades.
 - Détail de l'affichage des icônes d'effets.
+
+## Ajustement après simulation (16/11/2026, tâche 8)
+
+La simulation (`app_scripts/compagnie-de-l-aube/tests/simulation.js`, 200 semaines par scénario, rythme réel de novembre)
+montrait 0 % de victoire avec un coefficient de 1,10 : les ratés habituels (≈ 9 par semaine à deux, 5 % de PV chacun) soignaient
+le boss de près de moitié. Corrections :
+- les PV de départ divisent par `1 + riposte × ratés attendus` (ratés par jour de présence sur les 28 derniers jours) ;
+- coefficients ramenés à 0,82 (semaine) et 0,80 (mois).
+
+Résultat : rythme normal sans contrer → une victoire sur deux, le samedi ou le dimanche (sinon il reste ≈ 13 % de PV) ;
+en contrant → 78 % de victoires, surtout du vendredi au dimanche ; semaine creuse (−30 %) → le boss s'enfuit ; jamais de victoire avant mercredi.

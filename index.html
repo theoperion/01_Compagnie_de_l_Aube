@@ -408,6 +408,33 @@
   .bc-tags .tag.f { border-color: #6a5320; color: var(--gold); } .bc-tags .tag.r { color: var(--muted); }
   .bc-pv { display: flex; justify-content: space-between; font-size: 13px; margin: 12px 0 4px; } .bc-pv span { color: var(--muted); }
   .bc-dmg { font-size: 12.5px; color: var(--muted); margin-top: 10px; } .bc-dmg .rip { color: #ff8b8b; }
+  .bc-tags .tag.ph { border-color: #7a2a2a; color: #ff9a8a; }
+  .bc-stade { display: block; font-size: 11.5px; color: #d6b46a; margin-top: 1px; }
+  .bc-coup { margin-top: 10px; padding: 9px 11px; border-radius: 12px; background: #1b1024; border: 1px solid #5a2f6e; font-size: 12.5px; line-height: 1.4; }
+  .bc-coup b { display: block; font-size: 13.5px; color: #e2c4ff; margin-bottom: 2px; }
+  .bc-coup span { display: block; }
+  .bc-coup.brise { background: #1e1a0c; border-color: #6a5320; } .bc-coup.brise b { color: var(--gold); }
+  .bc-coup.demain { background: #14121c; border-color: var(--line); opacity: .9; } .bc-coup.demain b { color: #c9bfd8; }
+  .bc-coup .cp-contre { margin-top: 4px; color: var(--gold); font-weight: 600; }
+  .bc-coup .cp-ok { margin-top: 4px; color: #9fe0a0; font-weight: 600; } .bc-coup .cp-ko { margin-top: 4px; color: #ff9a8a; font-weight: 600; }
+  .bc-sbire { margin-top: 8px; font-size: 12px; color: #e0c8b0; } .bc-sbire.ok { color: #9fe0a0; }
+  .bar.sbire i { background: linear-gradient(90deg, #7a3a9a, #c06ad8); }
+  .bc-capa { margin-top: 8px; font-size: 11.5px; color: var(--muted); }
+  .bm-coup { display: block; font-size: 11.5px; color: #e2c4ff; margin-top: 2px; } .bm-coup.ok { color: var(--gold); } .bm-coup.demain { color: var(--muted); }
+  .gains span.g.brise { border-color: #6a5320; color: var(--gold); font-weight: 700; } .gains span.g.maudit { border-color: #5a2f6e; color: #d9a8ff; }
+  .eclat { animation: eclatOr 1.1s ease-out; } .subi { animation: subiViolet .6s ease-in-out 2; }
+  @keyframes eclatOr { 0% { box-shadow: 0 0 0 0 rgba(255, 210, 110, .9); } 60% { box-shadow: 0 0 22px 8px rgba(255, 210, 110, .35); } 100% { box-shadow: 0 0 0 0 rgba(255, 210, 110, 0); } }
+  @keyframes subiViolet { 0%, 100% { transform: translateX(0); box-shadow: none; } 25% { transform: translateX(-4px); box-shadow: 0 0 16px rgba(180, 90, 255, .55); } 75% { transform: translateX(4px); } }
+  @media (prefers-reduced-motion: reduce) { .eclat, .subi { animation: none; } }
+  .boss-svg .b-aura { animation: auraPulse 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .boss-svg .b-oeil { animation: oeilFeu 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes auraPulse { 0%, 100% { opacity: .65; transform: scale(.97); } 50% { opacity: 1; transform: scale(1.03); } }
+  @keyframes oeilFeu { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(.45); } }
+  @media (prefers-reduced-motion: reduce) { .boss-svg .b-aura, .boss-svg .b-oeil { animation: none; } }
+  .annonce-boss { text-align: left; max-height: 86vh; overflow-y: auto; } .annonce-boss h3, .annonce-boss > p { text-align: center; }
+  #bossVue .annonce-boss .bv-av { width: 130px; margin: 0 auto 6px; }
+  .ab-l { display: flex; gap: 10px; margin: 8px 0; font-size: 13.5px; line-height: 1.4; } .ab-l > span { font-size: 20px; flex: none; width: 26px; text-align: center; }
+  .ab-l b { color: var(--gold); }
   .bc-tip { margin-top: 10px; font-style: italic; font-size: 13px; color: #d8c9a8; }
   .bc-xp { margin-top: 6px; font-size: 12px; color: var(--gold); }
   .bc-win { margin-top: 12px; padding: 10px; border-radius: 12px; background: #2b2410; border: 1px solid #6a5320; color: var(--gold); font-weight: 700; font-size: 14px; text-align: center; }
@@ -1732,7 +1759,7 @@ function gains(q, xp) {
   const chip = (c, v, prim) => { if (!c) return ''; const f = enCombat && c === b.faible && prim, r = enCombat && c === b.resiste && prim;
     return `<span class="g ${prim ? 'p' : ''} ${f ? 'f' : ''} ${r ? 'r' : ''}">${ICONES[c] || '⭐'} ${esc(c)} <b>+${v}</b>${f ? ` · ⚡ ×${String(mage ? (R.faibleMage || 2) : (R.faible || 1.5)).replace('.', ',')}` : r ? ' · 🛡 ×0,5' : ''}</span>`; };
   const pas = /10[ .\u202f\u00a0]?000 pas/i.test(q.nom) && state && state.reglages && state.reglages.pas != null ? state.reglages.pas : null;
-  return `<div class="gains">${chip(q.carac, x, true)}${chip(q.carac2, Math.round(x * part), false)}${pas != null ? `<span class="g montre ${pas >= 10000 ? 'ok' : ''}">⌚ ${Number(pas).toLocaleString('fr-FR')} / 10 000 pas</span>` : ''}</div>`;
+  return `<div class="gains">${chip(q.carac, x, true)}${chip(q.carac2, Math.round(x * part), false)}${state ? tagsCoups(state, q) : ''}${pas != null ? `<span class="g montre ${pas >= 10000 ? 'ok' : ''}">⌚ ${Number(pas).toLocaleString('fr-FR')} / 10 000 pas</span>` : ''}</div>`;
 }
 
 const sortSur = nom => state && state.capacites && state.capacites.sortPrepare === nom ? ' · <span class="sort">✨ sort préparé : XP ×1,5 à la validation</span>' : '';
@@ -2375,7 +2402,7 @@ function ouvrirBoss(type) {
   const b = state && state.boss && state.boss[type]; if (!b) return;
   let ov = document.getElementById('bossVue');
   if (!ov) { ov = document.createElement('div'); ov.id = 'bossVue'; document.body.appendChild(ov); }
-  ov.innerHTML = `<div><div class="bv-av" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, 'vue')}</div>
+  ov.innerHTML = `<div><div class="bv-av" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, 'vue', b)}</div>
     <h3>${esc(b.nom)}</h3><p>${esc(b.incarne || '')}</p><p>⚡ Faible : <b class="faible">${esc(b.faible)}</b> · 🛡 Résiste : ${esc(b.resiste)}</p>
     ${b.conseil ? `<p style="font-style:italic">« ${esc(b.conseil)} »</p>` : ''}<button class="btn or" data-boss-fermer="1" style="margin-top:14px">Retour au combat</button></div>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
@@ -2392,9 +2419,27 @@ const BOSS_MOUV = { golem: 'lourd', liche: 'flotte', spectre: 'flotte', basilic:
   gargouille: 'lourd', mimique: 'claque', dragon: 'respire', archidemon: 'respire', procrastination: 'balance', dissipation: 'flotte', oubli: 'flotte', fatigue: 'flotte', doute: 'flotte', tentation: 'balance' };
 const BOSS_AURA = { golem: '255,154,60', liche: '63,224,176', spectre: '160,190,255', basilic: '140,220,90', harpie: '200,120,255', troll: '120,170,110', hydre: '80,200,200', necro: '150,255,110',
   gargouille: '255,140,60', mimique: '255,200,80', dragon: '120,160,255', archidemon: '255,70,50', procrastination: '190,140,255', dissipation: '90,230,190', oubli: '230,230,255', fatigue: '170,180,220', doute: '230,90,90', tentation: '255,120,170' };
-function bossSvg(cle, id) {
+function bossSvg(cle, id, b) {
   const f = BOSS_DESSINS[cle] || BOSS_DESSINS.golem;
-  return `<svg viewBox="0 0 120 130" class="boss-svg mv-${BOSS_MOUV[cle] || 'respire'}" style="--aura:${BOSS_AURA[cle] || '255,120,90'}" aria-hidden="true"><g class="b-corps">${f('b' + (id || cle))}</g></svg>`;
+  // Stades II et III (nouvelles règles) : couleur décalée + attribut dessiné par-dessus
+  const st = b && b.stade > 1 ? b : null, p = 'b' + (id || cle) + 's';
+  const filtre = st && st.teinte ? ` style="filter:hue-rotate(${Number(st.teinte) || 0}deg) saturate(1.25)"` : '';
+  const haut = st && /couronne|cornes|yeux/.test(st.attribut) ? 14 : 0;
+  return `<svg viewBox="0 ${-haut} 120 ${130 + haut}" class="boss-svg mv-${BOSS_MOUV[cle] || 'respire'}${st ? ' stade' + st.stade : ''}" style="--aura:${BOSS_AURA[cle] || '255,120,90'}" aria-hidden="true">${st ? attributBoss(st.attribut, p, 'fond') : ''}<g class="b-corps"><g${filtre}>${f('b' + (id || cle))}</g>${st ? attributBoss(st.attribut, p, 'dessus') : ''}</g></svg>`;
+}
+/** Attribut d'un boss évolué : aura (derrière), couronne, cornes ou œil de feu (au-dessus de la tête) */
+function attributBoss(a, p, couche) {
+  if (a === 'aura') return couche === 'fond' ? `<defs><radialGradient id="${p}au"><stop offset=".55" style="stop-color:rgb(var(--aura));stop-opacity:0"/><stop offset=".8" style="stop-color:rgb(var(--aura));stop-opacity:.45"/><stop offset="1" style="stop-color:rgb(var(--aura));stop-opacity:0"/></radialGradient></defs>
+    <ellipse class="b-aura" cx="60" cy="72" rx="62" ry="64" fill="url(#${p}au)"/>` : '';
+  if (couche === 'fond') return '';
+  if (a === 'couronne') return `<g class="b-attr"><path d="M44 2 L48 -10 L54 -2 L60 -13 L66 -2 L72 -10 L76 2 Z" fill="#f2c94c" stroke="#7a5512" stroke-width="1.4" stroke-linejoin="round"/>
+    <circle cx="60" cy="-4" r="2.2" fill="#e0475a"/><circle cx="50" cy="-2" r="1.5" fill="#5ab0ff"/><circle cx="70" cy="-2" r="1.5" fill="#5ab0ff"/></g>`;
+  if (a === 'cornes') return `<g class="b-attr" fill="#e8dcc0" stroke="#5a4630" stroke-width="1.3" stroke-linejoin="round">
+    <path d="M40 8 C30 2 26 -8 30 -13 C32 -4 38 0 46 4 Z"/><path d="M80 8 C90 2 94 -8 90 -13 C88 -4 82 0 74 4 Z"/></g>`;
+  if (a === 'yeux') return `<g class="b-attr"><path d="M44 -3 Q60 -16 76 -3 Q60 10 44 -3 Z" fill="#fff1d6" stroke="#b3261e" stroke-width="1.6"/>
+    <circle cx="60" cy="-3" r="5" fill="#d1361f"/><ellipse class="b-oeil" cx="60" cy="-3" rx="1.6" ry="4.2" fill="#1a0505"/>
+    <path d="M42 -3 L37 -6 M42 -1 L36 0 M78 -3 L83 -6 M78 -1 L84 0" stroke="#ff6a3c" stroke-width="1.3" stroke-linecap="round"/></g>`;
+  return '';
 }
 
 /* ---------- Boss du Crépuscule ---------- */
@@ -2402,6 +2447,14 @@ const etoiles = r => '★'.repeat(r) + '☆'.repeat(Math.max(0, 5 - r));
 const joursRestants = fin => Math.max(0, Math.round((versDate(fin) - versDate(state.today)) / 864e5));
 const estMage = s => /magicien/i.test(String(((s || state).classe || {}).nom || ''));
 function couleurHeros(nom, s) { return nom === s.heros ? 'var(--moi)' : 'var(--allie)'; }
+function miniCoup(b) {
+  const c = coupActif(b);
+  if (c && c.capacite !== 'vol' && c.capacite !== 'hurlement') return `<span class="bm-coup">${c.icone} ${esc(c.nom)} : à contrer</span>`;
+  if (c) return `<span class="bm-coup">${c.icone} ${esc(c.nom)} : ne ratez rien</span>`;
+  if (b.coupDuJour && b.coupDuJour.brise && b.coupDuJour.breche) return '<span class="bm-coup ok">✨ Brèche : +25 % de dégâts</span>';
+  if (b.coupDemain) return `<span class="bm-coup demain">${b.coupDemain.icone} Demain : ${esc(b.coupDemain.nom)}</span>`;
+  return '';
+}
 /** Petite carte du boss de la semaine (onglet Quêtes) */
 function carteBossMini(s) {
   const b = s.boss && s.boss.semaine;
@@ -2409,13 +2462,13 @@ function carteBossMini(s) {
   const pct = b.pvMax ? Math.max(0, Math.min(100, b.pv / b.pvMax * 100)) : 0;
   const j = joursRestants(b.fin);
   return `<button class="boss-mini ${b.statut === 'Vaincu' ? 'vaincu' : ''}" data-tab="combat">
-    <div class="bm-av" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, 'mini')}</div>
-    <div class="bm-txt"><b>${esc(b.nom)}</b>
+    <div class="bm-av" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, 'mini', b)}</div>
+    <div class="bm-txt"><b>${esc(b.nomStade || b.nom)}</b>
       ${b.statut === 'Vaincu' ? `<span class="bm-ok">⚔ Vaincu · ${esc(b.trophee || 'trophée gagné')}</span>`
         : b.statut === 'À venir' ? `<span>Attaque ${dateLongueCourte(b.debut)} · ${Math.round(b.pvMax).toLocaleString('fr-FR')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)}</span>`
         : b.statut === 'Trêve' ? '<span>Trêve : la Compagnie est en vacances</span>'
         : `<div class="bar boss"><i style="width:${pct}%"></i></div>
-           <span>${Math.round(b.pv).toLocaleString('fr-FR')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)} · ${j ? `encore ${j} j` : 'dernier jour'}</span>`}
+           <span>${Math.round(b.pv).toLocaleString('fr-FR')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)} · ${j ? `encore ${j} j` : 'dernier jour'}</span>${miniCoup(b)}`}
     </div><span class="bm-go">›</span></button>`;
 }
 /** Grande carte d'un boss (onglet Compagnie) */
@@ -2427,12 +2480,13 @@ function carteBoss(b, s) {
   const tot = noms.reduce((t, n) => t + (b.degats[n] || 0), 0) || 1;
   const j = joursRestants(b.fin);
   return `<div class="boss-card ${mois ? 'mois' : ''} ${vaincu ? 'vaincu' : ''}">
-    <div class="bc-top"><div class="bc-av" id="bossAv-${b.type}" data-boss-vue="${b.type}" role="button" aria-label="Voir le boss en grand" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, b.type)}</div>
+    <div class="bc-top"><div class="bc-av" id="bossAv-${b.type}" data-boss-vue="${b.type}" role="button" aria-label="Voir le boss en grand" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, b.type, b)}</div>
       <div class="bc-id"><span class="bc-type">${mois ? '🌑 Boss du mois' : '⚔ Boss de la semaine'}</span>
-        <b>${esc(b.nom)}</b>
+        <b>${esc(b.nomStade || b.nom)}</b>${b.stade > 1 ? `<span class="bc-stade">Stade ${ROMAIN[b.stade] || b.stade} · a évolué depuis ${esc(b.nom)}</span>` : ''}
         <span class="bc-rang">${b.statut === 'À venir' ? (mois ? 'Du ' + dateCourte(b.debut) + ' au ' + dateCourte(b.fin) : etoiles(b.rang) + ' rang ' + b.rang + ' · semaine du ' + dateCourte(b.debut)) : mois ? 'Fin le ' + dateCourte(b.fin) : etoiles(b.rang) + ' rang ' + b.rang + ' · fin dimanche'}</span>
-        <div class="bc-tags"><span class="tag f">⚡ Faible : ${esc(b.faible)}</span><span class="tag r">🛡 Résiste : ${esc(b.resiste)}</span></div>
+        <div class="bc-tags"><span class="tag f">⚡ Faible : ${esc(b.faible)}</span><span class="tag r">🛡 Résiste : ${esc(b.resiste)}</span>${b.statut === 'En cours' && PHASES_BOSS[b.phase] ? `<span class="tag ph">${PHASES_BOSS[b.phase]}</span>` : ''}${b.enhardi && !vaincu ? `<span class="tag ph">😈 Enhardi${b.enhardi === 'fuite' ? ' +10 %' : ' +5 %'}</span>` : ''}</div>
       </div></div>
+    ${blocCoups(b)}
     ${vaincu ? `<div class="bc-win">⚔ Vaincu le ${dateCourte(b.vaincuLe)} · +${b.xp} XP pour toi<br><span>Trophée : ${esc(b.trophee)}</span><br><button class="btn mini or" data-bw-revoir="${b.type}" style="margin-top:8px">▶ Revoir la victoire</button></div>`
       : b.statut === 'À venir' ? `<div class="bc-win avenir">Il attaque ${dateLongueCourte(b.debut)} avec ${Math.round(b.pvMax).toLocaleString('fr-FR')} PV.<br><span>Préparez-vous : ses PV tiennent compte de vos vacances.</span></div>`
       : b.statut === 'Trêve' ? '<div class="bc-win">Trêve : toute la Compagnie est en vacances.</div>'
@@ -2565,6 +2619,38 @@ document.addEventListener('click', e => {
   if (pa) { regler('proposerPacte', pa.dataset.pacte).then(ok => ok && toast('Pacte proposé : ton compagnon doit le sceller')); return; }
   if (e.target.closest('[data-accepter]')) { regler('accepterPacte').then(ok => ok && toast('🤝 Pacte scellé !')); return; }
 });
+/* ---------- Annonce des nouvelles règles des boss (une fois par téléphone) ---------- */
+const ANNONCE_BOSS = [
+  ['🎯', 'Des PV à votre mesure', 'les PV du boss sont calés sur votre vrai rythme des dernières semaines : la victoire se mérite, elle n\'est plus garantie.'],
+  ['⚔', 'Des coups spéciaux', 'le mardi et le jeudi (le samedi pour le boss du mois), annoncés la veille. Chacun se contre : la quête qui le brise est marquée « 🗡 brise… » et ouvre une Brèche (+25 % de dégâts).'],
+  ['🔥', 'Enragé puis Aux abois', 'sous 50 % de PV il riposte plus fort ; sous 20 % il tente un dernier recours.'],
+  ['😈', 'S\'il s\'enfuit', 'le boss suivant arrive enhardi : plus de PV et une malédiction de départ.'],
+  ['🐉', 'Ils évoluent', 'chaque boss a 3 stades : nouveau nom, nouvelles couleurs, une capacité de plus.']
+];
+function ouvrirAnnonceBoss() {
+  let ov = document.getElementById('bossVue');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'bossVue'; document.body.appendChild(ov); }
+  ov.innerHTML = `<div class="annonce-boss"><div class="bv-av" style="--aura-c:255,120,90">${bossSvg('golem', 'annonce', { stade: 3, teinte: 300, attribut: 'couronne' })}</div>
+    <h3>⚔ Les boss changent !</h3><p class="muted" style="margin:0 0 10px">À partir du lundi 23 novembre (le 1er décembre pour le boss du mois)</p>
+    ${ANNONCE_BOSS.map(l => `<div class="ab-l"><span>${l[0]}</span><div><b>${l[1]}</b> : ${l[2]}</div></div>`).join('')}
+    <div style="text-align:center"><button class="btn or" data-boss-fermer="1" style="margin-top:14px">À l'attaque !</button></div></div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+}
+function annonceBossAFaire() {
+  let vu = false; try { vu = !!localStorage.getItem('annonceBoss2026'); } catch (e) {}
+  if (vu || !state || state.today > '2026-12-31' || annonceBossPrevue) return;
+  annonceBossPrevue = true;
+  // attend qu'aucune autre fenêtre (d20, célébration) ne soit ouverte
+  const essayer = () => {
+    const occupe = document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on') || (el.id === 'd20ov' && el.style.display && el.style.display !== 'none'));
+    if (occupe) { setTimeout(essayer, 2000); return; }
+    try { localStorage.setItem('annonceBoss2026', '1'); } catch (e) {}
+    ouvrirAnnonceBoss();
+  };
+  setTimeout(essayer, 1500);
+}
+let annonceBossPrevue = false;
+document.addEventListener('click', e => { if (e.target.closest('[data-annonce-boss]')) ouvrirAnnonceBoss(); });
 function ouvrirEncouragement() {
   const C = state.camp; if (!C) return;
   const el = document.getElementById('sheetPal');
@@ -2814,6 +2900,7 @@ function nouvellesDe(s, dimanche) {
   const E = s.evenement, e = E && (E.actuel || E.prochain);
   if (e) { const sansMJ = Object.assign({}, s, { mj: null }); L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), html: carteEvenement(sansMJ, 2) }); }
   ((s.reglages && s.reglages.montre) || []).forEach(m => { const t = texteMontre(m); L.push({ id: 'montre|' + m.id, html: `<div class="evt on"><div class="evt-t">${t.titre}</div><div class="evt-e">${t.detail} · ${t.statut}</div></div>` }); });
+  if (s.today <= '2026-12-07') L.push({ id: 'annonceBoss2026', html: `<button class="evt on" data-annonce-boss="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">⚔ Les boss changent le 23 novembre</div><div class="evt-e">PV à votre mesure, coups spéciaux à contrer, 3 stades d'évolution · relire ›</div></button>` });
   if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, html: `<div class="section" style="margin-top:4px"><h2>Bilan du dimanche</h2><span>semaine du ${dateCourte(s.bilan.semaine.lundi)}</span></div>${carteBilan(s, true)}` });
   return L;
 }
@@ -2987,6 +3074,62 @@ function vueCombat(s) {
 }
 function dateLongueCourte(iso) { return versDate(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }); }
 function isoPlus(iso, n) { const d = versDate(iso); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+/* ---------- Coups spéciaux des boss (nouvelles règles, à partir du 23/11/2026) ---------- */
+const PHASES_BOSS = { enrage: '🔥 Enragé', abois: '💢 Aux abois' };
+const ARTICLE_COUP = { carapace: 'la Carapace', regeneration: 'la Régénération', malediction: 'la Malédiction', bouclier: 'le Bouclier', dernierRecours: 'le Dernier recours' };
+const ROMAIN = ['', 'I', 'II', 'III'];
+/** Coup du jour encore actif (ni brisé ni raté par un boss étourdi) */
+function coupActif(b) { const c = b && b.statut === 'En cours' && b.coupDuJour; return c && !c.brise && !c.etourdi ? c : null; }
+function faitAujourdhui(s) { return (s.habitudes || []).concat(s.annexes || []).some(q => q.jour && q.jour.fait > 0); }
+/** La quête q brise-t-elle le coup du jour du boss b (pour le héros de cet écran) ? */
+function briseCoup(s, b, q) {
+  const c = coupActif(b); if (!c || !q) return false;
+  if (c.capacite === 'carapace' || c.capacite === 'regeneration' || c.capacite === 'dernierRecours') return q.carac === b.faible;
+  if (c.capacite === 'malediction') return c.cible === s.heros && q.carac === c.remede;
+  if (c.capacite === 'bouclier') return !faitAujourdhui(s); // sa part du bouclier : il faut une quête de chacun
+  return false;
+}
+/** Malédiction sur cette quête (XP ×0,85), sauf si elle brise justement la malédiction */
+function maudite(s, q) {
+  return ['semaine', 'mois'].some(t => { const b = s.boss && s.boss[t], c = coupActif(b);
+    return c && c.capacite === 'malediction' && c.cible === s.heros && q.carac === c.carac && !briseCoup(s, b, q); });
+}
+/** Étiquettes sur les cartes de quête : « 🗡 brise la Carapace », « 💀 maudite », « 🛡 dégâts ÷2 » */
+function tagsCoups(s, q) {
+  if (!s || !s.boss) return '';
+  const out = [];
+  ['semaine', 'mois'].forEach(t => {
+    const b = s.boss[t], c = coupActif(b); if (!c) return;
+    if (briseCoup(s, b, q)) out.push(c.capacite === 'bouclier' ? '<span class="g brise">🗡 ta part du Bouclier</span>' : `<span class="g brise">🗡 brise ${ARTICLE_COUP[c.capacite] || esc(c.nom)}</span>`);
+    else if (c.capacite === 'malediction' && c.cible === s.heros && q.carac === c.carac) out.push('<span class="g maudit">💀 maudite : XP ×0,85</span>');
+    else if (c.capacite === 'carapace' && Number(q.dd) > 0 && Number(q.dd) <= 9) out.push('<span class="g maudit">🛡 Carapace : dégâts ÷2</span>');
+  });
+  return out.join('');
+}
+/** Bloc « coup du jour / coup de demain / sbire / capacités » de la grande carte du boss */
+function blocCoups(b) {
+  if (!b.nouvellesRegles || b.statut !== 'En cours') return '';
+  const c = b.coupDuJour, d = b.coupDemain;
+  let h = '';
+  if (c) {
+    const neutre = c.capacite === 'vol' || c.capacite === 'hurlement';
+    const etat = c.etourdi ? '<span class="cp-ok">😵 Étourdi : vous avez tant frappé hier que son coup échoue.</span>'
+      : neutre ? (c.brise ? '<span class="cp-ok">🙏 Aucun raté pour l\'instant : tenez bon jusqu\'à minuit.</span>'
+        : `<span class="cp-ko">${c.capacite === 'vol' ? '🃏 Un raté : il a volé un joker.' : '📢 Un raté : sa riposte compte double.'}</span>`)
+      : c.brise ? `<span class="cp-ok">✨ Brisé !${c.breche ? ' Brèche ouverte : vos quêtes frappent +25 % aujourd\'hui.' : ''}</span>`
+      : `<span class="cp-contre">🗡 ${esc(c.contre)}</span>`;
+    h += `<div class="bc-coup ${c.brise || c.etourdi ? 'brise' : ''}"><b>${c.icone} Aujourd'hui : ${esc(c.nom)}</b><span>${esc(c.annonce)}</span>${etat}</div>`;
+  }
+  if (d) h += `<div class="bc-coup demain"><b>${d.icone} Demain : ${esc(d.nom)}</b><span>${esc(d.annonce)}</span><span class="cp-contre">🗡 ${esc(d.contre)}</span></div>`;
+  if (b.sbire && !b.sbire.vaincu) h += `<div class="bc-sbire"><span>👹 Sbire : ${Math.round(b.sbire.pv)} / ${Math.round(b.sbire.pvMax)} PV · vos coups le frappent d'abord</span><div class="bar sbire"><i style="width:${b.sbire.pvMax ? Math.max(0, Math.min(100, b.sbire.pv / b.sbire.pvMax * 100)) : 0}%"></i></div></div>`;
+  else if (b.sbire && b.sbire.vaincu) h += '<div class="bc-sbire ok">👹 Sbire abattu : +20 XP chacun</div>';
+  if (b.capacites && b.capacites.length) h += `<div class="bc-capa">Ses capacités : ${b.capacites.map(x => `${x.icone} ${esc(x.nom)}`).join(' · ')}</div>`;
+  return h;
+}
+/** Petit éclat doré (coup brisé) ou secousse violette (coup subi) sur la carte du boss */
+function effetCoup(type) {
+  document.querySelectorAll('.boss-mini, .boss-card').forEach(el => { el.classList.remove('eclat', 'subi'); void el.offsetWidth; el.classList.add(type); setTimeout(() => el.classList.remove(type), 1200); });
+}
 function regleBoss(s) {
   const R = (s.boss && s.boss.regles) || {};
   const f = x => String(x).replace('.', ',');
@@ -3002,7 +3145,10 @@ function tagBoss(q) {
 function degatsQuete(s, b, q, dXp, estAnnexe) {
   const R = s.boss.regles || {}, mage = estMage(s), capa = s.capacites || {};
   const f = q.carac === b.faible ? (mage ? R.faibleMage : R.faible) : q.carac === b.resiste ? R.resiste : 1;
-  return Math.round(dXp * f * (mage && capa.sortPrepare === q.nom ? R.sort : 1) * (!mage && estAnnexe ? R.annexeRoublard : 1));
+  // Nouvelles règles : Carapace (quêtes DD 9 ou moins ÷2, sauf celle qui la brise), Brèche (+25 % après un coup brisé)
+  const c = b.coupDuJour, dd = Number(q.dd) || 0;
+  const k = (c && c.capacite === 'carapace' && coupActif(b) && !briseCoup(s, b, q) && dd > 0 && dd <= 9 ? 0.5 : 1) * (c && c.breche ? 1.25 : 1);
+  return Math.round(dXp * f * k * (mage && capa.sortPrepare === q.nom ? R.sort : 1) * (!mage && estAnnexe ? R.annexeRoublard : 1));
 }
 const bossFetes = {};
 /**
@@ -3042,13 +3188,13 @@ function bossVaincu(b, revoir) {
       <div class="bw-rayons">${rayons}</div>
       <div class="bw-nom">${esc(b.nom)}</div>
       <div class="bw-vie"><i></i></div>
-      <div class="bw-boss"><div class="bw-bi">${bossSvg(b.visuel, 'win')}</div>
+      <div class="bw-boss"><div class="bw-bi">${bossSvg(b.visuel, 'win', b)}</div>
         <span class="bw-slash s1"></span><span class="bw-slash s2"></span><span class="bw-slash s3"></span><span class="bw-slash s4"></span>${eclats}
         <b class="bw-coup c1">⚔ ${esc(nomG)}</b><b class="bw-coup c2">⚔ ${esc(nomD)}</b><b class="bw-coup c3">COUP FINAL !</b></div>
       ${heros.map((h, i) => `<div class="bw-h ${i ? 'd' : 'g'}"><div class="bw-hi">${h.svg}</div><small>${esc(h.nom)}</small></div>`).join('')}
       <div class="bw-flash"></div>
       <div class="bw-tampon">VICTOIRE</div>
-    </div>` : `<div class="bw-svg">${bossSvg(b.visuel, 'win')}</div>`}
+    </div>` : `<div class="bw-svg">${bossSvg(b.visuel, 'win', b)}</div>`}
     <div class="bw-txt"><h3>BOSS VAINCU !</h3>
     <p>${esc(b.nom)} ${b.type === 'mois' ? 'est repoussé jusqu\'au mois prochain' : 'tombe sous les coups de la Compagnie'}.</p>
     ${b.xp ? `<p class="bw-xp">+${b.xp} XP pour toi · ton compagnon reçoit aussi sa part</p>` : ''}
@@ -3310,6 +3456,7 @@ function poserApp(html) {
 }
 function render() {
   if (!state) return;
+  annonceBossAFaire();
   if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
   const s = state;
   document.body.classList.toggle('calme', !confort().animations);
@@ -4020,8 +4167,10 @@ function predire(s, nom, statut) {
     const epuise = n.arc || n.pv < n.seuilEpuise;
     const sort = capa.sortPrepare === nom ? 1.5 : 1;
     const sournoise = capa.roublard && estAnnexe && (capa.liste || []).some(c => c.n === 5 && c.debloquee && /^Prête/.test(c.statut)) ? 2 : 1;
-    return Math.round((Number(q.xp) || 0) * R.rend[Math.min(rang, 2)] * (epuise ? n.malus : 1) * (R.xpMult || 1) * ((n.d20 && n.d20.mult) || 1) * sort * sournoise * multEvt(n, q, estAnnexe));
+    return Math.round((Number(q.xp) || 0) * R.rend[Math.min(rang, 2)] * (epuise ? n.malus : 1) * (R.xpMult || 1) * ((n.d20 && n.d20.mult) || 1) * sort * sournoise * multEvt(n, q, estAnnexe) * (maudite(n, q) ? 0.85 : 1));
   };
+  // Coups spéciaux que cette quête brise (le Bouclier demande une quête de chacun : le Sheet tranchera)
+  const brises = statut === 'Fait' && n.boss ? ['semaine', 'mois'].filter(t => { const b = n.boss[t], c = coupActif(b); return c && c.capacite !== 'bouclier' && briseCoup(n, b, q); }) : [];
   const soin = estAnnexe ? R.soinAnnexe : R.soinHab;
   if (statut === 'Fait') {
     const deja = q.jour.fait;
@@ -4061,6 +4210,12 @@ function predire(s, nom, statut) {
     const rip = Math.round(b.pvMax * (t === 'mois' ? n.boss.regles.ripMois : n.boss.regles.ripSemaine));
     let d = 0;
     if (res.dXp) d = degatsQuete(n, b, q, res.dXp, estAnnexe);
+    if (brises.includes(t) && b.coupDuJour) { b.coupDuJour.brise = true; b.coupDuJour.breche = true; (res.brise = res.brise || []).push(b.coupDuJour.nom); }
+    if (statut === 'Raté' && coupActif(b) && (b.coupDuJour.capacite === 'vol' || b.coupDuJour.capacite === 'hurlement')) res.subi = b.coupDuJour;
+    if (d > 0 && b.sbire && !b.sbire.vaincu) { // le sbire prend les coups d'abord
+      const pris = Math.min(d, b.sbire.pv); b.sbire.pv -= pris; d -= pris;
+      if (b.sbire.pv <= 0) { b.sbire.vaincu = true; res.sbireAbattu = true; }
+    }
     if (statut === 'Raté' || (statut === 'undo' && res.annule === 'rate')) {
       const sens = statut === 'Raté' ? 1 : -1;
       b.riposte = Math.max(0, (b.riposte || 0) + sens * rip); b.pv = Math.max(0, b.pv + sens * rip);
@@ -4116,6 +4271,9 @@ function agir(nom, statut) {
     if (pred.coups && pred.coups.length) setTimeout(() => flotter(`⚔ −${pred.coups[0].d} PV au boss`, '#ff8b7a'), 450);
     setTimeout(() => frapperBoss(pred.coups && pred.coups.length && pred.coups[0].d > 0 ? 'hit' : statut === 'Raté' ? 'riposte' : ''), 60);
     (pred.victoires || []).forEach((b, i) => setTimeout(() => bossVaincu(b), 700 + i * 300));
+    if (pred.brise) setTimeout(() => { effetCoup('eclat'); toast('✨ ' + pred.brise.join(' et ') + ' brisé' + (pred.brise.length > 1 ? 's' : '') + ' ! Brèche : +25 % de dégâts aujourd\'hui'); }, 900);
+    if (pred.sbireAbattu) setTimeout(() => toast('👹 Sbire abattu ! +20 XP chacun'), 1300);
+    if (pred.subi) setTimeout(() => { effetCoup('subi'); toast(pred.subi.capacite === 'vol' ? '🃏 Le boss te vole ton joker !' : '📢 Le boss hurle : sa riposte compte double'); }, 900);
     if (pred.monte) { // montée de niveau fêtée tout de suite, sans attendre la réponse du Sheet
       niveauCelebre = pred.monte;
       const cl = classeDe(state);
