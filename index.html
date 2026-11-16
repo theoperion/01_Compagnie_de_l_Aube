@@ -1357,7 +1357,8 @@ const POLICES_TEXTE = [
 const TAILLES = [{ id: '', nom: 'Normale', z: 1 }, { id: 'grand', nom: 'Grande', z: 1.08 }, { id: 'tgrand', nom: 'Très grande', z: 1.16 }];
 function lireOpt(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
 /* Réglages : 3 thèmes affichés (dont celui choisi), les autres derrière « Voir plus » */
-let themesOuverts = false;
+let themesOuverts = false, apparenceOuverte = false; // réglages d'apparence repliés par défaut (app 4.1)
+document.addEventListener('click', e => { if (e.target.closest('[data-apparence]')) { apparenceOuverte = !apparenceOuverte; render(); } });
 function themesVisibles() {
   if (themesOuverts) return THEMES;
   const choisi = THEMES.find(t => t.id === themeChoisi()) || THEMES[0];
@@ -1441,7 +1442,7 @@ function orner(svg, orn, id, grand) {
   const fam = ORN_SVG[orn.familier], sol = ORN_SVG[orn.sol], emb = ORN_SVG[orn.embleme];
   if (orn.lueur && ORN_LUEURS[orn.lueur]) svg = svg.replace('<svg ', `<svg data-lueur="${orn.lueur}" `);
   // Vitrine : de la place au-dessus de la tête, emblème en grand, familier plus gros
-  if (grand) svg = svg.replace('viewBox="0 0 200 260"', 'viewBox="0 -56 200 316"');
+  if (grand) svg = svg.replace('viewBox="0 0 200 260"', 'viewBox="-24 -100 248 364"'); // marge pour l'emblème agrandi (flamme, lauriers) et le familier : plus rien de coupé (app 4.1)
   if (sol) { const k = svg.indexOf('</defs>'); const i = k >= 0 ? k + 7 : svg.indexOf('>') + 1; svg = svg.slice(0, i) + `<g class="orn orn-sol"${grand ? ' transform="translate(100 243) scale(1.18) translate(-100 -243)"' : ''}>${sol(id)}</g>` + svg.slice(i); }
   const avant = (fam ? `<g${grand ? ' transform="translate(26 236) scale(1.7) translate(-40 -222)"' : ''}><g class="orn orn-fam">${fam(id)}</g></g>` : '')
     + (emb ? `<g${grand ? ' transform="translate(100 -24) scale(2.4) translate(-42 -54)"' : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
@@ -3324,7 +3325,7 @@ function render() {
   const ordre = h => (h.type === 'Routine' ? 0 : 1);
   const duJour = habs.filter(h => (h.aFaire && !s.vacances) || touche(h)).sort((a, b) => ordre(a) - ordre(b));
   const plusTard = habs.filter(h => !(h.aFaire && !s.vacances) && !touche(h));
-  const annexes = s.annexes.filter(garde);
+  const annexes = s.annexes.filter(garde).sort((a, b) => (a.destin ? 1 : 0) - (b.destin ? 1 : 0)); // quête du destin (Claude) en dernier : tes annexes d'abord
   const epiques = s.objectifs.filter(garde);
   const faits = duJour.filter(h => h.jour.fait).length;
   const dimanche = indexJour(s.today) === 6;
@@ -3621,7 +3622,9 @@ function vueProfil(s) {
       <div class="lv">${s.niveau >= e.n ? '✦' : '🔒'}<br>Niv ${e.n}</div><div><b>${esc(e.titre)}${i === pal ? ' · aujourd\'hui' : ''}</b><span>${esc(e.desc)}</span></div></div>`).join('');
 
   // Réglages
-  const regTheme = `<div class="reg"><h3>🎨 Apparence de l'app</h3>
+  const themeActuel = (THEMES.find(t => t.id === themeChoisi()) || {}).nom || '';
+  const regTheme = !apparenceOuverte ? `<button class="reg reg-lien" data-apparence="1"><span>🎨</span><div><b>Apparence de l'app</b><small>Thème : ${esc(themeActuel)} · toucher pour changer</small></div></button>`
+    : `<div class="reg"><h3 data-apparence="1" style="cursor:pointer">🎨 Apparence de l'app <small class="muted" style="font-weight:400">▴ replier</small></h3>
       <div class="aide">Couleurs et polices, sur ce téléphone. Le Carnet suit le même thème.</div>
       <div class="themes">${themesVisibles().map(t => { const V = Object.assign({ bg: '#110e15', card: '#241e2c', gold: '#d4ad3c', text: '#ece6f2', 'f-titre': 'Cinzel, serif' }, t.v);
         return `<button class="theme ${themeChoisi() === t.id ? 'on' : ''}" data-theme="${t.id}" style="background:${V.bg};color:${V.text}">
