@@ -85,7 +85,9 @@
   - Saisie tardive : même liste de coups ajoutée un jour plus tard → résultat identique (point de vigilance 1).
 - [ ] Lancer → échecs attendus. Implémenter. Relancer → succès. Commit.
 
-### Tâche 4 : Brancher le moteur (`Code.js`)
+### Tâche 4 : Brancher le moteur (`Code.js`) ✅ (16/11, moteur 5.0 en service, actif le 23/11 ; 5 tests d'intégration)
+
+> Suivi : avant mars 2027, adapter `roulerBoss_` (il ne décale que la colonne U ; les lignes écrites en valeurs par le moteur ne doivent pas se décaler mal).
 
 **Fichiers :** modifier `app_scripts/compagnie-de-l-aube/Code.js` (`combatsDuJour_`, `reglesBoss_`, `multEvenement_`, `jokersUtilises_`, `roulerBoss_`, `titres_` stats si besoin) ; tests `tests/integration.test.js` (fausse Sheet, comme les tests du 05/11).
 
