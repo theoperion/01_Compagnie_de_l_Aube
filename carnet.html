@@ -590,6 +590,14 @@ function fusionCarnet(srvS,loc){
   // course et renfo : toutes les séances notées des deux côtés
   ["run","str"].forEach(k=>{f[k].logs=Object.assign({},(srvS[k]||{}).logs||{},f[k].logs||{})});
   f.run.bilans=Object.assign({},srvS.run.bilans||{},f.run.bilans||{});
+  // Plan recommencé (ou date de début changée) sur un des deux appareils : le plan qui commence le plus tard l'emporte entier,
+  // l'autre n'apporte que ses séances notées depuis ce début (les anciennes séances et anciens bilans ne reviennent pas)
+  const sR=srvS.run||{}, lR=loc.run||{};
+  if(sR.start&&lR.start&&sR.start!==lR.start){
+    const recent=sR.start>lR.start?sR:lR, autre=recent===sR?lR:sR;
+    f.run=JSON.parse(JSON.stringify(recent)); f.run.logs=f.run.logs||{};
+    Object.keys(autre.logs||{}).forEach(k=>{const l=autre.logs[k];if(String(l.date||"")>=recent.start&&!f.run.logs[k])f.run.logs[k]=l});
+  }
   // jeu : on garde le meilleur des deux
   const g=f.en.game,gs=srvS.en.game||{};g.xp=Math.max(g.xp||0,gs.xp||0);g.badges=Object.assign({},gs.badges||{},g.badges||{});
   Object.keys(gs.stats||{}).forEach(k=>{if(typeof gs.stats[k]==="number")g.stats[k]=Math.max(g.stats[k]||0,gs.stats[k])});
@@ -1772,8 +1780,21 @@ function decalerHTML(){const pp=pausePlanActive(), W=weeksPlan();
     <p class="small muted">Course officielle, blessure, voyage : les semaines sautées ne sont pas perdues, le plan reprend là où tu en étais. Les séances déjà envoyées sur ta montre pour ces semaines sont retirées.</p>
     <div class="row"><label class="small">Reprendre le (un lundi)<input type="date" id="dcR" value="${pp?addDays(pp.fin,1):propose}"></label>
     <button class="btn sm primary run" id="dcOk">Décaler</button>${pp?'<button class="btn sm" id="dcNo">Annuler le décalage</button>':""}</div>
-    <p class="small" id="dcMsg"></p></details>`}
+    <p class="small" id="dcMsg"></p></details>
+  <details class="parcours" id="recom"><summary>🔄 Recommencer le plan cette semaine</summary>
+    <p class="small muted">Le plan repart à la semaine 1 ce lundi (${frDate(mondayOf(todayISO()))}), avec les allures de départ. L'ancien plan est rangé dans les archives (rien n'est effacé). Les séances de l'ancien plan encore à venir sont retirées de ta montre et les nouvelles y sont envoyées.</p>
+    <div class="row"><button class="btn sm primary run" id="recOk">Recommencer cette semaine</button></div></details>`}
+/* Recommencer le plan à la semaine 1 ce lundi : l'ancien plan est archivé (séances, bilans), l'adaptation repart de zéro */
+function recommencerPlan(){
+  const r=state.run, lun=mondayOf(todayISO());
+  if(Object.keys(r.logs||{}).length||r.start!==lun) r.archives=(r.archives||[]).concat([{debut:r.start,fin:addDays(lun,-1),logs:r.logs||{},bilans:r.bilans||{},facteur:r.facteur||1}]).slice(-5);
+  r.start=lun; r.logs={}; r.bilans={}; r.allege={}; r.facteur=1; r.pauses=[];
+}
 function bindDecaler(){
+  $("#recOk")&&($("#recOk").onclick=async()=>{
+    if(!confirm("Recommencer le plan de course à la semaine 1, à partir de ce lundi ? L'ancien plan sera archivé."))return;
+    recommencerPlan();save();renderAll();toast("🔄 Plan recommencé : semaine 1 cette semaine");
+    if(montre?.ok){await envoyerSeances(true);toast("⌚ Séances de la semaine 1 envoyées sur ta montre")}});
   const ok=$("#dcOk"); if(!ok) return;
   ok.onclick=async()=>{try{decalerPlan($("#dcR").value)}catch(e){$("#dcMsg").textContent=e.message;return}
     save();renderAll();toast("⏸ Plan décalé : reprise le "+frDate(weeksPlan().find(w=>w.monday>=todayISO())?.monday||$("#dcR").value));await envoyerSeances(true)};
