@@ -34,7 +34,7 @@
 
 ---
 
-### Tâche 1 : Récupérer les formules actuelles des combats
+### Tâche 1 : Récupérer les formules actuelles des combats ✅ (16/11)
 
 **Fichiers :** modifier `app_scripts/compagnie-de-l-aube/Code.js` (fonction temporaire).
 
@@ -44,7 +44,7 @@
 - [ ] Mettre en ligne, demander à Théo d'ouvrir l'app une fois, lire le fichier par Google Drive.
 - [ ] Noter dans `Boss.js` (commentaire en tête) les formules de PV, dégâts et riposte actuelles ; retirer la fonction temporaire à la tâche 4.
 
-### Tâche 2 : Données des boss (`Boss.js`, partie données)
+### Tâche 2 : Données des boss (`Boss.js`, partie données) ✅ (16/11)
 
 **Fichiers :** créer `app_scripts/compagnie-de-l-aube/Boss.js` ; tests `app_scripts/compagnie-de-l-aube/tests/boss.test.js`.
 
@@ -58,7 +58,7 @@
 - [ ] Écrire les données (noms des stades II/III et textes par Claude).
 - [ ] Relancer → succès. Commit.
 
-### Tâche 3 : Moteur de combat pur (`Boss.js`, partie calcul)
+### Tâche 3 : Moteur de combat pur (`Boss.js`, partie calcul) ✅ (16/11, 18 tests)
 
 **Fichiers :** modifier `Boss.js` ; tests `tests/boss.test.js`.
 
