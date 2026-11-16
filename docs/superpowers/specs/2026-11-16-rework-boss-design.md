@@ -58,8 +58,13 @@ briser les capacités (« Brèche », section 4) et ne pas rater de quêtes suff
 
 ## 4. Capacités spéciales
 
-### 4.1 L'intention du jour (annoncée chaque matin)
-Chaque jour, le boss **annonce** une action, tirée de ses capacités (tirage fixe d'avance, le même pour les deux héros).
+### 4.1 Les coups spéciaux annoncés (deux fois par semaine)
+*Décision de Théo : pas d'annonce tous les jours, c'est trop lourd.*
+- **Boss de la semaine** : un coup spécial le **mardi** et un le **jeudi**.
+- **Boss du mois** : un coup spécial chaque **samedi**.
+- Le coup est **annoncé dès la veille au soir** (carte du boss, Nouvelles), pour pouvoir s'organiser.
+
+Le boss **annonce** une action tirée de ses capacités (tirage fixe d'avance, le même pour les deux héros).
 Elle s'affiche sur la carte du boss et en pastille sur l'écran des quêtes :
 
 > ⚠ *Le Golem prépare **Carapace de pierre** : vos petites quêtes font moitié dégâts aujourd'hui.*
@@ -68,7 +73,7 @@ Elle s'affiche sur la carte du boss et en pastille sur l'écran des quêtes :
 - **Contre réussi** (un des héros fait la quête demandée) : l'effet est annulé pour la journée **et** la Compagnie gagne
   **« Brèche »** : dégâts ×1,25 sur toutes les quêtes suivantes du jour. Petite animation sur la carte.
 - Pas de contre : l'effet s'applique toute la journée (ou à minuit pour les effets « de nuit »).
-- Un même effet ne revient pas deux jours de suite. Environ 1 jour sur 4 : « Le boss reprend son souffle » (aucune intention).
+- Les deux coups d'une même semaine sont différents.
 
 ### 4.1 bis Règles « à la journée » (*choix de Claude*)
 Le Journal note la date d'une quête, pas l'heure (et une quête peut être saisie le lendemain, ou arriver de la montre en retard).
@@ -99,12 +104,12 @@ Toutes les règles se jugent donc **sur la journée entière**, jamais sur l'ord
 
 ### 4.3 Phases
 - **> 50 % PV** : normal.
-- **≤ 50 %** : **Enragé** — ripostes ×2, et ses intentions deviennent plus fréquentes (plus de jour de repos).
-- **≤ 20 %** : **Aux abois** — chaque jour, intention « Dernier recours » : +8 % PV à minuit sauf si une quête de sa faiblesse est faite.
+- **≤ 50 %** : **Enragé** — ses ripostes (ratés) sont doublées. Pas d'annonce supplémentaire.
+- **≤ 20 %** : **Aux abois** — **une seule fois**, le lendemain du passage sous 20 %, coup « Dernier recours » annoncé : +8 % PV à minuit sauf si une quête de sa faiblesse est faite ce jour-là.
 
 ### 4.4 Effets en votre faveur
 - **Brèche** (contre réussi) : ×1,25 dégâts le reste du jour.
-- **Étourdi** : si les deux héros font chacun 3 quêtes ou plus le même jour, pas d'intention le lendemain.
+- **Étourdi** : si les deux héros font chacun 3 quêtes ou plus la veille d'un coup spécial, le coup est annulé.
 - **d20 = 20** : la première quête du jour fait double dégâts au boss.
 - Le **Rebondissement du jeudi** (allié du Maître du Jeu si le boss a plus de 50 % PV) reste.
 
@@ -158,6 +163,11 @@ Quand un boss revient dans le calendrier, il revient **évolué** :
 - L'écran des quêtes signale les quêtes qui **contrent** l'intention du jour (petite étiquette « 🗡 brise la Carapace »).
 - La prédiction instantanée des dégâts dans l'app applique les effets du jour (Carapace, Brèche, Bouclier, sbire), pour rester juste avant la réponse du moteur.
 - Petites animations quand une capacité se déclenche ou est brisée (secousse, éclat violet / doré). Les grosses animations par boss = chantier 2.
+
+### 7 bis Annonce des nouvelles règles (pour Kevin)
+- Une fenêtre unique « ⚔ Les boss changent ! » s'ouvre chez **chaque héros** à sa prochaine ouverture de l'app,
+  avec les nouveautés en 5 lignes (PV calés, coups spéciaux mardi/jeudi/samedi et contres, phases, fuite enhardie, évolutions)
+  et la date de départ (23 novembre). Elle reste consultable dans les Nouvelles. Un message dans le fil de la Compagnie aussi.
 
 ## 8. Fonctionnement dans le moteur
 - Nouvelle fonction de combat qui, à chaque calcul de la fiche : lit les coups (Journal), applique faiblesse/résistance, capacités du jour,
