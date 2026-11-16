@@ -40,9 +40,9 @@
 
 **Interfaces :** produit le fichier Drive « Compagnie · formules des combats.txt » (lu par Claude via Google Drive).
 
-- [ ] Ajouter `exporterFormulesCombats_()` : écrit dans un fichier texte Drive les formules de `Combats!A3:X5`, `Combats!A60:X61`, `Bestiaire!A3:K6`, `Paramètres!A60:B77` (`getFormulas()` + `getValues()`), appelée une seule fois par `getState` (drapeau de propriété `formulesExportees`).
-- [ ] Mettre en ligne, demander à Théo d'ouvrir l'app une fois, lire le fichier par Google Drive.
-- [ ] Noter dans `Boss.js` (commentaire en tête) les formules de PV, dégâts et riposte actuelles ; retirer la fonction temporaire à la tâche 4.
+- [x] Ajouter `exporterFormulesCombats_()` : écrit dans un fichier texte Drive les formules de `Combats!A3:X5`, `Combats!A60:X61`, `Bestiaire!A3:K6`, `Paramètres!A60:B77` (`getFormulas()` + `getValues()`), appelée une seule fois par `getState` (drapeau de propriété `formulesExportees`).
+- [x] Mettre en ligne, demander à Théo d'ouvrir l'app une fois, lire le fichier par Google Drive.
+- [x] Noter dans `Boss.js` (commentaire en tête) les formules de PV, dégâts et riposte actuelles ; retirer la fonction temporaire à la tâche 4.
 
 ### Tâche 2 : Données des boss (`Boss.js`, partie données) ✅ (16/11)
 
@@ -53,10 +53,10 @@
 - Produit `CAPACITES_` : `{ carapace, regeneration, malediction, bouclier, sbire, vol, hurlement }` → `{ nom, annonce(boss), contre(boss), effet }` (textes d'une phrase).
 - Produit `stadeDepuisRang_(rang: number) -> 1|2|3` et `xpVictoire_(type, stade) -> number`.
 
-- [ ] Test : `stadeDepuisRang_(1)===1`, `(3)===2`, `(5)===3` ; `xpVictoire_('semaine',2)===300` ; `xpVictoire_('mois',3)===800` ; chaque visuel a 3 stades, des noms différents, 2 (semaine) ou 3 (mois) capacités au stade I et une de plus par stade, toutes présentes dans `CAPACITES_`.
-- [ ] Lancer `node tests/boss.test.js` → échec attendu.
-- [ ] Écrire les données (noms des stades II/III et textes par Claude).
-- [ ] Relancer → succès. Commit.
+- [x] Test : `stadeDepuisRang_(1)===1`, `(3)===2`, `(5)===3` ; `xpVictoire_('semaine',2)===300` ; `xpVictoire_('mois',3)===800` ; chaque visuel a 3 stades, des noms différents, 2 (semaine) ou 3 (mois) capacités au stade I et une de plus par stade, toutes présentes dans `CAPACITES_`.
+- [x] Lancer `node tests/boss.test.js` → échec attendu.
+- [x] Écrire les données (noms des stades II/III et textes par Claude).
+- [x] Relancer → succès. Commit.
 
 ### Tâche 3 : Moteur de combat pur (`Boss.js`, partie calcul) ✅ (16/11, 18 tests)
 
@@ -71,7 +71,7 @@
   - `rejouerCombat_({ boss, pvMax, debut, jusqua, coups, rates, quetesParJour, d20, presences }) -> { pv, degats: {heros:n}, ripostes, phase, effetsDuJour, sbire, brisés, plafondAtteint, historique }`.
 - Valeurs : toutes celles des Contraintes globales.
 
-- [ ] Tests (assertions chiffrées) :
+- [x] Tests (assertions chiffrées) :
   - `rythme_` : 2 héros, 28 jours, un héros 7 jours en vacances → moyenne sur les seuls jours présents.
   - `pvDepart_` : rythme 100, 14 jours présents, stade II → `100*14*1.10*1.05` arrondi ; borné à 150 % de `pvPrecedent` ; `pvSecours` si historique < 14 jours ; enhardi +10 % / +5 %.
   - `coupsSpeciaux_` : semaine du 2026-11-23 → dates `2026-11-24` et `2026-11-26`, capacités différentes ; même entrée → même sortie ; boss du mois de décembre → 4 samedis ; aucun coup un jour où tous les héros sont en vacances.
@@ -83,7 +83,7 @@
   - Phases : passage ≤ 50 % → ripostes ×2 ; ≤ 20 % → un seul « Dernier recours » le lendemain.
   - Étourdi : 3 quêtes chacun la veille → coup du lendemain annulé.
   - Saisie tardive : même liste de coups ajoutée un jour plus tard → résultat identique (point de vigilance 1).
-- [ ] Lancer → échecs attendus. Implémenter. Relancer → succès. Commit.
+- [x] Lancer → échecs attendus. Implémenter. Relancer → succès. Commit.
 
 ### Tâche 4 : Brancher le moteur (`Code.js`) ✅ (16/11, moteur 5.0 en service, actif le 23/11 ; 5 tests d'intégration)
 
@@ -96,48 +96,48 @@
 - Produit, dans `etat.boss.semaine` / `etat.boss.mois` (champs **ajoutés**, rien de renommé) : `stade, nomStade, phase, coupDuJour, coupDemain, effets[], sbire{pv,pvMax,vaincu}|null, enhardi, nouvellesRegles:true`.
 - Propriétés du script : `bossPv|<type>|<debut>` (PV fixés au lancement), `bossFin|<type>|<debut>` (`{issue:'victoire'|'fuite'|'fuiteJuste', pvRestant}`), `jokerVole|<heros>|<lundi>`.
 
-- [ ] Tests d'intégration : boss commencé avant le 23/11 → calcul inchangé ; après → valeurs écrites dans Combats (G PV max, H/I dégâts, J ripostes, K PV, L statut, D stade) ; victoire détectée une seule fois avec XP 200/300/400 ; fuite → `bossFin` noté et boss suivant +10 % avec malédiction de départ (fuite à ≤ 10 % → +5 % sans malédiction ; boss du mois en fuite → pas de relique) ; malédiction → multiplicateur 0,85 dans la saisie concernée, rétabli après contre ; vol de joker → `jokersRestants` diminue pour le héros qui a raté, rendu à la victoire ; fiche préparée jetée au changement de jour (point 4).
-- [ ] Implémenter ; retirer `exporterFormulesCombats_`. Monter la version du moteur (5.0).
-- [ ] Tests au vert. Commit (pas encore de mise en ligne).
+- [x] Tests d'intégration : boss commencé avant le 23/11 → calcul inchangé ; après → valeurs écrites dans Combats (G PV max, H/I dégâts, J ripostes, K PV, L statut, D stade) ; victoire détectée une seule fois avec XP 200/300/400 ; fuite → `bossFin` noté et boss suivant +10 % avec malédiction de départ (fuite à ≤ 10 % → +5 % sans malédiction ; boss du mois en fuite → pas de relique) ; malédiction → multiplicateur 0,85 dans la saisie concernée, rétabli après contre ; vol de joker → `jokersRestants` diminue pour le héros qui a raté, rendu à la victoire ; fiche préparée jetée au changement de jour (point 4).
+- [x] Implémenter ; retirer `exporterFormulesCombats_`. Monter la version du moteur (5.0).
+- [x] Tests au vert. Commit (pas encore de mise en ligne).
 
-### Tâche 5 : Affichage dans l'app (`index.html`)
+### Tâche 5 : Affichage dans l'app (`index.html`) ✅
 
 **Fichiers :** modifier `01_Compagnie_de_l_Aube/index.html` (`carteBoss`, petite carte des Quêtes, `degatsQuete`, `predire`, Nouvelles, étiquette des quêtes) et `config.js`.
 
 **Interfaces :** consomme les champs de la tâche 4.
 
-- [ ] Carte du boss : stade et nom du stade, phase (badge), coup du jour (ou de demain, la veille au soir) en une phrase + son contre, effets actifs en icônes, barre du sbire.
-- [ ] Écran des quêtes : étiquette « 🗡 brise la Carapace » sur les quêtes qui contrent le coup du jour.
-- [ ] `degatsQuete` applique Carapace, Brèche, Bouclier restant et sbire, pour une prédiction juste.
-- [ ] Petite animation quand un coup est brisé (éclat doré) ou subi (secousse violette).
-- [ ] Test Playwright (mode aperçu, objet `boss` simulé) : la carte affiche coup/contre/phase ; une quête de faiblesse porte l'étiquette ; la prédiction d'une quête DD 8 sous Carapace donne la moitié ; un objet `boss` **sans** les nouveaux champs s'affiche comme avant (point 5) ; comparaison des règles CSS avant/après (seules les nouvelles s'ajoutent).
-- [ ] Version de l'app 4.1. Commit.
+- [x] Carte du boss : stade et nom du stade, phase (badge), coup du jour (ou de demain, la veille au soir) en une phrase + son contre, effets actifs en icônes, barre du sbire.
+- [x] Écran des quêtes : étiquette « 🗡 brise la Carapace » sur les quêtes qui contrent le coup du jour.
+- [x] `degatsQuete` applique Carapace, Brèche, Bouclier restant et sbire, pour une prédiction juste.
+- [x] Petite animation quand un coup est brisé (éclat doré) ou subi (secousse violette).
+- [x] Test Playwright (mode aperçu, objet `boss` simulé) : la carte affiche coup/contre/phase ; une quête de faiblesse porte l'étiquette ; la prédiction d'une quête DD 8 sous Carapace donne la moitié ; un objet `boss` **sans** les nouveaux champs s'affiche comme avant (point 5) ; comparaison des règles CSS avant/après (seules les nouvelles s'ajoutent).
+- [x] Version de l'app 4.1. Commit.
 
-### Tâche 6 : Apparence des stades
+### Tâche 6 : Apparence des stades ✅
 
 **Fichiers :** modifier `index.html` (`bossSvg`, styles).
 
-- [ ] `bossSvg(visuel, cle, stade)` : stade II/III → teinte (`teinte` de `BOSS_FICHES_`, filtre de couleur) + attribut dessiné par-dessus (couronne, cornes, aura, yeux brillants).
-- [ ] Captures des 18 boss aux 3 stades (planche Playwright) vérifiées à l'œil ; aucune forme illisible. Commit.
+- [x] `bossSvg(visuel, cle, stade)` : stade II/III → teinte (`teinte` de `BOSS_FICHES_`, filtre de couleur) + attribut dessiné par-dessus (couronne, cornes, aura, yeux brillants).
+- [x] Captures des 18 boss aux 3 stades (planche Playwright) vérifiées à l'œil ; aucune forme illisible. Commit.
 
-### Tâche 7 : Annonce des nouvelles règles (pour Kevin)
+### Tâche 7 : Annonce des nouvelles règles (pour Kevin) ✅
 
 **Fichiers :** `index.html` (fenêtre unique), `Code.js` (message dans le fil, une fois).
 
-- [ ] Fenêtre « ⚔ Les boss changent ! » à la première ouverture après la mise en ligne, chez chaque héros (mémorisée sur le téléphone), 5 lignes : PV calés sur votre rythme · coups spéciaux mardi et jeudi (samedi pour le mois), annoncés la veille, à contrer · Enragé et Aux abois · un boss non battu revient enhardi · les boss évoluent en 3 stades ; départ le 23 novembre. Consultable ensuite dans les Nouvelles.
-- [ ] Message dans le fil de la Compagnie (propriété `annonceBoss2026` pour ne l'écrire qu'une fois).
-- [ ] Test Playwright : la fenêtre s'ouvre une fois, pas la deuxième. Commit.
+- [x] Fenêtre « ⚔ Les boss changent ! » à la première ouverture après la mise en ligne, chez chaque héros (mémorisée sur le téléphone), 5 lignes : PV calés sur votre rythme · coups spéciaux mardi et jeudi (samedi pour le mois), annoncés la veille, à contrer · Enragé et Aux abois · un boss non battu revient enhardi · les boss évoluent en 3 stades ; départ le 23 novembre. Consultable ensuite dans les Nouvelles.
+- [x] Message dans le fil de la Compagnie (propriété `annonceBoss2026` pour ne l'écrire qu'une fois).
+- [x] Test Playwright : la fenêtre s'ouvre une fois, pas la deuxième. Commit.
 
-### Tâche 8 : Simulation d'équilibrage
+### Tâche 8 : Simulation d'équilibrage ✅
 
 **Fichiers :** `app_scripts/compagnie-de-l-aube/tests/simulation.js`.
 
-- [ ] Simuler 8 semaines avec `Boss.js` : rythme régulier, semaine de voyage à quêtes faciles, semaine creuse (−30 %), Compagnie qui contre la moitié des coups.
-- [ ] Attendu : rythme normal sans contre → défaite de justesse ou victoire dimanche ; rythme normal avec contres → victoire jeudi–samedi ; semaine creuse → fuite ; jamais de victoire avant mercredi à rythme normal. Ajuster les coefficients **seulement** si ces attentes ne tiennent pas, et le noter dans le design.
-- [ ] Commit du script et du tableau de résultats.
+- [x] Simuler 8 semaines avec `Boss.js` : rythme régulier, semaine de voyage à quêtes faciles, semaine creuse (−30 %), Compagnie qui contre la moitié des coups.
+- [x] Attendu : rythme normal sans contre → défaite de justesse ou victoire dimanche ; rythme normal avec contres → victoire jeudi–samedi ; semaine creuse → fuite ; jamais de victoire avant mercredi à rythme normal. Ajuster les coefficients **seulement** si ces attentes ne tiennent pas, et le noter dans le design.
+- [x] Commit du script et du tableau de résultats.
 
-### Tâche 9 : Mise en ligne et suivi
+### Tâche 9 : Mise en ligne et suivi ✅
 
-- [ ] `clasp push --force` puis `python3 ../outils/deployer.py "moteur 5.0 : rework des boss"` ; vérifier par l'API que l'adresse est sur la nouvelle version.
-- [ ] Publier l'app (main), mettre à jour l'audit `app_scripts/audits/compagnie-2026-11.md`, le mode d'emploi Claude et le README.
-- [ ] Checklist pour Théo et Kevin : fenêtre d'annonce vue ; le 23/11, carte du boss avec stade et PV ; le 23/11 au soir, coup du mardi annoncé ; mardi, l'étiquette « brise… » sur la bonne quête et la Brèche après contre.
+- [x] `clasp push --force` puis `python3 ../outils/deployer.py "moteur 5.0 : rework des boss"` ; vérifier par l'API que l'adresse est sur la nouvelle version.
+- [x] Publier l'app (main), mettre à jour l'audit `app_scripts/audits/compagnie-2026-11.md`, le mode d'emploi Claude et le README.
+- [x] Checklist pour Théo et Kevin : fenêtre d'annonce vue ; le 23/11, carte du boss avec stade et PV ; le 23/11 au soir, coup du mardi annoncé ; mardi, l'étiquette « brise… » sur la bonne quête et la Brèche après contre.
