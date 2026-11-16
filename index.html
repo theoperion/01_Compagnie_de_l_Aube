@@ -4383,6 +4383,31 @@ document.addEventListener('click', e => {
     fermerMenu(); toast('Décalage annulé'); regler('annulerDecalage', nom, de, a);
   }
 });
+/* ---------- Bouton retour d'Android : ferme ce qui est ouvert, revient aux Quêtes, puis deux appuis pour quitter ----------
+ * Une « garde » est ajoutée à l'historique ; le bouton retour la consomme (popstate) et on la remet.
+ * Chrome ignore les entrées ajoutées sans geste de l'utilisateur : la garde est aussi remise à chaque toucher. */
+let retourQuitter = 0;
+function gardeRetour() { try { if (!(history.state && history.state.garde)) history.pushState({ garde: 1 }, ''); } catch (e) {} }
+document.addEventListener('click', gardeRetour, true);
+window.addEventListener('popstate', () => {
+  const ok = () => { gardeRetour(); };
+  const ouvert = id => { const el = document.getElementById(id); return el && el.classList.contains('on') ? el : null; };
+  const bw = document.querySelector('.boss-win');
+  if (bw) { bw.remove(); document.body.classList.remove('bloque'); return ok(); }
+  if (ouvert('bossVue')) { ouvert('bossVue').classList.remove('on'); document.body.classList.remove('bloque'); return ok(); }
+  if (ouvert('vitrine')) { fermerVitrine(); return ok(); }
+  if (ouvert('d20ov')) { fermerD20(); return ok(); }
+  if (ouvert('sheet') || ouvert('sheetPal')) { fermerMenu(); return ok(); }
+  if (compVue) { compVue = null; render(); return ok(); }
+  if (onglet !== 'quetes' || sousOnglet !== 'quetes') {
+    onglet = 'quetes'; sousOnglet = 'quetes';
+    try { localStorage.setItem('onglet', onglet); } catch (e) {}
+    render(); window.scrollTo(0, 0); return ok();
+  }
+  if (Date.now() - retourQuitter < 2500) { history.back(); return; } // deuxième appui : on quitte vraiment
+  retourQuitter = Date.now(); toast('Appuie encore sur retour pour quitter', 'info'); ok();
+});
+gardeRetour();
 function fermerMenu() {
   document.getElementById('sheet').classList.remove('on');
   document.getElementById('sheetPal').classList.remove('on');
