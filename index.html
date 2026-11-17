@@ -450,6 +450,12 @@
   .orn-t.cosm { border-width: 1px; border-style: solid; }
   .ap-rep { display: block; width: 34px; height: 34px; border-radius: 6px; overflow: hidden; } .ap-rep svg { width: 100%; height: 100%; }
   .ap-ef { font-size: 22px; }
+  .plateau { margin: 10px 0; } .pl-tete { display: flex; justify-content: space-between; align-items: baseline; margin: 0 4px 6px; } .pl-tete b { font-family: var(--f-titre); color: var(--gold); } .pl-tete span { font-size: 12.5px; color: var(--muted); }
+  .pl-svg { width: 100%; height: auto; display: block; border-radius: 16px; border: 1px solid var(--line); }
+  .pl-case { cursor: pointer; } .pl-case:not(.fait) { opacity: .75; } .pl-case.proch circle:first-child { animation: plProch 1.6s ease-in-out infinite; }
+  .pl-pion { transition: transform .38s cubic-bezier(.3,1.5,.5,1); } .pl-pion.lui { opacity: .9; }
+  @keyframes plProch { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .3; } }
+  @media (prefers-reduced-motion: reduce) { .pl-case.proch circle:first-child { animation: none; } .pl-pion { transition: none; } }
   .apercu-s1 { margin: 10px 0; border: 1px solid #3a5a9a; border-radius: 14px; padding: 10px 12px; background: linear-gradient(180deg, #141c30, var(--panel)); }
   .apercu-s1 summary { cursor: pointer; font-weight: 700; color: #8ad0ff; }
   .s1-boss { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; margin-top: 8px; }
@@ -1772,6 +1778,84 @@ const CHEMIN_APP = { 1: { item: 'cape_rouge' }, 3: { item: 'bandeau' }, 4: { cof
   35: { item: 'vi_foudre' }, 38: { coffre: 'epique' }, 40: { coffre: 'legendaire' }, 42: { coffre: 'epique' }, 45: { item: 'aura_aube' }, 48: { coffre: 'legendaire' },
   50: { item: 'tete_aube' } };
 
+/* --- Plateau de l'Aventure : le chemin de la saison façon jeu de plateau ---
+ * Une case par palier, en lacets du haut vers le bas (départ en haut, château à l'arrivée). Ton pion et celui de ton compagnon. */
+const PL_COL = 4, PL_DX = 78, PL_DY = 92, PL_X0 = 52, PL_Y0 = 70;
+function posCase(n) { // n = 0 (départ) … paliers
+  const r = Math.floor(n / PL_COL), c = n % PL_COL, x = PL_X0 + (r % 2 ? PL_COL - 1 - c : c) * PL_DX;
+  return [x, PL_Y0 + r * PL_DY];
+}
+function plateauHTML(s) {
+  const A = s.armurerie; if (!A || !A.saison) return '';
+  const S = A.saison, N = S.paliers, CC = s.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
+  const lignes = Math.floor(N / PL_COL) + 1, H = PL_Y0 + (lignes - 1) * PL_DY + 150;
+  const pts = Array.from({ length: N + 1 }, (_, n) => posCase(n));
+  const chemin = pts.map(([x, y], i) => (i ? 'L' : 'M') + x + ' ' + y).join(' ');
+  // décor : forêt en haut, collines au milieu, château à l'arrivée
+  const decor = [];
+  for (let r = 0; r < lignes; r++) {
+    const y = PL_Y0 + r * PL_DY + 44, t = r / Math.max(1, lignes - 1);
+    const c = t < .4 ? '#1d3a2a' : t < .75 ? '#3a3248' : '#4a2a3a';
+    [12, 330].forEach((x, k) => decor.push(`<path d="M${x - 12} ${y + 10} L${x} ${y - 22} L${x + 12} ${y + 10} Z" fill="${c}" opacity=".8"/><path d="M${x - 8 + k * 4} ${y + 30} L${x + 2} ${y + 6} L${x + 12} ${y + 30} Z" fill="${c}" opacity=".55"/>`));
+  }
+  const [xf, yf] = pts[N];
+  decor.push(`<g transform="translate(${xf} ${yf + 96})"><rect x="-40" y="-26" width="80" height="34" fill="#3e3850" stroke="#1c1824" stroke-width="1.5"/>${[-40, -24, -8, 8, 24].map(x => `<rect x="${x}" y="-34" width="10" height="9" fill="#3e3850" stroke="#1c1824"/>`).join('')}
+    <rect x="-14" y="-52" width="28" height="60" fill="#4a4258" stroke="#1c1824" stroke-width="1.5"/><path d="M-18 -52 L0 -72 L18 -52 Z" fill="#6e1e1e"/><path d="M0 -72 V-84 l12 4 l-12 4" fill="#d4ad3c"/><path d="M-6 8 V-8 Q0 -16 6 -8 V8Z" fill="#120c18"/></g>`);
+  const cases = Array.from({ length: N }, (_, i) => {
+    const n = i + 1, [x, y] = pts[n], r = CH[n] || { eclats: 20 }, it = r.item ? cosmItem(r.item) : null, fait = n <= S.palier;
+    const gros = it && (it.rarete === 'legendaire' || it.rarete === 'epique');
+    const coul = it ? ({ commun: '#a99bb6', rare: '#5ab0ff', epique: '#b392ee', legendaire: '#f2a93c' })[it.rarete] : r.coffre ? '#d4ad3c' : '#4a6a9a';
+    const ic = it ? ({ cape: '🧥', tete: '👑', aura: '✨', familier: '🐾', monture: '🐎', repaire: '🏰', trainee: '💫', victoire: '⚡' })[it.slot] || '✦' : r.coffre ? '🎁' : '✦';
+    return `<g class="pl-case ${fait ? 'fait' : ''} ${n === S.palier + 1 ? 'proch' : ''}" data-case="${n}" transform="translate(${x} ${y})">
+      <circle r="${gros ? 22 : 18}" fill="${fait ? coul : '#1c1626'}" stroke="${coul}" stroke-width="${gros ? 3.5 : 2.5}"/>
+      ${gros ? `<circle r="27" fill="none" stroke="${coul}" stroke-opacity=".35" stroke-width="2"/>` : ''}
+      <text y="6" text-anchor="middle" font-size="${gros ? 19 : 15}">${ic}</text>
+      <text y="${gros ? 36 : 32}" text-anchor="middle" font-size="10" fill="var(--muted)" font-weight="700">${n}</text></g>`;
+  }).join('');
+  // pions : le mien (avatar) et celui du compagnon
+  const pion = (svg, n, dx, cls) => { const [x, y] = pts[Math.min(N, n)]; return `<g class="pl-pion ${cls}" data-pion="${cls}" style="transform:translate(${x + dx - 26}px,${y - 70}px)"><ellipse cx="26" cy="66" rx="14" ry="3.5" fill="#000" opacity=".4"/>${svg.replace('<svg ', '<svg x="0" y="0" width="52" height="68" ')}</g>`; };
+  const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -10, 'moi');
+  const comp = (s.compagnons || [])[0];
+  const lui = comp && comp.palierSaison != null ? pion(orner(classeDe(comp).dessin(palierDe(Number(comp.niveau) || 1, classeDe(comp)), 'plc', lookDe(comp.look)), comp.ornements || {}, 'plc'), comp.palierSaison, 12, 'lui') : '';
+  return `<div class="plateau"><div class="pl-tete"><b>🗺 ${esc(S.nom)}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
+    <svg viewBox="0 0 360 ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
+      <defs><linearGradient id="plSol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16241c"/><stop offset=".5" stop-color="#1e1a2a"/><stop offset="1" stop-color="#2a1a24"/></linearGradient></defs>
+      <rect width="360" height="${H}" rx="16" fill="url(#plSol)"/>${decor.join('')}
+      <path d="${chemin}" stroke="#5a4a32" stroke-width="16" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="${chemin}" stroke="#c9a86a" stroke-width="2" stroke-dasharray="2 8" fill="none" stroke-linejoin="round" opacity=".6"/>
+      <g transform="translate(${pts[0][0]} ${pts[0][1]})"><circle r="16" fill="#2a4a2a" stroke="#7ad06a" stroke-width="2"/><text y="5" text-anchor="middle" font-size="13">🚩</text></g>
+      ${cases}${lui}${moi}
+    </svg><div class="orn-info" id="info-case"></div></div>`;
+}
+let plateauDepart = null;
+function prepPlateau(s) {
+  const A = s && s.armurerie; if (!A || !A.saison || !confort().animations) { plateauDepart = null; return; }
+  try { const v = localStorage.getItem('plateauVu|' + A.saison.id + '|' + (s.heros || '')); plateauDepart = v == null || Number(v) >= A.saison.palier ? null : Number(v); } catch (e) { plateauDepart = null; }
+}
+/** Le pion avance case par case quand de nouveaux paliers sont gagnés depuis la dernière visite */
+function animerPlateau(s) {
+  const A = s && s.armurerie; if (!A || !A.saison) return;
+  const k = 'plateauVu|' + A.saison.id + '|' + (s.heros || ''), cible = A.saison.palier;
+  let vu = cible; try { const v = localStorage.getItem(k); vu = v == null ? cible : Number(v); } catch (e) {}
+  if (vu >= cible || !confort().animations) { try { localStorage.setItem(k, String(cible)); } catch (e) {} return; }
+  const el = document.querySelector('.pl-pion.moi'); if (!el) return;
+  let n = vu;
+  const pas = () => {
+    n++; const [x, y] = posCase(Math.min(A.saison.paliers, n));
+    el.style.transform = `translate(${x - 36}px,${y - 70}px)`; vib(15);
+    if (n < cible) setTimeout(pas, 420);
+    else { try { localStorage.setItem(k, String(cible)); } catch (e) {} plateauDepart = null;
+      const r = ((s.catalogueCosm || {}).chemins || {})[A.saison.id] || {}, x2 = r[cible] || { eclats: 20 };
+      setTimeout(() => toast(`🎉 Palier ${cible} : ${recompenseTexte(x2)}`), 300); }
+  };
+  setTimeout(pas, 500);
+}
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-case]'); if (!c || !state || !state.armurerie) return;
+  const n = Number(c.dataset.case), S = state.armurerie.saison, CC = state.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
+  const r = CH[n] || { eclats: 20 }, box = document.getElementById('info-case');
+  if (box) { box.innerHTML = `<b>Palier ${n}</b> · ${esc(recompenseTexte(r))}${r.item2 ? ' + ' + esc((cosmItem(r.item2) || {}).nom || '') : ''} · ${n <= S.palier ? '✓ gagné' : `encore ${((n - S.palier) * S.cout - S.dansPalier).toLocaleString('fr-FR')} XP`}`; box.classList.add('on'); }
+});
 /* --- Aperçu de la Saison 1 (pendant la pré-saison) --- */
 const BOSS_S1_APP_RESERVE = [['kraken', 'Le Kraken des Notifications'], ['sirene', 'La Sirène du Canapé'], ['minotaure', 'Le Minotaure du Stress'], ['vampire', 'Le Vampire du Sommeil'],
   ['cyclope', 'Le Cyclope de l\'Écran'], ['meduse', 'La Méduse du Grignotage'], ['lougarou', 'Le Loup-Garou des Excuses'], ['ogre', 'L\'Ogre du Désordre'],
@@ -3550,7 +3634,7 @@ function effetsActifs(s) {
 }
 document.addEventListener('click', e => {
   const h = e.target.closest('[data-sous-heros]');
-  if (h) { sousHeros = h.dataset.sousHeros; try { localStorage.setItem('sousHeros', sousHeros); } catch (err) {} render(); window.scrollTo(0, 0); }
+  if (h) { sousHeros = h.dataset.sousHeros; try { localStorage.setItem('sousHeros', sousHeros); } catch (err) {} if (sousHeros === 'aventure') prepPlateau(state); render(); window.scrollTo(0, 0); if (sousHeros === 'aventure') animerPlateau(state); }
 });
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-sous]');
@@ -4181,7 +4265,7 @@ function render() {
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `
     ${blocSaison(s, true)}
-    <p class="muted" style="font-size:12.5px;margin:4px 2px 10px">Touche ton personnage (onglet Personnage) ou le bouton ci-dessus pour ouvrir l'armurerie : garde-robe, chemin des paliers et marchand.</p>`
+    ${plateauHTML(s)}`
     : sousHeros === 'exploits' ? `
     ${blocTitres(s)}
     <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
