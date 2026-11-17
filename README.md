@@ -25,7 +25,8 @@ Téléphone                                        Google
 | `sw.js` | Garde une copie de l'app sur le téléphone pour l'ouvrir sans réseau. |
 | `manifest.webmanifest`, `icon-*.png` | Nom, couleurs et icônes de l'app installée. |
 
-**Le moteur** (Google Apps Script relié à la Google Sheet : règles du jeu, sauvegardes, appels à Claude et à intervals.icu)
+**Le moteur** (Google Apps Script relié à la Google Sheet : règles du jeu, sauvegardes, appels à Claude et à intervals.icu ;
+`Boss.js` pour les combats, `Armurerie.js` pour les saisons, coffres et cosmétiques)
 est rangé avec les moteurs des autres applis dans le dépôt **privé** `theoperion/app_scripts`, dossier `compagnie-de-l-aube/`.
 L'audit de novembre 2026 y est aussi : `audits/compagnie-2026-11.md`.
 
