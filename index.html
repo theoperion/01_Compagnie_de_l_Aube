@@ -454,6 +454,7 @@
   .apercu-s1 summary { cursor: pointer; font-weight: 700; color: #8ad0ff; }
   .s1-boss { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; margin-top: 8px; }
   .s1-boss > div { display: grid; justify-items: center; gap: 2px; text-align: center; } .s1-boss small { font-size: 10.5px; line-height: 1.2; color: var(--muted); }
+  .s1-myst { width: 64px; height: 70px; display: grid; place-items: center; font: 800 30px var(--f-titre); color: #3a5a9a; border: 1px dashed #3a5a9a; border-radius: 12px; }
   .s1-av { width: 80px; height: 86px; } .s1-av svg { width: 100%; height: 100%; }
   .orn-t .tag-s1 { position: absolute; left: 4px; bottom: 4px; font-style: normal; font-size: 9px; font-weight: 700; color: #8ad0ff; border: 1px solid #3a5a9a; border-radius: 6px; padding: 0 4px; background: #101828; }
   .marchand { display: grid; gap: 6px; margin: 8px 0; }
@@ -1739,7 +1740,7 @@ function blocArmurerie() {
   const slots = SLOTS_COSM.map(E => {
     const items = liste.filter(x => x.slot === E.id);
     return `<div class="orn-slot"><h4>${E.nom} <span>${E.aide}</span></h4><div class="orn-liste">
-      ${items.map(x => { const ok = cosmPossede(x.id), eq = orn[E.id] === x.id || (E.id === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
+      ${items.filter(x => !(x.saison === 's1' && S.id === 'pre')).map(x => { const ok = cosmPossede(x.id), eq = orn[E.id] === x.id || (E.id === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
         return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E.id}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
           <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}${x.saison === 's1' && S.id === 'pre' ? '<i class="tag-s1">S1</i>' : ''}</button><button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button></div>`; }).join('')}
     </div></div>`;
@@ -1747,7 +1748,7 @@ function blocArmurerie() {
   const prix = ((s.catalogueCosm || {}).prix) || {};
   const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === S.id).sort((a, b) => (prix[a.rarete] || 0) - (prix[b.rarete] || 0)).map(x =>
     `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
-  return `<div id="armurerie"><div class="section"><h2>Armurerie</h2><span>${A.possede.length} / ${liste.length} objets</span></div>
+  return `<div id="armurerie"><div class="section"><h2>Armurerie</h2><span>${A.possede.length} / ${liste.filter(x => !(x.saison === 's1' && S.id === 'pre')).length} objets</span></div>
     ${blocSaison(s)}
     <div class="sa-b"><button class="btn mini" data-chemin="1">${cheminOuvert ? 'Masquer' : 'Voir'} le chemin des ${S.paliers} paliers</button><button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} le marchand</button></div>
     ${S.id === 'pre' ? apercuSaison1() : ''}
@@ -1772,14 +1773,14 @@ const CHEMIN_APP = { 1: { item: 'cape_rouge' }, 3: { item: 'bandeau' }, 4: { cof
   50: { item: 'tete_aube' } };
 
 /* --- Aperçu de la Saison 1 (pendant la pré-saison) --- */
-const BOSS_S1_APP = [['kraken', 'Le Kraken des Notifications'], ['sirene', 'La Sirène du Canapé'], ['minotaure', 'Le Minotaure du Stress'], ['vampire', 'Le Vampire du Sommeil'],
+const BOSS_S1_APP_RESERVE = [['kraken', 'Le Kraken des Notifications'], ['sirene', 'La Sirène du Canapé'], ['minotaure', 'Le Minotaure du Stress'], ['vampire', 'Le Vampire du Sommeil'],
   ['cyclope', 'Le Cyclope de l\'Écran'], ['meduse', 'La Méduse du Grignotage'], ['lougarou', 'Le Loup-Garou des Excuses'], ['ogre', 'L\'Ogre du Désordre'],
   ['leviathan', 'Le Léviathan de la Routine', 1], ['chimere', 'La Chimère du Perfectionnisme', 1], ['titan', 'Le Titan de l\'Ennui', 1], ['banshee', 'La Banshee du Regret', 1],
   ['sphinx', 'Le Sphinx de l\'Hésitation', 1], ['wyrm', 'Le Wyrm de l\'Isolement', 1]];
 function apercuSaison1() {
-  return `<details class="apercu-s1"><summary>✦ Aperçu de la Saison 1 · L'Éveil des Légendes (1er janvier)</summary>
-    <p class="muted" style="font-size:12.5px">14 nouveaux boss, 50 paliers, de nouveaux repaires (forge des nains, bibliothèque volante, navire céleste), un loup géant et un dragon à chevaucher, et 6 panoplies à arracher aux boss du mois. Les objets marqués <b>S1</b> plus bas arrivent avec elle.</p>
-    <div class="s1-boss">${BOSS_S1_APP.map(([k, n, m]) => `<div><div class="s1-av" style="--aura-c:${BOSS_AURA[k] || '255,120,90'}">${bossSvg(k, 's1' + k)}</div><small>${m ? '🌑 ' : '⚔ '}${esc(n)}</small></div>`).join('')}</div></details>`;
+  return `<details class="apercu-s1"><summary>✦ La Saison 1 arrive le 1er janvier</summary>
+    <p class="muted" style="font-size:12.5px">Un nouveau bestiaire à affronter, un chemin de 50 paliers, de nouveaux repaires, de nouvelles montures, de nouveaux familiers et des panoplies à arracher aux boss du mois. Tout reste secret jusqu'au jour J… Ce que tu gagnes d'ici là reste à toi.</p>
+    <div class="s1-boss">${Array.from({ length: 6 }, () => '<div><div class="s1-myst">?</div></div>').join('')}</div></details>`;
 }
 /* --- Ouverture d'un coffre : il tremble, s'ouvre, l'objet apparaît --- */
 async function ouvrirUnCoffre() {
