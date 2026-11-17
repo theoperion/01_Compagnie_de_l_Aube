@@ -450,6 +450,11 @@
   .orn-t.cosm { border-width: 1px; border-style: solid; }
   .ap-rep { display: block; width: 34px; height: 34px; border-radius: 6px; overflow: hidden; } .ap-rep svg { width: 100%; height: 100%; }
   .ap-ef { font-size: 22px; }
+  .gr-onglets { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: none; }
+  .gr-b { flex: none; display: grid; justify-items: center; gap: 1px; min-width: 66px; padding: 7px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; font: inherit; }
+  .gr-b span { font-size: 20px; } .gr-b b { font-size: 11px; font-weight: 600; } .gr-b small { font-size: 10px; opacity: .8; }
+  .gr-b.on { border-color: var(--gold); color: var(--text); background: #2a2014; }
+  .gr-liste { margin: 4px 0 10px; }
   .plateau { margin: 10px 0; } .pl-tete { display: flex; justify-content: space-between; align-items: baseline; margin: 0 4px 6px; } .pl-tete b { font-family: var(--f-titre); color: var(--gold); } .pl-tete span { font-size: 12.5px; color: var(--muted); }
   .pl-svg { width: 100%; height: auto; display: block; border-radius: 16px; border: 1px solid var(--line); }
   .pl-case { cursor: pointer; } .pl-case:not(.fait) { opacity: .75; } .pl-case.proch circle:first-child { animation: plProch 1.6s ease-in-out infinite; }
@@ -1736,30 +1741,35 @@ function blocSaison(s, court) {
   </div>`;
 }
 let cheminOuvert = false, marchandOuvert = false;
+/* Garde-robe : on choisit un emplacement, puis on ne voit que ses objets (cosmétiques de la saison + petits ornements) */
+const GARDE_ROBE = [['cape', '🧥', 'Cape'], ['tete', '👑', 'Couronne'], ['aura', '✨', 'Aura'], ['familier', '🐾', 'Familier'], ['monture', '🐎', 'Monture'],
+  ['repaire', '🏰', 'Repaire'], ['trainee', '💫', 'Traînée'], ['victoire', '⚡', 'Coup de grâce'], ['embleme', '⭐', 'Emblème'], ['sol', '🌸', 'Sol'], ['lueur', '🌟', 'Lueur']];
+let slotGarde = 'cape';
 function blocArmurerie() {
   const s = state, A = s.armurerie; if (!A) return '';
-  const orn = ornementsDe(s) || {}, liste = cosmListe(s);
-  const S = A.saison;
-  const CC = s.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
-  const chemin = cheminOuvert ? `<ol class="chemin">${Array.from({ length: S.paliers }, (_, i) => { const n = i + 1, r = (CH[n] || { eclats: 20 }), it = r.item ? cosmItem(r.item) : null;
-    return `<li class="${n <= S.palier ? 'ok' : ''} ${it ? 'r-' + it.rarete : r.coffre ? 'r-' + r.coffre : ''}"><span class="n">${n}</span><span class="t">${esc(recompenseTexte(r))}</span></li>`; }).join('')}</ol>` : '';
-  const slots = SLOTS_COSM.map(E => {
-    const items = liste.filter(x => x.slot === E.id);
-    return `<div class="orn-slot"><h4>${E.nom} <span>${E.aide}</span></h4><div class="orn-liste">
-      ${items.filter(x => !(x.saison === 's1' && S.id === 'pre')).map(x => { const ok = cosmPossede(x.id), eq = orn[E.id] === x.id || (E.id === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
-        return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E.id}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
-          <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}${x.saison === 's1' && S.id === 'pre' ? '<i class="tag-s1">S1</i>' : ''}</button><button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button></div>`; }).join('')}
-    </div></div>`;
-  }).join('');
+  const orn = ornementsDe(s) || {}, liste = cosmListe(s).filter(x => !(x.saison === 's1' && A.saison.id === 'pre'));
+  const objets = slot => liste.filter(x => x.slot === slot);
+  const petits = slot => ORNEMENTS.filter(o => o.slot === slot);
+  const compte = slot => [objets(slot).filter(x => cosmPossede(x.id)).length + petits(slot).filter(o => ornementDebloque(s, o)).length, objets(slot).length + petits(slot).length];
+  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''}" data-garde="${id}"><span>${ic}</span><b>${nom}</b><small>${a}/${t}</small></button>` : ''; }).join('');
+  const E = GARDE_ROBE.find(g => g[0] === slotGarde) || GARDE_ROBE[0];
+  const tuilesCosm = objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
+    return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
+      <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button><button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button></div>`; }).join('');
+  const tuilesOrn = petits(E[0]).map(o => { const ok = ornementDebloque(s, o), eq = orn[E[0]] === o.id;
+    return `<div class="orn-t ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : o.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(o.nom)}"><span class="orn-ic">${miniOrnement(o)}</span><b>${esc(o.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>
+      <button class="orn-q" data-orn-info="${o.id}" aria-label="Comment le gagner">?</button></div>`; }).join('');
   const prix = ((s.catalogueCosm || {}).prix) || {};
-  const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === S.id).sort((a, b) => (prix[a.rarete] || 0) - (prix[b.rarete] || 0)).map(x =>
+  const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id).sort((a, b) => (prix[a.rarete] || 0) - (prix[b.rarete] || 0)).map(x =>
     `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
-  return `<div id="armurerie"><div class="section"><h2>Armurerie</h2><span>${A.possede.length} / ${liste.filter(x => !(x.saison === 's1' && S.id === 'pre')).length} objets</span></div>
-    ${blocSaison(s)}
-    <div class="sa-b"><button class="btn mini" data-chemin="1">${cheminOuvert ? 'Masquer' : 'Voir'} le chemin des ${S.paliers} paliers</button><button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} le marchand</button></div>
-    ${S.id === 'pre' ? apercuSaison1() : ''}
-    ${chemin}${marchand}<div class="orn-info" id="info-cosm"></div>
-    <p class="muted" style="font-size:12px;margin:6px 0">Touche un objet pour le porter ou le retirer · « ? » pour savoir comment l'obtenir. Ton compagnon le voit aussi.</p>${slots}</div>`;
+  return `<div id="armurerie"><div class="section"><h2>Garde-robe</h2><span>touche pour porter ou retirer</span></div>
+    <div class="gr-onglets">${onglets}</div>
+    <div class="orn-info" id="info-cosm"></div><div class="orn-info" id="info-${E[0]}"></div>
+    <div class="orn-liste gr-liste">${tuilesCosm}${tuilesOrn}</div>
+    <div class="section"><h2>Marchand</h2><span>✦ ${A.eclats} éclats</span></div>
+    <div class="sa-b">${(A.coffres || []).length ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${A.coffres.length})</button>` : ''}<button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} la boutique</button></div>
+    ${marchand}
+    ${A.saison.id === 'pre' ? apercuSaison1() : ''}</div>`;
 }
 /** Petite image d'un objet pour les tuiles */
 function apercuCosm(x) {
@@ -1921,6 +1931,7 @@ document.addEventListener('click', e => {
     return;
   }
   if (e.target.closest('[data-chemin]')) { cheminOuvert = !cheminOuvert; dessinerVitrine(); return; }
+  const gr = e.target.closest('[data-garde]'); if (gr) { slotGarde = gr.dataset.garde; dessinerVitrine(); return; }
   if (e.target.closest('[data-marchand]')) { marchandOuvert = !marchandOuvert; dessinerVitrine(); return; }
   const ach = e.target.closest('[data-acheter]');
   if (ach) {
@@ -3399,8 +3410,7 @@ function dessinerVitrine() {
     <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche une forme atteinte pour revoir son évolution' : 'toucher'}</span></div>
     <div class="evo-rang">${evos}</div>
     ${moi ? blocArmurerie() : ''}
-    ${moi ? `<div class="section"><h2>Ornements</h2><span>${nb} / ${ORNEMENTS.length} gagnés</span></div>
-    <p class="muted" style="font-size:12px;margin:-4px 0 6px">Touche pour porter ou retirer · « ? » pour savoir comment le gagner. Ton compagnon les voit aussi.</p>${coll}` : ''}
+
   </div>`;
   brancherRotation();
 }
