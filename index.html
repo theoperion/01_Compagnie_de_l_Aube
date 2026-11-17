@@ -3494,6 +3494,9 @@ function carteSagaMini(s) {
 
 /* ---------- Nouvelles : saga, bénédiction, rebondissement, événement, rétrospective, bilan du dimanche ---------- */
 let sousOnglet = 'quetes';
+let sousHeros = 'perso';
+try { sousHeros = localStorage.getItem('sousHeros') || 'perso'; } catch (e) {}
+if (!['perso', 'aventure', 'exploits'].includes(sousHeros)) sousHeros = 'perso';
 try { sousOnglet = localStorage.getItem('sousOnglet') || 'quetes'; } catch (e) {}
 if (sousOnglet !== 'nouvelles') sousOnglet = 'quetes';
 const cleVues = () => 'vues|' + (herosActif || '');
@@ -3545,6 +3548,10 @@ function effetsActifs(s) {
   if (!p.length) return '';
   return `<button class="effets" data-sous="nouvelles">${p.map(x => `<span>${esc(x)}</span>`).join('')}</button>`;
 }
+document.addEventListener('click', e => {
+  const h = e.target.closest('[data-sous-heros]');
+  if (h) { sousHeros = h.dataset.sousHeros; try { localStorage.setItem('sousHeros', sousHeros); } catch (err) {} render(); window.scrollTo(0, 0); }
+});
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-sous]');
   if (!b) return;
@@ -4168,7 +4175,23 @@ function render() {
     return `<div class="capa ${ok ? '' : 'lock'}"><div class="lv">${ok ? '✦' : '🔒'}<br>Niv ${c.n}</div>
     <div><b>${c.nom}</b><span class="d">${c.d}</span>${ok && st ? `<span class="cst">${esc(st.statut)}</span>` : ''}${actions}</div></div>`;
   }).join('');
-  const vueHeros = `
+  const nbCoffres = ((s.armurerie || {}).coffres || []).length;
+  const sousH = `<div class="sous-onglets trois"><button class="${sousHeros === 'perso' ? 'on' : ''}" data-sous-heros="perso">🛡 Personnage</button>
+      <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure">🗺 Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
+      <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
+  const vueHeros = sousH + (sousHeros === 'aventure' ? `
+    ${blocSaison(s, true)}
+    <p class="muted" style="font-size:12.5px;margin:4px 2px 10px">Touche ton personnage (onglet Personnage) ou le bouton ci-dessus pour ouvrir l'armurerie : garde-robe, chemin des paliers et marchand.</p>`
+    : sousHeros === 'exploits' ? `
+    ${blocTitres(s)}
+    <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
+    <div class="panel">${series}</div>
+    ${calendrierHTML(s)}
+    ${blocLegende(s)}
+    <div class="section"><h2>Caractéristiques</h2><span>score · bonus au d20</span></div>
+    <div class="panel">${statsHtml}
+      <div class="stat-note">Chaque quête donne 100 % de son XP à sa carac. principale et 50 % en plus à la secondaire. Les scores de départ viennent de ta classe et de tes caractéristiques favorites (15 · 14 · 13 · 12 · 10 · 10 · 8, comme une répartition de D&D), puis +1 tous les ${Number(s.xpParPoint).toLocaleString('fr-FR')} XP, jusqu'à 20. Les bases sont modifiables dans le Sheet (onglet Personnage, colonne H).</div></div>
+` : `
     <div class="hero-card">
       <div class="hero-perso" data-vitrine="1" role="button" aria-label="Voir ton personnage en grand"><span class="perso-fond">${repaireSvg(repaireDe(s), 'hf')}</span>${avatar(pal, 'h', s)}<span class="loupe">⤢ Vitrine</span></div>
       <div>
@@ -4180,19 +4203,10 @@ function render() {
           : '<div class="next-evo">Forme ultime atteinte</div>'}
       </div>
     </div>
-    ${blocSaison(s, true)}
     <div class="section"><h2>Capacités</h2><span>actives dès leur niveau</span></div>
     <div class="panel">${capas}</div>
     ${s.bilan.precedente && textesClaude['coach|' + s.bilan.precedente.lundi] ? `<div class="panel coach"><b>🧙 Le mot du mentor</b>${plie(textesClaude['coach|' + s.bilan.precedente.lundi])}</div>` : ''}
-    ${blocTitres(s)}
-    <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
-    <div class="panel">${series}</div>
-    ${calendrierHTML(s)}
-    ${blocLegende(s)}
-    <div class="section"><h2>Caractéristiques</h2><span>score · bonus au d20</span></div>
-    <div class="panel">${statsHtml}
-      <div class="stat-note">Chaque quête donne 100 % de son XP à sa carac. principale et 50 % en plus à la secondaire. Les scores de départ viennent de ta classe et de tes caractéristiques favorites (15 · 14 · 13 · 12 · 10 · 10 · 8, comme une répartition de D&D), puis +1 tous les ${Number(s.xpParPoint).toLocaleString('fr-FR')} XP, jusqu'à 20. Les bases sont modifiables dans le Sheet (onglet Personnage, colonne H).</div></div>
-    <button class="vac-btn" data-tab="profil" data-mode="reglages">⚙️ Réglages (vacances, pauses, rappel…)</button>`;
+    <button class="vac-btn" data-tab="profil" data-mode="reglages">⚙️ Réglages (vacances, pauses, rappel…)</button>`);
 
   const coop = (s.compagnons || []).length > 0;
   if (!coop && onglet === 'compagnie') onglet = 'quetes';
@@ -5014,6 +5028,7 @@ window.addEventListener('popstate', () => {
   if (ouvert('d20ov')) { fermerD20(); return ok(); }
   if (ouvert('sheet') || ouvert('sheetPal')) { fermerMenu(); return ok(); }
   if (compVue) { compVue = null; render(); return ok(); }
+  if (onglet === 'heros' && sousHeros !== 'perso') { sousHeros = 'perso'; render(); window.scrollTo(0, 0); return ok(); }
   if (onglet !== 'quetes' || sousOnglet !== 'quetes') {
     onglet = 'quetes'; sousOnglet = 'quetes';
     try { localStorage.setItem('onglet', onglet); } catch (e) {}
