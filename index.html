@@ -435,6 +435,54 @@
   #bossVue .annonce-boss .bv-av { width: 130px; margin: 0 auto 6px; }
   .ab-l { display: flex; gap: 10px; margin: 8px 0; font-size: 13.5px; line-height: 1.4; } .ab-l > span { font-size: 20px; flex: none; width: 26px; text-align: center; }
   .ab-l b { color: var(--gold); }
+
+  /* Armurerie */
+  .saison { background: linear-gradient(180deg, #221a2e, var(--panel)); border: 1px solid #4a3a64; border-radius: 16px; padding: 12px 14px; margin: 10px 0; display: grid; gap: 6px; }
+  .saison .sa-t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; } .saison .sa-t b { color: var(--gold); font-family: var(--f-titre); }
+  .saison .sa-t span { font-size: 12.5px; color: var(--muted); } .saison .sa-n { font-size: 12.5px; color: var(--muted); } .saison .sa-n b { color: var(--text); }
+  .bar.sa-bar i { background: linear-gradient(90deg, #b8862b, #f2c94c); }
+  .sa-b { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; } .sa-b .eclats { font-size: 13px; color: #9fe4ff; }
+  .chemin { list-style: none; margin: 8px 0; padding: 4px 0 8px; display: flex; gap: 6px; overflow-x: auto; }
+  .chemin li { flex: none; width: 86px; display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: 10px; border: 1px solid var(--line); background: #15111c; text-align: center; font-size: 11px; line-height: 1.2; opacity: .7; }
+  .chemin li.ok { opacity: 1; background: #221a12; } .chemin li .n { font-weight: 700; color: var(--muted); } .chemin li.ok .n { color: var(--gold); }
+  .r-commun { border-color: #a99bb6 !important; } .r-rare { border-color: #5ab0ff !important; } .r-epique { border-color: #b392ee !important; } .r-legendaire { border-color: #f2a93c !important; }
+  h3.r-commun { color: #d8cfe4; } h3.r-rare { color: #8ccaff; } h3.r-epique { color: #d0b8ff; } h3.r-legendaire { color: #ffc46b; }
+  .orn-t.cosm { border-width: 1px; border-style: solid; }
+  .ap-rep { display: block; width: 34px; height: 34px; border-radius: 6px; overflow: hidden; } .ap-rep svg { width: 100%; height: 100%; }
+  .ap-ef { font-size: 22px; }
+  .marchand { display: grid; gap: 6px; margin: 8px 0; }
+  .mar-l { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); }
+  .mar-l small { display: block; color: var(--muted); font-size: 11px; }
+  .vit-repaire { position: absolute; inset: 0; z-index: 0; opacity: .95; } .vit-repaire svg { width: 100%; height: 100%; display: block; }
+  .vit-scene .vit-parts { z-index: 1; }
+  .hero-perso { position: relative; overflow: hidden; border-radius: 14px; }
+  .hero-perso .perso-fond { position: absolute; inset: 0; z-index: 0; } .hero-perso .perso-fond svg { width: 100%; height: 100%; display: block; }
+  .hero-perso > svg { position: relative; z-index: 1; } .hero-perso .loupe { z-index: 2; }
+  .orn-flotte { animation: flotteC 3.2s ease-in-out infinite; } .orn-aura { animation: etinc 3.4s ease-in-out infinite; opacity: .8; } .orn-etinc { animation: etinc 2.4s ease-in-out infinite; }
+  .orn-aile { animation: aile 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+  @keyframes flotteC { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  @keyframes etinc { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+  @keyframes aile { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.9); } }
+  #coffreOv { position: fixed; inset: 0; z-index: 70; background: rgba(8,6,12,.92); display: none; place-items: center; padding: 20px; text-align: center; }
+  #coffreOv.on { display: grid; }
+  .cof-box { display: grid; gap: 10px; justify-items: center; max-width: 340px; position: relative; }
+  .cof { font-size: 84px; border: 2px solid; border-radius: 22px; padding: 10px 22px; animation: cofTremble .5s ease-in-out infinite; }
+  .cof-obj { font-size: 54px; position: relative; z-index: 1; } .cof-obj svg, .cof-obj .ap-rep { width: 120px !important; height: 120px !important; }
+  .cof-box.ouvert h3 { margin: 0; font-family: var(--f-titre); font-size: 22px; position: relative; z-index: 1; }
+  .cof-box.ouvert > * { animation: vitIn .4s ease-out both; }
+  .cof-rayons { position: absolute; top: -20px; width: 260px; height: 260px; border-radius: 50%; border: none !important; background: radial-gradient(circle, rgba(255,215,120,.45), transparent 65%); animation: pulse 2s ease-in-out infinite; }
+  .cof-rayons.r-epique { background: radial-gradient(circle, rgba(190,150,255,.5), transparent 65%); } .cof-rayons.r-legendaire { background: radial-gradient(circle, rgba(255,180,80,.6), transparent 65%); }
+  .cof-rayons.r-rare { background: radial-gradient(circle, rgba(110,180,255,.45), transparent 65%); }
+  @keyframes cofTremble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg) scale(1.03); } 75% { transform: rotate(6deg) scale(1.03); } }
+  .trainee { position: fixed; z-index: 80; pointer-events: none; font-style: normal; font-size: 16px; color: #ffe27a; text-shadow: 0 0 6px rgba(255,210,110,.8); animation: trainee 1s ease-out forwards; }
+  .trainee.tr_petales { color: #f7b6c8; } .trainee.tr_flammes { color: #ff9a3c; }
+  @keyframes trainee { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.4); opacity: 0; } }
+  .cdg { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+  .cdg.vi_foudre svg { position: absolute; left: 30%; top: 0; width: 40%; height: 70%; animation: foudre .9s steps(2) 2; filter: drop-shadow(0 0 12px #9fe4ff); }
+  .cdg.vi_etoiles i { position: absolute; top: -10%; font-style: normal; color: #fff6c8; font-size: 18px; animation: etoileTombe 1.8s ease-in forwards; text-shadow: 0 0 8px #ffd27a; }
+  @keyframes foudre { 0% { opacity: 1; } 50% { opacity: .2; } 100% { opacity: 1; } }
+  @keyframes etoileTombe { to { transform: translateY(380px) rotate(200deg); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .orn-flotte, .orn-aura, .orn-etinc, .orn-aile, .cof, .trainee, .cdg * { animation: none !important; } }
   .bc-tip { margin-top: 10px; font-style: italic; font-size: 13px; color: #d8c9a8; }
   .bc-xp { margin-top: 6px; font-size: 12px; color: var(--gold); }
   .bc-win { margin-top: 12px; padding: 10px; border-radius: 12px; background: #2b2410; border: 1px solid #6a5320; color: var(--gold); font-weight: 700; font-size: 14px; text-align: center; }
@@ -1334,7 +1382,8 @@ function lookDe(txt) {
   if (c[2]) L.yeux = c[2];
   return L;
 }
-function avatar(st, id, s) { s = s || state; return orner(classeDe(s).dessin(st, id, lookDe(s && s.look)), ornementsDe(s), id); }
+const joursDe = s => (s && s.armurerie ? s.armurerie.joursActifs : s && s.joursActifs);
+function avatar(st, id, s) { s = s || state; return orner(classeDe(s).dessin(st, id, lookDe(s && s.look)), Object.assign({ _jours: joursDe(s) }, ornementsDe(s)), id); }
 
 /* ---------- Apparence de l'app (thèmes) : couleurs et polices, choisies dans les réglages ----------
  * Gardée sur ce téléphone. Le Carnet suit le même thème.
@@ -1460,6 +1509,270 @@ const ORNEMENTS = [
   { id: 'pourpre', slot: 'lueur', nom: 'Lueur pourpre', cond: 'Meilleur frappeur sur 5 boss (« Fléau du Crépuscule »)', ok: t_('fleau') },
   { id: 'aube', slot: 'lueur', nom: 'Lueur de l\'aube', cond: 'Toute la Compagnie active 14 jours d\'affilée (titre secret)', ok: t_('freres') }
 ];
+/* ---------- Armurerie de l'Aube : cosmétiques de la saison ----------
+ * Le moteur dit ce que le héros possède (state.armurerie) et le catalogue (state.catalogueCosm) ; ici, les dessins et l'écran.
+ * Emplacements (gardés avec les ornements) : cape, tete, aura, familier (fa_*), monture, repaire, trainee, victoire. */
+const COSM_COUL = { cape_rouge: ['#a83838', '#3a1010'], cape_verte: ['#3c7048', '#122016'], cape_bleue: ['#3c5ea0', '#121a32'], cape_aube: ['#f2a93c', '#7a2a5a'],
+  procrastination: '#b48cff', dissipation: '#5ae6be', oubli: '#dfe3ff', fatigue: '#9fb0e0', doute: '#ff5a5a', tentation: '#ff78aa' };
+const RARETE_NOM = { commun: 'Commun', rare: 'Rare', epique: 'Épique', legendaire: 'Légendaire' };
+const SLOTS_COSM = [
+  { id: 'cape', nom: 'Cape', aide: 'dans ton dos' }, { id: 'tete', nom: 'Couronne', aide: 'au-dessus de ta tête' }, { id: 'aura', nom: 'Aura', aide: 'autour de toi' },
+  { id: 'familier', nom: 'Familier de l\'Aube', aide: 'il grandit avec tes jours de quêtes' }, { id: 'monture', nom: 'Monture', aide: 'dans la vitrine' },
+  { id: 'repaire', nom: 'Repaire', aide: 'le décor autour de toi' }, { id: 'trainee', nom: 'Traînée', aide: 'quand tu valides une quête' },
+  { id: 'victoire', nom: 'Coup de grâce', aide: 'quand un boss tombe' }
+];
+const cosmListe = s => (((s || state || {}).catalogueCosm) || {}).liste || [];
+const cosmItem = (id, s) => cosmListe(s).find(x => x.id === id) || null;
+const cosmPossede = (id, s) => !!(((s || state || {}).armurerie || {}).possede || []).includes(id);
+function couleurPano(id) { const m = /^(?:cape|tete|aura)_(.+)$/.exec(id || ''); return m && typeof COSM_COUL[m[1]] === 'string' ? COSM_COUL[m[1]] : null; }
+/** Stade du familier : œuf, petit, jeune, adulte (jours avec au moins une quête faite) */
+const stadeFamilier = j => (j == null ? 1 : j < 7 ? 0 : j < 30 ? 1 : j < 90 ? 2 : 3);
+
+/* --- Dessins (cadre 200 × 260 du personnage, pieds vers y = 242) --- */
+function capeSvg(id, p) {
+  const c = Array.isArray(COSM_COUL[id]) ? COSM_COUL[id] : [couleurPano(id) || '#7a2a2a', '#140e1c'];
+  return `<defs><linearGradient id="${p}ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs>
+    <path class="orn-cape" d="M62 108 Q100 90 138 108 L168 246 Q134 236 100 242 Q66 236 32 246 Z" fill="url(#${p}ca)" stroke="#000" stroke-opacity=".35"/>
+    <path d="M86 112 Q80 180 70 242 M114 112 Q120 180 130 242" stroke="#000" stroke-opacity=".14" stroke-width="3" fill="none"/>`;
+}
+function auraSvg(id, p) {
+  const c = id === 'aura_aube' ? '#ffb86b' : id === 'aura_etincelles' ? '#ffd75a' : couleurPano(id) || '#b392ee';
+  const etinc = id === 'aura_etincelles' || id === 'aura_aube' ? [[52, 90], [150, 120], [60, 170], [146, 196], [100, 60], [40, 130]].map(([x, y], i) =>
+    `<circle class="orn-etinc" style="animation-delay:${i * .4}s" cx="${x}" cy="${y}" r="2.2" fill="#fff6c8"/>`).join('') : '';
+  return `<defs><radialGradient id="${p}au" cx="50%" cy="55%" r="50%"><stop offset=".35" stop-color="${c}" stop-opacity="0"/><stop offset=".72" stop-color="${c}" stop-opacity=".42"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs>
+    <ellipse class="orn-aura" cx="100" cy="150" rx="96" ry="118" fill="url(#${p}au)"/>${etinc}`;
+}
+function teteSvg(id, y) {
+  const c = couleurPano(id);
+  let d;
+  if (id === 'bandeau') d = `<path d="M-20 4 Q0 -6 20 4" stroke="#b07a3a" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="0" cy="-1" r="3.4" fill="#e0475a" stroke="#5a3a1a"/>`;
+  else if (id === 'fleurs') d = [-18, -9, 0, 9, 18].map((x, i) => `<circle cx="${x}" cy="${Math.abs(x) / 4}" r="4.2" fill="${['#f7b6c8', '#ffe7b0', '#f4a3bb', '#ffd9a8', '#f7b6c8'][i]}"/><circle cx="${x}" cy="${Math.abs(x) / 4}" r="1.4" fill="#d4ad3c"/>`).join('');
+  else if (id === 'tete_aube') d = `<g class="orn-rayons">${[-60, -30, 0, 30, 60].map(a => `<path d="M0 -6 L${(Math.sin(a * Math.PI / 180) * 26).toFixed(1)} ${(-6 - Math.cos(a * Math.PI / 180) * 26).toFixed(1)}" stroke="#ffd27a" stroke-width="2" opacity=".6"/>`).join('')}</g>
+    <path d="M-24 8 L-18 -14 L-9 -2 L0 -22 L9 -2 L18 -14 L24 8 Z" fill="#f2c94c" stroke="#7a5512" stroke-width="1.6" stroke-linejoin="round"/><circle cx="0" cy="-4" r="3.6" fill="#ff6a8a"/><circle cx="-12" cy="2" r="2" fill="#5ab0ff"/><circle cx="12" cy="2" r="2" fill="#5ab0ff"/>`;
+  else d = `<path d="M-22 6 L-17 -11 L-8 -1 L0 -17 L8 -1 L17 -11 L22 6 Z" fill="${c || '#f2c94c'}" stroke="#2a1d30" stroke-width="1.6" stroke-linejoin="round" opacity=".95"/>
+    <path d="M-22 6 L22 6" stroke="#f3dfa0" stroke-width="2"/><circle cx="0" cy="-3" r="3.2" fill="#fff" opacity=".85"/><circle cx="0" cy="-3" r="7" fill="${c || '#f2c94c'}" opacity=".25"/>`;
+  return `<g transform="translate(100 ${y})"><g class="orn-flotte">${d}</g></g>`;
+}
+/** Familier de l'Aube : 3 espèces × 4 stades, dessinés dans une boîte 100 × 100 posée aux pieds du héros */
+const FAMILIERS_AUBE = {
+  fa_dragon: ['#d9c7f0', '#8f6bd6', '#6a45b8', '#b392ee'],
+  fa_loup: ['#e8eef4', '#b8c4d2', '#7f8ea2', '#e8eef4'],
+  fa_chouette: ['#f3e3b0', '#8a6a4a', '#5a4430', '#cfb18a']
+};
+function familierAube(id, stade) {
+  const c = FAMILIERS_AUBE[id] || FAMILIERS_AUBE.fa_dragon;
+  if (stade <= 0) return `<ellipse cx="50" cy="66" rx="20" ry="26" fill="${c[0]}" stroke="${c[2]}" stroke-width="2"/><path d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5" stroke="${c[2]}" stroke-width="2" fill="none"/><circle cx="44" cy="74" r="3" fill="${c[1]}"/><circle cx="57" cy="56" r="2.5" fill="${c[1]}"/>`;
+  const yeux = (y, k) => `<circle cx="${50 - 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 + 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 - 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/><circle cx="${50 + 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/>`;
+  if (id === 'fa_chouette') {
+    const k = [0, 1, 1.2, 1.4][stade];
+    return `<g transform="translate(50 92) scale(${k}) translate(-50 -92)"><path d="M28 70 q-10 -14 4 -26 l8 22 z M72 70 q10 -14 -4 -26 l-8 22 z" fill="${c[2]}"/><ellipse cx="50" cy="68" rx="20" ry="22" fill="${c[1]}"/><ellipse cx="50" cy="74" rx="12" ry="14" fill="${c[3]}"/>
+      <path d="M34 50 l4 -12 l7 10 z M66 50 l-4 -12 l-7 10 z" fill="${c[1]}"/><circle cx="43" cy="56" r="7" fill="${c[0]}"/><circle cx="57" cy="56" r="7" fill="${c[0]}"/><circle cx="43" cy="56" r="3" fill="#1a1028"/><circle cx="57" cy="56" r="3" fill="#1a1028"/><path d="M48 62 l2 5 l2 -5 z" fill="#d4ad3c"/>
+      ${stade >= 3 ? '<path d="M38 40 L42 30 L46 38 L50 26 L54 38 L58 30 L62 40" fill="#f2c94c" stroke="#7a5512"/>' : ''}</g>`;
+  }
+  if (id === 'fa_loup') {
+    const k = [0, 1, 1.2, 1.4][stade];
+    return `<g transform="translate(50 92) scale(${k}) translate(-50 -92)"><path d="M70 78 q20 -4 22 -20 q-10 10 -20 8 z" fill="${c[2]}"/><ellipse cx="54" cy="74" rx="24" ry="14" fill="${c[1]}"/>
+      <rect x="36" y="78" width="6" height="14" rx="2" fill="${c[2]}"/><rect x="62" y="78" width="6" height="14" rx="2" fill="${c[2]}"/><circle cx="36" cy="58" r="13" fill="${c[1]}"/><path d="M26 50 l2 -14 l8 10 z M44 48 l2 -14 l-8 10 z" fill="${c[2]}"/>
+      <path d="M22 62 q-6 4 0 8 l10 -2 z" fill="${c[3]}"/><circle cx="31" cy="56" r="2.2" fill="#ffd27a"/><circle cx="40" cy="56" r="2.2" fill="#ffd27a"/><circle cx="21" cy="64" r="2" fill="#1a1028"/>
+      ${stade >= 3 ? `<ellipse cx="54" cy="70" rx="26" ry="16" fill="none" stroke="#9fe4ff" stroke-opacity=".5"/>` : ''}</g>`;
+  }
+  const corps = [null,
+    `<path d="M30 70 q-8 -10 2 -16 l8 8 z M70 70 q8 -10 -2 -16 l-8 8 z" fill="${c[3]}"/><ellipse cx="50" cy="72" rx="18" ry="16" fill="${c[1]}"/><circle cx="50" cy="50" r="13" fill="${c[1]}"/>${yeux(48, 1)}<path d="M44 40 l-3 -7 l5 4 z M56 40 l3 -7 l-5 4 z" fill="#f3dfa0"/>`,
+    `<path d="M16 58 q-14 -24 10 -28 q-2 14 12 20 z M84 58 q14 -24 -10 -28 q2 14 -12 20 z" fill="${c[3]}" stroke="${c[2]}"/><ellipse cx="50" cy="70" rx="22" ry="18" fill="${c[2]}"/><path d="M68 78 q18 4 20 -10" stroke="${c[2]}" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="50" cy="46" r="14" fill="${c[1]}"/><circle cx="45" cy="44" r="2.6" fill="#ffd27a"/><circle cx="55" cy="44" r="2.6" fill="#ffd27a"/><path d="M42 34 l-4 -10 l7 6 z M58 34 l4 -10 l-7 6 z" fill="#f3dfa0"/>`,
+    `<path class="orn-aile" d="M4 54 q-6 -42 30 -32 q-6 20 12 26 z M96 54 q6 -42 -30 -32 q6 20 -12 26 z" fill="${c[3]}" stroke="${c[2]}"/><ellipse cx="50" cy="70" rx="26" ry="20" fill="${c[2]}"/><path d="M72 80 q22 8 24 -14" stroke="${c[2]}" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="50" cy="42" r="16" fill="${c[1]}"/><circle cx="44" cy="40" r="3" fill="#ffb347"/><circle cx="56" cy="40" r="3" fill="#ffb347"/><path d="M40 28 l-6 -14 l10 9 z M60 28 l6 -14 l-10 9 z" fill="#f3dfa0"/><path class="flam" d="M50 56 q6 6 16 4 q-6 8 -16 2 z" fill="#ff9a3c"/>`];
+  return corps[stade];
+}
+function familierAubeSvg(id, stade, grand) {
+  const k = grand ? [0.42, 0.5, 0.6, 0.72][stade] : [0.36, 0.42, 0.5, 0.6][stade];
+  return `<g transform="translate(${grand ? -6 : 2} ${246 - 94 * k}) scale(${k})"><g class="orn orn-fam"><ellipse cx="50" cy="94" rx="24" ry="4" fill="#000" opacity=".35"/>${familierAube(id, stade)}</g></g>`;
+}
+function montureSvg(id) {
+  if (id === 'mo_griffon') return `<g class="orn-monture"><path class="orn-aile" d="M96 120 Q40 40 -20 30 Q10 70 0 90 Q30 100 20 120 Q50 120 60 140 Z" fill="#c9a86a" stroke="#5a4020" stroke-width="1.5"/>
+    <path class="orn-aile" d="M104 120 Q160 40 220 30 Q190 70 200 90 Q170 100 180 120 Q150 120 140 140 Z" fill="#c9a86a" stroke="#5a4020" stroke-width="1.5"/>
+    <path d="M30 110 q-10 -22 10 -30 q16 -4 22 12 l-8 20 z" fill="#f3ead8" stroke="#5a4020"/><path d="M28 96 l-14 6 l14 4 z" fill="#d4ad3c"/><circle cx="38" cy="92" r="2.4" fill="#1a1028"/>
+    <ellipse cx="110" cy="200" rx="70" ry="28" fill="#b08850"/><rect x="58" y="210" width="10" height="36" rx="4" fill="#9a7440"/><rect x="150" y="210" width="10" height="36" rx="4" fill="#9a7440"/><path d="M178 196 q22 -6 20 -30" stroke="#9a7440" stroke-width="6" fill="none"/></g>`;
+  return `<g class="orn-monture"><ellipse cx="112" cy="184" rx="70" ry="30" fill="#6a4428"/><path d="M58 176 Q40 130 34 104 Q30 92 40 88 L58 96 Q66 130 84 160 Z" fill="#6a4428"/>
+    <path d="M34 104 q-12 4 -16 -6 q-2 -12 14 -14 q12 0 14 8 z" fill="#6a4428"/><circle cx="30" cy="94" r="2" fill="#1a1028"/><path d="M44 88 q14 10 22 40 q-6 -24 -16 -38 z" fill="#2a1a10"/>
+    <path d="M178 172 q24 6 18 44 q-8 -20 -18 -28 z" fill="#2a1a10"/>
+    ${[56, 80, 142, 166].map(x => `<rect x="${x}" y="200" width="10" height="46" rx="4" fill="#5a3a22"/><rect x="${x - 1}" y="240" width="12" height="6" rx="2" fill="#1c120a"/>`).join('')}
+    <path d="M92 158 h44 l-6 22 h-32 z" fill="#7a2a2a" stroke="#d4ad3c"/></g>`;
+}
+/** Décor du repaire (fond seul, cadre 200 × 260, sol vers y = 236–260) */
+function repaireSvg(id, p) {
+  const nuit = `<linearGradient id="${p}n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d0a1c"/><stop offset=".7" stop-color="#2a1d3e"/><stop offset="1" stop-color="#3a2546"/></linearGradient>`;
+  const lum = `<radialGradient id="${p}l" cx="50%" cy="70%" r="55%"><stop offset="0" stop-color="#ffcf7a" stop-opacity=".5"/><stop offset=".6" stop-color="#ff9a3c" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`;
+  const pierre = `<linearGradient id="${p}p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3448"/><stop offset="1" stop-color="#211b2b"/></linearGradient>`;
+  const etoiles = [[20, 20, 1], [60, 12, .8], [95, 30, 1.1], [140, 16, .9], [178, 34, 1], [120, 52, .7], [40, 48, .8]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity=".7"/>`).join('');
+  const arbres = (c) => [[0, 1], [200, -1]].map(([x0, s]) => [[4, 200, 46], [30, 150, 36], [-6, 120, 30]].map(([dx, h, w], i) => { const x = x0 + s * dx; return `<path d="M${x} 250 L${x + s * w * .5} ${250 - h} L${x + s * w} 250 Z" fill="${c}" opacity="${1 - i * .15}"/>`; }).join('')).join('');
+  const feu = (x, y, k) => `<g transform="translate(${x} ${y}) scale(${k || 1})"><ellipse cx="0" cy="4" rx="18" ry="4" fill="#ff9a3c" opacity=".35"/><path d="M-12 4 L12 -2 M-12 -2 L12 4" stroke="#4a2c18" stroke-width="4" stroke-linecap="round"/><path class="flam" d="M0 2 q-10 -8 -3 -20 q2 7 5 6 q-2 -9 4 -14 q7 11 2 20 q4 -2 4 -7 q5 9 -12 15 z" fill="#ff9a3c"/><path class="flam" d="M0 1 q-5 -5 -1 -11 q2 5 3 4 q3 4 -2 7 z" fill="#ffe27a"/></g>`;
+  const lanterne = (x, y) => `<g transform="translate(${x} ${y})"><line x1="0" y1="-10" x2="0" y2="0" stroke="#2a1d12" stroke-width="1.2"/><rect x="-4" y="0" width="8" height="10" rx="2" fill="#ffd27a"/><circle cx="0" cy="5" r="12" fill="#ffcf7a" opacity=".18"/></g>`;
+  const banniere = (x, y, c, m) => `<g transform="translate(${x} ${y})"><rect x="-2" y="-4" width="34" height="4" fill="#3a2a1c"/><path d="M2 0 L28 0 L28 46 L15 38 L2 46 Z" fill="${c}" stroke="#1c1218"/><text x="15" y="24" font-size="14" text-anchor="middle">${m}</text></g>`;
+  const torche = x => `<g transform="translate(${x} 120)"><rect x="-3" y="-10" width="6" height="12" fill="#3a2a1c"/><path class="flam" d="M0 -10 q-6 -6 0 -16 q6 8 0 16 z" fill="#ff9a3c"/><circle cy="-16" r="16" fill="#ffcf7a" opacity=".2"/></g>`;
+  let sc = '';
+  if (id === 're_campement') sc = `<rect width="200" height="260" fill="url(#${p}n)"/>${etoiles}${arbres('#101a1a')}
+    <path d="M20 236 L100 82 L180 236 Z" fill="#7a5a3a" stroke="#2a1a10" stroke-width="2"/><path d="M100 82 L60 236 L140 236 Z" fill="#8f6c46"/><path d="M76 236 L100 150 L124 236 Z" fill="#24160c"/>
+    <path d="M100 82 L100 58 L124 66 L100 74" fill="#a33a3a" stroke="#2a1a10"/><path d="M20 120 Q100 96 180 120" stroke="#3a2a1c" fill="none"/>
+    ${[[36, 114, '#d4ad3c'], [62, 107, '#a33a3a'], [88, 103, '#5ab0ff'], [112, 103, '#d4ad3c'], [138, 107, '#a33a3a'], [162, 114, '#5ab0ff']].map(([x, y, c]) => `<path d="M${x} ${y} l6 0 l-3 9 z" fill="${c}"/>`).join('')}
+    <rect width="200" height="260" fill="url(#${p}l)"/><path d="M0 236 L200 236 L200 260 L0 260 Z" fill="#1d1a14"/>${lanterne(30, 150)}${lanterne(170, 150)}${feu(166, 248)}`;
+  else if (id === 're_taverne') sc = `<rect width="200" height="260" fill="#2a1c14"/>${Array.from({ length: 10 }, (_, i) => `<rect x="${i * 22}" y="0" width="22" height="236" fill="${i % 2 ? '#3a2818' : '#33231a'}"/>`).join('')}
+    <rect x="0" y="22" width="200" height="10" fill="#1c120a"/><rect x="0" y="60" width="200" height="6" fill="#1c120a"/>
+    <path d="M46 236 L46 124 L154 124 L154 236 Z" fill="url(#${p}p)" stroke="#120e18" stroke-width="2"/><path d="M62 236 L62 166 Q100 140 138 166 L138 236 Z" fill="#120a06"/><rect x="38" y="116" width="124" height="10" fill="#4a3220"/>
+    ${feu(70, 232, 1.2)}${feu(130, 232, 1.2)}<rect width="200" height="260" fill="url(#${p}l)"/><path d="M0 236 L200 236 L200 260 L0 260 Z" fill="#3a2616"/>
+    ${banniere(8, 70, '#2f5a3a', '💀')}${banniere(160, 70, '#7a2a1a', '🔥')}`;
+  else if (id === 're_tour') sc = `<rect width="200" height="260" fill="url(#${p}p)"/>${Array.from({ length: 18 }, (_, r) => Array.from({ length: 8 }, (_, c) => `<rect x="${(r % 2) * 14 + c * 28 - 14}" y="${r * 14}" width="27" height="13" fill="none" stroke="#17121f"/>`).join('')).join('')}
+    <path d="M60 236 L60 70 Q100 20 140 70 L140 236 Z" fill="#0d0a1c" stroke="#5a4c6a" stroke-width="4"/>${etoiles}<circle cx="112" cy="70" r="16" fill="#e8e2ff" opacity=".9"/><circle cx="106" cy="66" r="15" fill="#0d0a1c"/>
+    <path d="M100 40 L100 236 M60 120 L140 120" stroke="#5a4c6a" stroke-width="3"/>
+    <g transform="translate(6 70)"><rect width="44" height="120" fill="#2a1c14" stroke="#120a06"/>${Array.from({ length: 4 }, (_, k) => Array.from({ length: 8 }, (_, j) => `<rect x="${3 + j * 5}" y="${6 + k * 30}" width="4" height="${20 - (j % 3) * 3}" fill="${['#7a2a2a', '#2f5a3a', '#2a4a7a', '#d4ad3c'][(j + k) % 4]}"/>`).join('') + `<rect x="0" y="${28 + k * 30}" width="44" height="3" fill="#120a06"/>`).join('')}</g>
+    <g transform="translate(154 150)"><rect width="40" height="6" fill="#4a3220"/><rect x="4" y="6" width="5" height="80" fill="#3a2818"/><rect x="31" y="6" width="5" height="80" fill="#3a2818"/><circle cx="20" cy="-8" r="9" fill="#7fe3ff" opacity=".8"/></g>
+    <rect width="200" height="260" fill="url(#${p}l)" opacity=".7"/><ellipse cx="100" cy="246" rx="80" ry="12" fill="#2a2236"/>
+    <ellipse class="tourne" cx="100" cy="246" rx="66" ry="9" fill="none" stroke="#d4ad3c" stroke-opacity=".7" stroke-dasharray="6 4"/><ellipse cx="100" cy="246" rx="54" ry="7" fill="none" stroke="#b392ee" stroke-opacity=".6"/>`;
+  else if (id === 're_trone') sc = `<rect width="200" height="260" fill="#1a1424"/><path d="M40 0 L160 0 L160 180 L40 180 Z" fill="#231b30"/><path d="M70 236 L70 60 Q100 30 130 60 L130 236 Z" fill="#100c18"/>
+    <g transform="translate(100 100)"><path d="M-26 40 L-26 -30 Q0 -50 26 -30 L26 40 Z" fill="#6e1e1e" stroke="#d4ad3c" stroke-width="2"/><path d="M-18 -26 L-12 -38 L-6 -30 L0 -42 L6 -30 L12 -38 L18 -26" fill="none" stroke="#d4ad3c" stroke-width="2"/></g>
+    ${banniere(46, 30, '#2f5a3a', '💀')}${banniere(124, 30, '#7a2a1a', '🔥')}
+    <path d="M0 236 L200 236 L200 260 L0 260 Z" fill="#2a2236"/><path d="M76 236 L124 236 L160 260 L40 260 Z" fill="#8a2424"/><rect width="200" height="260" fill="url(#${p}l)" opacity=".6"/>
+    ${[[0, 26], [174, 26]].map(([x, w]) => `<rect x="${x}" y="0" width="${w}" height="250" fill="url(#${p}p)" stroke="#0e0a14" stroke-width="2"/><rect x="${x - 4}" y="0" width="${w + 8}" height="14" fill="#4a4258"/><rect x="${x - 4}" y="236" width="${w + 8}" height="14" fill="#4a4258"/>`).join('')}${torche(36)}${torche(164)}`;
+  else sc = `<rect width="200" height="260" fill="url(#${p}n)"/>${etoiles}<circle cx="150" cy="44" r="13" fill="#f3e3b0" opacity=".9"/>
+    <path d="M0 200 Q60 170 100 186 Q150 168 200 196 L200 260 L0 260 Z" fill="#1a2a22"/>${arbres('#0f1c16')}<rect width="200" height="260" fill="url(#${p}l)"/>
+    <path d="M0 238 Q100 226 200 238 L200 260 L0 260 Z" fill="#14201a"/>${feu(160, 246, 1.1)}`;
+  return `<svg viewBox="0 0 200 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>${nuit}${lum}${pierre}</defs>${sc}</svg>`;
+}
+/** Repaire porté : celui choisi, sinon le plus beau débloqué par le niveau */
+function repaireDe(s) {
+  const orn = ornementsDe(s) || {};
+  if (orn.repaire && (s !== state || cosmPossede(orn.repaire, s))) return orn.repaire;
+  const n = Number((s || {}).niveau) || 1;
+  return n >= 50 ? 're_trone' : n >= 35 ? 're_tour' : n >= 20 ? 're_taverne' : n >= 10 ? 're_campement' : 're_clairiere';
+}
+
+/* --- Écran : saison, coffres, emplacements, marchand (dans la vitrine) --- */
+function recompenseTexte(r) {
+  if (!r) return 'Saison terminée';
+  if (r.item) return (cosmItem(r.item) || {}).nom || r.item;
+  if (r.coffre) return '🎁 Coffre ' + (RARETE_NOM[r.coffre] || '').toLowerCase();
+  return '✦ ' + (r.eclats || 0) + ' éclats';
+}
+function blocSaison(s, court) {
+  const A = s.armurerie; if (!A || !A.saison) return '';
+  const S = A.saison, pct = S.palier >= S.paliers ? 100 : Math.round(S.dansPalier / S.cout * 100);
+  const coffres = (A.coffres || []).length;
+  return `<div class="saison ${court ? 'court' : ''}">
+    <div class="sa-t"><b>⚜ ${esc(S.nom)}</b><span>Palier ${S.palier} / ${S.paliers}</span></div>
+    <div class="bar sa-bar"><i style="width:${pct}%"></i></div>
+    <div class="sa-n">${S.palier >= S.paliers ? 'Chemin terminé, bravo !' : `Encore ${Math.max(0, S.cout - S.dansPalier).toLocaleString('fr-FR')} XP · prochaine récompense : <b>${esc(recompenseTexte(S.prochaine))}</b>`}</div>
+    <div class="sa-b">${coffres ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${coffres})</button>` : ''}${court ? '<button class="btn mini" data-vitrine="1" data-armurerie="1">⚔ Ouvrir l\'armurerie</button>' : `<span class="eclats">✦ ${A.eclats} éclats</span>`}</div>
+  </div>`;
+}
+let cheminOuvert = false, marchandOuvert = false;
+function blocArmurerie() {
+  const s = state, A = s.armurerie; if (!A) return '';
+  const orn = ornementsDe(s) || {}, liste = cosmListe(s);
+  const S = A.saison;
+  const chemin = cheminOuvert ? `<ol class="chemin">${Array.from({ length: S.paliers }, (_, i) => { const n = i + 1, r = (CHEMIN_APP[n] || { eclats: 20 }), it = r.item ? cosmItem(r.item) : null;
+    return `<li class="${n <= S.palier ? 'ok' : ''} ${it ? 'r-' + it.rarete : r.coffre ? 'r-' + r.coffre : ''}"><span class="n">${n}</span><span class="t">${esc(recompenseTexte(r))}</span></li>`; }).join('')}</ol>` : '';
+  const slots = SLOTS_COSM.map(E => {
+    const items = liste.filter(x => x.slot === E.id);
+    return `<div class="orn-slot"><h4>${E.nom} <span>${E.aide}</span></h4><div class="orn-liste">
+      ${items.map(x => { const ok = cosmPossede(x.id), eq = orn[E.id] === x.id || (E.id === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
+        return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E.id}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
+          <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button><button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button></div>`; }).join('')}
+    </div></div>`;
+  }).join('');
+  const prix = ((s.catalogueCosm || {}).prix) || {};
+  const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id)).sort((a, b) => (prix[a.rarete] || 0) - (prix[b.rarete] || 0)).map(x =>
+    `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
+  return `<div id="armurerie"><div class="section"><h2>Armurerie</h2><span>${A.possede.length} / ${liste.length} objets</span></div>
+    ${blocSaison(s)}
+    <div class="sa-b"><button class="btn mini" data-chemin="1">${cheminOuvert ? 'Masquer' : 'Voir'} le chemin des ${S.paliers} paliers</button><button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} le marchand</button></div>
+    ${chemin}${marchand}<div class="orn-info" id="info-cosm"></div>
+    <p class="muted" style="font-size:12px;margin:6px 0">Touche un objet pour le porter ou le retirer · « ? » pour savoir comment l'obtenir. Ton compagnon le voit aussi.</p>${slots}</div>`;
+}
+/** Petite image d'un objet pour les tuiles */
+function apercuCosm(x) {
+  const p = 'ap' + x.id;
+  if (x.slot === 'cape') return `<svg viewBox="40 90 120 160" width="34" height="34">${capeSvg(x.id, p)}</svg>`;
+  if (x.slot === 'tete') return `<svg viewBox="70 -16 60 40" width="34" height="24">${teteSvg(x.id, 4)}</svg>`;
+  if (x.slot === 'aura') return `<svg viewBox="0 30 200 240" width="30" height="34">${auraSvg(x.id, p)}</svg>`;
+  if (x.slot === 'familier') return `<svg viewBox="0 0 100 100" width="34" height="34">${familierAube(x.id, 2)}</svg>`;
+  if (x.slot === 'monture') return `<svg viewBox="-20 20 240 230" width="38" height="36">${montureSvg(x.id)}</svg>`;
+  if (x.slot === 'repaire') return `<span class="ap-rep">${repaireSvg(x.id, p)}</span>`;
+  return `<span class="ap-ef">${{ tr_etincelles: '✨', tr_petales: '🌸', tr_flammes: '🔥', vi_etoiles: '🌠', vi_foudre: '⚡' }[x.id] || '✦'}</span>`;
+}
+const CHEMIN_APP = { 1: { item: 'cape_rouge' }, 3: { item: 'bandeau' }, 4: { coffre: 'commun' }, 5: { coffre: 'rare' }, 7: { item: 'tr_etincelles' },
+  8: { coffre: 'commun' }, 10: { coffre: 'epique' }, 12: { item: 'fleurs' }, 14: { coffre: 'rare' }, 15: { item: 'aura_etincelles' }, 18: { coffre: 'rare' },
+  20: { item: 'cape_aube' }, 22: { coffre: 'epique' }, 25: { item: 'mo_destrier' }, 28: { coffre: 'rare' }, 30: { coffre: 'epique' }, 33: { item: 'tr_flammes' },
+  35: { item: 'vi_foudre' }, 38: { coffre: 'epique' }, 40: { coffre: 'legendaire' }, 42: { coffre: 'epique' }, 45: { item: 'aura_aube' }, 48: { coffre: 'legendaire' },
+  50: { item: 'tete_aube' } };
+
+/* --- Ouverture d'un coffre : il tremble, s'ouvre, l'objet apparaît --- */
+async function ouvrirUnCoffre() {
+  const A = state && state.armurerie; if (!A || !(A.coffres || []).length) return;
+  const c = A.coffres[0];
+  let ov = document.getElementById('coffreOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'coffreOv'; document.body.appendChild(ov); }
+  ov.innerHTML = `<div class="cof-box"><p class="muted">${esc(c.origine || '')}</p><div class="cof r-${c.type}">🎁</div><p>Coffre ${esc((RARETE_NOM[c.type] || '').toLowerCase())}…</p></div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+  const debut = Date.now();
+  let r = null;
+  try { r = await api('ouvrirCoffre', c.source); } catch (e) {
+    ov.classList.remove('on'); document.body.classList.remove('bloque');
+    toast(estHorsLigne(e) ? '📴 Il faut du réseau pour ouvrir un coffre' : (e.message || String(e)), 'info'); return;
+  }
+  await new Promise(ok => setTimeout(ok, Math.max(0, 1600 - (Date.now() - debut))));
+  state = avecAttente(r); render();
+  const o = r.coffreOuvert || {}, x = o.item ? cosmItem(o.item, r) : null;
+  ov.innerHTML = `<div class="cof-box ouvert"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
+    ${x ? `<div class="cof-obj">${apercuCosm(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p>${RARETE_NOM[x.rarete]} · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>
+      <button class="btn or" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">✦</div><h3>${o.eclats || 0} éclats</h3><p>Tu avais déjà tout ce qu'il contenait : de quoi acheter chez le marchand.</p>`}
+    <button class="btn" data-cof-fermer="1">${(state.armurerie.coffres || []).length ? 'Coffre suivant' : 'Fermer'}</button></div>`;
+  vib([30, 60, 30]);
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-coffre]')) { ouvrirUnCoffre(); return; }
+  const pt = e.target.closest('[data-cof-porter]');
+  if (pt) { const [slot, id] = pt.dataset.cofPorter.split('|'); regler('equiperOrnement', slot, id); pt.textContent = '✓ Porté'; pt.disabled = true; return; }
+  if (e.target.closest('[data-cof-fermer]')) {
+    const ov = document.getElementById('coffreOv'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque');
+    if (document.getElementById('vitrine') && document.getElementById('vitrine').classList.contains('on')) dessinerVitrine();
+    if ((state.armurerie.coffres || []).length) setTimeout(ouvrirUnCoffre, 250);
+    return;
+  }
+  if (e.target.closest('[data-chemin]')) { cheminOuvert = !cheminOuvert; dessinerVitrine(); return; }
+  if (e.target.closest('[data-marchand]')) { marchandOuvert = !marchandOuvert; dessinerVitrine(); return; }
+  const ach = e.target.closest('[data-acheter]');
+  if (ach) {
+    const x = cosmItem(ach.dataset.acheter), prix = ((state.catalogueCosm || {}).prix || {})[x && x.rarete];
+    if (!x) return;
+    if (state.armurerie.eclats < prix) { toast(`Il te faut ${prix} éclats (tu en as ${state.armurerie.eclats})`, 'info'); return; }
+    if (ach.dataset.sur !== '1') { ach.dataset.sur = '1'; ach.textContent = 'Confirmer ?'; setTimeout(() => { ach.dataset.sur = ''; ach.textContent = '✦ ' + prix; }, 3000); return; }
+    regler('acheterCosmetique', x.id).then(ok => { if (ok) { toast('✦ ' + x.nom + ' acheté !'); dessinerVitrine(); } });
+    return;
+  }
+  const qi = e.target.closest('[data-cosm-info]');
+  if (qi) { const x = cosmItem(qi.dataset.cosmInfo), box = document.getElementById('info-cosm'); if (!x || !box) return;
+    box.innerHTML = `<b>${cosmPossede(x.id) ? '✦' : '🔒'} ${esc(x.nom)}</b> · ${RARETE_NOM[x.rarete]} · ${esc(x.comment || '')}`; box.classList.add('on'); return; }
+});
+
+/* --- Effets : traînée à chaque quête validée, coup de grâce sur les boss --- */
+function effetTrainee(x, y) {
+  const id = (ornementsDe(state) || {}).trainee; if (!id || !confort().animations) return;
+  const sym = { tr_etincelles: ['✦', '✧', '·'], tr_petales: ['🌸', '❀', '✿'], tr_flammes: ['🔥', '✹', '·'] }[id]; if (!sym) return;
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('i'); p.className = 'trainee ' + id; p.textContent = sym[i % sym.length];
+    p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.setProperty('--dx', (Math.cos(i / 12 * Math.PI * 2) * (40 + i % 3 * 18)) + 'px'); p.style.setProperty('--dy', (Math.sin(i / 12 * Math.PI * 2) * (40 + i % 3 * 18) - 30) + 'px');
+    document.body.appendChild(p); setTimeout(() => p.remove(), 1100);
+  }
+}
+let dernierToucherXY = null;
+document.addEventListener('pointerdown', e => { dernierToucherXY = [e.clientX, e.clientY]; }, true);
+function effetCoupDeGrace() {
+  const id = (ornementsDe(state) || {}).victoire; if (!id || !confort().animations) return;
+  const sc = document.querySelector('.boss-win .bw-scene'); if (!sc) return;
+  const f = document.createElement('div'); f.className = 'cdg ' + id;
+  f.innerHTML = id === 'vi_foudre' ? '<svg viewBox="0 0 100 200" preserveAspectRatio="none"><path d="M60 0 L30 90 L52 90 L28 200 L78 70 L54 70 L74 0 Z" fill="#fff6c8" stroke="#9fe4ff" stroke-width="3"/></svg>'
+    : Array.from({ length: 18 }, (_, i) => `<i style="left:${(i * 37) % 100}%;animation-delay:${(i % 6) * .12}s">✦</i>`).join('');
+  sc.appendChild(f); setTimeout(() => f.remove(), 2600);
+}
+
 function ornementsDe(s) { return (s && (s.ornements || (s.reglages && s.reglages.ornements))) || {}; }
 function ornementDebloque(s, o) { try { return !!o.ok(s); } catch (e) { return false; } }
 /** Ajoute les ornements équipés au dessin du personnage (cadre 200 × 260, pieds vers y = 242). */
@@ -1474,6 +1787,17 @@ function orner(svg, orn, id, grand) {
   const avant = (fam ? `<g${grand ? ' transform="translate(26 236) scale(1.7) translate(-40 -222)"' : ''}><g class="orn orn-fam">${fam(id)}</g></g>` : '')
     + (emb ? `<g${grand ? ' transform="translate(100 -24) scale(2.4) translate(-42 -54)"' : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
   if (avant) { const j = svg.lastIndexOf('</svg>'); svg = svg.slice(0, j) + avant + svg.slice(j); }
+  // Armurerie : aura, monture (vitrine seulement) et cape derrière le héros ; couronne et familier de l'Aube devant
+  const derriere = (orn.aura ? auraSvg(orn.aura, 'au' + id) : '') + (grand && orn.monture ? montureSvg(orn.monture) : '') + (orn.cape ? capeSvg(orn.cape, 'ca' + id) : '');
+  if (derriere) { const k = svg.indexOf('</defs>'); const i = k >= 0 ? k + 7 : svg.indexOf('>') + 1; svg = svg.slice(0, i) + `<g class="orn-derriere">${derriere}</g>` + svg.slice(i); }
+  let dessus = '';
+  if (orn.tete) {
+    const m = /aria-label="([^",]+), palier (\d+)"/.exec(svg), mageHaut = m && /Magicien/.test(m[1]) && Number(m[2]) > 1;
+    dessus += teteSvg(orn.tete, mageHaut ? 4 : 34);
+    if (!grand && mageHaut) svg = svg.replace('viewBox="0 0 200 260"', 'viewBox="0 -16 200 276"');
+  }
+  if (/^fa_/.test(orn.familier || '')) dessus += familierAubeSvg(orn.familier, stadeFamilier(orn._jours), grand);
+  if (dessus) { const j = svg.lastIndexOf('</svg>'); svg = svg.slice(0, j) + dessus + svg.slice(j); }
   return svg;
 }
 const ORN_LUEURS = { argent: 1, or: 1, pourpre: 1, aube: 1 };
@@ -1685,7 +2009,7 @@ window.addEventListener('unhandledrejection', e => { const r = e.reason; const m
 /* Héros joué sur ce téléphone (mémorisé). Chaque appel au serveur l'envoie en dernier paramètre. */
 let herosActif = '';
 try { herosActif = localStorage.getItem('heros') || ''; } catch (e) {}
-const ARITE = { getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
+const ARITE = { ouvrirCoffre: 1, acheterCosmetique: 1, getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
   decalerSeance: 3, annulerDecalage: 3, reglerRappel: 1, testerRappel: 0, changerDifficulte: 1, reglerConfort: 1, reglerDevise: 1,
   getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, equiperOrnement: 2, planifierVoyage: 3, annulerVoyage: 2, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1, journalRecent: 1, corrigerJour: 3, retirerSaisie: 2 };
 function api(fn, ...args) {
@@ -2678,7 +3002,7 @@ function dessinerVitrine() {
   const moi = !vitrineCible, s = moi ? state : vitrineCible;
   const cl = classeDe(s), pal = palierDe(Number(s.niveau) || 1, cl), P = cl.paliers[pal];
   const orn = moi ? ornementsDe(state) : (s.ornements || {});
-  const svg = orner(cl.dessin(pal, 'vit', lookDe(s.look)), orn, 'vit', true);
+  const svg = orner(cl.dessin(pal, 'vit', lookDe(s.look)), Object.assign({ _jours: joursDe(s) }, orn), 'vit', true);
   const mage = !/voleur|assassin|roublard/i.test((s.classe || {}).nom || '');
   const parts = Array.from({ length: 14 }, (_, i) => `<i style="left:${8 + (i * 61) % 84}%;animation-delay:${(i * .73) % 6}s;animation-duration:${5 + (i % 4)}s"></i>`).join('');
   // petites tuiles : toucher = porter / retirer ; « ? » = comment on le gagne
@@ -2697,6 +3021,7 @@ function dessinerVitrine() {
     <button class="vit-x" data-vit-close="1" aria-label="Fermer">✕</button>
     <div class="vit-nom"><b>${esc(s.heros || s.nom || '')}</b><span>${esc([s.titre, 'niveau ' + s.niveau, P && P.titre].filter(Boolean).join(' · '))}</span></div>
     <div class="vit-scene ${mage ? 'mage' : 'voleur'} ${confort().animations ? '' : 'calme'}">
+      <div class="vit-repaire">${repaireSvg(repaireDe(s), 'vr')}</div>
       <div class="vit-parts">${parts}</div>
       <div class="vit-rot" id="vitRot"><div class="vit-saut" id="vitSaut"><div class="vit-perso" id="vitPerso">${svg}</div></div></div>
       <div class="vit-ombre"></div>
@@ -2704,6 +3029,7 @@ function dessinerVitrine() {
     <p class="vit-aide">Incline-le du doigt · touche-le pour le saluer</p>
     <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche une forme atteinte pour revoir son évolution' : 'toucher'}</span></div>
     <div class="evo-rang">${evos}</div>
+    ${moi ? blocArmurerie() : ''}
     ${moi ? `<div class="section"><h2>Ornements</h2><span>${nb} / ${ORNEMENTS.length} gagnés</span></div>
     <p class="muted" style="font-size:12px;margin:-4px 0 6px">Touche pour porter ou retirer · « ? » pour savoir comment le gagner. Ton compagnon les voit aussi.</p>${coll}` : ''}
   </div>`;
@@ -2756,7 +3082,7 @@ document.addEventListener('click', e => {
   }
   const b = e.target.closest('[data-orn]');
   if (b) {
-    if (b.dataset.lock) { const q = b.parentNode.querySelector('[data-orn-info]'); if (q) q.click(); return; }
+    if (b.dataset.lock) { const q = b.parentNode.querySelector('[data-orn-info], [data-cosm-info]'); if (q) q.click(); return; }
     const [slot, id] = b.dataset.orn.split('|');
     regler('equiperOrnement', slot, id).then(() => dessinerVitrine());
     dessinerVitrine();
@@ -3206,6 +3532,7 @@ function bossVaincu(b, revoir) {
   if (anim) {
     [[1500, [60]], [2400, [60]], [3300, [140, 40, 220]], [4450, [40, 30, 40]]].forEach(([t, v]) => minuteurs.push(setTimeout(() => vib(v), t)));
     minuteurs.push(setTimeout(() => el.classList.add('fin'), 5300));
+    minuteurs.push(setTimeout(effetCoupDeGrace, 3250));
   } else vib([80, 40, 80, 40, 200]);
   el.addEventListener('click', e => {
     if (e.target.closest('[data-bw]')) { minuteurs.forEach(clearTimeout); el.remove(); return; }
@@ -3558,7 +3885,7 @@ function render() {
   }).join('');
   const vueHeros = `
     <div class="hero-card">
-      <div class="hero-perso" data-vitrine="1" role="button" aria-label="Voir ton personnage en grand">${avatar(pal, 'h', s)}<span class="loupe">⤢ Vitrine</span></div>
+      <div class="hero-perso" data-vitrine="1" role="button" aria-label="Voir ton personnage en grand"><span class="perso-fond">${repaireSvg(repaireDe(s), 'hf')}</span>${avatar(pal, 'h', s)}<span class="loupe">⤢ Vitrine</span></div>
       <div>
         <div class="classe">${esc(cl.nom || 'Magicien')}</div>
         <div class="classe-sub" style="color:var(--gold)">Veilleur de l'Aube</div>
@@ -3568,6 +3895,7 @@ function render() {
           : '<div class="next-evo">Forme ultime atteinte</div>'}
       </div>
     </div>
+    ${blocSaison(s, true)}
     <div class="section"><h2>Capacités</h2><span>actives dès leur niveau</span></div>
     <div class="panel">${capas}</div>
     ${s.bilan.precedente && textesClaude['coach|' + s.bilan.precedente.lundi] ? `<div class="panel coach"><b>🧙 Le mot du mentor</b>${plie(textesClaude['coach|' + s.bilan.precedente.lundi])}</div>` : ''}
@@ -3600,7 +3928,7 @@ function render() {
       <button data-tab="quetes" class="${onglet === 'quetes' ? 'on' : ''}"><span>⚔️</span>Quêtes${duJour.length - faits > 0 && !s.vacances ? `<i>${duJour.length - faits}</i>` : ''}</button>
       ${distant && s.carnet ? `<button data-tab="carnet" class="${onglet === 'carnet' ? 'on' : ''}"><span>📖</span>Carnet</button>` : ''}
       ${aBoss ? `<button data-tab="combat" class="${onglet === 'combat' ? 'on' : ''}"><span>🐉</span>Combat${bossEnCours ? `<i class="pvb">${bossEnCours}%</i>` : ''}</button>` : ''}
-      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros</button>
+      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros${s.armurerie && (s.armurerie.coffres || []).length ? '<i class="pvb">🎁</i>' : ''}</button>
       ${coop ? `<button data-tab="compagnie" class="${onglet === 'compagnie' ? 'on' : ''}"><span>🤝</span>Compagnie</button>` : ''}
     </nav>`);
   if (onglet === 'profil' && change) dessinerGrille();
@@ -3983,7 +4311,7 @@ async function regler(fn, ...args) {
     envoisEnCours--;
     const m = e && e.message ? e.message : String(e);
     // les refus normaux du serveur (« déjà encouragé », « plus de joker »…) ne sont pas des pannes
-    const refus = /^(OCCUPE|Plus de joker|Seules|On ne|Le décalage|Cette quête|Ce jour|Jours invalides|Palier|C'est déjà|Nom trop|Le nouveau nom|Plus rien|Déjà|Tu as déjà|Une fois|Le pacte|C'est à ton|Aucun pacte|Le destin|Le chapitre|Ce titre|Prochain changement|Ces dates|La fin)/.test(m);
+    const refus = /^(OCCUPE|Pas assez|Pas en vente|Plus de joker|Seules|On ne|Le décalage|Cette quête|Ce jour|Jours invalides|Palier|C'est déjà|Nom trop|Le nouveau nom|Plus rien|Déjà|Tu as déjà|Une fois|Le pacte|C'est à ton|Aucun pacte|Le destin|Le chapitre|Ce titre|Prochain changement|Ces dates|La fin)/.test(m);
     toast(estHorsLigne(e) ? '📴 Hors connexion : ce réglage demande le réseau, réessaie quand tu es connecté' : m.replace(/^OCCUPE : /, ''), estHorsLigne(e) || refus ? 'info' : 'erreur');
     if (confirme && envoisEnCours === 0) { state = confirme; confirme = null; }
     render(); return false;
@@ -4182,6 +4510,7 @@ function predire(s, nom, statut) {
     res.trace = 'fait';
   } else if (statut === 'hier') { // rattrapage de la veille : XP tout de suite, le Sheet recalcule le reste
     bougerXp(n, res, gain(0));
+    if (!n.arc) res.dPv = Math.min(n.pvMax - n.pv, soin);
     if (!estAnnexe && indexJour(n.today) !== 0) q.semaine = (Number(q.semaine) || 0) + 1;
   } else if (statut === 'Raté') {
     if (!n.arc) res.dPv = -Math.min(n.pv, R.pen);
@@ -4268,6 +4597,7 @@ function agir(nom, statut) {
     else if (!pred.annule && pred.ripBoss) flotter(`🐉 Le boss se soigne : +${pred.ripBoss} PV`, 'var(--pv)');
     else if (statut === 'Repos') flotter('Repos', 'var(--rest)');
     if (pred.dXp > 0) vib(25);
+    if (pred.dXp > 0 && dernierToucherXY) effetTrainee(dernierToucherXY[0], dernierToucherXY[1]);
     if (pred.coups && pred.coups.length) setTimeout(() => flotter(`⚔ −${pred.coups[0].d} PV au boss`, '#ff8b7a'), 450);
     setTimeout(() => frapperBoss(pred.coups && pred.coups.length && pred.coups[0].d > 0 ? 'hit' : statut === 'Raté' ? 'riposte' : ''), 60);
     (pred.victoires || []).forEach((b, i) => setTimeout(() => bossVaincu(b), 700 + i * 300));
@@ -4696,6 +5026,20 @@ const demo = (() => {
       return etat();
     }
   };
+})();
+/* Aperçu : une armurerie de démonstration (le vrai catalogue vient du moteur) */
+(function () {
+  const CAT = {"liste":[{"id":"cape_rouge","slot":"cape","rarete":"commun","nom":"Cape de laine rouge","butin":true,"comment":"Coffres et marchand"},{"id":"cape_verte","slot":"cape","rarete":"commun","nom":"Cape du chasseur","butin":true,"comment":"Coffres et marchand"},{"id":"cape_bleue","slot":"cape","rarete":"commun","nom":"Cape du voyageur","butin":true,"comment":"Coffres et marchand"},{"id":"bandeau","slot":"tete","rarete":"commun","nom":"Bandeau du héros","butin":true,"comment":"Coffres et marchand"},{"id":"fleurs","slot":"tete","rarete":"commun","nom":"Couronne de fleurs","butin":true,"comment":"Coffres et marchand"},{"id":"aura_etincelles","slot":"aura","rarete":"rare","nom":"Aura d'étincelles","butin":true,"comment":"Coffres et marchand"},{"id":"tr_etincelles","slot":"trainee","rarete":"rare","nom":"Traînée d'étincelles","butin":true,"comment":"Coffres et marchand"},{"id":"tr_petales","slot":"trainee","rarete":"rare","nom":"Traînée de pétales","butin":true,"comment":"Coffres et marchand"},{"id":"tr_flammes","slot":"trainee","rarete":"epique","nom":"Traînée de flammes","butin":true,"comment":"Coffres et marchand"},{"id":"vi_etoiles","slot":"victoire","rarete":"epique","nom":"Coup de grâce : pluie d'étoiles","butin":true,"comment":"Coffres et marchand"},{"id":"vi_foudre","slot":"victoire","rarete":"legendaire","nom":"Coup de grâce : foudre","butin":true,"comment":"Coffres et marchand"},{"id":"fa_dragon","slot":"familier","rarete":"epique","nom":"Dragon de l'Aube","comment":"Une série de 7 jours sur une quête"},{"id":"fa_loup","slot":"familier","rarete":"epique","nom":"Loup des neiges","butin":true,"comment":"Coffres et marchand"},{"id":"fa_chouette","slot":"familier","rarete":"epique","nom":"Chouette astrale","butin":true,"comment":"Coffres et marchand"},{"id":"cape_aube","slot":"cape","rarete":"epique","nom":"Cape de l'Aube","comment":"Palier 20 de la saison"},{"id":"aura_aube","slot":"aura","rarete":"legendaire","nom":"Aura de l'Aube","comment":"Palier 45 de la saison"},{"id":"tete_aube","slot":"tete","rarete":"legendaire","nom":"Couronne de l'Aube","comment":"Palier 50 de la saison"},{"id":"mo_destrier","slot":"monture","rarete":"epique","nom":"Destrier","comment":"Niveau 25 ou palier 25 de la saison"},{"id":"mo_griffon","slot":"monture","rarete":"legendaire","nom":"Griffon","comment":"Niveau 50 ou palier 50 de la saison"},{"id":"re_clairiere","slot":"repaire","rarete":"commun","nom":"La clairière","niveau":1,"comment":"Niveau 1"},{"id":"re_campement","slot":"repaire","rarete":"rare","nom":"Le campement","niveau":10,"comment":"Niveau 10"},{"id":"re_taverne","slot":"repaire","rarete":"epique","nom":"La taverne","niveau":20,"comment":"Niveau 20"},{"id":"re_tour","slot":"repaire","rarete":"epique","nom":"La tour","niveau":35,"comment":"Niveau 35"},{"id":"re_trone","slot":"repaire","rarete":"legendaire","nom":"La salle du trône","niveau":50,"comment":"Niveau 50"},{"id":"cape_procrastination","slot":"cape","rarete":"epique","nom":"Cape du Sablier","butin":true,"panoplie":"procrastination","comment":"Coffres, boss du mois, marchand"},{"id":"tete_procrastination","slot":"tete","rarete":"legendaire","nom":"Couronne du Sablier","butin":true,"panoplie":"procrastination","comment":"Coffres, boss du mois, marchand"},{"id":"aura_procrastination","slot":"aura","rarete":"legendaire","nom":"Aura du Sablier","butin":true,"panoplie":"procrastination","comment":"Coffres, boss du mois, marchand"},{"id":"cape_dissipation","slot":"cape","rarete":"epique","nom":"Cape des Tourbillons","butin":true,"panoplie":"dissipation","comment":"Coffres, boss du mois, marchand"},{"id":"tete_dissipation","slot":"tete","rarete":"legendaire","nom":"Couronne des Tourbillons","butin":true,"panoplie":"dissipation","comment":"Coffres, boss du mois, marchand"},{"id":"aura_dissipation","slot":"aura","rarete":"legendaire","nom":"Aura des Tourbillons","butin":true,"panoplie":"dissipation","comment":"Coffres, boss du mois, marchand"},{"id":"cape_oubli","slot":"cape","rarete":"epique","nom":"Cape du Néant","butin":true,"panoplie":"oubli","comment":"Coffres, boss du mois, marchand"},{"id":"tete_oubli","slot":"tete","rarete":"legendaire","nom":"Couronne du Néant","butin":true,"panoplie":"oubli","comment":"Coffres, boss du mois, marchand"},{"id":"aura_oubli","slot":"aura","rarete":"legendaire","nom":"Aura du Néant","butin":true,"panoplie":"oubli","comment":"Coffres, boss du mois, marchand"},{"id":"cape_fatigue","slot":"cape","rarete":"epique","nom":"Cape des Brumes","butin":true,"panoplie":"fatigue","comment":"Coffres, boss du mois, marchand"},{"id":"tete_fatigue","slot":"tete","rarete":"legendaire","nom":"Couronne des Brumes","butin":true,"panoplie":"fatigue","comment":"Coffres, boss du mois, marchand"},{"id":"aura_fatigue","slot":"aura","rarete":"legendaire","nom":"Aura des Brumes","butin":true,"panoplie":"fatigue","comment":"Coffres, boss du mois, marchand"},{"id":"cape_doute","slot":"cape","rarete":"epique","nom":"Cape des Mille Yeux","butin":true,"panoplie":"doute","comment":"Coffres, boss du mois, marchand"},{"id":"tete_doute","slot":"tete","rarete":"legendaire","nom":"Couronne des Mille Yeux","butin":true,"panoplie":"doute","comment":"Coffres, boss du mois, marchand"},{"id":"aura_doute","slot":"aura","rarete":"legendaire","nom":"Aura des Mille Yeux","butin":true,"panoplie":"doute","comment":"Coffres, boss du mois, marchand"},{"id":"cape_tentation","slot":"cape","rarete":"epique","nom":"Cape de la Pomme d'Or","butin":true,"panoplie":"tentation","comment":"Coffres, boss du mois, marchand"},{"id":"tete_tentation","slot":"tete","rarete":"legendaire","nom":"Couronne de la Pomme d'Or","butin":true,"panoplie":"tentation","comment":"Coffres, boss du mois, marchand"},{"id":"aura_tentation","slot":"aura","rarete":"legendaire","nom":"Aura de la Pomme d'Or","butin":true,"panoplie":"tentation","comment":"Coffres, boss du mois, marchand"}],"prix":{"commun":40,"rare":100,"epique":250,"legendaire":600},"panoplies":{"procrastination":{"nom":"du Sablier","couleur":"#b48cff"},"dissipation":{"nom":"des Tourbillons","couleur":"#5ae6be"},"oubli":{"nom":"du Néant","couleur":"#dfe3ff"},"fatigue":{"nom":"des Brumes","couleur":"#9fb0e0"},"doute":{"nom":"des Mille Yeux","couleur":"#ff5a5a"},"tentation":{"nom":"de la Pomme d'Or","couleur":"#ff78aa"}}};
+  const arm = { saison: { id: 's1', nom: 'Saison de l\'Aube', paliers: 50, palier: 4, xp: 2580, cout: 600, dansPalier: 180, prochaine: { coffre: 'rare' } },
+    possede: ['cape_rouge', 'bandeau', 're_clairiere', 're_campement', 'fa_dragon'], eclats: 120, ouverts: 0, joursActifs: 15,
+    coffres: [{ source: 'palier|4', type: 'commun', origine: 'Palier 4' }, { source: 'boss|2026-11-12|La Liche du Scroll', type: 'rare', origine: 'La Liche du Scroll' }] };
+  const ornDemo = {};
+  Object.keys(demo).forEach(k => { const f = demo[k]; if (typeof f !== 'function') return;
+    demo[k] = function () { const r = f.apply(this, arguments); if (r && r.habitudes && r.heros) { r.catalogueCosm = CAT; r.armurerie = JSON.parse(JSON.stringify(arm)); if (r.reglages) r.reglages.ornements = Object.assign({}, r.reglages.ornements, ornDemo); } return r; }; });
+  demo.equiperOrnement = (slot, id) => { ornDemo[slot] = id || ''; return demo.getState(); };
+  demo.ouvrirCoffre = src => { const c = arm.coffres.shift(); const item = ['tr_petales', 'cape_procrastination', 'fa_loup'][arm.ouverts++ % 3];
+    if (!arm.possede.includes(item)) arm.possede.push(item); const e = demo.getState(); e.coffreOuvert = { source: src, type: c ? c.type : 'rare', origine: c ? c.origine : '', item, eclats: 0 }; return e; };
+  demo.acheterCosmetique = id => { arm.possede.push(id); arm.eclats -= 100; return demo.getState(); };
 })();
 
 /* ---------- Démarrage ---------- */
