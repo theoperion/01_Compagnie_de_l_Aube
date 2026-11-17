@@ -464,6 +464,36 @@
   .pl-pion { transition: transform .38s cubic-bezier(.3,1.5,.5,1); } .pl-pion.lui { opacity: .9; }
   @keyframes plProch { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .3; } }
   @media (prefers-reduced-motion: reduce) { .pl-case.proch circle:first-child { animation: none; } .pl-pion { transition: none; } }
+  .trophees { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 10px; border-radius: 16px; border: 1px solid #3a3446;
+    background: repeating-linear-gradient(0deg, #2a2632 0 26px, #24202c 26px 28px), #2a2632; box-shadow: inset 0 0 30px rgba(0,0,0,.5); }
+  .tr-niche { display: grid; justify-items: center; gap: 0; padding: 8px 4px 6px; border-radius: 40px 40px 10px 10px; background: radial-gradient(ellipse at 50% 30%, #3a3448, #16121e 75%);
+    border: 1px solid #4a4258; cursor: pointer; font: inherit; color: var(--text); min-width: 0; }
+  .tr-niche.vide { cursor: default; opacity: .55; } .tr-niche.vide .tr-boss { display: grid; place-items: center; font: 800 26px var(--f-titre); color: #5a5468; }
+  .tr-boss { width: 72px; height: 76px; } .tr-boss svg { width: 100%; height: 100%; filter: sepia(.9) saturate(1.6) hue-rotate(-12deg) brightness(.95) drop-shadow(0 0 6px rgba(255,190,90,.35)); }
+  .tr-niche.mois .tr-boss svg { filter: sepia(1) saturate(2.6) hue-rotate(5deg) brightness(1.15) drop-shadow(0 0 10px rgba(255,215,110,.7)); }
+  .tr-socle { width: 70%; height: 10px; border-radius: 3px; background: linear-gradient(#7a5a32, #4a3418); margin-top: -4px; }
+  .tr-plaque { text-align: center; margin-top: 5px; min-width: 0; } .tr-plaque b { display: block; font-size: 10.5px; color: var(--gold); line-height: 1.2; } .tr-plaque small { display: block; font-size: 9.5px; color: var(--muted); line-height: 1.2; }
+  .tr-niche.mois { border-color: #8a6a22; }
+  #recapOv { position: fixed; inset: 0; z-index: 75; display: none; background: radial-gradient(circle at 50% 30%, #2e2240, #0c0912 75%); color: var(--text); padding: 54px 24px 30px; text-align: center; }
+  #recapOv.on { display: block; }
+  .rc-barres { position: absolute; top: 14px; left: 14px; right: 54px; display: flex; gap: 4px; } .rc-barres i { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.2); overflow: hidden; }
+  .rc-barres i b { display: block; height: 100%; width: 0; background: var(--gold); } .rc-barres i.ok b { width: 100%; } .rc-barres i.en b { animation: rcBarre 3.6s linear forwards; }
+  .rc-x { position: absolute; top: 6px; right: 10px; background: none; border: 0; color: var(--text); font-size: 22px; padding: 6px; cursor: pointer; }
+  .rc-ecran { height: 100%; display: grid; place-items: center; } .rc-in { display: grid; gap: 12px; justify-items: center; animation: rcIn .5s ease-out both; max-width: 420px; }
+  .rc-in h2 { font-family: var(--f-titre); font-size: 26px; margin: 0; color: var(--gold); text-wrap: balance; } .rc-in p { margin: 0; font-size: 16px; } .rc-petit { color: var(--muted); font-size: 13px !important; }
+  .rc-sur { text-transform: uppercase; letter-spacing: .14em; font-size: 12px !important; color: var(--muted); }
+  .rc-gros { font: 800 72px var(--f-titre); color: #fff; text-shadow: 0 0 30px rgba(255,210,110,.5); font-variant-numeric: tabular-nums; }
+  .rc-up { color: #9fe0a0; } .rc-down { color: #ff9a8a; }
+  .rc-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; } .rc-kpis div { background: rgba(255,255,255,.06); border-radius: 16px; padding: 14px 8px; animation: rcIn .5s ease-out both; }
+  .rc-kpis div:nth-child(2) { animation-delay: .15s; } .rc-kpis div:nth-child(3) { animation-delay: .3s; } .rc-kpis div:nth-child(4) { animation-delay: .45s; }
+  .rc-kpis b { display: block; font: 800 34px var(--f-titre); color: var(--gold); } .rc-kpis span { font-size: 12.5px; color: var(--muted); }
+  .rc-perso, .rc-boss { width: 170px; } .rc-perso svg, .rc-boss svg { width: 100%; height: auto; } .rc-boss.vaincu svg { filter: grayscale(.6); }
+  .rc-flamme { font-size: 64px; animation: rcPulse 1.4s ease-in-out infinite; }
+  .rc-duel { display: grid; gap: 14px; width: 100%; text-align: left; } .rc-duel div { display: grid; grid-template-columns: 70px 1fr auto; gap: 8px; align-items: center; }
+  .rc-duel i { height: 14px; border-radius: 7px; background: linear-gradient(90deg, #b8862b, #f2c94c); width: var(--w); animation: rcBarreW 1s ease-out both; } .rc-duel i.lui { background: linear-gradient(90deg, #2a4a9a, #5a8ae8); }
+  @keyframes rcIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes rcBarre { from { width: 0; } to { width: 100%; } } @keyframes rcBarreW { from { width: 0; } }
+  @keyframes rcPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
   .apercu-s1 { margin: 10px 0; border: 1px solid #3a5a9a; border-radius: 14px; padding: 10px 12px; background: linear-gradient(180deg, #141c30, var(--panel)); }
   .apercu-s1 summary { cursor: pointer; font-weight: 700; color: #8ad0ff; }
   .s1-boss { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; margin-top: 8px; }
@@ -552,6 +582,23 @@
   @keyframes bwIn { from { opacity: 0; transform: scale(.7) translateY(-20px); } }
   @keyframes bwMenace { 50% { transform: scale(1.08); filter: drop-shadow(0 0 16px rgba(255,60,40,.8)); } }
   @keyframes bwHit { 0%,100% { transform: translateX(0); filter: none; } 20% { transform: translateX(-9px) rotate(-3deg); filter: brightness(2.2) saturate(.3); } 50% { transform: translateX(8px) rotate(2deg); filter: brightness(1.6); } }
+  .bw-fx { position: absolute; inset: 0; pointer-events: none; } .bw-fx i { position: absolute; left: 50%; top: 45%; font-style: normal; font-size: 22px; opacity: 0; }
+  .boss-win.anim .bw-fx i { animation: bwFx 1.6s var(--d) ease-out 3.75s forwards; }
+  .boss-win.mort-pierre .bw-fx i { animation-name: bwFxBas; } .boss-win.mort-eau .bw-fx i { animation-name: bwFxEau; }
+  @keyframes bwFx { 0% { opacity: 0; transform: translate(-50%, 0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--x) * 2.4), -170px) scale(1.2) rotate(40deg); } }
+  @keyframes bwFxBas { 0% { opacity: 0; transform: translate(-50%, -20px); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--x) * 2), 150px) rotate(120deg); } }
+  @keyframes bwFxEau { 0% { opacity: 0; transform: translate(-50%, 40px) scale(.5); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--x) * 2.6), -110px) scale(1.3); } }
+  .boss-win.anim.mort-eau .bw-bi { animation: bwIn .6s ease-out both, bwMenace 1s .6s ease-in-out, bwHit .32s 1.5s, bwHit .32s 2.4s, bwHit .45s 3.3s, bwCoule 1.7s 3.6s forwards; }
+  .boss-win.anim.mort-ombre .bw-bi { animation: bwIn .6s ease-out both, bwMenace 1s .6s ease-in-out, bwHit .32s 1.5s, bwHit .32s 2.4s, bwHit .45s 3.3s, bwFumee 1.7s 3.6s forwards; }
+  .boss-win.anim.mort-pierre .bw-bi { animation: bwIn .6s ease-out both, bwMenace 1s .6s ease-in-out, bwHit .32s 1.5s, bwHit .32s 2.4s, bwHit .45s 3.3s, bwEffondre 1.7s 3.6s forwards; }
+  .boss-win.anim.mort-feu .bw-bi { animation: bwIn .6s ease-out both, bwMenace 1s .6s ease-in-out, bwHit .32s 1.5s, bwHit .32s 2.4s, bwHit .45s 3.3s, bwExplose 1.4s 3.6s forwards; }
+  .boss-win.anim.mort-nature .bw-bi { animation: bwIn .6s ease-out both, bwMenace 1s .6s ease-in-out, bwHit .32s 1.5s, bwHit .32s 2.4s, bwHit .45s 3.3s, bwEnvole 1.7s 3.6s forwards; }
+  @keyframes bwCoule { 0% { opacity: 1; transform: none; } 30% { transform: translateY(10px) rotate(-6deg); filter: hue-rotate(160deg) brightness(1.3); } 100% { opacity: 0; transform: translateY(140px) scaleY(.6) rotate(10deg); filter: blur(4px) hue-rotate(160deg); } }
+  @keyframes bwFumee { 0% { opacity: 1; filter: none; } 35% { filter: brightness(.3) saturate(0); transform: scale(1.05); } 100% { opacity: 0; transform: scale(1.4) translateY(-40px); filter: brightness(0) blur(12px); } }
+  @keyframes bwEffondre { 0% { opacity: 1; transform: none; } 20% { transform: translateX(-6px) rotate(-3deg); } 30% { transform: translateX(6px) rotate(3deg); filter: grayscale(1) brightness(1.2); } 100% { opacity: 0; transform: translateY(120px) rotate(18deg) scale(.8); filter: grayscale(1) blur(3px); } }
+  @keyframes bwExplose { 0% { opacity: 1; filter: brightness(1.5); } 25% { transform: scale(1.25); filter: brightness(3) sepia(1) saturate(4) hue-rotate(-20deg); } 45% { opacity: 1; } 100% { opacity: 0; transform: scale(2.2); filter: brightness(5) blur(10px); } }
+  @keyframes bwEnvole { 0% { opacity: 1; transform: none; } 30% { transform: rotate(-12deg) scale(.95); filter: hue-rotate(60deg); } 100% { opacity: 0; transform: translateY(-160px) rotate(220deg) scale(.2); filter: hue-rotate(80deg) blur(3px); } }
+  @media (prefers-reduced-motion: reduce) { .bw-fx { display: none; } }
   @keyframes bwMort { 0% { opacity: 1; transform: scale(1); filter: brightness(1.6); } 15% { opacity: .3; } 22% { opacity: 1; filter: brightness(2.6) contrast(1.5); } 35% { transform: scale(1.1) rotate(3deg); filter: brightness(3) saturate(0); } 100% { opacity: 0; transform: scale(.3) translateY(-60px) rotate(-8deg); filter: brightness(4) blur(6px); } }
   .bw-slash { position: absolute; left: 50%; top: 50%; width: 190px; height: 5px; margin: -2px 0 0 -95px; border-radius: 4px; opacity: 0;
     background: linear-gradient(90deg, transparent, #fff 30%, #ffe08a 60%, transparent); box-shadow: 0 0 14px #ffd36b, 0 0 30px rgba(255,180,60,.6); }
@@ -590,6 +637,7 @@
   .boss-win.anim .bw-txt { opacity: 0; transform: translateY(10px); transition: opacity .6s, transform .6s; pointer-events: none; }
   .boss-win.anim.fin .bw-txt { opacity: 1; transform: none; pointer-events: auto; }
   .boss-win.anim.fin .bw-tampon { top: 40px; font-size: 30px; transition: top .6s, font-size .6s; }
+  .boss-win.saute .bw-fx { display: none; }
   .boss-win.anim.saute .bw-bi, .boss-win.anim.saute .bw-nom, .boss-win.anim.saute .bw-vie { animation: none; opacity: 0; }
   .boss-win.anim.saute .bw-p, .boss-win.anim.saute .bw-slash, .boss-win.anim.saute .bw-flash, .boss-win.anim.saute .bw-coup, .boss-win.anim.saute .bw-rayons { display: none; }
   .boss-win.anim.saute .bw-hi, .boss-win.anim.saute .bw-scene, .boss-win.anim.saute { animation: none; }
@@ -1898,6 +1946,24 @@ document.addEventListener('click', e => {
   const n = Number(c.dataset.case), S = state.armurerie.saison, CC = state.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
   const r = CH[n] || { eclats: 20 }, box = document.getElementById('info-case');
   if (box) { box.innerHTML = `<b>Palier ${n}</b> · ${esc(recompenseTexte(r))}${r.item2 ? ' + ' + esc((cosmItem(r.item2) || {}).nom || '') : ''} · ${n <= S.palier ? '✓ gagné' : `encore ${((n - S.palier) * S.cout - S.dansPalier).toLocaleString('fr-FR')} XP`}`; box.classList.add('on'); }
+});
+/* --- Salle des trophées : un mur de pierre, une niche par boss vaincu (bronze = semaine, or = mois). Toucher = revoir la victoire --- */
+function salleTrophees(s) {
+  const T = s.trophees || [];
+  const mois = T.filter(t => t.type === 'mois').length;
+  const niche = (t, i) => t ? `<button class="tr-niche ${t.type}" data-trophee="${i}" aria-label="Revoir la victoire contre ${esc(t.nom)}">
+      <div class="tr-boss">${t.visuel ? bossSvg(t.visuel, 'tr' + i) : '🏆'}</div><div class="tr-socle"></div>
+      <div class="tr-plaque"><b>${esc(t.trophee || t.nom)}</b><small>${esc(t.nom)} · ${dateCourte(t.date)}</small></div></button>`
+    : `<div class="tr-niche vide"><div class="tr-boss">?</div><div class="tr-socle"></div><div class="tr-plaque"><small>à conquérir</small></div></div>`;
+  const vides = Math.max(3 - (T.length % 3 || 3) + (T.length ? 0 : 0), T.length ? (3 - T.length % 3) % 3 : 3);
+  return `<div class="section"><h2>Salle des trophées</h2><span>${T.length} boss vaincu${T.length > 1 ? 's' : ''}${mois ? ` · dont ${mois} du mois` : ''}</span></div>
+    <div class="trophees">${T.map(niche).join('')}${Array.from({ length: vides }, () => niche(null)).join('')}</div>
+    ${T.length ? '<p class="muted" style="font-size:12px;margin:4px 2px">Touche un trophée pour revoir la victoire.</p>' : ''}`;
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-trophee]'); if (!t || !state) return;
+  const x = (state.trophees || [])[Number(t.dataset.trophee)]; if (!x) return;
+  bossVaincu({ nom: x.nom, visuel: x.visuel, type: x.type, xp: x.xp, trophee: x.trophee }, true);
 });
 /* --- Aperçu de la Saison 1 (pendant la pré-saison) --- */
 function apercuSaison1() {
@@ -3232,6 +3298,15 @@ function carteBoss(b, s) {
   </div>`;
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
+/* Familles de victoire par boss (app 5.2) */
+const MORT_BOSS = { kraken: 'eau', sirene: 'eau', leviathan: 'eau', meduse: 'eau', hydre: 'eau',
+  vampire: 'ombre', spectre: 'ombre', liche: 'ombre', necro: 'ombre', banshee: 'ombre', oubli: 'ombre', doute: 'ombre', lougarou: 'ombre',
+  golem: 'pierre', titan: 'pierre', gargouille: 'pierre', troll: 'pierre', ogre: 'pierre', sphinx: 'pierre', fatigue: 'pierre', minotaure: 'pierre', mimique: 'pierre',
+  dragon: 'feu', chimere: 'feu', archidemon: 'feu', procrastination: 'feu', cyclope: 'feu',
+  basilic: 'nature', wyrm: 'nature', harpie: 'nature', dissipation: 'nature', tentation: 'nature' };
+const MORTS = { eau: { c: ['#3fa9c9', '#bfe8ff', '#7ad0f0'], e: ['💧', '🫧', '💦'] }, ombre: { c: ['#2a1a3a', '#6a4a8a', '#14101a'], e: ['🦇', '💨', '🦇'] },
+  pierre: { c: ['#8a8496', '#5a5468', '#b8b0c4'], e: ['🪨', '💥', '🪨'] }, feu: { c: ['#ff9a3c', '#ffd23a', '#e8452c'], e: ['🔥', '✨', '🔥'] },
+  nature: { c: ['#5aa85a', '#9ae08a', '#d4ad3c'], e: ['🍃', '🍂', '🌿'] }, eclat: { c: ['var(--gold)', 'var(--gold)', '#8a7aa8'], e: ['✨', '⭐', '✨'] } };
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
 const VERSION_CARNET = CONFIG.VERSION_CARNET || String(Date.now()); // config.js : changer la version force le téléphone à recharger carnet.html
 const NUMERO_CARNET = CONFIG.NUMERO_CARNET || '?';
@@ -3351,6 +3426,73 @@ document.addEventListener('click', e => {
   if (pa) { regler('proposerPacte', pa.dataset.pacte).then(ok => ok && toast('Pacte proposé : ton compagnon doit le sceller')); return; }
   if (e.target.closest('[data-accepter]')) { regler('accepterPacte').then(ok => ok && toast('🤝 Pacte scellé !')); return; }
 });
+/* ---------- Récap animé de la semaine : des écrans façon « stories » (toucher à droite = suivant, à gauche = retour) ----------
+ * S'ouvre une fois par semaine : le dimanche à partir de 18 h (semaine en cours) ou le lundi (semaine passée). Revoir : bouton du bilan. */
+let recapEtat = null;
+function donneesRecap(s, precedente) {
+  const b = precedente ? s.bilan.precedente : s.bilan.semaine, pr = precedente ? null : s.bilan.precedente;
+  const delta = pr && pr.xp ? Math.round((b.xp - pr.xp) / pr.xp * 100) : null;
+  const meilleure = s.habitudes.reduce((m, h) => (h.serieNb > 0 && h.serie > m.serie ? h : m), { serie: 0 });
+  const comp = (s.compagnons || [])[0];
+  return { b, delta, meilleure, comp, boss: s.boss && s.boss.semaine, precedente };
+}
+function ecransRecap(s, d) {
+  const b = d.b, E = [];
+  E.push(`<div class="rc-perso">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'rc', s)}</div><h2>Ta semaine</h2><p>du ${dateCourte(b.lundi)} au ${dateCourte(b.dimanche)}</p><p class="rc-petit">Niveau ${s.niveau} · ${esc(s.titre || '')}</p>`);
+  E.push(`<p class="rc-sur">XP gagnée</p><div class="rc-gros" data-compte="${b.xp}">0</div>${d.delta !== null ? `<p class="${d.delta >= 0 ? 'rc-up' : 'rc-down'}">${d.delta >= 0 ? '▲' : '▼'} ${Math.abs(d.delta)} % par rapport à la semaine d'avant</p>` : ''}`);
+  E.push(`<p class="rc-sur">Sur le terrain</p><div class="rc-kpis"><div><b>${b.faits}</b><span>quêtes faites</span></div><div><b>${b.aJour}/${b.total}</b><span>habitudes à jour</span></div><div><b>${b.rates}</b><span>ratés</span></div><div><b>${b.bonus}</b><span>bonus de série</span></div></div>`);
+  if (d.meilleure.serie) E.push(`<div class="rc-flamme">🔥</div><p class="rc-sur">Meilleure série</p><h2>${esc(d.meilleure.nom)}</h2><div class="rc-gros" data-compte="${d.meilleure.serie}">0</div><p>jours d'affilée</p>`);
+  const B = d.boss;
+  if (B && !d.precedente) E.push(`<div class="rc-boss ${B.statut === 'Vaincu' ? 'vaincu' : ''}">${bossSvg(B.visuel, 'rcb', B)}</div><h2>${esc(B.nomStade || B.nom)}</h2>
+    <p>${B.statut === 'Vaincu' ? `⚔ Vaincu le ${dateCourte(B.vaincuLe)} ! Trophée : ${esc(B.trophee || '')}` : B.statut === 'En cours' ? `Il lui reste ${Math.round(B.pv).toLocaleString('fr-FR')} PV… dernière chance ce soir !` : esc(B.statut || '')}</p>`);
+  if (d.comp && !d.precedente && d.comp.xpSemaine != null) {
+    const moi = b.xp, lui = Number(d.comp.xpSemaine) || 0, max = Math.max(1, moi, lui);
+    E.push(`<p class="rc-sur">La Compagnie</p><div class="rc-duel"><div><span>Toi</span><i style="--w:${Math.round(moi / max * 100)}%"></i><b>${moi.toLocaleString('fr-FR')} XP</b></div>
+      <div><span>${esc(String(d.comp.nom).split(' ')[0])}</span><i class="lui" style="--w:${Math.round(lui / max * 100)}%"></i><b>${lui.toLocaleString('fr-FR')} XP</b></div></div>
+      <p>${moi + lui > 0 ? `Ensemble : <b>${(moi + lui).toLocaleString('fr-FR')} XP</b> cette semaine.` : ''}</p>`);
+  }
+  const mot = b.aJour === b.total && b.total ? 'Semaine parfaite. Légendaire.' : b.rates === 0 ? 'Aucun raté. Continue comme ça !' : d.delta !== null && d.delta > 0 ? 'Plus fort que la semaine dernière !' : 'Une semaine plus dure. Choisis UNE habitude à sécuriser.';
+  E.push(`<div class="rc-flamme">☀️</div><h2>${mot}</h2><p>À la semaine prochaine, héros.</p><button class="btn or" data-recap-fin="1">Fermer</button>`);
+  return E;
+}
+function ouvrirRecap(precedente) {
+  const s = state; if (!s || !s.bilan || !s.bilan.semaine) return;
+  const E = ecransRecap(s, donneesRecap(s, precedente));
+  let ov = document.getElementById('recapOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'recapOv'; document.body.appendChild(ov); }
+  ov.innerHTML = `<div class="rc-barres">${E.map(() => '<i><b></b></i>').join('')}</div><button class="rc-x" data-recap-fin="1" aria-label="Fermer">✕</button><div class="rc-ecran"></div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+  recapEtat = { E, i: -1, t: null };
+  recapAller(0);
+}
+function recapAller(i) {
+  const ov = document.getElementById('recapOv'), R = recapEtat; if (!ov || !R) return;
+  if (i >= R.E.length) { fermerRecap(); return; }
+  R.i = Math.max(0, i); clearTimeout(R.t);
+  const ec = ov.querySelector('.rc-ecran'); ec.innerHTML = `<div class="rc-in">${R.E[R.i]}</div>`;
+  ov.querySelectorAll('.rc-barres i').forEach((b, k) => { b.className = k < R.i ? 'ok' : k === R.i ? 'en' : ''; });
+  ec.querySelectorAll('[data-compte]').forEach(el => { const fin = Number(el.dataset.compte) || 0, t0 = performance.now();
+    const f = t => { const p = Math.min(1, (t - t0) / 900); el.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3))).toLocaleString('fr-FR'); if (p < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); });
+  vib(12);
+  if (R.i < R.E.length - 1) R.t = setTimeout(() => recapAller(R.i + 1), 3600);
+}
+function fermerRecap() { const ov = document.getElementById('recapOv'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque'); if (recapEtat) clearTimeout(recapEtat.t); recapEtat = null; }
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-recap-fin]')) { fermerRecap(); return; }
+  if (e.target.closest('[data-recap]')) { ouvrirRecap(e.target.closest('[data-recap]').dataset.recap === 'prec'); return; }
+  const ov = e.target.closest('#recapOv'); if (!ov || !recapEtat || e.target.closest('button')) return;
+  recapAller(e.clientX < window.innerWidth / 3 ? recapEtat.i - 1 : recapEtat.i + 1);
+});
+/** Une fois par semaine : dimanche dès 18 h (semaine en cours), sinon lundi (semaine passée) */
+function recapAFaire() {
+  const s = state; if (!s || !s.bilan || !s.bilan.semaine || !confort().animations) return;
+  const j = indexJour(s.today), h = new Date().getHours();
+  const prec = j === 0, cle = 'recapVu|' + (prec ? s.bilan.precedente && s.bilan.precedente.lundi : s.bilan.semaine.lundi);
+  if (!(j === 6 && h >= 18) && !prec) return;
+  if (prec && !(s.bilan.precedente && s.bilan.precedente.faits)) return;
+  try { if (localStorage.getItem(cle)) return; localStorage.setItem(cle, '1'); } catch (e) { return; }
+  setTimeout(() => { if (!document.body.classList.contains('bloque')) ouvrirRecap(prec); }, 2500);
+}
 /* ---------- Annonce des nouvelles règles des boss (une fois par téléphone) ---------- */
 const ANNONCE_BOSS = [
   ['🎯', 'Des PV à votre mesure', 'les PV du boss sont calés sur votre vrai rythme des dernières semaines : la victoire se mérite, elle n\'est plus garantie.'],
@@ -3381,7 +3523,7 @@ function annonceBossAFaire() {
   };
   setTimeout(essayer, 1500);
 }
-let annonceBossPrevue = false;
+let annonceBossPrevue = false, recapPrevu = false;
 document.addEventListener('click', e => { if (e.target.closest('[data-annonce-boss]')) ouvrirAnnonceBoss(); });
 function ouvrirEncouragement() {
   const C = state.camp; if (!C) return;
@@ -3904,17 +4046,20 @@ function bossVaincu(b, revoir) {
       heros.push({ nom: String(c.nom || '').split(' ')[0], svg: cl.dessin(palierDe(Number(c.niveau) || 1, cl), 'bwc', lookDe(c.look)) });
     });
   } catch (e) { heros = []; }
+  // Chaque boss tombe à sa façon : il coule (eau), part en fumée (ombre), s'effondre (pierre), explose (feu) ou s'envole en feuilles (nature)
+  const mort = MORT_BOSS[b.visuel] || 'eclat', M = MORTS[mort];
   const eclats = Array.from({ length: 28 }, (_, i) => {
     const ang = (i / 28) * Math.PI * 2 + (i % 3) * .2, dist = 90 + (i * 37) % 110;
-    return `<i class="bw-p" style="--dx:${Math.round(Math.cos(ang) * dist)}px;--dy:${Math.round(Math.sin(ang) * dist - 20)}px;--r:${(i * 47) % 360}deg;background:${i % 3 ? 'var(--gold)' : '#8a7aa8'}"></i>`;
-  }).join('');
+    const dy = mort === 'pierre' ? Math.abs(Math.sin(ang) * dist) + 40 : mort === 'ombre' || mort === 'nature' ? -Math.abs(Math.sin(ang) * dist) - 40 : Math.sin(ang) * dist - 20;
+    return `<i class="bw-p" style="--dx:${Math.round(Math.cos(ang) * dist)}px;--dy:${Math.round(dy)}px;--r:${(i * 47) % 360}deg;background:${M.c[i % M.c.length]}"></i>`;
+  }).join('') + `<div class="bw-fx">${Array.from({ length: 10 }, (_, i) => `<i style="--x:${(i * 37) % 100 - 50}px;--d:${(i % 5) * .12}s">${M.e[i % M.e.length]}</i>`).join('')}</div>`;
   /* Animation de victoire (app 4.0) : ~5,5 s. Les héros frappent l'un après l'autre (la barre de vie se vide),
      coup final commun (l'écran tremble), le boss se brise dans la lumière, puis le tampon « VICTOIRE » et le récap.
      Toucher l'écran ne coupe plus l'animation : bouton « Passer ». Rejouable depuis la carte du boss vaincu. */
   const nomG = heros[0] ? heros[0].nom : 'Toi', nomD = heros[1] ? heros[1].nom : nomG;
   const rayons = Array.from({ length: 12 }, (_, i) => `<i style="--a:${i * 30}deg"></i>`).join('');
   const el = document.createElement('div');
-  el.className = 'boss-win' + (anim ? ' anim' : ' fin');
+  el.className = 'boss-win mort-' + mort + (anim ? ' anim' : ' fin');
   el.innerHTML = `${anim ? '<button class="bw-passer" data-bw-passer="1">Passer ›</button>' : ''}<div class="bw-box">
     ${anim ? `<div class="bw-scene">
       <div class="bw-rayons">${rayons}</div>
@@ -4171,6 +4316,7 @@ function carteBilan(s, dimanche) {
       <div class="kpi"><b>${b.bonus}</b><span>bonus de série</span></div>
     </div>
     <p>${meilleure.serie ? `🔥 Meilleure série : <b>${esc(meilleure.nom)}</b>, ${meilleure.serie} jours. ` : ''}${mot}</p>
+    <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn mini or" data-recap="sem">▶ Récap animé</button>${s.bilan.precedente && s.bilan.precedente.faits ? '<button class="btn mini" data-recap="prec">▶ Semaine dernière</button>' : ''}</div>
   </div>`;
 }
 
@@ -4190,6 +4336,7 @@ function poserApp(html) {
 function render() {
   if (!state) return;
   annonceBossAFaire();
+  if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
   if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
   const s = state;
   document.body.classList.toggle('calme', !confort().animations);
@@ -4295,7 +4442,8 @@ function render() {
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `
     ${blocSaison(s, true)}
-    ${plateauHTML(s)}`
+    ${plateauHTML(s)}
+    ${salleTrophees(s)}`
     : sousHeros === 'exploits' ? `
     ${blocTitres(s)}
     <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
@@ -5137,6 +5285,8 @@ window.addEventListener('popstate', () => {
   const ouvert = id => { const el = document.getElementById(id); return el && el.classList.contains('on') ? el : null; };
   const bw = document.querySelector('.boss-win');
   if (bw) { bw.remove(); document.body.classList.remove('bloque'); return ok(); }
+  if (ouvert('recapOv')) { fermerRecap(); return ok(); }
+  if (ouvert('coffreOv')) { ouvert('coffreOv').classList.remove('on'); document.body.classList.remove('bloque'); render(); return ok(); }
   if (ouvert('bossVue')) { ouvert('bossVue').classList.remove('on'); document.body.classList.remove('bloque'); return ok(); }
   if (ouvert('vitrine')) { fermerVitrine(); return ok(); }
   if (ouvert('d20ov')) { fermerD20(); return ok(); }
@@ -5449,7 +5599,7 @@ const demo = (() => {
     coffres: [{ source: 'palier|4', type: 'commun', origine: 'Palier 4' }, { source: 'boss|2026-11-12|La Liche du Scroll', type: 'rare', origine: 'La Liche du Scroll' }] };
   const ornDemo = {};
   Object.keys(demo).forEach(k => { const f = demo[k]; if (typeof f !== 'function') return;
-    demo[k] = function () { const r = f.apply(this, arguments); if (r && r.habitudes && r.heros) { r.catalogueCosm = CAT; r.armurerie = JSON.parse(JSON.stringify(arm)); if (r.reglages) r.reglages.ornements = Object.assign({}, r.reglages.ornements, ornDemo); } return r; }; });
+    demo[k] = function () { const r = f.apply(this, arguments); if (r && r.habitudes && r.heros) { r.trophees = [{ date: '2026-11-12', nom: 'La Liche du Scroll', visuel: 'liche', type: 'semaine', trophee: 'Écran brisé', xp: 300 }, { date: '2026-11-08', nom: 'Le Golem de la Flemme', visuel: 'golem', type: 'semaine', trophee: 'Cœur de pierre', xp: 200 }, { date: '2026-10-31', nom: 'La Procrastination', visuel: 'procrastination', type: 'mois', trophee: 'Sablier brisé', xp: 500 }]; r.catalogueCosm = CAT; r.armurerie = JSON.parse(JSON.stringify(arm)); if (r.reglages) r.reglages.ornements = Object.assign({}, r.reglages.ornements, ornDemo); } return r; }; });
   demo.equiperOrnement = (slot, id) => { ornDemo[slot] = id || ''; return demo.getState(); };
   demo.ouvrirCoffre = src => { const c = arm.coffres.shift(); const item = ['tr_petales', 'cape_procrastination', 'fa_loup'][arm.ouverts++ % 3];
     if (!arm.possede.includes(item)) arm.possede.push(item); const e = demo.getState(); e.coffreOuvert = { source: src, type: c ? c.type : 'rare', origine: c ? c.origine : '', item, eclats: 0 }; return e; };
