@@ -473,7 +473,7 @@
   #coffreOv { position: fixed; inset: 0; z-index: 70; background: rgba(8,6,12,.92); display: none; place-items: center; padding: 20px; text-align: center; }
   #coffreOv.on { display: grid; }
   .cof-box { display: grid; gap: 10px; justify-items: center; max-width: 340px; position: relative; }
-  .cof { font-size: 84px; border: 2px solid; border-radius: 22px; padding: 10px 22px; animation: cofTremble .5s ease-in-out infinite; }
+  .cof { font-size: 84px; border: 2px solid; border-radius: 22px; padding: 10px 22px; animation: cofTremble .35s ease-in-out infinite; cursor: pointer; }
   .cof-obj { font-size: 54px; position: relative; z-index: 1; } .cof-obj svg, .cof-obj .ap-rep { width: 120px !important; height: 120px !important; }
   .cof-box.ouvert h3 { margin: 0; font-family: var(--f-titre); font-size: 22px; position: relative; z-index: 1; }
   .cof-box.ouvert > * { animation: vitIn .4s ease-out both; }
@@ -1783,36 +1783,57 @@ function apercuSaison1() {
     <div class="s1-boss">${Array.from({ length: 6 }, () => '<div><div class="s1-myst">?</div></div>').join('')}</div></details>`;
 }
 /* --- Ouverture d'un coffre : il tremble, s'ouvre, l'objet apparaît --- */
-async function ouvrirUnCoffre() {
+/* Même tirage que le moteur (Armurerie.js, tirerCoffre_) : l'objet s'affiche tout de suite, le moteur l'enregistre en arrière-plan */
+const POIDS_COF = { commun: [70, 25, 5, 0], rare: [20, 55, 22, 3], epique: [0, 30, 60, 10], legendaire: [0, 0, 30, 70] };
+const DOUBLON_COF = { commun: 10, rare: 25, epique: 60, legendaire: 150 }, RARETES_COF = ['commun', 'rare', 'epique', 'legendaire'];
+function hashCof(t) { let h = 2166136261; t = String(t); for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function tirerCoffreLocal(c, s) {
+  const a = {}; ((s.armurerie || {}).possede || []).forEach(id => { a[id] = 1; });
+  const graine = s.heros + '|' + c.source; let type = c.type;
+  if (c.panoplie) { const piece = ['cape_', 'tete_', 'aura_'].map(x => x + c.panoplie).find(id => !a[id] && cosmItem(id, s)); if (piece) return { item: piece, eclats: 0 }; type = 'epique'; }
+  const w = POIDS_COF[type] || POIDS_COF.rare, tot = w.reduce((x, y) => x + y, 0);
+  let r = hashCof(graine + '|r') % tot, k = 0; while (r >= w[k]) { r -= w[k]; k++; }
+  const rarete = RARETES_COF[k];
+  const pool = cosmListe(s).filter(x => x.butin && x.rarete === rarete && !a[x.id] && (x.saison || 'pre') === (c.saison || 'pre'));
+  if (!pool.length) return { item: '', eclats: DOUBLON_COF[rarete] * 2 };
+  return { item: pool[hashCof(graine + '|i') % pool.length].id, eclats: 0 };
+}
+let coffreRevele = null;
+function ouvrirUnCoffre() {
   const A = state && state.armurerie; if (!A || !(A.coffres || []).length) return;
   const c = A.coffres[0];
+  if (navigator.onLine === false) { toast('📴 Il faut du réseau pour ouvrir un coffre', 'info'); return; }
   let ov = document.getElementById('coffreOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'coffreOv'; document.body.appendChild(ov); }
-  ov.innerHTML = `<div class="cof-box"><p class="muted">${esc(c.origine || '')}</p><div class="cof r-${c.type}">🎁</div><p>Coffre ${esc((RARETE_NOM[c.type] || '').toLowerCase())}…</p></div>`;
+  ov.innerHTML = `<div class="cof-box" data-cof-vite="1"><p class="muted">${esc(c.origine || '')}</p><div class="cof r-${c.type}">🎁</div><p>Coffre ${esc((RARETE_NOM[c.type] || '').toLowerCase())}</p><p class="muted" style="font-size:12px">Touche pour l'ouvrir</p></div>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
-  const debut = Date.now();
-  let r = null;
-  try { r = await api('ouvrirCoffre', c.source); } catch (e) {
-    ov.classList.remove('on'); document.body.classList.remove('bloque');
-    toast(estHorsLigne(e) ? '📴 Il faut du réseau pour ouvrir un coffre' : (e.message || String(e)), 'info'); return;
-  }
-  await new Promise(ok => setTimeout(ok, Math.max(0, 1600 - (Date.now() - debut))));
-  state = avecAttente(r); render();
-  const o = r.coffreOuvert || {}, x = o.item ? cosmItem(o.item, r) : null;
-  ov.innerHTML = `<div class="cof-box ouvert"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
-    ${x ? `<div class="cof-obj">${apercuCosm(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p>${RARETE_NOM[x.rarete]} · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>
-      <button class="btn or" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">✦</div><h3>${o.eclats || 0} éclats</h3><p>Tu avais déjà tout ce qu'il contenait : de quoi acheter chez le marchand.</p>`}
-    <button class="btn" data-cof-fermer="1">${(state.armurerie.coffres || []).length ? 'Coffre suivant' : 'Fermer'}</button></div>`;
-  vib([30, 60, 30]);
+  const o = tirerCoffreLocal(c, state);
+  // l'état local avance tout de suite (coffre retiré, objet ou éclats ajoutés)
+  const n = copie(state); n.armurerie.coffres = n.armurerie.coffres.slice(1);
+  if (o.item && !n.armurerie.possede.includes(o.item)) n.armurerie.possede.push(o.item); else n.armurerie.eclats += o.eclats || 0;
+  state = n;
+  api('ouvrirCoffre', c.source).then(r => { state = avecAttente(r); if (!document.getElementById('coffreOv').classList.contains('on')) render(); })
+    .catch(e => toast(estHorsLigne(e) ? '📴 Coffre pas encore enregistré : il le sera au prochain réseau' : (e.message || String(e)), 'info'));
+  coffreRevele = () => {
+    coffreRevele = null;
+    const x = o.item ? cosmItem(o.item) : null;
+    ov.innerHTML = `<div class="cof-box ouvert"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
+      ${x ? `<div class="cof-obj">${apercuCosm(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p>${RARETE_NOM[x.rarete]} · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>
+        <button class="btn or" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">✦</div><h3>${o.eclats || 0} éclats</h3><p>Tu avais déjà tout ce qu'il contenait : de quoi acheter chez le marchand.</p>`}
+      <button class="btn" data-cof-fermer="1">${(state.armurerie.coffres || []).length ? 'Coffre suivant' : 'Fermer'}</button></div>`;
+    vib([30, 60, 30]);
+  };
+  setTimeout(() => { if (coffreRevele) coffreRevele(); }, confort().animations ? 1100 : 0);
 }
+document.addEventListener('click', e => { if (e.target.closest('[data-cof-vite]') && coffreRevele) coffreRevele(); });
 document.addEventListener('click', e => {
   if (e.target.closest('[data-coffre]')) { ouvrirUnCoffre(); return; }
   const pt = e.target.closest('[data-cof-porter]');
   if (pt) { const [slot, id] = pt.dataset.cofPorter.split('|'); regler('equiperOrnement', slot, id); pt.textContent = '✓ Porté'; pt.disabled = true; return; }
   if (e.target.closest('[data-cof-fermer]')) {
     const ov = document.getElementById('coffreOv'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque');
-    if (document.getElementById('vitrine') && document.getElementById('vitrine').classList.contains('on')) dessinerVitrine();
-    if ((state.armurerie.coffres || []).length) setTimeout(ouvrirUnCoffre, 250);
+    render(); if (document.getElementById('vitrine') && document.getElementById('vitrine').classList.contains('on')) dessinerVitrine();
+    if ((state.armurerie.coffres || []).length) setTimeout(ouvrirUnCoffre, 150);
     return;
   }
   if (e.target.closest('[data-chemin]')) { cheminOuvert = !cheminOuvert; dessinerVitrine(); return; }
