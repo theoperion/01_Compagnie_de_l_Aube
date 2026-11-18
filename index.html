@@ -496,6 +496,8 @@
   @keyframes rcIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
   @keyframes rcBarre { from { width: 0; } to { width: 100%; } } @keyframes rcBarreW { from { width: 0; } }
   @keyframes rcPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  .regles-box { position: relative; } .regles-reduire { position: absolute; top: 2px; right: -2px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid #6a5320; background: #1a140e; color: var(--muted); font-size: 12px; cursor: pointer; display: grid; place-items: center; }
+  .regles-mini { margin-left: 6px; padding: 2px 8px; border-radius: 99px; border: 1px solid #d4ad3c; background: #2a2014; color: var(--gold); font: 700 11px var(--f-texte); cursor: pointer; vertical-align: 2px; }
   .regles-btn { width: 100%; margin: 6px 0 12px; padding: 10px 12px; border-radius: 14px; border: 1.5px solid #d4ad3c; background: linear-gradient(90deg, #3a2a10, #221a2e);
     color: var(--text); font: inherit; cursor: pointer; display: flex; align-items: center; gap: 12px; text-align: left; box-shadow: 0 0 0 0 rgba(212,173,60,.5); animation: rgAppel 2.6s ease-in-out 3; }
   .regles-btn .rq { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: #1a1208; font: 800 20px var(--f-titre); }
@@ -1930,7 +1932,7 @@ function plateauHTML(s) {
   const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
   const lui = comp && comp.palierSaison != null ? pion(orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'plc', lookDe(comp.look)), comp.ornements || {}, 'plc'), comp.palierSaison, 22, 'lui', String(comp.nom).split(' ')[0], '#3a6ad8') : '';
   const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -8, 'moi', 'Toi', '#c8902a');
-  return `<div class="plateau"><div class="pl-tete"><b>🗺 Le chemin du Rodage</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
+  return `<div class="plateau"><div class="pl-tete"><b>🗺 Le chemin du Rodage${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
     <div class="pl-legende"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>
     <div class="pl-cadre"><svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
       ${sol}${riviere}${deco.join('')}
@@ -2020,6 +2022,10 @@ const REGLES_PAGES = [
     p: ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Ce que tu as gagné <b>reste à toi</b> d\'une saison à l\'autre.', 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.'] }
 ];
 let pageRegles = 0;
+function livretReduit() { try { return localStorage.getItem('livretReduit') === '1'; } catch (e) { return false; } }
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-livret-reduire]')) { try { localStorage.setItem('livretReduit', '1'); } catch (err) {} render(); toast('Livret réduit : touche « ? Règles » à côté du titre du plateau', 'info'); }
+});
 function ouvrirRegles(page) {
   pageRegles = page || 0;
   let ov = document.getElementById('reglesOv');
@@ -4549,7 +4555,8 @@ function render() {
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `
     ${blocSaison(s, true)}
-    <button class="regles-btn" data-regles="0"><span class="rq">?</span><span><b>Livret des règles</b><small>Comment marchent le plateau, les coffres et la garde-robe</small></span><span class="fl">›</span></button>
+    ${livretReduit() ? '' : `<div class="regles-box"><button class="regles-btn" data-regles="0"><span class="rq">?</span><span><b>Livret des règles</b><small>Comment marchent le plateau, les coffres et la garde-robe</small></span><span class="fl">›</span></button>
+      <button class="regles-reduire" data-livret-reduire="1" aria-label="Réduire le livret des règles">✕</button></div>`}
     ${plateauHTML(s)}
     ${salleTrophees(s)}`
     : sousHeros === 'exploits' ? `
