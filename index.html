@@ -459,6 +459,9 @@
   .pl-cadre { max-height: 400px; overflow-y: auto; border-radius: 16px; border: 1px solid var(--line); overscroll-behavior: contain; scrollbar-width: thin; }
   .pl-svg { width: 100%; height: auto; display: block; }
   .pl-aide { text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .pl-nuage { animation: plNuage 14s ease-in-out infinite alternate; } .pl-moulin { animation: plMoulin 6s linear infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+  @keyframes plMoulin { to { transform: rotate(360deg); } }
+  @keyframes plNuage { from { transform: translateX(-12px); } to { transform: translateX(12px); } }
   .pl-legende { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 4px 8px; font-size: 11.5px; color: var(--muted); } .pl-legende i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
   .pl-pion.moi .pl-saute { animation: plSaute 1.8s ease-in-out infinite; } .pl-halo { animation: plProch 1.4s ease-in-out infinite; }
   @keyframes plSaute { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -532,6 +535,9 @@
   .ouv-sous { letter-spacing: .2em; text-transform: uppercase; font-size: 12px; color: #8ad0ff; animation: rcIn .6s ease-out both; }
   .ouv-box h1 { font-family: var(--f-titre); font-size: 30px; margin: 0; color: #e8f4ff; text-shadow: 0 0 24px rgba(138,208,255,.6); }
   .ouv-box h1 span { display: inline-block; opacity: 0; animation: rcIn .5s ease-out forwards; }
+  #ouvertureOv.saison-pre { background: radial-gradient(circle at 50% 35%, #3a2a18, #0a0706 75%); } #ouvertureOv.saison-pre .ouv-sous, #ouvertureOv.saison-pre .ouv-lot small { color: #f2c94c; }
+  #ouvertureOv.saison-pre h1 { color: #fff3d6; text-shadow: 0 0 24px rgba(242,201,76,.6); } #ouvertureOv.saison-pre .ouv-lot { border-color: #d4ad3c; background: rgba(60,40,10,.6); } #ouvertureOv.saison-pre .ouv-ciel i { background: #ffe7b0; box-shadow: 0 0 6px #f2c94c; }
+  .ouv-heros { width: 130px; animation: rcIn 1s 1.4s ease-out both; } .ouv-heros svg { width: 100%; height: auto; filter: drop-shadow(0 0 16px rgba(242,201,76,.6)); }
   .ouv-boss { width: 150px; animation: rcIn 1s 1.4s ease-out both; } .ouv-boss svg { width: 100%; height: auto; filter: brightness(0) drop-shadow(0 0 14px rgba(138,208,255,.8)); }
   .ouv-box p { margin: 0; font-size: 15px; line-height: 1.45; animation: rcIn .8s 1.8s ease-out both; }
   .ouv-lot { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; border: 1px solid #8ad0ff; background: rgba(20,40,70,.6); text-align: left; animation: rcIn .8s 2.2s ease-out both; }
@@ -1909,7 +1915,7 @@ function plateauHTML(s) {
   const sol = zones.map((z, k) => `<rect x="0" y="${k * bande}" width="${PL_W}" height="${bande + 2}" fill="${z[0]}"/>`).join('');
   const deco = [];
   const libre = (x, y) => pts.every(([px, py]) => Math.hypot(px - x, py - y) > 36);
-  for (let k = 0; k < Math.round(H / 26); k++) {
+  for (let k = 0; k < Math.round(H / 11); k++) {
     const y = 30 + hashPl(k + 1) * (H - 80), x = 14 + hashPl(k + 77) * (PL_W - 28); if (!libre(x, y)) continue;
     const z = Math.min(zones.length - 1, Math.floor(y / bande)), t = hashPl(k + 9);
     if (s1) {
@@ -1928,6 +1934,38 @@ function plateauHTML(s) {
     else if (z === 3) deco.push(`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-18 10 L0 -22 L18 10Z" fill="#6a6478"/><path d="M-6 -11 L0 -22 L6 -11 L2 -9 L0 -12 L-3 -9Z" fill="#efeaff"/></g>`);
     else deco.push(`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><rect x="-1" y="-10" width="2" height="12" fill="#3a2a1c"/><path class="flam" d="M0 -10 q-4 -4 0 -9 q4 5 0 9z" fill="#ff9a3c"/></g>`);
   }
+  // petits détails : touffes d'herbe / écume, cailloux au bord du sentier, nuages et oiseaux
+  for (let k = 0; k < Math.round(H / 6); k++) {
+    const y = 10 + hashPl(k + 301) * (H - 40), x = 6 + hashPl(k + 509) * (PL_W - 12); if (!libre(x, y)) continue;
+    const z = Math.min(zones.length - 1, Math.floor(y / bande)), t = hashPl(k + 7);
+    const c = s1 ? ['#3a6070', '#3e6474', '#7a9ab0', '#4a3a6a', '#5a4430'][z] : ['#4a8a4a', '#3a7040', '#4a7a5a', '#6a6478', '#5a4458'][z];
+    deco.unshift(t < .6 ? `<path d="M${x.toFixed(0)} ${y.toFixed(0)} l2 -6 l2 6 l2 -4 l1 4" stroke="${c}" stroke-width="1.3" fill="none"/>`
+      : t < .85 ? `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(1.5 + t * 2).toFixed(1)}" fill="${['#f2c94c', '#f7b6c8', '#fff', '#c49aff'][k % 4]}" opacity="${s1 && z < 2 ? .25 : .75}"/>`
+      : `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(3 + t * 3).toFixed(1)}" ry="2" fill="#8a8496" opacity=".6"/>`);
+  }
+  for (let k = 1; k < pts.length; k++) { const [x0, y0] = pts[k - 1], [x1, y1] = pts[k], mx = (x0 + x1) / 2, my = (y0 + y1) / 2, nx = -(y1 - y0), ny = x1 - x0, L = Math.hypot(nx, ny) || 1;
+    [-1, 1].forEach(sg => deco.push(`<circle cx="${(mx + sg * nx / L * 13).toFixed(0)}" cy="${(my + sg * ny / L * 13).toFixed(0)}" r="2.2" fill="#8a7a62" opacity=".8"/>`)); }
+  for (let k = 0; k < Math.round(H / 260); k++) { const y = 30 + k * 260 + hashPl(k) * 60, x = 40 + hashPl(k + 3) * 280;
+    deco.push(`<g opacity=".55" class="pl-nuage" style="animation-delay:${k * 2}s"><ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="22" ry="7" fill="#fff"/><ellipse cx="${(x + 12).toFixed(0)}" cy="${(y - 5).toFixed(0)}" rx="13" ry="7" fill="#fff"/></g>
+      <path d="M${(x - 30).toFixed(0)} ${(y + 22).toFixed(0)} q4 -4 8 0 q4 -4 8 0" stroke="#1a1a22" stroke-width="1.4" fill="none"/>`); }
+  // lieux repères, un par paysage, posés là où le sentier laisse de la place
+  const reperes = s1 ? [
+      `<g><path d="M-16 6 Q0 14 16 6 L12 -2 H-12Z" fill="#6a4a2a" stroke="#2a1a0a"/><path d="M0 -2 V-26" stroke="#4a3418" stroke-width="2"/><path d="M1 -24 L14 -10 H1Z" fill="#efe6c4"/></g>`,
+      `<g><path d="M-14 10 L-14 -6 L0 -18 L14 -6 L14 10Z" fill="#4a5a68" stroke="#1a2430"/><rect x="-4" y="0" width="8" height="10" fill="#14202a"/><path d="M0 -18 V-30 l9 4 l-9 4" fill="#8ad0ff"/></g>`,
+      `<g><path d="M-16 10 A16 16 0 0 1 16 10Z" fill="#dff2ff" stroke="#8ab0c8"/><path d="M-6 10 A6 6 0 0 1 6 10Z" fill="#3a5a6e"/><path d="M-12 2 H12 M-8 -5 H8" stroke="#8ab0c8" stroke-width=".8"/></g>`,
+      `<g><path d="M-10 10 L-6 -22 L0 -30 L6 -22 L10 10Z" fill="#8ad0ff" opacity=".85"/><path d="M0 -30 L0 10" stroke="#fff" opacity=".6"/><circle cy="-6" r="18" fill="#8ad0ff" opacity=".15"/></g>`,
+      `<g><rect x="-8" y="-20" width="16" height="30" fill="#c8b488" stroke="#5a4a2a"/><path d="M-12 -20 H12 L8 -26 H-8Z" fill="#a8946a"/><circle cy="-6" r="4" fill="#5a4a2a"/></g>`]
+    : [
+      `<g><rect x="-8" y="-16" width="16" height="26" fill="#d8c8a8" stroke="#5a4a2a"/><path d="M-11 -16 L0 -28 L11 -16Z" fill="#8a3a2a"/><g class="pl-moulin"><path d="M0 -14 L0 -36 M0 -14 L22 -14 M0 -14 L0 8 M0 -14 L-22 -14" stroke="#efe6c4" stroke-width="3"/></g><rect x="-3" y="2" width="6" height="8" fill="#3a2a1a"/></g>`,
+      `<g><rect x="-12" y="-6" width="24" height="16" fill="#6a4a2a" stroke="#2a1a0a"/><path d="M-16 -6 L0 -18 L16 -6Z" fill="#3a5a2a"/><rect x="4" y="-2" width="5" height="5" fill="#ffd27a"/><path d="M8 -18 V-24" stroke="#888" stroke-width="2"/><circle cx="10" cy="-28" r="3" fill="#aaa" opacity=".5"/></g>`,
+      `<g><path d="M-20 6 H20 M-20 0 H20" stroke="#8a6a42" stroke-width="2"/>${[-18, -6, 6, 18].map(x => `<path d="M${x} -4 V10" stroke="#6a4a2a" stroke-width="2.5"/>`).join('')}${[[-10, -4], [4, -6], [12, 2]].map(([x, y]) => `<g transform="translate(${x} ${y})"><ellipse rx="5" ry="3.5" fill="#f2f0ea"/><circle cx="4" cy="-1" r="2" fill="#2a2a2a"/></g>`).join('')}</g>`,
+      `<g><rect x="-12" y="-4" width="24" height="14" fill="#7a5a3a" stroke="#2a1a0a"/><path d="M-16 -4 L0 -18 L16 -4Z" fill="#efeaff" stroke="#9a94aa"/><rect x="-3" y="2" width="6" height="8" fill="#2a1a10"/></g>`,
+      `<g fill="#6a6080" stroke="#2a2434"><rect x="-16" y="-18" width="8" height="28"/><rect x="8" y="-10" width="8" height="20"/><rect x="-6" y="0" width="12" height="10"/><path d="M-16 -18 l4 -4 l4 4" fill="none"/></g>`];
+  reperes.forEach((r, z) => {
+    const y = (z + .5) * bande; let best = null;
+    [30, 60, 300, 330, 90, 270].forEach(x => { if (!best && libre(x, y)) best = x; });
+    if (best) deco.push(`<g transform="translate(${best} ${y.toFixed(0)})">${r}</g>`);
+  });
   // rivière en travers, avec un pont là où passe le chemin
   const yr = 2.5 * bande, nr = Math.round((yr - PL_Y0) / PL_STEP), xr = posCase(nr + 0.5)[0];
   const riviere = `<path d="M0 ${yr - 14} C90 ${yr - 30} 270 ${yr + 2} 360 ${yr - 16} L360 ${yr + 16} C270 ${yr + 34} 90 ${yr - 2} 0 ${yr + 18}Z" fill="${s1 ? '#9fd8f0' : '#3fa0c9'}" opacity="${s1 ? '.6' : '.85'}"/>
@@ -3629,6 +3667,7 @@ function annonceAventureAFaire() {
   const essayer = () => {
     if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
     if (!localStorage.getItem('annonceBoss2026')) { setTimeout(essayer, 3000); return; } // l'annonce des boss passe d'abord
+    const S0 = state.armurerie && state.armurerie.saison; if (S0 && OUVERTURES[S0.id] && !localStorage.getItem('ouverture|' + S0.id)) { setTimeout(essayer, 3000); return; } // puis l'ouverture de la saison
     try { localStorage.setItem('annonceAventure1', '1'); } catch (e) {}
     ouvrirAnnonceAventure();
   };
@@ -3642,7 +3681,9 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-annonce-aventure]')) ouvrirAnnonceAventure();
 });
 /* ---------- Ouverture d'une saison : une petite cinématique, une fois par téléphone ---------- */
-const OUVERTURES = { s1: { nom: 'L\'Éveil des Légendes', sous: 'Saison 1 · janvier → juin', lot: 'tete_legende', boss: 'kraken',
+const OUVERTURES = { pre: { nom: 'Le Rodage', sous: 'Pré-saison · jusqu\'au 31 décembre', lot: 'tete_aube', heros: true,
+  texte: 'Ton aventure commence au campement. Un chemin de 15 paliers mène au château de l\'Aube : chaque quête t\'en rapproche, coffres et trésors jalonnent la route.' },
+  s1: { nom: 'L\'Éveil des Légendes', sous: 'Saison 1 · janvier → juin', lot: 'tete_legende', boss: 'kraken',
   texte: 'Les créatures légendaires sortent de leur sommeil. Un nouveau chemin de 50 paliers vous attend jusqu\'au temple des Légendes.' } };
 function ouvertureSaisonAFaire() {
   const S = state && state.armurerie && state.armurerie.saison, O = S && OUVERTURES[S.id]; if (!O) return;
@@ -3663,8 +3704,8 @@ function ouvrirOuverture(id) {
   ov.className = 'saison-' + id;
   ov.innerHTML = `<div class="ouv-ciel">${Array.from({ length: 30 }, (_, i) => `<i style="left:${(i * 37) % 100}%;top:${(i * 53) % 100}%;animation-delay:${(i % 9) * .3}s"></i>`).join('')}</div>
     <div class="ouv-box"><div class="ouv-sous">${esc(O.sous)}</div><h1>${esc(O.nom).split('').map((c, i) => `<span style="animation-delay:${.4 + i * .05}s">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</h1>
-      <div class="ouv-boss">${bossSvg(O.boss, 'ouv')}</div><p>${esc(O.texte)}</p>
-      ${lot ? `<div class="ouv-lot"><span>${apercuCosm(lot)}</span><div><small>Le gros lot du palier 50</small><b>${esc(lot.nom)}</b></div></div>` : ''}
+      ${O.heros ? `<div class="ouv-heros">${avatar(palierDe(Number(state.niveau) || 1, classeDe(state)), 'ouvh', state)}</div>` : `<div class="ouv-boss">${bossSvg(O.boss, 'ouv')}</div>`}<p>${esc(O.texte)}</p>
+      ${lot ? `<div class="ouv-lot"><span>${apercuCosm(lot)}</span><div><small>Le gros lot du dernier palier</small><b>${esc(lot.nom)}</b></div></div>` : ''}
       <button class="btn or" data-ouverture-go="1">Commencer l'aventure</button></div>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
 }
