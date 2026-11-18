@@ -47,6 +47,10 @@ ils sont dans Apps Script → Paramètres du projet → Propriétés du script.
 Il se met à jour depuis le dépôt privé `app_scripts` (dossier `compagnie-de-l-aube/`) : voir son README.
 La mise en ligne garde toujours la même adresse : rien à changer dans `config.js`.
 
+## Reprendre le travail (nouvelle session Claude)
+
+Lire d'abord `compagnie-de-l-aube/REPRISE.md` dans le dépôt privé `theoperion/app_scripts` : où est quoi, comment livrer, pièges connus, état actuel.
+
 ## Suivi du chantier
 
 Le mode d'emploi, les checklists et le journal des modifications sont dans le document Claude
