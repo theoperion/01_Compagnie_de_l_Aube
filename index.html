@@ -520,6 +520,23 @@
   .rg-grille b { font-size: 13px; color: var(--gold); } .rg-grille small { font-size: 11px; color: #b8acc8; line-height: 1.3; }
   .rg-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 8px; } .rg-points { display: flex; gap: 5px; }
   .rg-points i { width: 7px; height: 7px; border-radius: 50%; background: #4a3a1e; } .rg-points i.on { background: var(--gold); }
+  /* Couleur d'accent de chaque saison (Aventure) */
+  .saison-s1 { --gold: #8ad0ff; }
+  .aventure.saison-s1 .saison { background: linear-gradient(180deg, #16243a, var(--panel)); border-color: #3a5a9a; }
+  .aventure.saison-s1 .bar.sa-bar i { background: linear-gradient(90deg, #3a8ad8, #bfe8ff); }
+  .aventure.saison-s1 .regles-btn { background: linear-gradient(90deg, #14304a, #221a2e); border-color: #8ad0ff; } .aventure.saison-s1 .regles-btn .rq { background: #8ad0ff; color: #0a1a2a; }
+  #ouvertureOv { position: fixed; inset: 0; z-index: 85; display: none; background: radial-gradient(circle at 50% 35%, #1a2e4a, #05070e 75%); color: var(--text); overflow: hidden; }
+  #ouvertureOv.on { display: grid; place-items: center; animation: vitIn .6s ease-out; }
+  .ouv-ciel i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #bfe8ff; box-shadow: 0 0 6px #8ad0ff; animation: etinc 2.6s ease-in-out infinite; }
+  .ouv-box { position: relative; display: grid; gap: 12px; justify-items: center; text-align: center; padding: 20px; max-width: 420px; }
+  .ouv-sous { letter-spacing: .2em; text-transform: uppercase; font-size: 12px; color: #8ad0ff; animation: rcIn .6s ease-out both; }
+  .ouv-box h1 { font-family: var(--f-titre); font-size: 30px; margin: 0; color: #e8f4ff; text-shadow: 0 0 24px rgba(138,208,255,.6); }
+  .ouv-box h1 span { display: inline-block; opacity: 0; animation: rcIn .5s ease-out forwards; }
+  .ouv-boss { width: 150px; animation: rcIn 1s 1.4s ease-out both; } .ouv-boss svg { width: 100%; height: auto; filter: brightness(0) drop-shadow(0 0 14px rgba(138,208,255,.8)); }
+  .ouv-box p { margin: 0; font-size: 15px; line-height: 1.45; animation: rcIn .8s 1.8s ease-out both; }
+  .ouv-lot { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; border: 1px solid #8ad0ff; background: rgba(20,40,70,.6); text-align: left; animation: rcIn .8s 2.2s ease-out both; }
+  .ouv-lot span svg { width: 44px; height: 32px; } .ouv-lot small { display: block; font-size: 11px; color: #8ad0ff; } .ouv-lot b { font-size: 15px; }
+  #ouvertureOv .btn { animation: rcIn .8s 2.6s ease-out both; }
   .apercu-s1 { margin: 10px 0; border: 1px solid #3a5a9a; border-radius: 14px; padding: 10px 12px; background: linear-gradient(180deg, #141c30, var(--panel)); }
   .apercu-s1 summary { cursor: pointer; font-weight: 700; color: #8ad0ff; }
   .s1-boss { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; margin-top: 8px; }
@@ -1886,7 +1903,8 @@ function plateauHTML(s) {
   for (let k = 0; k < pts.length - 1; k++) { const p0 = pts[Math.max(0, k - 1)], p1 = pts[k], p2 = pts[k + 1], p3 = pts[Math.min(pts.length - 1, k + 2)];
     d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0]} ${p2[1]}`; }
   // paysage : bandes de terrain le long du chemin
-  const zones = [['#2e5a34', '#3c6e3e'], ['#24482c', '#2f5a36'], ['#2e4a3c', '#33523f'], ['#4a4458', '#5a5468'], ['#3a2a3e', '#4a3448']];
+  const s1 = S.id === 's1';
+  const zones = s1 ? [['#22404e'], ['#2a4c5c'], ['#4a6a80'], ['#2a2246'], ['#3a2a1e']] : [['#2e5a34', '#3c6e3e'], ['#24482c', '#2f5a36'], ['#2e4a3c', '#33523f'], ['#4a4458', '#5a5468'], ['#3a2a3e', '#4a3448']];
   const bande = H / zones.length;
   const sol = zones.map((z, k) => `<rect x="0" y="${k * bande}" width="${PL_W}" height="${bande + 2}" fill="${z[0]}"/>`).join('');
   const deco = [];
@@ -1894,6 +1912,15 @@ function plateauHTML(s) {
   for (let k = 0; k < Math.round(H / 26); k++) {
     const y = 30 + hashPl(k + 1) * (H - 80), x = 14 + hashPl(k + 77) * (PL_W - 28); if (!libre(x, y)) continue;
     const z = Math.min(zones.length - 1, Math.floor(y / bande)), t = hashPl(k + 9);
+    if (s1) {
+      deco.push(`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})">${
+        z === 0 ? `<path d="M-12 6 q6 -6 12 0 q6 -6 12 0" stroke="#9fd8f0" stroke-width="1.6" fill="none" opacity=".55"/>`
+        : z === 1 ? `<path d="M-12 10 L-6 -8 L4 -12 L12 10Z" fill="#3a5868"/><path d="M-6 -8 L4 -12 L2 -4Z" fill="#5a7a8a"/>`
+        : z === 2 ? `<path d="M-8 10 L-3 -16 L2 10Z M2 10 L7 -8 L11 10Z" fill="#cfe9ff" opacity=".85"/><path d="M-3 -16 L-1 0" stroke="#fff" stroke-width="1" opacity=".7"/>`
+        : z === 3 ? `<path d="M-6 10 L-3 -12 L0 10Z" fill="${t < .5 ? '#8ad0ff' : '#c49aff'}" opacity=".9"/><path d="M0 10 L4 -6 L8 10Z" fill="${t < .5 ? '#c49aff' : '#8ad0ff'}" opacity=".8"/><circle cy="-4" r="9" fill="#8ad0ff" opacity=".12"/>`
+        : `<rect x="-1" y="-10" width="2" height="12" fill="#5a4428"/><path class="flam" d="M0 -10 q-4 -4 0 -9 q4 5 0 9z" fill="#8ad0ff"/>`}</g>`);
+      continue;
+    }
     if (z <= 1) deco.push(t < .55 ? `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><ellipse cy="14" rx="11" ry="3" fill="#000" opacity=".25"/><rect x="-2" y="2" width="4" height="12" fill="#5a3a22"/><circle r="11" cy="-2" fill="${t < .3 ? '#3f8a44' : '#2f7a3a'}"/><circle r="7" cx="-4" cy="-6" fill="#5aa85a" opacity=".7"/></g>`
       : t < .8 ? `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><path d="M-9 8 L0 -16 L9 8Z" fill="#1f5a2e"/><path d="M-7 0 L0 -20 L7 0Z" fill="#2a6e3a"/></g>`
       : `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)})"><rect x="-1.5" y="-2" width="3" height="6" fill="#efe6c4"/><ellipse cy="-3" rx="6" ry="4" fill="#d8402a"/><circle cx="-2" cy="-4" r="1" fill="#fff"/><circle cx="2" cy="-3" r="1" fill="#fff"/></g>`);
@@ -1903,11 +1930,15 @@ function plateauHTML(s) {
   }
   // rivière en travers, avec un pont là où passe le chemin
   const yr = 2.5 * bande, nr = Math.round((yr - PL_Y0) / PL_STEP), xr = posCase(nr + 0.5)[0];
-  const riviere = `<path d="M0 ${yr - 14} C90 ${yr - 30} 270 ${yr + 2} 360 ${yr - 16} L360 ${yr + 16} C270 ${yr + 34} 90 ${yr - 2} 0 ${yr + 18}Z" fill="#3fa0c9" opacity=".85"/>
+  const riviere = `<path d="M0 ${yr - 14} C90 ${yr - 30} 270 ${yr + 2} 360 ${yr - 16} L360 ${yr + 16} C270 ${yr + 34} 90 ${yr - 2} 0 ${yr + 18}Z" fill="${s1 ? '#9fd8f0' : '#3fa0c9'}" opacity="${s1 ? '.6' : '.85'}"/>
     <path d="M10 ${yr} q30 -6 60 0 M200 ${yr + 8} q30 -6 60 0" stroke="#bfe8ff" stroke-width="2" fill="none" opacity=".6"/>
     <g transform="translate(${xr} ${yr})"><rect x="-26" y="-12" width="52" height="24" rx="4" fill="#8a6a42" stroke="#3a2a14" stroke-width="2"/>${[-18, -9, 0, 9, 18].map(x => `<path d="M${x} -12 V12" stroke="#5a4428" stroke-width="1.5"/>`).join('')}</g>`;
   const [xf, yf] = pts[N];
-  const chateau = `<g transform="translate(${PL_W / 2} ${yf + 84}) scale(.8)"><ellipse cy="20" rx="110" ry="14" fill="#000" opacity=".3"/>
+  const chateau = s1 ? `<g transform="translate(${PL_W / 2} ${yf + 84}) scale(.8)"><ellipse cy="20" rx="110" ry="14" fill="#000" opacity=".3"/>
+    <path d="M-90 20 L-80 0 L80 0 L90 20Z" fill="#8a7a5a" stroke="#2a2214" stroke-width="2"/><path d="M-80 0 L-70 -10 L70 -10 L80 0Z" fill="#a8946a"/>
+    ${[-60, -30, 0, 30, 60].map(x => `<rect x="${x - 7}" y="-78" width="14" height="68" fill="#d8c8a0" stroke="#5a4a2a"/><rect x="${x - 10}" y="-82" width="20" height="6" fill="#b8a478"/>`).join('')}
+    <path d="M-80 -82 L0 -124 L80 -82Z" fill="#c8b488" stroke="#5a4a2a" stroke-width="2"/><circle cy="-100" r="10" fill="#8ad0ff" class="pulse"/><circle cy="-100" r="22" fill="#8ad0ff" opacity=".2" class="pulse"/></g>`
+    : `<g transform="translate(${PL_W / 2} ${yf + 84}) scale(.8)"><ellipse cy="20" rx="110" ry="14" fill="#000" opacity=".3"/>
     <rect x="-70" y="-30" width="140" height="50" fill="#5a5070" stroke="#1c1824" stroke-width="2"/>${Array.from({ length: 8 }, (_, k) => `<rect x="${-70 + k * 18}" y="-40" width="12" height="11" fill="#5a5070" stroke="#1c1824"/>`).join('')}
     ${[-70, 70].map(x => `<rect x="${x - 14}" y="-62" width="28" height="82" fill="#6a6080" stroke="#1c1824" stroke-width="2"/><path d="M${x - 18} -62 L${x} -88 L${x + 18} -62Z" fill="#8a1e2e"/><path d="M${x} -88 V-104 l14 5 l-14 5" fill="#d4ad3c"/>`).join('')}
     <rect x="-20" y="-78" width="40" height="98" fill="#6a6080" stroke="#1c1824" stroke-width="2"/><path d="M-24 -78 L0 -110 L24 -78Z" fill="#8a1e2e"/><path d="M0 -110 V-128 l16 6 l-16 6" fill="#d4ad3c"/>
@@ -1937,7 +1968,7 @@ function plateauHTML(s) {
   const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
   const lui = comp && comp.palierSaison != null ? pion(orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'plc', lookDe(comp.look)), comp.ornements || {}, 'plc'), comp.palierSaison, 22, 'lui', String(comp.nom).split(' ')[0], '#3a6ad8') : '';
   const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -8, 'moi', 'Toi', '#c8902a');
-  return `<div class="plateau"><div class="pl-tete"><b>🗺 Le chemin du Rodage${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
+  return `<div class="plateau"><div class="pl-tete"><b>🗺 ${s1 ? 'Le chemin des Légendes' : 'Le chemin du Rodage'}${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
     <div class="pl-legende"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>
     <div class="pl-cadre"><svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
       ${sol}${riviere}${deco.join('')}
@@ -3610,6 +3641,38 @@ document.addEventListener('click', e => {
   }
   if (e.target.closest('[data-annonce-aventure]')) ouvrirAnnonceAventure();
 });
+/* ---------- Ouverture d'une saison : une petite cinématique, une fois par téléphone ---------- */
+const OUVERTURES = { s1: { nom: 'L\'Éveil des Légendes', sous: 'Saison 1 · janvier → juin', lot: 'tete_legende', boss: 'kraken',
+  texte: 'Les créatures légendaires sortent de leur sommeil. Un nouveau chemin de 50 paliers vous attend jusqu\'au temple des Légendes.' } };
+function ouvertureSaisonAFaire() {
+  const S = state && state.armurerie && state.armurerie.saison, O = S && OUVERTURES[S.id]; if (!O) return;
+  let vu = false; try { vu = !!localStorage.getItem('ouverture|' + S.id); } catch (e) {} if (vu || ouverturePrevue) return;
+  ouverturePrevue = true;
+  const essayer = () => {
+    if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
+    try { localStorage.setItem('ouverture|' + S.id, '1'); } catch (e) {} ouvrirOuverture(S.id);
+  };
+  setTimeout(essayer, 1800);
+}
+let ouverturePrevue = false;
+function ouvrirOuverture(id) {
+  const O = OUVERTURES[id]; if (!O) return;
+  let ov = document.getElementById('ouvertureOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'ouvertureOv'; document.body.appendChild(ov); }
+  const lot = cosmItem(O.lot);
+  ov.className = 'saison-' + id;
+  ov.innerHTML = `<div class="ouv-ciel">${Array.from({ length: 30 }, (_, i) => `<i style="left:${(i * 37) % 100}%;top:${(i * 53) % 100}%;animation-delay:${(i % 9) * .3}s"></i>`).join('')}</div>
+    <div class="ouv-box"><div class="ouv-sous">${esc(O.sous)}</div><h1>${esc(O.nom).split('').map((c, i) => `<span style="animation-delay:${.4 + i * .05}s">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</h1>
+      <div class="ouv-boss">${bossSvg(O.boss, 'ouv')}</div><p>${esc(O.texte)}</p>
+      ${lot ? `<div class="ouv-lot"><span>${apercuCosm(lot)}</span><div><small>Le gros lot du palier 50</small><b>${esc(lot.nom)}</b></div></div>` : ''}
+      <button class="btn or" data-ouverture-go="1">Commencer l'aventure</button></div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-ouverture-go]')) return;
+  const ov = document.getElementById('ouvertureOv'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque');
+  onglet = 'heros'; sousHeros = 'aventure'; try { localStorage.setItem('sousHeros', 'aventure'); } catch (err) {} render(); window.scrollTo(0, 0); centrerPlateau(state);
+});
 /* ---------- Annonce des nouvelles règles des boss (une fois par téléphone) ---------- */
 const ANNONCE_BOSS = [
   ['🎯', 'Des PV à votre mesure', 'les PV du boss sont calés sur votre vrai rythme des dernières semaines : la victoire se mérite, elle n\'est plus garantie.'],
@@ -4461,6 +4524,7 @@ function render() {
   if (!state) return;
   annonceBossAFaire();
   annonceAventureAFaire();
+  ouvertureSaisonAFaire();
   if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
   if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
   const s = state;
@@ -4565,12 +4629,12 @@ function render() {
   const sousH = `<div class="sous-onglets trois"><button class="${sousHeros === 'perso' ? 'on' : ''}" data-sous-heros="perso">🛡 Personnage</button>
       <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure">🗺 Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
-  const vueHeros = sousH + (sousHeros === 'aventure' ? `
+  const vueHeros = sousH + (sousHeros === 'aventure' ? `<div class="aventure saison-${(s.armurerie && s.armurerie.saison && s.armurerie.saison.id) || 'pre'}">
     ${blocSaison(s, true)}
     ${livretReduit() ? '' : `<div class="regles-box"><button class="regles-btn" data-regles="0"><span class="rq">?</span><span><b>Livret des règles</b><small>Comment marchent le plateau, les coffres et la garde-robe</small></span><span class="fl">›</span></button>
       <button class="regles-reduire" data-livret-reduire="1" aria-label="Réduire le livret des règles">✕</button></div>`}
     ${plateauHTML(s)}
-    ${salleTrophees(s)}`
+    ${salleTrophees(s)}</div>`
     : sousHeros === 'exploits' ? `
     ${blocTitres(s)}
     <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
@@ -5412,6 +5476,7 @@ window.addEventListener('popstate', () => {
   const ouvert = id => { const el = document.getElementById(id); return el && el.classList.contains('on') ? el : null; };
   const bw = document.querySelector('.boss-win');
   if (bw) { bw.remove(); document.body.classList.remove('bloque'); return ok(); }
+  if (ouvert('ouvertureOv')) { ouvert('ouvertureOv').classList.remove('on'); document.body.classList.remove('bloque'); return ok(); }
   if (ouvert('reglesOv')) { fermerRegles(); return ok(); }
   if (ouvert('recapOv')) { fermerRecap(); return ok(); }
   if (ouvert('coffreOv')) { ouvert('coffreOv').classList.remove('on'); document.body.classList.remove('bloque'); render(); return ok(); }
