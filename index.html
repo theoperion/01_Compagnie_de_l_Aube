@@ -450,9 +450,9 @@
   .orn-t.cosm { border-width: 1px; border-style: solid; }
   .ap-rep { display: block; width: 34px; height: 34px; border-radius: 6px; overflow: hidden; } .ap-rep svg { width: 100%; height: 100%; }
   .ap-ef { font-size: 22px; }
-  .gr-onglets { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: none; }
-  .gr-b { flex: none; display: grid; justify-items: center; gap: 1px; min-width: 66px; padding: 7px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; font: inherit; }
-  .gr-b span { font-size: 20px; } .gr-b b { font-size: 11px; font-weight: 600; } .gr-b small { font-size: 10px; opacity: .8; }
+  .gr-onglets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; padding: 2px 0 8px; }
+  .gr-b { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 5px 6px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; font: inherit; }
+  .gr-b span { font-size: 14px; flex: none; } .gr-b b { font-size: 10.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .gr-b small { font-size: 9.5px; opacity: .75; margin-left: auto; flex: none; }
   .gr-b.on { border-color: var(--gold); color: var(--text); background: #2a2014; }
   .gr-liste { margin: 4px 0 10px; }
   .plateau { margin: 10px 0; } .pl-tete { display: flex; justify-content: space-between; align-items: baseline; margin: 0 4px 6px; } .pl-tete b { font-family: var(--f-titre); color: var(--gold); } .pl-tete span { font-size: 12.5px; color: var(--muted); }
@@ -494,6 +494,24 @@
   @keyframes rcIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
   @keyframes rcBarre { from { width: 0; } to { width: 100%; } } @keyframes rcBarreW { from { width: 0; } }
   @keyframes rcPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  .regles-btn { width: 100%; margin: 4px 0 2px; padding: 10px; border-radius: 12px; border: 1px dashed #6a5320; background: #1e170c; color: var(--gold); font: 600 13.5px var(--f-texte); cursor: pointer; }
+  .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 0; }
+  #reglesOv { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(8,6,12,.88); padding: 16px; }
+  #reglesOv.on { display: grid; }
+  .rg-livre { position: relative; width: min(100%, 440px); max-height: 92vh; overflow-y: auto; padding: 18px 18px 14px; border-radius: 18px; border: 2px solid #6a5320;
+    background: linear-gradient(180deg, #2a2116, #1a140e); box-shadow: 0 10px 40px rgba(0,0,0,.6), inset 0 0 0 4px #1a140e, inset 0 0 0 5px #4a3a1e; animation: rcIn .35s ease-out; }
+  .rg-num { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); } .rg-livre h2 { font-family: var(--f-titre); color: var(--gold); margin: 4px 0 12px; font-size: 21px; }
+  .rg-livre ul { margin: 12px 0 4px; padding-left: 18px; display: grid; gap: 7px; font-size: 14px; line-height: 1.45; } .rg-livre li b { color: #f3dfa0; }
+  .rg-schema { width: 100%; height: auto; display: block; }
+  .rg-leg, .rg-rar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+  .rg-leg i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; } .rg-rar span { border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; }
+  .rg-ligne { display: flex; align-items: center; justify-content: center; gap: 6px; } .rg-ligne > b { color: var(--gold); font-size: 18px; }
+  .rg-bloc { display: grid; justify-items: center; gap: 2px; width: 92px; padding: 10px 4px; border-radius: 14px; background: #221a2e; border: 1px solid #4a3a64; font-size: 26px; text-align: center; }
+  .rg-bloc small { font-size: 10.5px; line-height: 1.2; color: #b8acc8; } .rg-bloc.or { border-color: #d4ad3c; background: #2a2014; } .rg-bloc.bleu { border-color: #5ab0ff; color: #8ad0ff; }
+  .rg-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .rg-grille div { display: grid; gap: 2px; padding: 10px; border-radius: 14px; background: #221a2e; border: 1px solid #4a3a64; font-size: 22px; }
+  .rg-grille b { font-size: 13px; color: var(--gold); } .rg-grille small { font-size: 11px; color: #b8acc8; line-height: 1.3; }
+  .rg-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 8px; } .rg-points { display: flex; gap: 5px; }
+  .rg-points i { width: 7px; height: 7px; border-radius: 50%; background: #4a3a1e; } .rg-points i.on { background: var(--gold); }
   .apercu-s1 { margin: 10px 0; border: 1px solid #3a5a9a; border-radius: 14px; padding: 10px 12px; background: linear-gradient(180deg, #141c30, var(--panel)); }
   .apercu-s1 summary { cursor: pointer; font-weight: 700; color: #8ad0ff; }
   .s1-boss { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; margin-top: 8px; }
@@ -1794,7 +1812,7 @@ function blocSaison(s, court) {
 let marchandOuvert = false;
 /* Garde-robe : on choisit un emplacement, puis on ne voit que ses objets (cosmétiques de la saison + petits ornements) */
 const GARDE_ROBE = [['cape', '🧥', 'Cape'], ['tete', '👑', 'Couronne'], ['aura', '✨', 'Aura'], ['familier', '🐾', 'Familier'], ['monture', '🐎', 'Monture'],
-  ['repaire', '🏰', 'Repaire'], ['trainee', '💫', 'Traînée'], ['victoire', '⚡', 'Coup de grâce'], ['embleme', '⭐', 'Emblème'], ['sol', '🌸', 'Sol'], ['lueur', '🌟', 'Lueur']];
+  ['repaire', '🏰', 'Repaire'], ['trainee', '💫', 'Traînée'], ['victoire', '⚡', 'Coup final'], ['embleme', '⭐', 'Emblème'], ['sol', '🌸', 'Sol'], ['lueur', '🌟', 'Lueur']];
 let slotGarde = 'cape';
 function blocArmurerie() {
   const s = state, A = s.armurerie; if (!A) return '';
@@ -1802,7 +1820,7 @@ function blocArmurerie() {
   const objets = slot => liste.filter(x => x.slot === slot);
   const petits = slot => ORNEMENTS.filter(o => o.slot === slot);
   const compte = slot => [objets(slot).filter(x => cosmPossede(x.id)).length + petits(slot).filter(o => ornementDebloque(s, o)).length, objets(slot).length + petits(slot).length];
-  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''}" data-garde="${id}"><span>${ic}</span><b>${nom}</b><small>${a}/${t}</small></button>` : ''; }).join('');
+  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''}" data-garde="${id}" title="${a} / ${t} gagnés"><span>${ic}</span><b>${nom}</b></button>` : ''; }).join('');
   const E = GARDE_ROBE.find(g => g[0] === slotGarde) || GARDE_ROBE[0];
   const tuilesCosm = objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
     return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
@@ -1813,7 +1831,7 @@ function blocArmurerie() {
   const prix = ((s.catalogueCosm || {}).prix) || {};
   const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id).sort((a, b) => (prix[a.rarete] || 0) - (prix[b.rarete] || 0)).map(x =>
     `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
-  return `<div id="armurerie"><div class="section"><h2>Garde-robe</h2><span>touche pour porter ou retirer</span></div>
+  return `<div id="armurerie"><div class="section"><h2>Garde-robe</h2><button class="lien-regles" data-regles="garde">📖 Comment ça marche ?</button></div>
     <div class="gr-onglets">${onglets}</div>
     <div class="orn-info" id="info-cosm"></div><div class="orn-info" id="info-${E[0]}"></div>
     <div class="orn-liste gr-liste">${tuilesCosm}${tuilesOrn}</div>
@@ -1964,6 +1982,50 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-trophee]'); if (!t || !state) return;
   const x = (state.trophees || [])[Number(t.dataset.trophee)]; if (!x) return;
   bossVaincu({ nom: x.nom, visuel: x.visuel, type: x.type, xp: x.xp, trophee: x.trophee }, true);
+});
+/* ---------- Livret de règles de l'Aventure : des pages illustrées, simples, avec des schémas ---------- */
+const REGLES_PAGES = [
+  { t: 'L\'Aventure en un coup d\'œil', s: `<svg viewBox="0 0 320 210" class="rg-schema"><defs><marker id="rgF" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#d4ad3c"/></marker></defs>
+      ${[['⚔', 'Quêtes', 'tu gagnes de l\'XP', 20, 20], ['🗺', 'Plateau', 'l\'XP fait avancer ton pion', 170, 20], ['🎁', 'Coffres', 'gagnés sur le plateau et contre les boss', 20, 120], ['🧥', 'Garde-robe', 'tu portes ce que tu gagnes', 170, 120]]
+        .map(([i, n, d, x, y]) => `<g transform="translate(${x} ${y})"><rect width="130" height="70" rx="14" fill="#221a2e" stroke="#4a3a64"/><text x="16" y="30" font-size="22">${i}</text><text x="46" y="28" font-size="14" font-weight="800" fill="#f3dfa0">${n}</text><foreignObject x="46" y="34" width="80" height="34"><div style="font-size:9.5px;line-height:1.2;color:#b8acc8">${d}</div></foreignObject></g>`).join('')}
+      <path d="M152 55 H166" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/><path d="M235 92 V116" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/>
+      <path d="M166 155 H152" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 159 155)"/><path d="M85 92 V116" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 85 104)"/></svg>`,
+    p: ['Tu fais tes quêtes comme d\'habitude : tout le reste en découle.', 'L\'XP fait avancer ton pion sur le <b>plateau</b>. Chaque case donne une récompense.', 'Les <b>coffres</b> contiennent des objets ; tu les portes dans ta <b>garde-robe</b>.'] },
+  { t: 'Le plateau', s: `<svg viewBox="0 0 320 120" class="rg-schema"><path d="M20 90 C80 20 140 110 200 50 S290 40 300 70" stroke="#b08a5a" stroke-width="14" fill="none" stroke-linecap="round"/>
+      ${[[40, 70, '#4a8ae8', '🧥'], [95, 58, '#e84a5a', '🎁'], [150, 82, '#5ac86a', '✦'], [205, 50, '#f2c94c', '👑'], [270, 52, '#4a8ae8', '✨']].map(([x, y, c, i]) => `<g transform="translate(${x} ${y})"><ellipse cy="4" rx="18" ry="10" fill="#000" opacity=".35"/><ellipse rx="18" ry="10" fill="${c}" stroke="#fff" stroke-opacity=".6"/><text y="5" text-anchor="middle" font-size="11" fill="#fff">${i}</text></g>`).join('')}</svg>
+      <div class="rg-leg"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>`,
+    p: ['Une case = un <b>palier</b>. Un palier ≈ <b>60 % d\'une semaine parfaite</b> d\'XP : environ <b>1 à 2 cases par semaine</b>.', 'Kevin et toi avancez au <b>même rythme</b> pour une semaine complète, même avec des quêtes différentes.', 'Touche une case pour voir ce qu\'elle donne et combien d\'XP il te manque.'] },
+  { t: 'Les coffres', s: `<div class="rg-ligne"><div class="rg-bloc">🗺<small>case coffre du plateau</small></div><b>+</b><div class="rg-bloc">🐉<small>chaque boss vaincu</small></div><b>=</b><div class="rg-bloc or">🎁<small>coffre à ouvrir</small></div></div>
+      <div class="rg-rar"><span style="border-color:#a99bb6">Commun</span><span style="border-color:#5ab0ff">Rare</span><span style="border-color:#b392ee">Épique</span><span style="border-color:#f2a93c">Légendaire</span></div>`,
+    p: ['Un coffre s\'ouvre dans <b>Héros → Aventure</b> (pastille 🎁). Touche-le pour l\'ouvrir tout de suite.', 'Plus le coffre est rare, plus l\'objet a de chances d\'être <b>épique ou légendaire</b>.', 'Un <b>boss du mois</b> laisse toujours une pièce de <b>sa panoplie</b> (cape, puis couronne, puis aura).'] },
+  { t: 'Éclats et marchand', s: `<div class="rg-ligne"><div class="rg-bloc">🎁<small>objet déjà possédé</small></div><b>→</b><div class="rg-bloc bleu">✦<small>éclats</small></div><b>→</b><div class="rg-bloc">🏪<small>le marchand</small></div></div>
+      <div class="rg-rar"><span>Commun ✦ 40</span><span>Rare ✦ 100</span><span>Épique ✦ 250</span><span>Légendaire ✦ 600</span></div>`,
+    p: ['Les cases vertes du plateau et les objets en double donnent des <b>éclats</b>.', 'Avec les éclats, tu achètes <b>l\'objet de ton choix</b> chez le marchand (dans la vitrine, sous la garde-robe).'] },
+  { t: 'Ce qui se gagne autrement', s: `<div class="rg-grille"><div>🏰<b>Repaire</b><small>avec ton niveau (10, 20, 35, 50)</small></div><div>🐎<b>Monture</b><small>niveau 25 et 50</small></div><div>🐉<b>Familier</b><small>une série de 7 jours ; il grandit avec tes jours de quêtes (7, 30, 90)</small></div><div>🏆<b>Trophée</b><small>chaque boss vaincu, dans la salle des trophées</small></div></div>`,
+    p: ['Ces récompenses viennent d\'elles-mêmes en jouant : pas besoin de coffre.'] },
+  { t: 'La garde-robe', s: `<div class="rg-ligne"><div class="rg-bloc">👆<small>touche ton personnage</small></div><b>→</b><div class="rg-bloc">🧥<small>choisis un emplacement</small></div><b>→</b><div class="rg-bloc or">✓<small>touche un objet pour le porter</small></div></div>`,
+    p: ['11 emplacements : cape, couronne, aura, familier, monture, repaire, traînée (quand tu valides une quête), coup de grâce (quand un boss tombe), emblème, sol, lueur.', 'Un cadenas = pas encore gagné. Le « ? » dit comment l\'obtenir.', 'Ton compagnon voit ce que tu portes.'] },
+  { t: 'Les saisons', s: `<div class="rg-ligne"><div class="rg-bloc">🌱<small>Pré-saison<br>jusqu'au 31 déc.</small></div><b>→</b><div class="rg-bloc or">✦<small>Saison 1<br>janv. → juin</small></div><b>→</b><div class="rg-bloc">✦<small>Saison 2<br>juil. → déc.</small></div></div>`,
+    p: ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Ce que tu as gagné <b>reste à toi</b> d\'une saison à l\'autre.', 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.'] }
+];
+let pageRegles = 0;
+function ouvrirRegles(page) {
+  pageRegles = page || 0;
+  let ov = document.getElementById('reglesOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'reglesOv'; document.body.appendChild(ov); }
+  const P = REGLES_PAGES[pageRegles], n = REGLES_PAGES.length;
+  ov.innerHTML = `<div class="rg-livre"><button class="rc-x" data-regles-fin="1" aria-label="Fermer">✕</button>
+    <div class="rg-num">Livret de l'Aventure · ${pageRegles + 1} / ${n}</div><h2>${P.t}</h2>${P.s}<ul>${P.p.map(x => `<li>${x}</li>`).join('')}</ul>
+    <div class="rg-nav"><button class="btn mini" data-regles-page="${pageRegles - 1}" ${pageRegles ? '' : 'disabled'}>‹ Précédent</button>
+      <span class="rg-points">${REGLES_PAGES.map((_, k) => `<i class="${k === pageRegles ? 'on' : ''}"></i>`).join('')}</span>
+      ${pageRegles < n - 1 ? `<button class="btn mini or" data-regles-page="${pageRegles + 1}">Suivant ›</button>` : '<button class="btn mini or" data-regles-fin="1">Compris !</button>'}</div></div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+}
+function fermerRegles() { const ov = document.getElementById('reglesOv'); if (ov) ov.classList.remove('on'); if (!document.getElementById('vitrine') || !document.getElementById('vitrine').classList.contains('on')) document.body.classList.remove('bloque'); }
+document.addEventListener('click', e => {
+  const r = e.target.closest('[data-regles]'); if (r) { ouvrirRegles(r.dataset.regles === 'garde' ? 5 : 0); return; }
+  const pg = e.target.closest('[data-regles-page]'); if (pg) { ouvrirRegles(Math.max(0, Number(pg.dataset.reglesPage))); return; }
+  if (e.target.closest('[data-regles-fin]') || e.target.id === 'reglesOv') fermerRegles();
 });
 /* --- Aperçu de la Saison 1 (pendant la pré-saison) --- */
 function apercuSaison1() {
@@ -4441,6 +4503,7 @@ function render() {
       <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure">🗺 Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `
+    <button class="regles-btn" data-regles="0">📖 Le livret de l'Aventure : comment ça marche</button>
     ${blocSaison(s, true)}
     ${plateauHTML(s)}
     ${salleTrophees(s)}`
@@ -5285,6 +5348,7 @@ window.addEventListener('popstate', () => {
   const ouvert = id => { const el = document.getElementById(id); return el && el.classList.contains('on') ? el : null; };
   const bw = document.querySelector('.boss-win');
   if (bw) { bw.remove(); document.body.classList.remove('bloque'); return ok(); }
+  if (ouvert('reglesOv')) { fermerRegles(); return ok(); }
   if (ouvert('recapOv')) { fermerRecap(); return ok(); }
   if (ouvert('coffreOv')) { ouvert('coffreOv').classList.remove('on'); document.body.classList.remove('bloque'); render(); return ok(); }
   if (ouvert('bossVue')) { ouvert('bossVue').classList.remove('on'); document.body.classList.remove('bloque'); return ok(); }
