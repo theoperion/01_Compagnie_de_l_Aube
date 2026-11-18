@@ -456,7 +456,9 @@
   .gr-b.on { border-color: var(--gold); color: var(--text); background: #2a2014; }
   .gr-liste { margin: 4px 0 10px; }
   .plateau { margin: 10px 0; } .pl-tete { display: flex; justify-content: space-between; align-items: baseline; margin: 0 4px 6px; } .pl-tete b { font-family: var(--f-titre); color: var(--gold); } .pl-tete span { font-size: 12.5px; color: var(--muted); }
-  .pl-svg { width: 100%; height: auto; display: block; border-radius: 16px; border: 1px solid var(--line); }
+  .pl-cadre { max-height: 400px; overflow-y: auto; border-radius: 16px; border: 1px solid var(--line); overscroll-behavior: contain; scrollbar-width: thin; }
+  .pl-svg { width: 100%; height: auto; display: block; }
+  .pl-aide { text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px; }
   .pl-legende { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 4px 8px; font-size: 11.5px; color: var(--muted); } .pl-legende i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
   .pl-pion.moi .pl-saute { animation: plSaute 1.8s ease-in-out infinite; } .pl-halo { animation: plProch 1.4s ease-in-out infinite; }
   @keyframes plSaute { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -494,7 +496,11 @@
   @keyframes rcIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
   @keyframes rcBarre { from { width: 0; } to { width: 100%; } } @keyframes rcBarreW { from { width: 0; } }
   @keyframes rcPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-  .regles-btn { width: 100%; margin: 4px 0 2px; padding: 10px; border-radius: 12px; border: 1px dashed #6a5320; background: #1e170c; color: var(--gold); font: 600 13.5px var(--f-texte); cursor: pointer; }
+  .regles-btn { width: 100%; margin: 6px 0 12px; padding: 10px 12px; border-radius: 14px; border: 1.5px solid #d4ad3c; background: linear-gradient(90deg, #3a2a10, #221a2e);
+    color: var(--text); font: inherit; cursor: pointer; display: flex; align-items: center; gap: 12px; text-align: left; box-shadow: 0 0 0 0 rgba(212,173,60,.5); animation: rgAppel 2.6s ease-in-out 3; }
+  .regles-btn .rq { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: #1a1208; font: 800 20px var(--f-titre); }
+  .regles-btn b { display: block; color: var(--gold); font-size: 15px; } .regles-btn small { display: block; color: var(--muted); font-size: 12px; } .regles-btn .fl { margin-left: auto; color: var(--gold); font-size: 22px; }
+  @keyframes rgAppel { 0%, 100% { box-shadow: 0 0 0 0 rgba(212,173,60,0); } 50% { box-shadow: 0 0 14px 2px rgba(212,173,60,.45); } }
   .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 0; }
   #reglesOv { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(8,6,12,.88); padding: 16px; }
   #reglesOv.on { display: grid; }
@@ -1860,13 +1866,13 @@ const CHEMIN_APP = { 1: { item: 'cape_rouge' }, 3: { item: 'bandeau' }, 4: { cof
 /* --- Plateau de l'Aventure : le chemin de la saison façon jeu de plateau ---
  * Un sentier qui serpente dans un paysage (prairie, forêt, rivière, montagnes, château). Cases en disques colorés vus en
  * perspective (bleu = objet, or = gros lot, rouge = coffre, vert = éclats) ; pions des deux héros sur leur socle. */
-const PL_W = 360, PL_STEP = 74, PL_Y0 = 70;
-function posCase(n) { return [Math.round(PL_W / 2 + 112 * Math.sin(n * 0.95 + 0.4)), PL_Y0 + n * PL_STEP]; }
+const PL_W = 360, PL_STEP = 44, PL_Y0 = 56;
+function posCase(n) { return [Math.round(PL_W / 2 + 118 * Math.sin(n * 1.15 + 0.4)), PL_Y0 + n * PL_STEP]; }
 function hashPl(n) { return Math.abs(Math.sin(n * 12.9898) * 43758.5453) % 1; }
 function plateauHTML(s) {
   const A = s.armurerie; if (!A || !A.saison) return '';
   const S = A.saison, N = S.paliers, CC = s.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
-  const H = PL_Y0 + N * PL_STEP + 150;
+  const H = PL_Y0 + N * PL_STEP + 130;
   const pts = Array.from({ length: N + 1 }, (_, n) => posCase(n));
   // sentier lissé (courbe passant par toutes les cases)
   let d = `M${pts[0][0]} ${pts[0][1]}`;
@@ -1877,7 +1883,7 @@ function plateauHTML(s) {
   const bande = H / zones.length;
   const sol = zones.map((z, k) => `<rect x="0" y="${k * bande}" width="${PL_W}" height="${bande + 2}" fill="${z[0]}"/>`).join('');
   const deco = [];
-  const libre = (x, y) => pts.every(([px, py]) => Math.hypot(px - x, py - y) > 44);
+  const libre = (x, y) => pts.every(([px, py]) => Math.hypot(px - x, py - y) > 36);
   for (let k = 0; k < Math.round(H / 26); k++) {
     const y = 30 + hashPl(k + 1) * (H - 80), x = 14 + hashPl(k + 77) * (PL_W - 28); if (!libre(x, y)) continue;
     const z = Math.min(zones.length - 1, Math.floor(y / bande)), t = hashPl(k + 9);
@@ -1894,7 +1900,7 @@ function plateauHTML(s) {
     <path d="M10 ${yr} q30 -6 60 0 M200 ${yr + 8} q30 -6 60 0" stroke="#bfe8ff" stroke-width="2" fill="none" opacity=".6"/>
     <g transform="translate(${xr} ${yr})"><rect x="-26" y="-12" width="52" height="24" rx="4" fill="#8a6a42" stroke="#3a2a14" stroke-width="2"/>${[-18, -9, 0, 9, 18].map(x => `<path d="M${x} -12 V12" stroke="#5a4428" stroke-width="1.5"/>`).join('')}</g>`;
   const [xf, yf] = pts[N];
-  const chateau = `<g transform="translate(${PL_W / 2} ${yf + 92})"><ellipse cy="20" rx="110" ry="14" fill="#000" opacity=".3"/>
+  const chateau = `<g transform="translate(${PL_W / 2} ${yf + 84}) scale(.8)"><ellipse cy="20" rx="110" ry="14" fill="#000" opacity=".3"/>
     <rect x="-70" y="-30" width="140" height="50" fill="#5a5070" stroke="#1c1824" stroke-width="2"/>${Array.from({ length: 8 }, (_, k) => `<rect x="${-70 + k * 18}" y="-40" width="12" height="11" fill="#5a5070" stroke="#1c1824"/>`).join('')}
     ${[-70, 70].map(x => `<rect x="${x - 14}" y="-62" width="28" height="82" fill="#6a6080" stroke="#1c1824" stroke-width="2"/><path d="M${x - 18} -62 L${x} -88 L${x + 18} -62Z" fill="#8a1e2e"/><path d="M${x} -88 V-104 l14 5 l-14 5" fill="#d4ad3c"/>`).join('')}
     <rect x="-20" y="-78" width="40" height="98" fill="#6a6080" stroke="#1c1824" stroke-width="2"/><path d="M-24 -78 L0 -110 L24 -78Z" fill="#8a1e2e"/><path d="M0 -110 V-128 l16 6 l-16 6" fill="#d4ad3c"/>
@@ -1926,7 +1932,7 @@ function plateauHTML(s) {
   const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -8, 'moi', 'Toi', '#c8902a');
   return `<div class="plateau"><div class="pl-tete"><b>🗺 Le chemin du Rodage</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
     <div class="pl-legende"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>
-    <svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
+    <div class="pl-cadre"><svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
       ${sol}${riviere}${deco.join('')}
       <path d="${d}" stroke="#2a1e12" stroke-width="22" fill="none" stroke-linecap="round" opacity=".5" transform="translate(0 4)"/>
       <path d="${d}" stroke="#b08a5a" stroke-width="18" fill="none" stroke-linecap="round"/>
@@ -1934,7 +1940,7 @@ function plateauHTML(s) {
       ${chateau}
       <g transform="translate(${pts[0][0]} ${pts[0][1]})"><ellipse cy="5" rx="22" ry="12" fill="#1e5a2a"/><ellipse rx="22" ry="12" fill="#3aa04a" stroke="#fff" stroke-opacity=".6"/><text y="-4" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">DÉPART</text><text y="18" text-anchor="middle" font-size="14">🚩</text></g>
       ${cases}${lui}${moi}
-    </svg><div class="orn-info" id="info-case"></div></div>`;
+    </svg></div><div class="pl-aide">↕ fais glisser pour parcourir le chemin</div><div class="orn-info" id="info-case"></div></div>`;
 }
 let plateauDepart = null;
 function prepPlateau(s) {
@@ -1942,6 +1948,11 @@ function prepPlateau(s) {
   try { const v = localStorage.getItem('plateauVu|' + A.saison.id + '|' + (s.heros || '')); plateauDepart = v == null || Number(v) >= A.saison.palier ? null : Number(v); } catch (e) { plateauDepart = null; }
 }
 /** Le pion avance case par case quand de nouveaux paliers sont gagnés depuis la dernière visite */
+function centrerPlateau(s) {
+  const c = document.querySelector('.pl-cadre'), A = s && s.armurerie; if (!c || !A) return;
+  const svg = c.querySelector('svg'), k = svg.getBoundingClientRect().width / PL_W;
+  c.scrollTop = Math.max(0, posCase(A.saison.palier)[1] * k - c.clientHeight / 2);
+}
 function animerPlateau(s) {
   const A = s && s.armurerie; if (!A || !A.saison) return;
   const k = 'plateauVu|' + A.saison.id + '|' + (s.heros || ''), cible = A.saison.palier;
@@ -3555,6 +3566,38 @@ function recapAFaire() {
   try { if (localStorage.getItem(cle)) return; localStorage.setItem(cle, '1'); } catch (e) { return; }
   setTimeout(() => { if (!document.body.classList.contains('bloque')) ouvrirRecap(prec); }, 2500);
 }
+/* Affichette « Nouveau : l'Aventure » : une fois par téléphone, puis 7 jours dans les Nouvelles */
+const AVENTURE_NOUVELLE_JUSQUA = '2026-11-25';
+function ouvrirAnnonceAventure() {
+  let ov = document.getElementById('bossVue');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'bossVue'; document.body.appendChild(ov); }
+  ov.innerHTML = `<div class="annonce-boss"><div style="font-size:52px;text-align:center">🗺</div><h3>Nouveau : l'Aventure !</h3><p class="muted" style="margin:0 0 10px">Dans l'onglet Héros → Aventure</p>
+    ${[['🗺', 'Un plateau', 'tes quêtes font avancer ton pion, case après case, jusqu\'au château. Kevin y est aussi.'], ['🎁', 'Des coffres', 'sur le plateau et après chaque boss vaincu, avec des objets à porter.'],
+      ['🧥', 'Une garde-robe', 'touche ton personnage pour porter capes, couronnes, familiers, montures et décors.'], ['🏆', 'La salle des trophées', 'chaque boss vaincu y devient une statuette.'],
+      ['📖', 'Un livret des règles', 'tout est expliqué en 7 pages illustrées.']].map(l => `<div class="ab-l"><span>${l[0]}</span><div><b>${l[1]}</b> : ${l[2]}</div></div>`).join('')}
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:14px"><button class="btn" data-boss-fermer="1">Plus tard</button><button class="btn or" data-aventure-go="1">Voir l'Aventure</button></div></div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+}
+let annonceAventurePrevue = false;
+function annonceAventureAFaire() {
+  let vu = false; try { vu = !!localStorage.getItem('annonceAventure1'); } catch (e) {}
+  if (vu || !state || !state.armurerie || state.today > AVENTURE_NOUVELLE_JUSQUA || annonceAventurePrevue) return;
+  annonceAventurePrevue = true;
+  const essayer = () => {
+    if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
+    if (!localStorage.getItem('annonceBoss2026')) { setTimeout(essayer, 3000); return; } // l'annonce des boss passe d'abord
+    try { localStorage.setItem('annonceAventure1', '1'); } catch (e) {}
+    ouvrirAnnonceAventure();
+  };
+  setTimeout(essayer, 2500);
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-aventure-go]')) {
+    const ov = document.getElementById('bossVue'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque');
+    onglet = 'heros'; sousHeros = 'aventure'; try { localStorage.setItem('sousHeros', 'aventure'); } catch (err) {} render(); window.scrollTo(0, 0); centrerPlateau(state); return;
+  }
+  if (e.target.closest('[data-annonce-aventure]')) ouvrirAnnonceAventure();
+});
 /* ---------- Annonce des nouvelles règles des boss (une fois par téléphone) ---------- */
 const ANNONCE_BOSS = [
   ['🎯', 'Des PV à votre mesure', 'les PV du boss sont calés sur votre vrai rythme des dernières semaines : la victoire se mérite, elle n\'est plus garantie.'],
@@ -3832,6 +3875,7 @@ function nouvellesDe(s, dimanche) {
   const E = s.evenement, e = E && (E.actuel || E.prochain);
   if (e) { const sansMJ = Object.assign({}, s, { mj: null }); L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), html: carteEvenement(sansMJ, 2) }); }
   ((s.reglages && s.reglages.montre) || []).forEach(m => { const t = texteMontre(m); L.push({ id: 'montre|' + m.id, html: `<div class="evt on"><div class="evt-t">${t.titre}</div><div class="evt-e">${t.detail} · ${t.statut}</div></div>` }); });
+  if (s.armurerie && s.today <= AVENTURE_NOUVELLE_JUSQUA) L.push({ id: 'annonceAventure1', html: `<button class="evt on" data-annonce-aventure="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">🗺 Nouveau : l'Aventure</div><div class="evt-e">Plateau, coffres, garde-robe et salle des trophées, dans Héros → Aventure · relire ›</div></button>` });
   if (s.today <= '2026-12-07') L.push({ id: 'annonceBoss2026', html: `<button class="evt on" data-annonce-boss="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">⚔ Les boss changent le 23 novembre</div><div class="evt-e">PV à votre mesure, coups spéciaux à contrer, 3 stades d'évolution · relire ›</div></button>` });
   if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, html: `<div class="section" style="margin-top:4px"><h2>Bilan du dimanche</h2><span>semaine du ${dateCourte(s.bilan.semaine.lundi)}</span></div>${carteBilan(s, true)}` });
   return L;
@@ -3868,7 +3912,7 @@ function effetsActifs(s) {
 }
 document.addEventListener('click', e => {
   const h = e.target.closest('[data-sous-heros]');
-  if (h) { sousHeros = h.dataset.sousHeros; try { localStorage.setItem('sousHeros', sousHeros); } catch (err) {} if (sousHeros === 'aventure') prepPlateau(state); render(); window.scrollTo(0, 0); if (sousHeros === 'aventure') animerPlateau(state); }
+  if (h) { sousHeros = h.dataset.sousHeros; try { localStorage.setItem('sousHeros', sousHeros); } catch (err) {} if (sousHeros === 'aventure') prepPlateau(state); render(); window.scrollTo(0, 0); if (sousHeros === 'aventure') { centrerPlateau(state); animerPlateau(state); } }
 });
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-sous]');
@@ -4398,6 +4442,7 @@ function poserApp(html) {
 function render() {
   if (!state) return;
   annonceBossAFaire();
+  annonceAventureAFaire();
   if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
   if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
   const s = state;
@@ -4503,8 +4548,8 @@ function render() {
       <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure">🗺 Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `
-    <button class="regles-btn" data-regles="0">📖 Le livret de l'Aventure : comment ça marche</button>
     ${blocSaison(s, true)}
+    <button class="regles-btn" data-regles="0"><span class="rq">?</span><span><b>Livret des règles</b><small>Comment marchent le plateau, les coffres et la garde-robe</small></span><span class="fl">›</span></button>
     ${plateauHTML(s)}
     ${salleTrophees(s)}`
     : sousHeros === 'exploits' ? `
@@ -5387,6 +5432,7 @@ document.addEventListener('click', e => {
     onglet = cible;
     try { localStorage.setItem('onglet', onglet === 'profil' ? ongletPrec : onglet); } catch (err) {}
     render(); window.scrollTo(0, 0);
+    if (onglet === 'heros' && sousHeros === 'aventure') { centrerPlateau(state); animerPlateau(state); }
     if (onglet === 'profil' && modeProfil === 'profil') chargerProfil();
     if (onglet === 'profil' && modeProfil === 'journal') chargerJournal(true);
     return;
