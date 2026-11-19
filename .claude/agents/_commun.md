@@ -14,5 +14,6 @@
 - **Aucune nouveauté visuelle n'est mise en ligne sans double validation sur capture réelle** (mode aperçu, téléphone 390 px) :
   1. **l'Enlumineur** juge la qualité du dessin et de l'ambiance (« est-ce beau, au niveau du reste de l'app ? ») ;
   2. **l'Avocat du diable** conteste (« est-ce utile, lisible, pas ridicule, pas chargé ? »).
-- **Note finale sur 10 donnée par le critique, l'Avocat du diable** (sur capture réelle : beauté, lisibilité, utilité, sobriété, niveau d'une app grand public soignée) : **9 ou 10 obligatoire** pour publier. En dessous, il dit précisément quoi changer, on reprend et on lui resoumet.
+- **Note finale sur 10 donnée par le critique, l'Avocat du diable** (sur capture réelle : beauté, lisibilité, utilité, sobriété, niveau d'une app grand public soignée) : **8,5 minimum** pour publier (seuil fixé par Théo le 19/11). En dessous, il dit précisément quoi changer, on reprend et on lui resoumet.
 - Un seul « non » = on reprend avant de publier. Les captures validées sont montrées à Théo avec leur verdict.
+- **Claude applique les verdicts du critique** (demande de Théo, 19/11/2026) : ce que l'Avocat du diable dit de garder, simplifier ou retirer est fait, sauf si Théo a explicitement décidé autrement.
