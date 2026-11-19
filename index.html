@@ -336,7 +336,7 @@
   .orn-item.eq { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(242,165,65,.35) inset; }
   .orn-item.lock { opacity: .55; }
   .orn-ic { height: 34px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .mini-lueur { width: 26px; height: 26px; border-radius: 50%; background: #261c15; display: inline-block; }
+  .mini-lueur { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle, #fffaf0 0 22%, rgba(255,246,220,.55) 34%, #261c15 62%); display: inline-block; }
   .mini-lueur.l-argent { box-shadow: 0 0 10px 3px rgba(220,230,245,.8); } .mini-lueur.l-or { box-shadow: 0 0 10px 3px rgba(240,200,90,.85); }
   .mini-lueur.l-pourpre { box-shadow: 0 0 10px 3px rgba(190,50,110,.85); } .mini-lueur.l-aube { box-shadow: 0 0 10px 3px rgba(255,170,90,.8), 0 0 16px 4px rgba(170,140,255,.5); }
   .horsligne.nouveau-jour { border-style: solid; border-color: rgba(242,165,65,.35); }
@@ -652,6 +652,9 @@
   .orn-aile { animation: aile 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
   @keyframes flotteC { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
   @keyframes etinc { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+  /* Aura d'étincelles : étincelles dorées en orbite autour du héros (plus petites quand elles passent derrière) */
+  .orn-orbite { animation: ornOrbite 7s linear infinite; }
+  @keyframes ornOrbite { 0% { transform: translate(180px, 142px) scale(.8); } 8.3% { transform: translate(169.3px, 155.1px) scale(.95); } 16.7% { transform: translate(140px, 169.1px) scale(1.06); } 25% { transform: translate(100px, 180px) scale(1.1); } 33.3% { transform: translate(60px, 185.1px) scale(1.06); } 41.7% { transform: translate(30.7px, 182.9px) scale(.95); } 50% { transform: translate(20px, 174px) scale(.8); } 58.3% { transform: translate(30.7px, 160.9px) scale(.65); } 66.7% { transform: translate(60px, 146.9px) scale(.54); } 75% { transform: translate(100px, 136px) scale(.5); } 83.3% { transform: translate(140px, 130.9px) scale(.54); } 91.7% { transform: translate(169.3px, 133.1px) scale(.65); } 100% { transform: translate(180px, 142px) scale(.8); } }
   @keyframes aile { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.9); } }
   #coffreOv { position: fixed; inset: 0; z-index: 70; background: rgba(8,6,12,.92); display: none; place-items: center; padding: 20px; text-align: center; }
   #coffreOv.on { display: grid; }
@@ -3027,7 +3030,20 @@ function bandeauCoffresRodage(s) {
 
 const AURA_COUL = { aura_aube: '#ffb86b', aura_etincelles: '#ffd75a', aura_lune: '#dfe4ff', aura_abysses: '#2a9ab8' };
 const AURA_ETINC = ['aura_etincelles', 'aura_aube']; // auras parsemées d'étincelles
+/* Étincelle dorée à 4 branches, dessinée autour de (0, 0) */
+const etincelleOr = (r, c) => `<circle r="${(r * .9).toFixed(1)}" fill="#ffd75a" opacity=".22"/><path d="M0 ${-r} L${(r * .22).toFixed(1)} ${(-r * .22).toFixed(1)} L${r} 0 L${(r * .22).toFixed(1)} ${(r * .22).toFixed(1)} L0 ${r} L${(-r * .22).toFixed(1)} ${(r * .22).toFixed(1)} L${-r} 0 L${(-r * .22).toFixed(1)} ${(-r * .22).toFixed(1)} Z" fill="${c || '#ffe27a'}" stroke="#fff6cf" stroke-width=".6"/><circle r="${(r * .2).toFixed(1)}" fill="#fff"/>`;
+/* Aura d'étincelles : un motif net (étincelles en orbite, scintillements, halo au sol) plutôt qu'un anneau flou */
+function auraEtincelles(p) {
+  const orbite = [7, 5, 6.5, 4.5, 6, 5].map((r, i) => { const a = i / 6 * Math.PI * 2, x = (100 + Math.cos(a) * 80).toFixed(1), y = (158 + Math.sin(a) * 22 - Math.cos(a) * 16).toFixed(1);
+    return `<g class="orn-orbite" style="animation-delay:${(-7 * i / 6).toFixed(2)}s" transform="translate(${x} ${y})">${etincelleOr(r, i % 2 ? '#fff0a8' : '#ffd75a')}</g>`; }).join('');
+  const scint = [[44, 74, 4.5], [158, 62, 5.5], [30, 120, 3.5], [172, 112, 4], [64, 30, 3.5], [138, 22, 4]].map(([x, y, r], i) =>
+    `<g class="orn-etinc" style="animation-delay:${(i * .45).toFixed(2)}s" transform="translate(${x} ${y})">${etincelleOr(r, '#fff6c8')}</g>`).join('');
+  return `<defs><radialGradient id="${p}au" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffe9a0" stop-opacity=".55"/><stop offset=".6" stop-color="#ffd75a" stop-opacity=".18"/><stop offset="1" stop-color="#ffd75a" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="100" cy="158" rx="80" ry="27" transform="rotate(-11 100 158)" fill="none" stroke="#ffe27a" stroke-opacity=".35" stroke-width="1.1" stroke-dasharray="2 5"/>
+    <ellipse cx="100" cy="245" rx="62" ry="10" fill="url(#${p}au)"/><ellipse cx="100" cy="245" rx="44" ry="6" fill="none" stroke="#ffe27a" stroke-opacity=".45" stroke-width="1"/>${scint}${orbite}`;
+}
 function auraSvg(id, p) {
+  if (id === 'aura_etincelles') return auraEtincelles(p);
   const c = AURA_COUL[id] || couleurPano(id) || '#b392ee';
   const etinc = AURA_ETINC.includes(id) ? [[52, 90], [150, 120], [60, 170], [146, 196], [100, 60], [40, 130]].map(([x, y], i) =>
     `<circle class="orn-etinc" style="animation-delay:${i * .4}s" cx="${x}" cy="${y}" r="2.2" fill="#fff6c8"/>`).join('') : '';
@@ -3136,7 +3152,7 @@ function familierAube(id, stade) {
   return corps[stade];
 }
 function familierAubeSvg(id, stade, grand) {
-  const k = grand ? [0.46, 0.6, 0.7, 0.8][stade] : [0.42, 0.56, 0.64, 0.72][stade];
+  const k = grand ? [0.46, 0.7, 0.76, 0.84][stade] : [0.42, 0.56, 0.64, 0.72][stade];
   return `<g transform="translate(${grand ? -6 : 2} ${246 - 94 * k}) scale(${k})"><g class="orn orn-fam"><ellipse cx="50" cy="94" rx="24" ry="4" fill="#000" opacity=".35"/>${familierAube(id, stade)}</g></g>`;
 }
 /* Montures (vitrine) : la bête de profil, tête à gauche, sabots vers y = 242. Le héros est mis EN SELLE par orner() :
@@ -3548,7 +3564,7 @@ const REGLES_PAGES = [
   { t: 'La garde-robe', s: `<div class="rg-ligne"><div class="rg-bloc">👆<small>touche ton personnage</small></div><b>→</b><div class="rg-bloc">🧥<small>choisis un emplacement</small></div><b>→</b><div class="rg-bloc or">✓<small>touche un objet pour le porter</small></div></div>`,
     p: ['12 emplacements : cape, couronne, aura, familier, familier de poche, monture, repaire, traînée (quand tu valides une quête), coup de grâce (quand un boss tombe), emblème, sol, lueur.', 'Un cadenas = pas encore gagné. Le « ? » dit comment l\'obtenir.', 'Ton compagnon voit ce que tu portes.'] },
   { t: 'Les saisons', s: `<div class="rg-ligne"><div class="rg-bloc">🌱<small>Pré-saison<br>jusqu'au 31 déc.</small></div><b>→</b><div class="rg-bloc or">✦<small>Saison 1<br>janv. → juin</small></div><b>→</b><div class="rg-bloc">✦<small>Saison 2<br>juil. → déc.</small></div></div>`,
-    get p() { const s1 = String((typeof state !== 'undefined' && state && state.today) || '') >= '2027-01-01';
+    get p() { const s1 = (((typeof state !== 'undefined' && state && state.armurerie) || {}).saison || {}).id === 's1'; // pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage
       return ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1, et les objets du Rodage repartent avec lui. Tes <b>trophées</b> et tes titres restent, souvenirs du Rodage.',
         s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.']; } }
 ];
@@ -3737,14 +3753,14 @@ function orner(svg, orn, id, grand) {
   const k0 = svg.indexOf('</defs>'), i0 = k0 >= 0 ? k0 + 7 : svg.indexOf('>') + 1, j0 = svg.lastIndexOf('</svg>');
   const haut = svg.slice(0, i0), corps = svg.slice(i0, j0), fin = svg.slice(j0);
   const solS = sol ? `<g class="orn orn-sol"${grand ? ' transform="translate(100 243) scale(1.18) translate(-100 -243)"' : ''}>${sol(id)}</g>` : '';
-  const avant = (fam ? `<g transform="${grand ? 'translate(174 236) scale(1.7) translate(-40 -222)' : 'translate(118 0)'}"><g class="orn orn-fam">${fam(id)}</g></g>` : '')
+  const avant = (fam ? `<g transform="${grand ? 'translate(170 238) scale(1.05) translate(-40 -232)' : 'translate(118 0)'}"><g class="orn orn-fam">${fam(id)}</g></g>` : '')
     + (emb ? `<g${grand ? ` transform="${orn.monture ? 'translate(190 34) scale(1.5)' : 'translate(100 -24) scale(2.4)'} translate(-42 -54)"` : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
   // Armurerie : aura et cape derrière le héros ; devant de la cape, couronne (posée sur la tête ou le bord du chapeau) et familier de l'Aube devant
   const auraS = orn.aura ? auraSvg(orn.aura, 'au' + id) : '', capeS = orn.cape ? capeSvg(orn.cape, 'ca' + id) : '', capeAv = orn.cape ? capeDevantSvg(orn.cape, 'ca' + id) : '';
   let couronne = '';
   if (orn.tete) {
     // [y du bandeau, échelle] : chapeau du Magicien (paliers 2 à 7), tête nue, capuche du Voleur
-    const [y, k] = mage ? (pal <= 1 ? [56, .8] : pal >= 8 ? [43, .82] : [51, 1]) : (pal <= 1 ? [55, .8] : [41, .92]);
+    const [y, k] = mage ? (pal <= 1 ? [56, .8] : pal >= 8 ? [43, .82] : [51, 1]) : (pal <= 1 ? [55, .8] : [46, .92]); // Voleur : posée sur la capuche (elle flottait ~5 px au-dessus)
     couronne = `<g transform="translate(100 ${y}) scale(${k}) translate(-100 ${-y})">${teteSvg(orn.tete, y)}</g>`;
   }
   const famAube = /^fa_/.test(orn.familier || '') ? familierAubeSvg(orn.familier, stadeFamilier(orn._jours), grand) : '';
@@ -3760,7 +3776,7 @@ function orner(svg, orn, id, grand) {
       : `<path d="M84 150 L116 150 L114 200 L112 222 L94 222 L92 200 Z" fill="#2c2630"/><path d="M90 196 h22 l1 32 q8 4 4 10 h-24 q-3 -4 -1 -10 z" fill="#5a3a22"/><path d="M89 196 h24 v7 h-24 z" fill="#7a5232"/>`;
     const etrier = `<path d="M90 236 h24 M93 236 v-8 M111 236 v-8" stroke="#c9ccd2" stroke-width="2.4" fill="none"/>`;
     const tr = `translate(${(sx - 100 * sk).toFixed(1)} ${(sy - H * sk).toFixed(1)}) scale(${sk})`;
-    heros = `<g class="orn-derriere">${auraS}</g><g class="orn-monte">${dos}${cut >= 0 ? '</g>' : ''}<g transform="${tr}">${capeS}<clipPath id="se${id}"><rect x="-80" y="-140" width="360" height="${H + 150}"/></clipPath><g clip-path="url(#se${id})">${corps}</g>${capeAv}${couronne}</g>
+    heros = `<g class="orn-derriere">${auraS}</g><g class="orn-monte">${dos}${cut >= 0 ? '</g>' : ''}<g transform="${tr}">${capeS}<clipPath id="se${id}"><rect x="-80" y="-140" width="360" height="${H + 150}"/></clipPath><g clip-path="url(#se${id})">${corps}</g>${capeAv}${couronne}</g></g>
       <g class="orn-monte">${cut >= 0 ? '<g>' : ''}${devant}<g transform="${tr}">${jambe}${etrier}</g></g>`;
   } else heros = (auraS || capeS ? `<g class="orn-derriere">${auraS}${capeS}</g>` : '') + corps + capeAv + couronne;
   return haut + solS + heros + avant + famAube + fin;
@@ -3785,7 +3801,13 @@ const ORN_SVG = {
   flamme: () => `<g transform="translate(36 40)"><path class="flam" d="M8 22 q-9 -7 -2 -17 q1 6 4 6 q-2 -7 3 -11 q5 8 3 14 q4 -2 3 -6 q6 9 -3 14 z" fill="#ff9a3c"/><path d="M8 20 q-4 -4 0 -9 q2 5 3 4 q2 3 -3 5 z" fill="#ffe27a"/></g>`,
   etoile: id => `<defs>${lueurRad('oet' + id, '#fffbe6', '#ffd75a')}</defs><g class="scint"><circle cx="42" cy="54" r="12" fill="url(#oet${id})" opacity=".55"/><path d="M42 42 L45 51 L54 54 L45 57 L42 66 L39 57 L30 54 L39 51 Z" fill="#ffe27a" stroke="#fff6cf" stroke-width=".6"/></g>`,
   lune: () => `<g class="scint"><path d="M48 44 a11 11 0 1 0 0 20 a8.5 8.5 0 1 1 0 -20 z" fill="#dfe6f2"/><circle cx="35" cy="50" r="1" fill="#fff"/></g>`,
-  laurier: () => `<g transform="translate(42 54)">` + [-1, 1].map(sg => [0, 1, 2, 3, 4, 5].map(k => { const a = (100 + k * 27) * Math.PI / 180, r = 11; const x = sg * r * Math.cos(a), y = -r * Math.sin(a) * -1; return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="3.6" ry="1.7" transform="rotate(${(sg * (100 + k * 27 + 90)).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${k % 2 ? '#8fbf5a' : '#d4ad3c'}"/>`; }).join('')).join('') + `<circle cx="0" cy="11" r="1.8" fill="#d4ad3c"/></g>`
+  // Couronne de lauriers (série de 100 jours) : deux branches feuillues d'or et de vert, baies, ruban rouge noué en bas
+  laurier: () => `<g transform="translate(42 54)"><circle r="15" fill="#ffd75a" opacity=".12"/>` + [-1, 1].map(sg => `<path d="M${sg * -1.5} 11 A11.5 11.5 0 0 ${sg > 0 ? 1 : 0} ${sg * -6.6} -9.4" stroke="#7a5a1a" stroke-width=".9" fill="none"/>`
+    + [0, 1, 2, 3, 4, 5, 6, 7].map(k => { const deg = 100 + k * 19, a = deg * Math.PI / 180, r = 11.5 + (k % 2 ? 1.6 : -1.2), x = sg * r * Math.cos(a), y = r * Math.sin(a), rot = sg * (deg + 90 + (k % 2 ? -22 : 22));
+      return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(4 - k * .18).toFixed(1)}" ry="1.8" transform="rotate(${rot.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${['#e8c35a', '#7fae4a', '#d4ad3c', '#9fcf62'][k % 4]}" stroke="#5a4210" stroke-width=".4"/>`; }).join('')
+    + `<circle cx="${(-sg * 8.6).toFixed(1)}" cy="5.4" r="1.1" fill="#c8344a"/><circle cx="${(-sg * 11.4).toFixed(1)}" cy="-2" r="1" fill="#c8344a"/>`).join('')
+    + `<path d="M-2.4 10.6 l-3.6 6 l2.6 -.6 l.8 2.4 z M2.4 10.6 l3.6 6 l-2.6 -.6 l-.8 2.4 z" fill="#c8344a" stroke="#6a1420" stroke-width=".4"/><circle cx="0" cy="11" r="2.2" fill="#e04a5c" stroke="#6a1420" stroke-width=".5"/>
+    <path d="M0 -15.5 L1 -13 L3.6 -12.6 L1.6 -11 L2.2 -8.4 L0 -9.8 L-2.2 -8.4 L-1.6 -11 L-3.6 -12.6 L-1 -13 Z" fill="#ffe27a" stroke="#fff6cf" stroke-width=".4"/></g>`
 };
 
 let state = null;
