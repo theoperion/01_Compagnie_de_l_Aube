@@ -7815,7 +7815,6 @@ function vueCompagnonDetail(c) {
     <div class="comp moi"><div class="comp-av" data-vitrine-comp="1" role="button" aria-label="Voir en grand">${orner(cl.dessin(pal, 'cd', lookDe(c.look)), c.ornements, 'cd')}</div>
       <div class="comp-txt"><b>${esc(c.heros)}</b><span class="tt">${[c.titre, 'niveau ' + c.niveau, (c.classe || {}).nom].filter(Boolean).map(esc).join(' · ')}</span>
         <div class="bar pv"><i style="width:${pv}%"></i></div><span>${c.pv} PV · ${Math.round(Number(c.xpTotale)).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP${c.d20 ? ` · 🎲 ${c.d20.de} (${esc(c.d20.titre)})` : ''}</span></div></div>
-    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}
     <div class="section"><h2>Aujourd'hui</h2><span>${auj.filter(h => h.jour.fait).length}/${auj.length}</span></div>
     <div class="panel">${auj.length ? auj.map(h => ligne(h, etat(h))).join('') : '<div class="muted">Rien d\'obligatoire aujourd\'hui.</div>'}</div>
     <div class="section"><h2>Cette semaine</h2><span>objectifs</span></div>
@@ -7824,6 +7823,7 @@ function vueCompagnonDetail(c) {
     <div class="panel">${ann.map(a => ligne(a, `<span class="wk">${a.jour.fait ? '✓ aujourd\'hui' : a.fois + ' fois'}</span>`)).join('')}</div>` : ''}
     ${c.objectifs.length ? `<div class="section"><h2>Quêtes épiques</h2><span>progression</span></div><div class="list">${c.objectifs.map(carteEpique).join('')}</div>` : ''}
     ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span><span><span class="streak">🔥 ${h.serie}</span><span class="muted"> · record&nbsp;${h.record || 0}</span></span></div>`).join('')}</div>` : ''}
+    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}
     <div class="aide-coop">Lecture seule : chacun valide ses propres quêtes avec sa clé.</div></div>`;
 }
 document.addEventListener('click', e => {
