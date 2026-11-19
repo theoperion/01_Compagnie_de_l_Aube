@@ -3102,7 +3102,7 @@ function capeSvg(id, p) {
     `<path transform="translate(${x} ${y}) scale(${i % 3 ? .7 : 1})" d="M0 -4 L1.1 -1.1 L4 0 L1.1 1.1 L0 4 L-1.1 1.1 L-4 0 L-1.1 -1.1 Z" fill="#fff3c4" opacity=".9"/>`).join('') : '';
   return `<defs><linearGradient id="${p}ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c0}"/><stop offset=".55" stop-color="${mixC(c0, bas, .4)}"/><stop offset="1" stop-color="${bas}"/></linearGradient>
     <linearGradient id="${p}cl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".22" stop-color="#fff" stop-opacity="0"/><stop offset=".78" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient></defs>
-    <g class="orn-cape${id === 'cape_veteran' ? '' : ' orn-vent'}">
+    <g class="orn-cape${(window.CAPES_SANS_VENT || []).includes(id) ? '' : ' orn-vent'}">
     <path d="M64 96 Q100 84 136 96 C154 140 170 196 186 251 ${bordBas} C30 196 46 140 64 96 Z" fill="url(#${p}ca)"/>
     <path d="M64 96 Q100 84 136 96 C154 140 170 196 186 251 ${bordBas} C30 196 46 140 64 96 Z" fill="url(#${p}cl)"/>
     <path d="M14 251 C30 196 46 140 64 96 L69 101 C54 146 40 198 27 247 Z M186 251 C170 196 154 140 136 96 L131 101 C146 146 160 198 173 247 Z" fill="${doublure}"/>
