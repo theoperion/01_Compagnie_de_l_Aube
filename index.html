@@ -1638,7 +1638,6 @@ const ORNEMENTS = [
  * Emplacements (gardés avec les ornements) : cape, tete, aura, familier (fa_*), monture, repaire, trainee, victoire. */
 const COSM_COUL = { cape_rouge: ['#a83838', '#3a1010'], cape_verte: ['#3c7048', '#122016'], cape_bleue: ['#3c5ea0', '#121a32'], cape_aube: ['#f2a93c', '#7a2a5a'],
   cape_hiver: ['#d6e8f4', '#4a6a8a'], cape_sable: ['#e2c48c', '#7a5a2a'], cape_corsaire: ['#2e2a3e', '#0c0a14'], cape_ecarlate: ['#e0283e', '#4a0a14'], cape_legende: ['#8ad0ff', '#4a2a8a'],
-  leviathan: '#3fa9c9', chimere: '#ff8a3c', titan: '#c9b38a', banshee: '#a8f0e0', sphinx: '#e8c34a', wyrm: '#7ad06a',
   procrastination: '#b48cff', dissipation: '#5ae6be', oubli: '#dfe3ff', fatigue: '#9fb0e0', doute: '#ff5a5a', tentation: '#ff78aa' };
 const RARETE_NOM = { commun: 'Commun', rare: 'Rare', epique: 'Épique', legendaire: 'Légendaire' };
 const SLOTS_COSM = [
@@ -2145,6 +2144,11 @@ function tirerCoffreLocal(c, s) {
 }
 let coffreRevele = null;
 const coffresEnVol = {}; // coffres ouverts sur le téléphone, pas encore confirmés par le moteur
+/** Tout état reçu du moteur garde ouverts les coffres pas encore confirmés (sinon ils réapparaissent et s'ouvrent deux fois) */
+function avecCoffresEnVol(s) {
+  const src = Object.keys(coffresEnVol); if (!s || !s.armurerie || !src.length) return s;
+  let n = copie(s); src.forEach(k => { n = appliquerCoffre(n, k, coffresEnVol[k]); }); return n;
+}
 function appliquerCoffre(n, source, o) {
   const A = n.armurerie; if (!A) return n;
   const avant = (A.coffres || []).length; A.coffres = (A.coffres || []).filter(x => x.source !== source);
@@ -2153,8 +2157,7 @@ function appliquerCoffre(n, source, o) {
   return n;
 }
 function ouvrirUnCoffre() {
-  const A = state && state.armurerie; if (!A || !(A.coffres || []).length) return;
-  const c = A.coffres[0];
+  const A = state && state.armurerie; const c = A && (A.coffres || []).find(x => !coffresEnVol[x.source]); if (!c) return;
   if (navigator.onLine === false) { toast('📴 Il faut du réseau pour ouvrir un coffre', 'info'); return; }
   let ov = document.getElementById('coffreOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'coffreOv'; document.body.appendChild(ov); }
@@ -2167,11 +2170,10 @@ function ouvrirUnCoffre() {
   // un envoi à la fois (coffres ouverts à la suite) ; chaque réponse garde ouverts les coffres pas encore confirmés
   apiFond('ouvrirCoffre', c.source).then(r => {
     delete coffresEnVol[c.source];
-    let n = avecAttente(r);
-    if (n && n.armurerie) { n = copie(n); Object.keys(coffresEnVol).forEach(src => { n = appliquerCoffre(n, src, coffresEnVol[src]); }); }
-    state = n; if (!document.getElementById('coffreOv').classList.contains('on')) render();
+    state = avecAttente(r); if (!document.getElementById('coffreOv').classList.contains('on')) render();
   }).catch(e => {
     delete coffresEnVol[c.source];
+    if (/déjà ouvert/i.test(String(e && e.message || e))) { api('getState').then(r => { state = avecAttente(r); render(); }).catch(() => {}); return; } // le moteur l'a bien compté
     // rien n'est enregistré : le coffre revient, l'objet ou les éclats repartent
     const n = copie(state), A2 = n.armurerie;
     if (!A2.coffres.some(x => x.source === c.source)) A2.coffres.unshift(c);
@@ -2397,6 +2399,7 @@ function recupererEnVol() {
 /* Saisies encore en attente : leur effet est réappliqué sur chaque nouvelle fiche reçue du Sheet (lot 2.3),
    sinon elles disparaissaient de l'écran jusqu'à leur envoi (et on risquait de les refaire). */
 function avecAttente(s) {
+  s = avecCoffresEnVol(s);
   const l = lireAttente(); if (!s || !s.today || !l.length) return s;
   let n = s;
   l.forEach(x => {
