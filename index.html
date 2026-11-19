@@ -618,6 +618,54 @@
   .pl-pion { transition: transform .38s cubic-bezier(.3,1.5,.5,1); } .pl-pion.lui { opacity: .9; }
   @keyframes plProch { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .3; } }
   @media (prefers-reduced-motion: reduce) { .pl-case.proch circle:first-child { animation: none; } .pl-pion { transition: none; } }
+  /* ===== Parcours, option C « L'Horizon » (v2) : silhouettes teintées par le thème, premier plan éclairci, soleil qui se lève ===== */
+  .ph { border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--line)); border-radius: 16px; margin: 10px 0; overflow: hidden; background: var(--panel); }
+  .ph-pano { position: relative; aspect-ratio: 360 / 128;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 85%, #1a2a4a) 0%, color-mix(in srgb, var(--gold) 22%, var(--panel)) 62%, color-mix(in srgb, var(--gold) 38%, var(--panel)) 100%); }
+  .ph-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .ph-etoile { fill: var(--text); opacity: .55; animation: phScint 4s ease-in-out infinite; } @keyframes phScint { 50% { opacity: .12; } }
+  .ph-rayons path { stroke: #ffd36a; stroke-width: 2.2; stroke-linecap: round; opacity: .85; } .ph-rayons { animation: phRayons 24s linear infinite; } @keyframes phRayons { to { transform: rotate(360deg); } }
+  .ph-m1 { fill: color-mix(in srgb, var(--line) 60%, var(--muted) 18%); opacity: .9; }
+  .ph-m2 { fill: color-mix(in srgb, var(--card) 62%, var(--gold) 20%); }
+  .ph-arbres path { fill: color-mix(in srgb, var(--bg) 55%, var(--card)); } .ph-chateau path { fill: color-mix(in srgb, var(--bg) 60%, var(--line)); }
+  .ph-fenetre { fill: #ffd36a; animation: phLueur 3s ease-in-out infinite; } @keyframes phLueur { 50% { opacity: .5; } }
+  .ph-route { fill: none; stroke: rgba(0,0,0,.35); stroke-width: 9; stroke-linecap: round; }
+  .ph-route2 { fill: none; stroke: color-mix(in srgb, var(--text) 55%, transparent); stroke-width: 1.8; stroke-dasharray: 4 5; }
+  .ph-fait { fill: none; stroke: var(--gold); stroke-width: 4.5; stroke-linecap: round; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--gold) 80%, transparent)); }
+  .ph-pt { fill: color-mix(in srgb, var(--panel) 70%, var(--text)); stroke: var(--bg); stroke-width: 1.2; } .ph-pt.coffre { fill: #e8604f; } .ph-pt.fait { fill: var(--gold); }
+  .ph-gros { fill: var(--panel); stroke: var(--gold); stroke-width: 2; } .ph-gros.fait { fill: var(--gold); }
+  .ph-drapeau { fill: var(--gold); stroke: var(--gold); stroke-width: 1.4; } .ph-allie { fill: var(--allie); stroke: #fff; stroke-width: 1.4; }
+  .ph-toi { position: absolute; bottom: 22%; width: 13%; max-width: 50px; transform: translateX(-50%); animation: phSaute 1.8s ease-in-out infinite; pointer-events: none; }
+  @keyframes phSaute { 0%, 100% { transform: translateX(-50%); } 50% { transform: translateX(-50%) translateY(-4px); } }
+  .ph-toi svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 3px 2px rgba(0,0,0,.6)); }
+  .ph-titre { position: absolute; left: 12px; right: 12px; top: 8px; display: flex; align-items: center; gap: 8px; text-shadow: 0 1px 4px rgba(0,0,0,.85); }
+  .ph-titre b { font: 700 16px var(--f-titre); color: var(--gold); } .ph-titre em { margin-left: auto; font: 700 19px var(--f-titre); font-style: normal; color: var(--text); } .ph-titre small { font-size: 12px; color: var(--text); opacity: .75; }
+  .ph-regles { position: relative; flex: none; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 1px solid color-mix(in srgb, var(--gold) 70%, transparent); background: color-mix(in srgb, var(--bg) 60%, transparent);
+    color: var(--gold); font: 800 13px var(--f-texte); cursor: pointer; text-shadow: none; } .ph-regles::after { content: ''; position: absolute; inset: -10px; } /* cible tactile 44 px */
+  .ph-ligne { display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 12px; background: none; border: 0; border-top: 1px solid var(--line); color: var(--muted); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+  .ph-lt { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ph-lt b { color: var(--text); }
+  .ph-chev { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-style: normal; color: var(--gold); transition: transform .25s ease; } .ph.ouvert .ph-chev { transform: rotate(180deg); }
+  .ph-corps { padding: 2px 10px 6px; animation: phOuvre .28s ease-out; } @keyframes phOuvre { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .ph-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .ph-c { display: grid; justify-items: center; gap: 3px; padding: 8px 4px 7px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; cursor: pointer; min-width: 0; }
+  .ph-c b { font-size: 11.5px; line-height: 1.2; text-align: center; max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .ph-c small { font-size: 10px; color: var(--muted); } .ph-c.proch { border-color: var(--gold); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent); } .ph-c.gros b { color: var(--gold); }
+  /* médaillon sombre cerclé d'or sous chaque vignette : les effets clairs (aura d'étincelles, traînées) restent visibles */
+  .ph-v { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    background: radial-gradient(circle at 50% 40%, #3a3046, #120e18 75%); border: 1.5px solid color-mix(in srgb, var(--gold) 55%, transparent); }
+  .ph-v svg, .ph-v .ap-rep svg { max-width: 32px; max-height: 30px; } .ph-v .ap-rep { width: 32px; display: block; }
+  .ph-v.s-aura, .ph-v.s-trainee { background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--gold) 45%, #3a3046), #120e18 72%); }
+  .ph-v.s-aura svg, .ph-v.s-trainee svg { transform: scale(1.25); filter: brightness(1.7) drop-shadow(0 0 2px #fff6d0); }
+  .ph-mini { width: 28px; height: 28px; border-width: 1px; } .ph-mini svg { max-width: 20px; max-height: 18px; }
+  .ph-final { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 6px; padding: 8px 12px; border-radius: 12px; cursor: pointer; text-align: left; font: inherit; color: var(--text);
+    border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--card)); }
+  .ph-final .ph-v { width: 48px; height: 48px; } .ph-final span:last-child { display: grid; } .ph-final small { font-size: 11px; color: var(--muted); } .ph-final b { font: 700 15px var(--f-titre); color: var(--gold); }
+  .ph .orn-info { margin: 6px 0 0; }
+  .ph-pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 6px 2px 0; font-size: 11.5px; color: var(--muted); } .ph-ec { color: #9fe4ff; display: inline-flex; align-items: center; gap: 4px; }
+  .ph-actions { display: flex; gap: 8px; padding: 2px 12px 10px; } .ph-actions .btn { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+  .ph-bi { display: inline-grid; place-items: center; width: 20px; height: 18px; } .ph-bi svg { display: block; }
+  body.calme .ph-etoile, body.calme .ph-fenetre, body.calme .ph-toi, body.calme .ph-corps, body.calme .ph-rayons { animation: none; } body.calme .ph-chev { transition: none; }
+  @media (prefers-reduced-motion: reduce) { .ph-etoile, .ph-fenetre, .ph-toi, .ph-corps, .ph-rayons { animation: none; } .ph-chev { transition: none; } }
   .trophees { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 10px; border-radius: 16px; border: 1px solid #3a3446;
     background: repeating-linear-gradient(0deg, #2a2632 0 26px, #24202c 26px 28px), #2a2632; box-shadow: inset 0 0 30px rgba(0,0,0,.5); }
   .tr-niche { display: grid; justify-items: center; gap: 0; padding: 8px 4px 6px; border-radius: 40px 40px 10px 10px; background: radial-gradient(ellipse at 50% 30%, #3a3448, #130e0a 75%);
@@ -1912,6 +1960,9 @@ body.calme #bossVue .bv-av::before { animation: none; }
 .hxc-j .t > i.glisse { transition: width .6s cubic-bezier(.2,.8,.3,1); }
 .hxc-j .t > i.reflet { box-shadow: 0 0 8px var(--gold); }
 
+.ph-regles.nouveau { box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 60%, transparent), 0 0 12px var(--gold); animation: phLuit 2.4s ease-in-out infinite; }
+@keyframes phLuit { 50% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 30%, transparent), 0 0 4px var(--gold); } }
+body.calme .ph-regles.nouveau { animation: none; } @media (prefers-reduced-motion: reduce) { .ph-regles.nouveau { animation: none; } }
 </style>
 </head>
 <body>
@@ -3601,6 +3652,98 @@ function plateauHTML(s) {
       ${cases}${lui}${moi}
     </svg></div><div class="pl-aide">↕ fais glisser pour parcourir le chemin</div><div class="orn-info" id="info-case"></div></div>`;
 }
+/* ===== Parcours de saison (refonte) : données communes =====
+ * Replié par défaut à chaque lancement ; l'état ouvert/fermé vit le temps de la session (parcoursOuvert).
+ * Remplace blocSaison(s, true) + plateauHTML(s) dans Héros → Aventure. */
+let parcoursOuvert = false;
+const xpFr = v => Math.max(0, Math.round(v)).toLocaleString('fr-FR').replace(/ /g, ' ');
+const ECLAT_SVG = (w = 22) => `<svg viewBox="0 0 24 24" width="${w}" height="${w}" aria-hidden="true"><path d="M12 2 L19 9 L12 22 L5 9 Z" fill="#9fe4ff"/><path d="M12 2 L19 9 H5 Z" fill="#dff7ff"/><path d="M12 9 V22" stroke="#4aa8d0" stroke-width="1"/></svg>`;
+function etapesParcours(s) {
+  const A = s.armurerie, S = A.saison, N = S.paliers, CC = s.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
+  return Array.from({ length: N }, (_, i) => {
+    const n = i + 1, r = CH[n] || { eclats: 20 }, it = r.item ? cosmItem(r.item) : null;
+    const gros = n === N || !!(it && (it.rarete === 'legendaire' || it.rarete === 'epique')) || r.coffre === 'legendaire';
+    const type = it ? 'objet' : r.coffre ? 'coffre' : 'eclats';
+    const nom = it ? (it.nom || r.item) : r.coffre ? 'Coffre ' + (RARETE_NOM[r.coffre] || '').toLowerCase() : (r.eclats || 0) + ' éclats';
+    return { n, r, it, type, gros, nom, fait: n <= S.palier, proch: n === S.palier + 1, reste: n <= S.palier ? 0 : (n - S.palier) * S.cout - S.dansPalier };
+  });
+}
+/* Vignette dessinée de la récompense (objet réel, coffre de sa rareté, éclat) : plus d'émojis sur le chemin */
+function vignetteEtape(e, w) {
+  if (e.it) return apercuCosm(e.it);
+  if (e.type === 'coffre') return coffreSvg(e.r.coffre).replace('width="128" height="107"', `width="${w || 30}" height="${Math.round((w || 30) * .84)}"`);
+  return ECLAT_SVG(w ? Math.round(w * .75) : 22);
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-parcours]')) return;
+  parcoursOuvert = !parcoursOuvert; render();
+  if (parcoursOuvert) requestAnimationFrame(() => { const f = document.querySelector('.pc-frise'), c = f && f.querySelector('.proch'); if (f && c) f.scrollLeft = c.offsetLeft - f.clientWidth / 2 + c.clientWidth / 2; });
+});
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-etape]'); if (!c || !state || !state.armurerie) return;
+  const E = etapesParcours(state)[Number(c.dataset.etape) - 1], box = document.getElementById('pc-info'); if (!E || !box) return;
+  box.innerHTML = `<b>Palier ${E.n}</b> · ${esc(E.nom)}${E.it && E.it.rarete ? ' · ' + (RARETE_NOM[E.it.rarete] || '') : ''} · ${E.fait ? '✓ gagné' : 'encore ' + xpFr(E.reste) + ' XP'}`; box.classList.add('on');
+});
+/* position du compagnon d'armes (déjà montrée par l'ancien plateau : on ne la perd pas) */
+const allieParcours = s => { const c = (s.compagnons || [])[0]; return c && c.palierSaison != null ? `Allié : palier ${c.palierSaison}` : ''; };
+/* Option C « L'Horizon » (v2) : panorama en silhouettes aux couleurs du thème ; le soleil de l'Aube monte avec ta progression
+ * et se lève tout à fait au dernier palier. Replié = panorama + ligne « prochaine » ; déplié = 6 prochaines récompenses + gros lot.
+ * Le Livret des règles est rangé dans le « ? » de l'en-tête. Aucun émoji : coffres, éclats, épée et objets sont dessinés. */
+const EPEE_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M19.5 2.5 L21.5 4.5 L10 16 L8 14 Z" fill="#dfe4ec" stroke="#5a6070" stroke-width=".8"/><path d="M20 3 L10.6 12.4" stroke="#fff" stroke-width=".8" opacity=".8"/>
+  <path d="M5.5 11.5 L12.5 18.5" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round"/><path d="M8.6 15.4 L4.6 19.4" stroke="#6a4424" stroke-width="2.6" stroke-linecap="round"/><circle cx="3.8" cy="20.2" r="1.6" fill="var(--gold)"/></svg>`;
+function parcoursHTML(s) {
+  const A = s.armurerie; if (!A || !A.saison) return '';
+  const S = A.saison, N = S.paliers, E = etapesParcours(s), P = E[S.palier] || null, fini = S.palier >= N, coffres = (A.coffres || []).length;
+  const titre = S.id === 'pre' ? 'Le chemin du Rodage' : 'Le chemin de la saison';
+  const pct = fini ? 1 : (S.palier + S.dansPalier / S.cout) / N;
+  const X = n => 26 + n / N * 290, Y = x => 96 + 5 * Math.sin(x / 38);
+  let d = ''; for (let x = 26; x <= 316; x += 5) d += (d ? ' L' : 'M') + x + ' ' + Y(x).toFixed(1);
+  const xm = X(S.palier + (fini ? 0 : S.dansPalier / S.cout));
+  // le soleil : à moitié sous les collines au départ, haut et rayonnant au dernier palier
+  const sy = 82 - 62 * pct, sx = 262, rayons = fini || pct > .5;
+  const dense = N > 20; // à 50 paliers : losanges pour les seuls gros lots, un point pour les coffres épiques, rien pour le reste (la grille dépliée détaille)
+  const marques = E.map(e => { const x = X(e.n), y = Y(x);
+    if (e.gros) return `<path d="M${x.toFixed(1)} ${(y - 8).toFixed(1)} l5.5 8 l-5.5 8 l-5.5 -8z" class="ph-gros ${e.fait ? 'fait' : ''}"/>`;
+    if (dense && !(e.type === 'coffre' && e.r.coffre === 'epique')) return '';
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${e.type === 'coffre' ? (dense ? 3 : 4.2) : 3}" class="ph-pt ${e.type} ${e.fait ? 'fait' : ''}"/>`; }).join('');
+  const comp = (s.compagnons || [])[0], xa = comp && comp.palierSaison != null ? X(Math.min(N, comp.palierSaison)) : null;
+  const pano = `<svg class="ph-svg" viewBox="0 0 360 128" role="img" aria-label="${titre} : palier ${S.palier} sur ${N}">
+      <defs><radialGradient id="phSol"><stop offset="0" stop-color="#fff6d0"/><stop offset=".55" stop-color="#ffd36a"/><stop offset="1" stop-color="#f2a541"/></radialGradient>
+        <radialGradient id="phHalo"><stop offset="0" stop-color="#ffd36a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd36a" stop-opacity="0"/></radialGradient></defs>
+      ${Array.from({ length: 16 }, (_, k) => `<circle cx="${(hashPl(k + 3) * 360).toFixed(0)}" cy="${(4 + hashPl(k + 40) * 44).toFixed(0)}" r="${(.6 + hashPl(k) * .9).toFixed(1)}" class="ph-etoile" style="animation-delay:${(hashPl(k + 9) * 4).toFixed(1)}s"/>`).join('')}
+      <path d="M0 74 L34 54 L60 64 L92 46 L120 62 L150 50 L186 66 L214 52 L244 70 L300 58 L330 66 L360 56 V128 H0Z" class="ph-m1"/>
+      <g class="ph-astre"><circle cx="${sx}" cy="${sy.toFixed(1)}" r="40" fill="url(#phHalo)"/>
+        ${rayons ? `<g class="ph-rayons" style="transform-origin:${sx}px ${sy.toFixed(1)}px">${Array.from({ length: 12 }, (_, k) => `<path d="M${sx} ${(sy - 17).toFixed(1)} V${(sy - 25).toFixed(1)}" transform="rotate(${k * 30} ${sx} ${sy.toFixed(1)})"/>`).join('')}</g>` : ''}
+        <circle cx="${sx}" cy="${sy.toFixed(1)}" r="13" fill="url(#phSol)"/></g>
+      <path d="M0 98 Q40 80 86 92 T176 88 T270 92 T360 84 V128 H0Z" class="ph-m2"/>
+      <g class="ph-arbres">${[12, 58, 120, 186, 226, 300].map((x, k) => `<path d="M${x} ${102 - k % 2 * 4} l6 -18 l6 18z"/>`).join('')}</g>
+      <g class="ph-chateau" transform="translate(338 96)"><path d="M-17 0 V-22 h5 v4 h3 v-4 h5 V-32 l4 -6 l4 6 V-22 h5 v4 h3 v-4 h5 V0Z"/><rect x="-2" y="-26" width="4" height="5" rx="2" class="ph-fenetre"/></g>
+      <path d="${d}" class="ph-route"/><path d="${d}" class="ph-route2"/><path d="${d}" class="ph-fait" pathLength="1" stroke-dasharray="${pct.toFixed(3)} 1"/>
+      ${marques}
+      <g transform="translate(26 ${Y(26).toFixed(1)})"><path d="M0 0 V-14 l9 3.5 l-9 3.5" class="ph-drapeau"/></g>
+      ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>Allié</title></circle>` : ''}
+    </svg>
+    <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>
+    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles">?</button><em>${S.palier}<small> / ${N}</small></em></span>`;
+  const suite = E.filter(e => !e.fait).slice(0, 6), fin = E[N - 1];
+  const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''}" data-etape="${e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
+  const corps = parcoursOuvert ? `<div class="ph-corps">
+      <div class="ph-grille">${suite.map(carte).join('')}</div>
+      ${!fin.fait && !suite.includes(fin) ? `<button class="ph-final" data-etape="${fin.n}"><span class="ph-v">${vignetteEtape(fin, 36)}</span><span><small>Au bout du chemin · palier ${fin.n}</small><b>${esc(fin.nom)}</b></span></button>` : ''}
+      <div class="orn-info" id="pc-info"></div>
+      <div class="ph-pied"><span class="ph-ec">${ECLAT_SVG(13)} ${A.eclats} éclats</span>${allieParcours(s) ? `<span>${allieParcours(s)}</span>` : ''}${S.id === 'pre' ? '<span>jusqu\'au 31 décembre</span>' : ''}</div></div>` : '';
+  const cof1 = coffres ? coffreSvg((A.coffres[0] || {}).type || 'commun').replace('width="128" height="107"', 'width="20" height="17"') : '';
+  return `<section class="parcours ph ${parcoursOuvert ? 'ouvert' : ''}">
+    <div class="ph-pano">${pano}</div>
+    <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · ${xpFr(S.cout - S.dansPalier)} XP</span>`}${fini ? '' : '<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
+    ${corps}
+    <div class="ph-actions">${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Ouvrir un coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie</button></div>
+  </section>`;
+}
+
+/* Le « ? » du livret luit tant que le héros ne l'a jamais ouvert (critique) */
+function livretJamaisVu() { try { return !localStorage.getItem('livretVu'); } catch (e) { return false; } }
+document.addEventListener('click', e => { if (e.target.closest('[data-regles]')) { try { localStorage.setItem('livretVu', '1'); } catch (er) {} document.querySelectorAll('.ph-regles.nouveau').forEach(b => b.classList.remove('nouveau')); } }, true);
 let plateauDepart = null;
 function prepPlateau(s) {
   const A = s && s.armurerie; if (!A || !A.saison || !confort().animations) { plateauDepart = null; return; }
@@ -6512,10 +6655,8 @@ function render() {
       <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure"><span class="ic">🗺 </span>Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits"><span class="ic">🏆 </span>Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `<div class="aventure saison-${(s.armurerie && s.armurerie.saison && s.armurerie.saison.id) || 'pre'}">
-    ${blocSaison(s, true)}
-    ${livretReduit() ? '' : `<div class="regles-box"><button class="regles-btn" data-regles="0"><span class="rq">?</span><span><b>Livret des règles</b><small>Comment marchent le plateau, les coffres et la garde-robe</small></span></button>
-      <button class="regles-reduire" data-livret-reduire="1" aria-label="Réduire le livret des règles">✕</button></div>`}
-    ${plateauHTML(s)}</div>`
+    ${parcoursHTML(s)}
+    </div>`
     : sousHeros === 'exploits' ? `
     ${blocBilanGarde(s)}
     ${salleTrophees(s)}
