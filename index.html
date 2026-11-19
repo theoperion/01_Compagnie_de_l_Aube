@@ -34,11 +34,11 @@
     --gold: #d39a5c; --xp: #d39a5c; --xp2: #f3c88c; --pv: #e8604f; --ok: #63e6ad;
     --warn: #e0a040; --rest: #6fb3ff; --epic: #a98bff; --wax: #a3382f; --wax2: #e8604f;
     --theron: #6fb3ff; --allie: #55e3c2;
-    --haut: #0f2230; --f-titre: 'Josefin Sans', system-ui, sans-serif; --f-recit: var(--f-texte); --f-texte: Inter, system-ui, -apple-system, sans-serif;
+    --haut: #0f2230; --f-titre: 'Josefin Sans', system-ui, sans-serif; --f-recit: 'Josefin Sans', system-ui, sans-serif; --f-texte: Inter, system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
-    font-family: var(--f-texte); font-synthesis: none; }
+    font-family: var(--f-texte); }
   button, input, select, textarea { font-family: inherit; } svg text { font-family: var(--f-texte); }
   body { padding: 0 0 48px; min-height: 100vh;
     background: radial-gradient(ellipse at top, var(--haut) 0%, var(--bg) 55%); }
@@ -2802,7 +2802,7 @@ const PICTO = {
 };
 const THEMES = [ // Théo (19/11) : Yggdrasil et Olympe seulement ; un téléphone réglé sur un autre thème retombe sur Yggdrasil
   { id: 'aube', nom: 'Yggdrasil', aide: 'fjord, givre, aurores et bronze', v: {} },
-  { id: 'olympe', nom: "Olympe", aide: "marbre de nuit, or, constellations", police: "Cinzel:wght@500;600;700;800;900&family=Manrope:wght@500;600;700;800", v: { 'bg': "#0e1220", 'panel': "#151a2b", 'card': "#181e31", 'card-done': "#17241f", 'line': "#2c3450", 'text': "#f4eee2", 'muted': "#9aa1b8", 'gold': "#e0b866", 'xp': "#e0b866", 'xp2': "#f6dc9c", 'pv': "#e2715a", 'ok': "#9fd39a", 'haut': "#1b2238", 'wax': "#c0563f", 'wax2': "#e2715a", 'theron': "#7aa2ff", 'allie': "#5fd0c4", 'rest': "#7aa2ff", 'epic': "#b79cff", 'f-titre': "Cinzel, Georgia, serif", 'f-recit': "Manrope, system-ui, sans-serif", 'f-texte': "Manrope, system-ui, sans-serif" } },
+  { id: 'olympe', nom: "Olympe", aide: "marbre de nuit, or, constellations", police: "Cinzel:wght@500;600;700;800;900&family=Manrope:wght@500;600;700;800", v: { 'bg': "#0e1220", 'panel': "#151a2b", 'card': "#181e31", 'card-done': "#17241f", 'line': "#2c3450", 'text': "#f4eee2", 'muted': "#9aa1b8", 'gold': "#e0b866", 'xp': "#e0b866", 'xp2': "#f6dc9c", 'pv': "#e2715a", 'ok': "#9fd39a", 'haut': "#1b2238", 'wax': "#c0563f", 'wax2': "#e2715a", 'theron': "#7aa2ff", 'allie': "#5fd0c4", 'rest': "#7aa2ff", 'epic': "#b79cff", 'f-titre': "Cinzel, Georgia, serif", 'f-recit': "Cinzel, Georgia, serif", 'f-texte': "Manrope, system-ui, sans-serif" } },
 ];
 /* Police des textes et taille : réglables à part, par-dessus le thème (gardées sur ce téléphone) */
 const POLICES_TEXTE = [
@@ -7541,7 +7541,7 @@ function render() {
           + (plein ? '<b class="hxq-or"></b><b class="hxq-trait"></b><b class="hxq-mot">Journée accomplie</b>' : '');
         const icoQ = plein ? '<svg class="hxq-rune" viewBox="0 0 12 16" aria-hidden="true"><path class="pl" d="M2.6 4.6 L9.4 11.4 V4.6 L2.6 11.4 Z"/><path d="M2.6 1.2 V14.8 M9.4 1.2 V14.8"/></svg>'
           : '<svg class="hxq-ep" viewBox="0 0 12 12" aria-hidden="true"><path d="M10.6 1.4 L4.4 7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M2.6 6 L6 9.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3.4 8.6 L1.5 10.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
-        const de = `<button class="jour-d20 hxd ${d ? 'fait' : ''} ${d && d.mult < 1 ? 'malus' : ''}" data-d20="1" aria-label="${d ? 'd20 du jour : ' + d.de : 'Lancer le d20 du jour'}">${d20Svg(d ? d.de : '?')}<small>${d ? (d.mult !== 1 ? '×' + String(d.mult).replace('.', ',') : '=') : 'Lance'}</small></button>`;
+        const de = `<button class="jour-d20 hxd ${d ? 'fait' : ''} ${d && d.mult < 1 ? 'malus' : ''}" data-d20="1" aria-label="${d ? 'd20 du jour : ' + d.de : 'Lancer le d20 du jour'}">${d20Svg(d ? d.de : '?')}<small>${d ? (d.mult !== 1 ? '×' + String(d.mult).replace('.', ',') : '×1') : 'Lance'}</small></button>`;
         const medaille = `<div class="hxc-m"><button class="hx-med ${bas ? 'fatigue' : ''}" data-tab="profil" data-mode="profil" aria-label="Ouvrir le profil du héros">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'hxm', s)}</button>
           <span class="hxc-niv" data-tab="profil" data-mode="profil" aria-label="Niveau ${s.niveau}"><small>niv.</small>${s.niveau}${marqueSouvenir(s)}</span></div>`;
         /* titre TOUJOURS visible (choisi, sinon titre de niveau) sur sa ligne ; la devise suit, défile si elle est longue ; un toucher ouvre « Ton titre » */
