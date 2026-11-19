@@ -323,6 +323,8 @@
   @media (prefers-reduced-motion: reduce) { .vit-scene *, .vit-scene::before { animation: none !important; } }
   .vit-aide { text-align: center; font-size: 12px; color: var(--muted); margin: 6px 0 18px; }
   .vit-acts { display: flex; gap: 8px; margin: -8px 0 16px; } .vit-acts .btn { min-height: 46px; white-space: nowrap; }
+  .vit-chemin { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 44px; margin: -6px 0 16px; padding: 8px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line)); background: var(--card); color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
+  .vit-chemin b { color: var(--text); } .vit-chemin em { font-style: normal; font-weight: 700; color: var(--gold); white-space: nowrap; }
   .vit-ancre { flex: none; padding: 0 14px; font-size: 14px; } .vit-acts .vit-ancre:only-child { margin: 0 auto; }
   .vit-coffre { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0; font-size: 15px; } .vit-coffre b { min-width: 22px; padding: 0 6px; border-radius: 11px; background: rgba(0,0,0,.25); font-size: 13px; }
   .orn-slot h4 { margin: 14px 0 8px; font: 600 14px var(--f-recit); color: var(--gold); } .orn-slot h4 span { font: 400 12px system-ui, sans-serif; color: var(--muted); margin-left: 6px; }
@@ -3751,18 +3753,6 @@ function recompenseTexte(r) {
   if (r.coffre) return '🎁 Coffre ' + (RARETE_NOM[r.coffre] || '').toLowerCase();
   return '✦ ' + (r.eclats || 0) + ' éclats';
 }
-function blocSaison(s, court) {
-  const A = s.armurerie; if (!A || !A.saison) return '';
-  const S = A.saison, pct = S.palier >= S.paliers ? 100 : Math.round(S.dansPalier / S.cout * 100);
-  const coffres = (A.coffres || []).length;
-  return `<div class="saison ${court ? 'court' : ''}">
-    <div class="sa-t"><b>⚜ ${esc(S.nom)}</b><span>Palier ${S.palier} / ${S.paliers}</span></div>
-    <div class="bar sa-bar"><i style="width:${pct}%"></i></div>
-    <div class="sa-n">${S.palier >= S.paliers ? 'Chemin terminé, bravo !' : `Encore ${Math.max(0, S.cout - S.dansPalier).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP · prochaine récompense : <b>${esc(recompenseTexte(S.prochaine))}</b>`}</div>
-    ${S.id === 'pre' ? '<div class="sa-n">Rodage jusqu\'au 31 décembre. Le 1er janvier, la Saison 1 apporte de nouveaux objets et de nouveaux boss.</div>' : ''}
-    <div class="sa-b">${coffres ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${coffres})</button>` : ''}${court ? '<button class="btn mini" data-vitrine="1" data-armurerie="1">⚔ Armurerie</button>' : `<span class="eclats">✦ ${A.eclats} éclats</span>`}</div>
-  </div>`;
-}
 let marchandOuvert = false;
 /* Garde-robe : on choisit un emplacement, puis on ne voit que ses objets (cosmétiques de la saison + petits ornements) */
 const GARDE_ROBE = [['cape', '🧥', 'Cape'], ['tete', '👑', 'Couronne'], ['aura', '✨', 'Aura'], ['familier', '🐉', 'Familier'], ['poche', '🦉', 'De poche'], ['monture', '🐎', 'Monture'],
@@ -6469,6 +6459,11 @@ function ouvrirOuverture(id) {
       <button class="btn or" data-ouverture-go="1">Commencer l'aventure</button></div>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
 }
+document.addEventListener('click', e => { // vitrine → le chemin de la saison (Aventure), déplié
+  if (!e.target.closest('[data-vit-chemin]')) return;
+  fermerVitrine(); parcoursOuvert = true;
+  onglet = 'heros'; sousHeros = 'aventure'; try { localStorage.setItem('sousHeros', 'aventure'); } catch (err) {} render(); window.scrollTo(0, 0);
+});
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-ouverture-go]')) return;
   const ov = document.getElementById('ouvertureOv'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque');
@@ -6551,6 +6546,7 @@ function dessinerVitrine() {
     </div>
     <p class="vit-aide">Incline-le du doigt · touche-le pour le saluer</p>
     ${moi && state.armurerie ? `<div class="vit-acts">${(state.armurerie.coffres || []).length ? `<button class="btn or vit-coffre" data-coffre="1">🎁 Ouvrir un coffre <b>${state.armurerie.coffres.length}</b></button>` : ''}<button class="btn vit-ancre" data-vit-garde="1">🧥 Garde-robe ↓</button></div>` : ''}
+    ${moi && state.armurerie && state.armurerie.saison ? `<button class="vit-chemin" data-vit-chemin="1"><span>⚜ Palier <b>${state.armurerie.saison.palier}</b> / ${state.armurerie.saison.paliers}</span><em>Voir le chemin ›</em></button>` : ''}
     <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche pour revoir' : ''}</span></div>
     <div class="evo-rang">${evos}</div>
     ${moi ? blocArmurerie() : ''}
