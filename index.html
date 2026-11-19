@@ -2262,6 +2262,21 @@ html[class] .hxc .hx-btn::after { content: ''; position: absolute; left: 50%; wi
 .hxa .hxd::after { content: ''; position: absolute; left: 50%; width: 44px; margin-left: -22px; top: -2px; bottom: -10px; }
 .hxc-niv::after { content: ''; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: 44px; transform: translate(-50%, -50%); }
 .hxt-t { padding-top: 15px; padding-bottom: 15px; margin-top: -15px; margin-bottom: -15px; } /* overflow:hidden coupe un ::after : la zone vient du rembourrage */
+/* Bandeau du héros « plus grand » (Théo 19/11 : tout est tout petit, on voit à peine le visage) */
+.hxc { gap: 10px; padding: 9px 4px 10px 11px; }
+html[class] .hxc .hx-med { width: 66px; height: 66px; }
+html[class] .hxc .hx-med svg { width: 184px; top: -40px; }
+html[class] .hxc .hx-med svg[aria-label^="Magicien"] { top: -32px; }
+html[class] .hxc .hx-med svg[aria-label^="Voleur"] { width: 240px; top: -60px; }
+html.th-olympe .hxc-m::before { left: -8px; top: -6px; width: 83px; height: 80px; }
+.hxc-niv { bottom: -11px; font-size: 14.5px; line-height: 18px; } .hxc-niv small { font-size: 10.5px; }
+html.th-aube .hxc .hero-name, html.th-olympe .hxc .hero-name, html[class] .hxc .hero-name { font-size: clamp(13.5px, calc(25px - var(--nl) * .6px), 17px) !important; }
+.hxc-l1 { max-height: 24px; }
+.hxt { font-size: 13px; line-height: 18px; }
+.hxc-j { grid-template-columns: 20px 1fr auto; margin-top: 5px; font-size: 10.5px; }
+.hxc-j .t { height: 7px; min-width: 40px; } .hxc-j em { font-size: 12px; } .hxc-j.pv.bas em small { font-size: 11px; }
+html[class] .hxc .joker { font-size: 11.5px; line-height: 18px; }
+.hxt .joker { margin-left: auto !important; } .hxt { align-items: center; }
 .cfu-voir { position: relative; } .cfu-voir::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
 .btn.contour-or { background: transparent; border-color: color-mix(in srgb, var(--gold) 70%, transparent); color: var(--gold); } /* action secondaire : contour or (critique) */
 .reg-bloc > .reg-tete { margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
@@ -7530,8 +7545,8 @@ function render() {
         /* devise fixe (jamais de défilement, Théo) : « … » si elle est trop longue, en entier dans la feuille « Ton titre » */
         const devise = dv ? `<span class="hxt-d" data-ttr="1" title="${esc(dv)}"><span>« ${esc(dv)} »</span></span>`
           : '<span class="hxt-d vide" data-ttr="1"><span>✎ ta devise</span></span>';
-        const l1 = `<div class="hxc-l1 ${String(s.heros).length > 18 ? 'long' : ''}" data-ttr="1"><span class="hero-name" style="--nl:${String(s.heros).length}">${esc(s.heros)}</span>JOKER_L1</div>
-          <div class="hxt"><span class="hxt-t ${choisi ? 'gagne' : ''}" data-ttr="1" role="button" aria-label="Choisir ton titre et écrire ta devise">${choisi ? esc(choisi) : esc(s.titre)}</span></div>`;
+        const l1 = `<div class="hxc-l1 ${String(s.heros).length > 18 ? 'long' : ''}" data-ttr="1"><span class="hero-name" style="--nl:${String(s.heros).length}">${esc(s.heros)}</span></div>
+          <div class="hxt"><span class="hxt-t ${choisi ? 'gagne' : ''}" data-ttr="1" role="button" aria-label="Choisir ton titre et écrire ta devise">${choisi ? esc(choisi) : esc(s.titre)}</span>JOKER_L1</div>`;
         const jxp = `<div class="hxc-j"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b> XP → niv.&nbsp;${s.niveau + 1}</em></div>`;
         const reglages = `<button class="engrenage hx-btn" data-tab="profil" data-mode="reglages" aria-label="Réglages">${PICTO.reglages}</button>`, joker = `<span class="joker" title="Jokers de la semaine">🃏 ${s.jokersRestants}/${s.jokersParSemaine}</span>`;
         const flamme = serie ? `<span class="hxs" title="Meilleure série en cours"><i>🔥</i><b>${serie}</b>&nbsp;j</span>` : '';
@@ -8024,7 +8039,7 @@ function vueProfil(s) {
   const themeActuel = (THEMES.find(t => t.id === themeChoisi()) || {}).nom || '';
   const regTheme = !apparenceOuverte ? `<button class="reg reg-lien" data-apparence="1"><span>🎨</span><div><b>Apparence de l'app</b><small>Thème : ${esc(themeActuel)} · toucher pour changer</small></div></button>`
     : `<div class="reg"><h3 data-apparence="1" style="cursor:pointer">🎨 Apparence de l'app <small class="muted" style="font-weight:400">▴ replier</small></h3>
-      <div class="aide">Couleurs et polices, sur ce téléphone. Le Carnet suit le même thème.</div>
+      <div class="aide">Choisis ton thème, sur ce téléphone. Le Carnet suit le même.</div>
       <div class="themes">${themesVisibles().map(t => { const V = Object.assign({ bg: '#081117', card: '#112029', gold: '#d39a5c', text: '#eaf3f6', 'f-titre': "'Josefin Sans', sans-serif" }, t.v);
         return `<button class="theme ${themeChoisi() === t.id ? 'on' : ''}" data-theme="${t.id}" style="background:${V.bg};color:${V.text}">
           <span class="th-pal"><i style="background:${V.card}"></i><i style="background:${V.gold}"></i><i style="background:${V.text}"></i></span>
