@@ -81,6 +81,9 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
 .mod[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-soft)}
 .mod[aria-pressed="true"] b{color:var(--gold)}
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mi-hud{padding:8px 12px!important}.mi-l1>*{white-space:nowrap}.mi-l1 .combo{padding:2px 8px}
+.composer:focus-within .micbar{display:none} /* clavier ouvert : la place va au dialogue */.mi-l1{justify-content:space-between;align-items:center;gap:6px;flex-wrap:nowrap}.mi-l1 .pill{font-size:.75rem}
+.mi-etape{display:flex;align-items:center;gap:6px}.mi-pts{display:inline-flex;gap:3px}.mi-pts i{width:7px;height:7px;border-radius:50%;background:var(--line2)}.mi-pts i.done{background:var(--ok)}.mi-pts i.cur{background:var(--en);box-shadow:0 0 6px var(--en)}
 .step{border:1px solid var(--line2);border-radius:8px;padding:6px;font:700 .7rem var(--display);letter-spacing:.06em;text-transform:uppercase;background:transparent;color:var(--muted);text-align:center}
 .step.cur{background:var(--gold);border-color:var(--gold);color:var(--ink)}
 .step.done{background:var(--gold-soft);color:var(--gold);border-color:var(--line)}
@@ -125,7 +128,7 @@ label{font-weight:600;font-size:.92rem;display:grid;gap:4px;color:var(--muted)}
 .sess .tag{font-family:var(--display);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--run)}
 .sess.strrow .tag{color:var(--str)}
 .sess .detail{min-width:0;display:grid;gap:2px}
-.check{width:28px;height:28px;border-radius:8px;border:1px solid var(--line2);background:var(--sunk);cursor:pointer;display:grid;place-items:center;color:var(--ink);font-weight:700}
+.check{width:40px;height:40px;border-radius:8px;border:1px solid var(--line2);background:var(--sunk);cursor:pointer;display:grid;place-items:center;color:var(--ink);font-weight:700}
 .check.on{background:var(--ok);border-color:var(--ok)}
 .paces{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
 .pace{background:var(--sunk);border:1px solid var(--line2);border-radius:10px;padding:10px}
@@ -240,13 +243,21 @@ body.focus .hud{position:sticky;top:0;z-index:6;background:linear-gradient(180de
 /* Conversation */
 .conv .chat{max-height:none}
 .bub .tools{white-space:normal;display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-.bub .tools button{font-size:.8rem;padding:3px 9px}
+.bub .tools button{font-size:.8rem;padding:6px 10px;min-height:36px}
 .bub .frtr{display:block;margin-top:6px;color:var(--muted);font-style:italic;font-size:.92rem}
 .flou{filter:blur(5px);cursor:pointer;user-select:none}
 .corr{justify-self:end;max-width:88%;background:var(--ok-soft);border:1px solid rgba(107,190,121,.35);border-radius:12px;padding:8px 10px;font-size:.92rem;display:grid;gap:4px}
 .corr b{color:var(--ok)}
-.composer{position:sticky;bottom:0;z-index:5;background:linear-gradient(180deg,rgba(31,23,54,.0),var(--surface) 18%);padding-top:14px;display:grid;gap:8px}
-.composer textarea{min-height:64px}
+.composer{position:sticky;bottom:0;z-index:5;background:var(--surface);box-shadow:0 -10px 14px -6px var(--surface);padding-top:10px;display:grid;gap:8px}
+.composer .btn{min-height:44px}
+.cv-hud{padding:8px 12px!important}
+.cv-l1{justify-content:space-between;align-items:center;gap:8px;flex-wrap:nowrap}
+.cv-l1 .pill{font-size:.78rem;white-space:normal;text-align:center}
+.cv-opt{position:relative}.cv-opt summary{list-style:none;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line2);border-radius:10px;font-size:1.1rem}
+.cv-opt summary::-webkit-details-marker{display:none}
+.cv-optbox{position:absolute;right:0;top:46px;z-index:8;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:10px 12px;display:grid;gap:10px;min-width:210px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.cv-optbox label{display:flex;gap:10px;align-items:center;font-weight:500;min-height:36px}.cv-optbox input{width:22px;height:22px}
+.composer textarea{min-height:48px}
 .pistes{display:grid;gap:6px}
 .piste{text-align:left;border:1px dashed var(--en);background:var(--en-soft);color:var(--fg);border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer}
 .scen{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
@@ -603,34 +614,49 @@ function fusionCarnet(srvS,loc){
   Object.keys(gs.stats||{}).forEach(k=>{if(typeof gs.stats[k]==="number")g.stats[k]=Math.max(g.stats[k]||0,gs.stats[k])});
   return f;
 }
+/* Un seul envoi à la fois (lot 3.2) : un 2e envoi parti avec le même _base était refusé comme « autre appareil », et la fusion
+   remplaçait l'objet state pendant qu'une carte ou une séance le modifiait encore (notes perdues). Le drapeau « non synchronisé »
+   n'est effacé que si rien n'a changé depuis l'envoi. Une fusion recopie dans l'objet state existant (les références restent bonnes). */
+let versionLocale=0, envoiEnCours=false, aRenvoyer=false;
+function remplacerState(n){Object.keys(state).forEach(k=>{delete state[k]});Object.assign(state,n)}
 function save(){
+  versionLocale++;
   try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}
   if(!dbDoc) return;
   try{localStorage.setItem("quetes-nonSync","1")}catch(e){}
   if(!charge) return; // la version de la Sheet n'est pas encore lue : l'envoi attendra (chargerServeur)
+  if(envoiEnCours){aRenvoyer=true;return}
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(async()=>{
-    if(navigator.onLine===false){setSync("📴 Hors connexion : gardé sur le téléphone, envoi au retour du réseau");return}
-    try{
-      const r=await dbDoc.set({json:JSON.stringify(state)});
-      if(r&&r.conflit&&r.json&&conflits<3){ // une version plus récente est arrivée d'un autre appareil : fusion puis nouvel envoi
-        conflits++; const srvS=migrate(JSON.parse(r.json)); state=fusionCarnet(srvS,state); state._base=r.maj||0; renderAll(); save(); return;
-      }
-      conflits=0;
-      if(r&&r.maj){state._base=r.maj;try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}}
-      try{localStorage.removeItem("quetes-nonSync")}catch(e){}setSync("Sauvegardé dans la Compagnie");
-    }catch(e){
-      const m=String((e&&e.message)||e);
-      setSync(navigator.onLine===false||/Failed to fetch|NetworkError|Load failed|Délai dépassé|Réponse inattendue/i.test(m)
-        ?"📴 Pas de réseau : gardé sur le téléphone, envoi au retour du réseau"
-        :"⚠️ Sauvegarde refusée par la Compagnie : "+m.slice(0,140)+" (gardé sur le téléphone, nouvel essai dans 1 min)");
+  saveTimer=setTimeout(envoyer,700);
+}
+async function envoyer(){
+  if(envoiEnCours){aRenvoyer=true;return}
+  if(navigator.onLine===false){setSync("📴 Hors connexion : gardé sur le téléphone, envoi au retour du réseau");return}
+  envoiEnCours=true; aRenvoyer=false; const v=versionLocale;
+  try{
+    const r=await dbDoc.set({json:JSON.stringify(state)});
+    if(r&&r.conflit&&r.json){ // une version plus récente est arrivée d'un autre appareil : fusion puis nouvel envoi
+      if(conflits>=3){setSync("⚠️ La Compagnie refuse la sauvegarde (conflit) : gardé sur le téléphone, nouvel essai dans 1 min");return}
+      conflits++; const srvS=migrate(JSON.parse(r.json)); const f=fusionCarnet(srvS,state); f._base=r.maj||0; remplacerState(f); aRenvoyer=true; renderAll(); return;
     }
-  },700);
+    conflits=0;
+    if(r&&r.maj){state._base=r.maj;try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}}
+    if(v===versionLocale&&!aRenvoyer){try{localStorage.removeItem("quetes-nonSync")}catch(e){}setSync("Sauvegardé dans la Compagnie")}
+  }catch(e){
+    aRenvoyer=false; // le drapeau « non synchronisé » reste : renvoi au retour du réseau ou dans 1 min
+    const m=String((e&&e.message)||e);
+    setSync(navigator.onLine===false||/Failed to fetch|NetworkError|Load failed|Délai dépassé|Réponse inattendue/i.test(m)
+      ?"📴 Pas de réseau : gardé sur le téléphone, envoi au retour du réseau"
+      :"⚠️ Sauvegarde refusée par la Compagnie : "+m.slice(0,140)+" (gardé sur le téléphone, nouvel essai dans 1 min)");
+  }finally{
+    envoiEnCours=false;
+    if(aRenvoyer){aRenvoyer=false;clearTimeout(saveTimer);saveTimer=setTimeout(envoyer,300)}
+  }
 }
 /* Hors connexion : ce qui a été fait sans réseau part dès que le réseau revient */
 const nonSync=()=>{try{return localStorage.getItem("quetes-nonSync")==="1"}catch(e){return false}};
 window.addEventListener("online",()=>{if(!dbDoc)return;if(!charge)chargerServeur();else if(nonSync())save()});
-setInterval(()=>{if(!dbDoc||navigator.onLine===false)return;if(!charge)chargerServeur();else if(nonSync())save()},60000);
+setInterval(()=>{if(!dbDoc||navigator.onLine===false)return;if(!charge)chargerServeur();else if(nonSync()&&!envoiEnCours){conflits=0;save()}},60000);
 function setSync(t){document.getElementById("sync").textContent=t}
 
 let chargement=null;
@@ -643,7 +669,7 @@ function chargerServeur(){
       if(brut){
         const srvS=migrate(brut);
         // modifications faites sur le téléphone sans être envoyées (hors connexion, ou pendant le chargement) : fusion
-        state=nonSync()?fusionCarnet(srvS,state):srvS; state._base=brut._maj||0;
+        remplacerState(nonSync()?fusionCarnet(srvS,state):srvS); state._base=brut._maj||0;
         try{localStorage.setItem("quetes-state",JSON.stringify(state))}catch(e){}
         renderAll(); setSync(nonSync()?"Fusion avec la copie du téléphone…":"Sauvegardé dans la Compagnie"); setTimeout(evaluerNiveaux,3000);
       }
@@ -1182,7 +1208,9 @@ function nettoyerA(o){
       const choices=(Array.isArray(x.choices)?x.choices:[]).map(c=>String(c??"").trim()).filter(Boolean).slice(0,4);
       const answer=Number(x.answer);
       if(!audio.length||choices.length<2||!txt(x.question)||!(answer>=0&&answer<choices.length)) return null;
-      return {type:"qcm",audio,question:txt(x.question),choices,answer};
+      // la bonne réponse n'est pas toujours au même rang (Claude recopie souvent l'exemple du prompt)
+      const ordre=choices.map((_,i)=>i).sort(()=>Math.random()-.5);
+      return {type:"qcm",audio,question:txt(x.question),choices:ordre.map(i=>choices[i]),answer:ordre.indexOf(answer)};
     }
     if(x.type==="dictee"){const a=Array.isArray(x.audio)?x.audio.map(l=>l&&l.line||l).join(" "):txt(x.audio);return a?{type:"dictee",audio:a}:null}
     return null;
@@ -1208,7 +1236,7 @@ async function partiePack(prompt,nettoyer){
   let derniere=null;
   for(let essai=0;essai<2;essai++){
     try{const o=nettoyer(await sample.json(prompt,{modelTier:"default",maxTokens:3500}));if(o)return o;derniere={code:"invalid_json"}}
-    catch(e){derniere=e;if(e&&/no_key|bad_key|cancelled/.test(e.code))break}
+    catch(e){derniere=e;if(e&&/no_key|bad_key|cancelled|timeout|rate_limited/.test(e.code))break} // délai dépassé : le moteur continue et facture, ne pas redemander
   }
   throw derniere||{code:"invalid_json"};
 }
@@ -1262,13 +1290,11 @@ function advance(){
 }
 function renderMission(p){
   const m=ses.m, R=["Intro","Écoute","Parole","Boss"];
-  p.innerHTML=`<div class="card hud">
-    <div class="row" style="justify-content:space-between"><span class="small muted">${MODULES[ses.mod].name} · ${esc(ses.pack?.title||modUnit(ses.mod)[0])}</span><span class="mono small" id="tm">00:00</span></div>
-    <div class="steps">${R.map((n,i)=>`<span class="step ${i===ses.round?"cur":i<ses.round?"done":""}">${n}</span>`).join("")}</div>
-    <div class="row" style="justify-content:space-between"><span class="xp sm">${m.xp>=0?"+":""}${m.xp} XP</span>
-      ${m.combo>=2?`<span class="combo">Combo ${m.combo}${mult(m.combo)>1?" · XP x"+mult(m.combo):""}</span>`:""}
-      ${ses.d20?`<span class="pill neutral">d20 : ${ses.d20} · ×${String(ses.d20m).replace(".",",")}</span>`:""}
-      ${ses.round===3&&ses.boss?`<span class="hearts" aria-label="${ses.boss.hearts} cœurs">${"♥".repeat(ses.boss.hearts)}<span class="lost">${"♥".repeat(3-ses.boss.hearts)}</span></span>`:""}</div>
+  p.innerHTML=`<div class="card hud mi-hud">
+    <div class="row mi-l1"><span class="mi-etape"><b>${R[ses.round]||""}</b> <span class="mi-pts">${R.map((n,i)=>`<i class="${i===ses.round?"cur":i<ses.round?"done":""}" title="${n}"></i>`).join("")}</span></span><span class="xp sm">${m.xp>=0?"+":""}${m.xp} XP</span>
+      ${m.combo>=2?`<span class="combo" title="Combo ×${m.combo}${mult(m.combo)>1?", XP ×"+mult(m.combo):""}">🔥×${m.combo}</span>`:""}
+      ${ses.d20?`<span class="pill neutral" title="d20 : ${ses.d20}, XP ×${String(ses.d20m).replace(".",",")}">🎲${ses.d20}</span>`:""}
+      ${ses.round===3&&ses.boss?`<span class="hearts" aria-label="${ses.boss.hearts} cœurs">${"♥".repeat(ses.boss.hearts)}<span class="lost">${"♥".repeat(3-ses.boss.hearts)}</span></span>`:""}<span class="mono small" id="tm">00:00</span></div>
   </div>
   <div id="stepBody" class="panel"></div>
   ${ses.round<4?`<div class="row"><button class="btn sm" id="quit">${ses.confirmQuit?"Confirmer l'abandon (mission non comptée)":"Abandonner"}</button>${ses.confirmQuit?'<button class="btn sm" id="stay">Continuer</button>':""}</div>`:""}`;
@@ -1289,12 +1315,12 @@ function renderBrief(b){
     <div class="gap" style="gap:4px;min-width:0"><h3>Bonus du d20</h3>
       <p class="small muted">${ses.d20?`${ses.d20===20?"Coup critique ! ":ses.d20===1?"Échec critique… ":""}Les XP de cette mission sont multipliés par ${String(ses.d20m).replace(".",",")}.`:"1 : ×0,8 · 2-9 : ×1 · 10-17 : ×1,1 · 18-19 : ×1,25 · 20 : ×1,5"}</p>
       ${ses.d20?"":'<div><button class="btn" id="roll">Lancer le d20</button></div>'}</div></div>
-  <button class="btn primary" id="nx" ${ses.d20?"":"disabled"}>Commencer</button>`;
+  <button class="btn primary" id="nx">${ses.d20?"Commencer":"Lancer le d20 et commencer"}</button>`;
   $("#ex")?.addEventListener("click",()=>speak(T.exemple,earRate()));
   $("#roll")?.addEventListener("click",()=>{$("#roll").disabled=true;const el=$("#d20");el.classList.remove("idle");let k=0;sfx("ok");
-    const iv=setInterval(()=>{el.textContent=1+Math.floor(Math.random()*20);if(++k>=14){clearInterval(iv);const r=1+Math.floor(Math.random()*20);ses.d20=r;ses.d20m=D20(r);
+    const iv=setInterval(()=>{el.textContent=1+Math.floor(Math.random()*20);if(++k>=14){clearInterval(iv);const r=1+Math.floor(Math.random()*20);if(!ses)return;ses.d20=r;ses.d20m=D20(r);
       if(r>=18){sfx("perfect");if(r===20)confetti()}else if(r===1)sfx("bad");renderEn()}},60)});
-  $("#nx").onclick=advance;
+  $("#nx").onclick=()=>{if(ses.d20)return advance();const C=ses;$("#nx").disabled=true;$("#roll")?.click();setTimeout(()=>{if(ses===C&&ses.d20)advance()},1700)};
 }
 function verdictHTML(it){return it.done?`<div class="verdict ${it.cls}">${esc(it.msg)}</div>`:""}
 function renderListen(b){
@@ -1479,6 +1505,9 @@ function renderEnd(b){
    CONV_QUETE répliques ou plus = séance d'anglais comptée (quête « Anglais » validée dans la Compagnie).
    ====================================================================== */
 const CONV_QUETE=8;            // répliques pour valider la quête
+const CONV_MOTS=60;            // … et mots prononcés au total (8 « yes » ne suffisent pas)
+const motsConv=C=>C.turns.filter(t=>t.role==="user").reduce((n,t)=>n+String(t.content||"").trim().split(/\s+/).filter(Boolean).length,0);
+const convValide=C=>C.turns.filter(t=>t.role==="user").length>=CONV_QUETE&&motsConv(C)>=CONV_MOTS;
 const CONV_MEMOIRE=18;         // nombre de répliques renvoyées à Claude à chaque tour (les plus récentes)
 const SCENARIOS=[
  {id:"libre",nom:"Discussion libre",sub:"Ta journée, tes projets, ce que tu veux",role:"Emma, une amie anglaise de Manchester, chaleureuse et curieuse",cadre:"Vous discutez comme deux amis qui se retrouvent : sa journée, son travail, ses loisirs, ses projets, l'actualité légère."},
@@ -1492,7 +1521,7 @@ const SCENARIOS=[
 ];
 const scenOf=id=>SCENARIOS.find(x=>x.id===id)||SCENARIOS[0];
 const convPrefs=()=>Object.assign({texte:true,auto:true,voix:true},state.en.convPrefs||{});
-function convSauvee(){try{const c=JSON.parse(localStorage.getItem("quetes-conv")||"null");return c&&c.kind==="conv"&&!c.fini&&c.date===todayISO()&&c.turns&&c.turns.length?c:null}catch(e){return null}}
+function convSauvee(){try{const c=JSON.parse(localStorage.getItem("quetes-conv")||"null");return c&&c.kind==="conv"&&!c.fini&&Date.now()-(c.startedAt||0)<864e5&&c.turns&&c.turns.length?c:null}catch(e){return null}}
 function convSauver(){try{if(ses&&ses.kind==="conv"&&!ses.fini)localStorage.setItem("quetes-conv",JSON.stringify(Object.assign({},ses,{wait:false,err:null})))}catch(e){}}
 function convOublier(){try{localStorage.removeItem("quetes-conv")}catch(e){}}
 
@@ -1571,23 +1600,22 @@ function renderConv(p){
   const bulles=C.turns.map((t,i)=>t.role==="assistant"
     ?`<div class="bub a"><span class="${!C.texte&&!t.vu?"flou":""}" data-reveal="${i}">${esc(t.content)}</span>${t.showFr&&t.fr?`<span class="frtr">${esc(t.fr)}</span>`:""}<div class="tools"><button class="btn sm" data-say="${i}">▶ Écouter</button><button class="btn sm" data-slow="${i}">Plus lent</button>${t.fr?`<button class="btn sm" data-fr="${i}">${t.showFr?"Masquer le français":"Français"}</button>`:""}</div></div>`
     :`<div class="bub u">${esc(t.content)}</div>${t.corr?`<div class="corr"><span class="small muted">Plus naturel :</span><b>${esc(t.corr)}</b>${t.astuce?`<span class="small">${esc(t.astuce)}</span>`:""}<div><button class="btn sm" data-sayc="${i}">▶ Écouter et répéter</button></div></div>`:""}`).join("");
-  p.innerHTML=`<div class="card hud">
-    <div class="row" style="justify-content:space-between"><span class="small muted">Conversation · ${esc(S.nom)}</span><span class="mono small" id="tm">00:00</span></div>
-    <div class="row" style="justify-content:space-between"><span class="xp sm">+${C.m.xp} XP</span><span class="pill ${nU>=CONV_QUETE?"ok":"neutral"}">${nU>=CONV_QUETE?"Quête Anglais : validée à la fin":`Quête Anglais : ${nU} / ${CONV_QUETE} répliques`}</span></div>
-    <div class="row small"><label style="display:flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="cvTxt" style="width:auto" ${C.texte?"checked":""}>Texte visible</label>
-      <label style="display:flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="cvVoix" style="width:auto" ${C.voix?"checked":""}>Lecture à voix haute</label>
-      ${hasSR()?`<label style="display:flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="cvAuto" style="width:auto" ${C.auto?"checked":""}>Envoi auto</label>`:""}</div>
+  p.innerHTML=`<div class="card hud cv-hud">
+    <div class="row cv-l1"><span class="xp sm">+${C.m.xp}</span><span class="pill ${convValide(C)?"ok":"neutral"}">${convValide(C)?"Quête Anglais : validée quand tu termines":`Quête Anglais : ${Math.min(nU,CONV_QUETE)}/${CONV_QUETE} répliques · ${Math.min(motsConv(C),CONV_MOTS)}/${CONV_MOTS} mots`}</span><span class="mono small" id="tm">00:00</span>
+      <details class="cv-opt"><summary aria-label="Options de la conversation">⚙</summary><div class="cv-optbox">
+        <label><input type="checkbox" id="cvTxt" ${C.texte?"checked":""}>Texte visible</label>
+        <label><input type="checkbox" id="cvVoix" ${C.voix?"checked":""}>Lecture à voix haute</label>
+        ${hasSR()?`<label><input type="checkbox" id="cvAuto" ${C.auto?"checked":""}>Envoi auto</label>`:""}</div></details></div>
   </div>
   <div class="card conv">
-    <div class="chat">${bulles}${C.wait?`<div class="bub a muted" id="cvWait">${C.turns.length?"…":"Ton interlocuteur arrive…"}</div>`:""}</div>
+    <div class="chat">${bulles}${C.pistesVues&&C.pistes.length?`<div class="pistes"><span class="small muted">Idées de réponse : touche pour l'écouter, puis dis-la (ou adapte-la) avec le micro.</span>${C.pistes.map((x,i)=>`<button class="piste" data-pi="${i}">${esc(x)}</button>`).join("")}</div>`:""}${C.wait?`<div class="bub a muted" id="cvWait">${C.turns.length?"…":"Ton interlocuteur arrive…"}</div>`:""}</div>
     ${C.err?`<div class="err small row" style="justify-content:space-between"><span>${esc(C.err)}</span><button class="btn sm" id="cvRetry">Réessayer</button></div>`:""}
     <div class="composer">
-      ${C.pistesVues&&C.pistes.length?`<div class="pistes"><span class="small muted">Idées de réponse : touche pour l'écouter, puis dis-la (ou adapte-la) avec le micro.</span>${C.pistes.map((x,i)=>`<button class="piste" data-pi="${i}">${esc(x)}</button>`).join("")}</div>`:""}
-      ${C.wait?"":micHTML("micC",C.auto&&hasSR()?"Touche le micro et parle : c'est envoyé quand tu t'arrêtes":"Touche le micro et parle")}
+      ${C.wait?"":micHTML("micC",nU?"":(C.auto&&hasSR()?"Touche le micro et parle : c'est envoyé quand tu t'arrêtes":"Touche le micro et parle"))}
       <textarea id="cvIn" rows="2" ${EN_IN} placeholder="Ta réponse en anglais…" ${C.wait?"disabled":""}>${esc(C.draft||"")}</textarea>
       <div class="row"><button class="btn primary" id="cvSend" ${C.wait?"disabled":""}>Envoyer</button>
         <button class="btn sm" id="cvHelp" ${C.pistes.length&&!C.pistesVues&&!C.wait?"":"disabled"}>Je bloque</button>
-        <button class="btn sm" id="cvEnd" ${C.wait?"disabled":""}>Terminer</button></div>
+        <button class="btn sm" id="cvEnd" style="margin-left:auto" ${C.wait?"disabled":""} aria-label="Finir la conversation et voir le bilan">Finir ›</button></div>
     </div>
   </div>`;
   updTimer();
@@ -1615,11 +1643,12 @@ async function finConv(){
   const nU=C.turns.filter(t=>t.role==="user").length;
   stopTTS();
   if(!nU){clearInterval(tick);convOublier();ses=null;renderAll();hautExercice();return}
+  if(!C.recorded&&!convValide(C)&&!confirm(`Il manque encore ${Math.max(0,CONV_QUETE-nU)} réplique(s) et ${Math.max(0,CONV_MOTS-motsConv(C))} mot(s) pour valider la quête Anglais. Terminer quand même ?`)) return;
   C.fini=true; C.recapWait=true; convOublier();
-  const min=Math.max(1,Math.round((Date.now()-C.startedAt)/60000));
+  const min=Math.min(nU*3,Math.max(1,Math.round((Date.now()-C.startedAt)/60000))); // une reprise après une coupure ne gonfle pas la durée
   if(!C.recorded){
     C.recorded=true; clearInterval(tick);
-    C.compte=nU>=CONV_QUETE;
+    C.compte=convValide(C);
     if(C.compte){state.en.sessions.push({date:todayISO(),mod:"conv",scen:C.scen,unit:0,min,xp:C.m.xp,tours:nU});addXP(20,"spk");G().stats.convs=(G().stats.convs||0)+1;checkBadges();confetti()}
     save();
   }
@@ -1646,7 +1675,7 @@ function renderConvFin(p){
     <span class="kicker">Bilan de la conversation</span>
     <h2>${esc(scenOf(C.scen).nom)}</h2>
     <div class="row" style="justify-content:center"><span class="pill ok">+${C.m.xp} XP</span><span class="pill neutral">${nU} réplique${nU>1?"s":""}</span>
-      <span class="pill ${C.compte?"ok":"warn"}">${C.compte?"Quête Anglais validée":`Pas comptée (il fallait ${CONV_QUETE} répliques)`}</span></div>
+      <span class="pill ${C.compte?"ok":"warn"}">${C.compte?"Quête Anglais validée":`Pas comptée (il fallait ${CONV_QUETE} répliques et ${CONV_MOTS} mots)`}</span></div>
   </div>
   ${C.recapWait?'<div class="card"><p class="muted">Claude prépare ton bilan…</p><div class="bar"><i class="indet"></i></div></div>':""}
   ${C.recapErr?`<p class="err small">Bilan indisponible : ${esc(C.recapErr)}</p>`:""}
@@ -2068,10 +2097,14 @@ function drawFig(svg,q){
   // ombre sous le corps
   const o=svg.querySelector(".ombre");if(o){const xs=[q.p[0],q.n[0],q.f[0],q.f2[0]];const a=Math.min(...xs),b=Math.max(...xs);o.setAttribute("cx",((a+b)/2).toFixed(1));o.setAttribute("rx",Math.max(16,(b-a)/2+12).toFixed(1))}
 }
+const calmeFig=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 function animate(now){
-  document.querySelectorAll("svg.fig").forEach(svg=>{
-    const X=EX[svg.dataset.ex]; if(!X) return;
-    const T=X.period*1000*(svg.classList.contains("paused")?1e9:1), ph=(now%T)/T, s=0.5-0.5*Math.cos(2*Math.PI*ph), q={};
+  // seulement l'onglet Renfo, page visible, et les bonshommes réellement affichés (batterie : la boucle tournait sur tous les onglets)
+  if(tab==="str"&&!document.hidden) document.querySelectorAll("svg.fig").forEach(svg=>{
+    const X=EX[svg.dataset.ex]; if(!X||svg.getClientRects().length===0) return;
+    const fige=calmeFig||svg.classList.contains("paused"); if(fige&&svg.dataset.fige===svg.dataset.ex) return;
+    svg.dataset.fige=fige?svg.dataset.ex:"";
+    const T=X.period*1000, ph=fige?0.25:(now%T)/T, s=0.5-0.5*Math.cos(2*Math.PI*ph), q={};
     for(const k in X.FA) q[k]=[X.FA[k][0]+(X.FB[k][0]-X.FA[k][0])*s, X.FA[k][1]+(X.FB[k][1]-X.FA[k][1])*s];
     drawFig(svg,q);
   });
@@ -2115,7 +2148,7 @@ function epicHTML(e,done){
   const ps=Math.min(100,done/e.goal*100), pt=el/tot*100, late=done<e.goal*pt/100-1;
   return `<div class="epic"><div class="row" style="justify-content:space-between"><b>Objectif · ${esc(e.name)}</b><span class="small mono">${done} / ${e.goal} ${e.unit}</span></div>
     <div class="gauge" title="Séances faites"><i class="g-done" style="width:${ps}%"></i></div><div class="gauge thin" title="Temps écoulé"><i class="g-time" style="width:${pt}%"></i></div>
-    <span class="small ${late?"badc2":"okc"}">${done>=e.goal?"Quête accomplie !":late?"La jauge rouge (temps) devance la dorée : rattrape ton retard":"Dans les temps"} · échéance ${frDate(e.end)}</span></div>`;
+    <span class="small ${late?"muted":"okc"}">${done>=e.goal?"Quête accomplie !":late?`Il te faut ~${Math.ceil((e.goal-done)/Math.max(1,(tot-el)/7)*10)/10} ${e.unit} par semaine pour y arriver`.replace(".",","):"Dans les temps"} · échéance ${frDate(e.end)}</span></div>`;
 }
 
 /* ---------- La Forge du vaisseau : chaque jeudi forge une pièce et fissure la Gargouille ---------- */
