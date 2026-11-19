@@ -324,7 +324,7 @@
   .vit-aide { text-align: center; font-size: 12px; color: var(--muted); margin: 6px 0 18px; }
   .vit-acts { display: flex; gap: 8px; margin: -8px 0 16px; } .vit-acts .btn { min-height: 46px; white-space: nowrap; }
   .vit-chemin { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 44px; margin: -6px 0 16px; padding: 8px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line)); background: var(--card); color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
-  .vit-chemin b { color: var(--text); } .vit-chemin em { font-style: normal; font-weight: 700; color: var(--gold); white-space: nowrap; }
+  .vit-chemin b { color: var(--text); } .vit-chemin span { flex: none; } .vit-chemin em { min-width: 0; font-style: normal; font-weight: 700; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .vit-ancre { flex: none; padding: 0 14px; font-size: 14px; } .vit-acts .vit-ancre:only-child { margin: 0 auto; }
   .vit-coffre { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0; font-size: 15px; } .vit-coffre b { min-width: 22px; padding: 0 6px; border-radius: 11px; background: rgba(0,0,0,.25); font-size: 13px; }
   .orn-slot h4 { margin: 14px 0 8px; font: 600 14px var(--f-recit); color: var(--gold); } .orn-slot h4 span { font: 400 12px system-ui, sans-serif; color: var(--muted); margin-left: 6px; }
@@ -6523,6 +6523,12 @@ function ouvrirVitrine(comp) {
   ov.classList.add('on'); document.body.classList.add('bloque');
 }
 function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; document.body.classList.remove('bloque'); if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; } }
+/* vitrine : la prochaine récompense du chemin en une ligne (« Coffre rare dans 320 XP › ») */
+function prochaineVitrine() {
+  const S = state.armurerie.saison; if (S.palier >= S.paliers) return 'Chemin terminé ›';
+  const P = (etapesParcours(state) || [])[S.palier]; if (!P) return 'Voir le chemin ›';
+  return `${esc(P.nom)} dans ${xpFr(Math.max(0, S.cout - S.dansPalier))} XP ›`;
+}
 function dessinerVitrine() {
   const ov = document.getElementById('vitrine'); if (!ov) return;
   const moi = !vitrineCible, s = moi ? state : vitrineCible;
@@ -6546,7 +6552,7 @@ function dessinerVitrine() {
     </div>
     <p class="vit-aide">Incline-le du doigt · touche-le pour le saluer</p>
     ${moi && state.armurerie ? `<div class="vit-acts">${(state.armurerie.coffres || []).length ? `<button class="btn or vit-coffre" data-coffre="1">🎁 Ouvrir un coffre <b>${state.armurerie.coffres.length}</b></button>` : ''}<button class="btn vit-ancre" data-vit-garde="1">🧥 Garde-robe ↓</button></div>` : ''}
-    ${moi && state.armurerie && state.armurerie.saison ? `<button class="vit-chemin" data-vit-chemin="1"><span>⚜ Palier <b>${state.armurerie.saison.palier}</b> / ${state.armurerie.saison.paliers}</span><em>Voir le chemin ›</em></button>` : ''}
+    ${moi && state.armurerie && state.armurerie.saison ? `<button class="vit-chemin" data-vit-chemin="1"><span>⚜ Palier <b>${state.armurerie.saison.palier}</b> / ${state.armurerie.saison.paliers}</span><em>${prochaineVitrine()}</em></button>` : ''}
     <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche pour revoir' : ''}</span></div>
     <div class="evo-rang">${evos}</div>
     ${moi ? blocArmurerie() : ''}
