@@ -1743,9 +1743,9 @@ html.th-carte .rappel-cof b, html.th-celeste .rappel-cof b { color: #b0500a; }
 
   /* Veillée d'armes (31/12 au soir) : lueur d'aube qui respire derrière le héros */
   html.veillee .hx-med { animation: veilleeLueur 3.6s ease-in-out infinite; }
-  @keyframes veilleeLueur { 0%, 100% { filter: drop-shadow(0 0 4px rgba(255,170,90,.35)); } 50% { filter: drop-shadow(0 0 16px rgba(255,190,110,1)) drop-shadow(0 0 6px rgba(255,150,80,.9)); } }
+  @keyframes veilleeLueur { 0%, 100% { filter: drop-shadow(0 0 4px rgba(255,170,90,.35)); } 50% { filter: drop-shadow(0 0 22px rgba(255,200,120,1)) drop-shadow(0 0 8px #ffd27a); } }
   html.veillee .hero-perso .perso-fond::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; border-radius: inherit;
-    background: radial-gradient(90% 60% at 50% 100%, rgba(255,196,110,.85), rgba(255,130,90,.35) 50%, transparent 78%); mix-blend-mode: screen; animation: veilleeFond 3.6s ease-in-out infinite; }
+    background: linear-gradient(to top, transparent 30%, rgba(255,150,110,.55) 52%, rgba(255,120,150,.25) 68%, transparent 85%); mix-blend-mode: screen; animation: veilleeFond 3.6s ease-in-out infinite; }
   @keyframes veilleeFond { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
   body.calme .hx-med, body.calme .hero-perso .perso-fond::after { animation: none !important; }
   @media (prefers-reduced-motion: reduce) { html.veillee .hx-med, html.veillee .hero-perso .perso-fond::after { animation: none; } }
@@ -6017,7 +6017,7 @@ function niveauSup(n, titre, nouveauTitre, avant, apres, evolue) {
   // premier niveau gagné après le Grand Recommencement : on referme l'histoire (une seule fois)
   let premierPas = 0;
   try { const n26 = Number((s.armurerie || {}).niveau2026) || 0;
-    if (n === 2 && s.today >= '2027-01-01' && n26 > 1 && !localStorage.getItem('premierPas2027')) { premierPas = n26; localStorage.setItem('premierPas2027', '1'); } } catch (e) {}
+    if (n >= 2 && s.today >= '2027-01-01' && n26 > 1 && !localStorage.getItem('premierPas2027')) { premierPas = n26; localStorage.setItem('premierPas2027', '1'); } } catch (e) {}
   const recap = [
     premierPas ? ligne('🌅', `<b>Premier pas de la Saison 1</b><small>tu étais niveau ${premierPas} au Rodage : la légende reprend</small>`) : '',
     nouveauTitre ? ligne('👑', `Nouveau titre : <b>${esc(titre)}</b>`) : '',
