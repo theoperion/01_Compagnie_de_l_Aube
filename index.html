@@ -720,7 +720,7 @@
   .pt-nom { flex: 1; min-width: 0; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pt-nom small { color: var(--muted); } .ph-liste li.gros .pt-nom { color: var(--gold); font-weight: 700; }
   .pt-xp { flex: none; font-size: 11px; color: var(--muted); }
   .ph-liste .ph-detail { margin: 4px 0 6px 30px; }
-  body.calme .ph-detail, body.calme .ph-corps { animation: none; } @media (prefers-reduced-motion: reduce) { .ph-detail, .ph-corps { animation: none; } }
+  body.calme .ph-detail, body.calme .ph-corps { animation: none; } @media (prefers-reduced-motion: reduce) { .ph-detail, .ph-detail.entre, .ph-corps, .ph-corps.entre { animation: none; } }
   .ph-liste li.proch .pt-nom::before { content: 'Prochaine · '; color: var(--gold); font-weight: 700; }
   .ph-pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 6px 2px 0; font-size: 11.5px; color: var(--muted); } .ph-ec { color: #9fe4ff; display: inline-flex; align-items: center; gap: 4px; }
   .ph-actions { display: flex; gap: 8px; padding: 2px 12px 10px; } .ph-actions .ph-mar { margin-left: auto; } .ph-actions .btn { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
@@ -4093,7 +4093,7 @@ function parcoursHTML(s) {
       ${restants.length > 6 ? `<button class="ph-tout" data-parcours-tout="1" aria-expanded="${parcoursTout}"><span>Tout le chemin</span><small>${restants.length} paliers · ${nCof} coffre${nCof > 1 ? 's' : ''}</small><i aria-hidden="true">${parcoursTout ? '−' : '+'}</i></button>` : ''}
       ${parcoursTout || !suite.length ? '' : `<div class="ph-grille">${grille}</div>`}
       ${!parcoursTout && !fin.fait && !suite.includes(fin) ? `<button class="ph-final" data-etape="${fin.n}"><span class="ph-v">${vignetteEtape(fin, 36)}</span><span><small>Au bout du chemin · palier ${fin.n}</small><b>${esc(fin.nom)}</b></span></button>` : ''}
-      ${choisi === fin && !parcoursTout && iC < 0 ? detailEtape(choisi, s) : ''}
+      ${choisi === fin && !fin.fait && !parcoursTout && iC < 0 ? detailEtape(choisi, s) : ''}
       ${parcoursTout ? `<ol class="ph-liste">${restants.map(rang).join('')}</ol>` : ''}
       ${allieParcours(s) || S.id === 'pre' ? `<div class="ph-pied">${allieParcours(s) ? `<span>${allieParcours(s)}</span>` : ''}${S.id === 'pre' ? '<span>Rodage jusqu\'au 31 déc.</span>' : ''}</div>` : ''}</div>` : '';
   const cof1 = coffres ? coffreSvg((A.coffres[0] || {}).type || 'commun').replace('width="128" height="107"', 'width="20" height="17"') : '';
@@ -6522,7 +6522,7 @@ function ouvrirVitrine(comp) {
   dessinerVitrine();
   ov.classList.add('on'); document.body.classList.add('bloque');
 }
-function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; document.body.classList.remove('bloque'); if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; } }
+function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; marchandOuvert = false; document.body.classList.remove('bloque'); if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; } }
 /* vitrine : la prochaine récompense du chemin en une ligne (« Coffre rare dans 320 XP › ») */
 function prochaineVitrine() {
   const S = state.armurerie.saison; if (S.palier >= S.paliers) return 'Chemin terminé ›';
@@ -6864,7 +6864,7 @@ function vueFil(s, L) {
   return `<div class="nf ${nfEntree ? 'entree' : ''}">
     <div class="nf-tete"><span>${k ? `<b>${k}</b> non lue${k > 1 ? 's' : ''}` : '✓ Tout est lu'}</span>${k ? '<button class="nf-tout" data-tout-lu="1">Tout marquer lu</button>' : ''}</div>
     ${bloc('À faire', faire)}${bloc('Nouveau', neuf)}${bloc('En vigueur cette semaine', vig, 'nf-vig')}
-    ${bilan.map(n => `<div class="nf-sec">Bilan du dimanche</div>${n.html}`).join('')}
+    ${bilan.map(n => `<div class="nf-sec">Bilan du dimanche</div><div data-nv="${esc(n.id)}">${n.html}</div>`).join('')}
     ${lus.length ? `<button class="nf-lus" data-nf-lus="1" aria-expanded="${nfLusOuverts}">Déjà lu · ${lus.length} <span>${nfLusOuverts ? '▴' : '▾'}</span></button>${nfLusOuverts ? lus.map(n => ligne(n, i++)).join('') : ''}` : ''}
   </div>`;
 }
