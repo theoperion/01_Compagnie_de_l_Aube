@@ -2146,7 +2146,7 @@ function magicien(st, id) {
       <path d="M${100 - rx},63 A${rx},7 0 0,0 ${100 + rx},63" stroke="#000" stroke-width="1.1" opacity=".35" fill="none"/>`;
     if (st >= 5) s += `<path d="M98,44 l1.5,3 l3,0 l-2.5,2 l1,3 l-3,-2 l-3,2 l1,-3 l-2.5,-2 l3,0z" fill="${C.or}"/><circle cx="108" cy="32" r="1.6" fill="${C.or}"/><circle cx="92" cy="53" r="1.3" fill="${C.or}"/>`;
     // 10 (le Vagabond) : plume de voyageur piquée dans le ruban et pointe du chapeau affaissée
-    if (st === 2) s += `<path d="M110,63 Q122,44 132,40 Q126,52 112,62Z" fill="#e8d6a8" stroke="#8a6a3a" stroke-width=".7"/><path d="M111,62 Q122,50 130,42" stroke="#8a6a3a" stroke-width=".6" fill="none"/>
+    if (st === 2) s += `<path d="M108,63.5 Q117,40 141,27 Q137,45 121,57 Q116,61 111,63Z" fill="#c9302c" stroke="#6e1512" stroke-width=".9"/><path d="M110,62.5 Q124,45 139,30" stroke="#f0c9b8" stroke-width=".8" fill="none" opacity=".8"/><path d="M119,52 l6,-1 M124,46 l6,-1.5 M129,40 l5,-2" stroke="#6e1512" stroke-width=".7" opacity=".7"/>
       <path d="M${tx},${pointe} q8,4 10,12" stroke="${C.robeOmbre}" stroke-width="4" stroke-linecap="round" fill="none"/>`;
   }
   // Couronne de lumière (100)
@@ -2196,7 +2196,7 @@ function voleur(st, id, look) {
   };
   const brume = st >= 7 ? '#8a5cff' : st >= 6 ? '#6b4fb0' : '#5c5a6e';
   const capuche = st >= 1, masque = st >= 2;
-  const yeuxLueur = st >= 6 ? (st >= 7 ? '#d9b8ff' : '#b9ffa8') : null;
+  const yeuxLueur = st >= 6 ? (st >= 7 ? '#d9b8ff' : '#3dff6e') : null;
 
   let s = `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Voleur assassin, palier ${st + 1}">
   <defs>
@@ -2214,6 +2214,7 @@ function voleur(st, id, look) {
     <linearGradient id="vtis${id}" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="${C.tissu}"/><stop offset="100%" stop-color="${C.tissuOmbre}"/>
     </linearGradient>
+    <filter id="vfl${id}" x="-50%" y="-80%" width="200%" height="260%"><feGaussianBlur stdDeviation="2"/></filter>
     <radialGradient id="vau${id}" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="${brume}" stop-opacity="${st >= 7 ? .55 : .35}"/>
       <stop offset="65%" stop-color="${brume}" stop-opacity=".1"/><stop offset="100%" stop-color="${brume}" stop-opacity="0"/>
@@ -2244,6 +2245,8 @@ function voleur(st, id, look) {
       <path d="M80,100 Q66,150 ${st >= 5 ? 54 : 60},${bas} M120,100 Q134,150 ${st >= 5 ? 146 : 140},${bas}" stroke="${rim}" stroke-width="1.6" opacity=".6" fill="none"/>
       ${st >= 5 ? `<path d="M80,100 Q70,150 62,226 L70,228 Q78,160 86,108Z M120,100 Q130,150 138,226 L130,228 Q122,160 114,108Z" fill="${C.bordeaux}"/>` : ''}</g>`;
   }
+  // 100 : anneau violet derrière la tête (lisible en médaillon)
+  if (st >= 7) s += `<circle cx="100" cy="76" r="33" fill="#6a3bd6" opacity=".22"/><circle cx="100" cy="76" r="33" fill="none" stroke="#8a4dff" stroke-width="10" opacity=".3"/><circle cx="100" cy="76" r="33" fill="none" stroke="#b98cff" stroke-width="3.6"/><circle cx="100" cy="76" r="33" fill="none" stroke="#f1e4ff" stroke-width="1" opacity=".85"/>`;
   // Capuche : partie arrière (avant la tête)
   if (capuche) s += `<path d="M78,104 Q71,74 82,55 Q90,41 100,40 Q112,40 119,54 Q129,74 122,104 Z" fill="${C.tissuOmbre}"/>`;
 
@@ -2343,8 +2346,9 @@ function voleur(st, id, look) {
       <path d="M${a + .9 * sens},78 Q${cx},80.1 ${b - .4 * sens},77.1" stroke="#5a3a30" stroke-width=".7" opacity=".45" fill="none"/>`;
   };
   // 75+ : regard qui brille dans l'ombre de la capuche (halo large, lisible même en médaillon)
-  if (yeuxLueur) s += `<g class="eyes"><ellipse cx="93.3" cy="77" rx="8" ry="4.6" fill="${yeuxLueur}" opacity=".35"/><ellipse cx="106.7" cy="77" rx="8" ry="4.6" fill="${yeuxLueur}" opacity=".35"/><ellipse cx="93.3" cy="77" rx="5.4" ry="3" fill="${yeuxLueur}" opacity=".7"/><ellipse cx="106.7" cy="77" rx="5.4" ry="3" fill="${yeuxLueur}" opacity=".7"/></g>`;
+  if (yeuxLueur) s += `<g class="eyes"><g filter="url(#vfl${id})"><ellipse cx="93.3" cy="77" rx="9" ry="5.2" fill="${yeuxLueur}"/><ellipse cx="106.7" cy="77" rx="9" ry="5.2" fill="${yeuxLueur}"/></g><ellipse cx="93.3" cy="77" rx="5.4" ry="3" fill="${yeuxLueur}" opacity=".6"/><ellipse cx="106.7" cy="77" rx="5.4" ry="3" fill="${yeuxLueur}" opacity=".6"/></g>`;
   s += oeil(93.3, -1) + oeil(106.7, 1);
+  if (yeuxLueur) s += `<g class="eyes" filter="url(#vfl${id})" opacity=".55"><ellipse cx="93.3" cy="77" rx="3.6" ry="2.2" fill="${yeuxLueur}"/><ellipse cx="106.7" cy="77" rx="3.6" ry="2.2" fill="${yeuxLueur}"/></g>`;
   s += `<g class="h-paup"><ellipse cx="93.3" cy="76.6" rx="4.9" ry="3.3" fill="${L.peau}"/><ellipse cx="106.7" cy="76.6" rx="4.9" ry="3.3" fill="${L.peau}"/></g>`;
   // Nez, bouche (cachés par le masque à partir du palier 3)
   if (!masque) s += `<path d="M100.4,78.5 L98.9,84.4 Q100.3,85.6 102,84.6" stroke="${L.peauOmbre}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
@@ -2366,7 +2370,7 @@ function voleur(st, id, look) {
     <path d="M87.5,92 Q84,78 88.5,66.5 Q93,58.5 100,58.2 Q107,58.5 111.5,66.5 Q116,78 112.5,92 Q100,101.5 87.5,92" stroke="#000" stroke-width="1.6" opacity=".4" fill="none"/>
     <path d="M100,43 Q104,50 100,58" stroke="#000" stroke-width="1" opacity=".25" fill="none"/>
     <path d="M82,104 Q92,98 100,102 Q108,98 118,104" stroke="#000" stroke-width="1" opacity=".25" fill="none"/>
-    ${st >= 5 ? `<path d="M87.5,92 Q84,78 88.5,66.5 Q93,58.5 100,58.2 Q107,58.5 111.5,66.5 Q116,78 112.5,92 Q100,101.5 87.5,92" stroke="${C.argent}" stroke-width=".9" opacity=".45" fill="none"/>` : ''}
+    ${st >= 5 ? `<path d="M87.5,92 Q84,78 88.5,66.5 Q93,58.5 100,58.2 Q107,58.5 111.5,66.5 Q116,78 112.5,92" stroke="${C.argent}" stroke-width="2.2" opacity=".95" fill="none" stroke-linecap="round"/><path d="M89.2,70 Q93,60.6 100,60.2 Q107,60.6 110.8,70" stroke="#fff" stroke-width=".7" opacity=".55" fill="none"/>` : ''}
     <path d="M75,110 Q71,74 83,56 Q91,43 100,42.5 Q110,43 117,56 Q129,74 125,110" stroke="${rim}" stroke-width="1.8" opacity=".75" fill="none" stroke-linecap="round"/>
     <path d="M88,64 Q93,59 100,58.6 Q107,59 112,64" stroke="${rim}" stroke-width="1" opacity=".45" fill="none"/>`;
   // 20+ : foulard rouge noué au cou, un pan qui flotte sur l'épaule
