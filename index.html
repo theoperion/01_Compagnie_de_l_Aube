@@ -8604,7 +8604,6 @@ function agir(nom, statut) {
     else if (!pred.annule && pred.dPv < 0) flotter(`Toi : ${pred.dPv} PV${pred.ripBoss ? ` · 🐉 boss +${pred.ripBoss} PV` : ''}`, 'var(--pv)', nom);
     else if (!pred.annule && pred.ripBoss) flotter(`🐉 Le boss se soigne : +${pred.ripBoss} PV`, 'var(--pv)', nom);
     else if (statut === 'Repos') flotter('Repos', 'var(--rest)', nom);
-    if (pred.dXp > 0) vib(25);
     if (statut === 'Fait' && !pred.annule) { toastAnnuler(nom); sceauxFrais[nom] = Date.now();
       requestAnimationFrame(bondFamilier); requestAnimationFrame(() => { const m = document.querySelector('.hx-med'); if (m && confort().animations) { m.classList.remove('salut'); void m.offsetWidth; m.classList.add('salut'); setTimeout(() => m.classList.remove('salut'), 1000); } }); }
     if (pred.dXp > 0 && dernierToucherXY) effetTrainee(dernierToucherXY[0], dernierToucherXY[1]);
