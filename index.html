@@ -3148,8 +3148,8 @@ document.addEventListener('click', e => {
 
 /* Rappel des coffres du Rodage (du 24 au 31/12, tant qu'il en reste) : toucher ouvre un coffre. */
 function bandeauCoffresRodage(s) {
-  // la saison, pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage et ses coffres
-  const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24') return '';
+  // la saison, pas seulement la date : entre minuit et le recommencement (01/01), le moteur envoie encore le Rodage et ses coffres
+  const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24' || s.today > '2027-01-01') return '';
   const n = (A.coffres || []).filter(c => c.saison === 'pre').length; if (!n) return '';
   const j = s.today > '2026-12-31' ? 0 : 31 - Number(s.today.slice(8, 10)), dernier = j === 0;
   return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? ': dernier soir' : 'à ouvrir'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
@@ -5066,7 +5066,7 @@ function carteBossMini(s) {
         : b.statut === 'À venir' ? `<span>Attaque ${dateLongueCourte(b.debut)} · ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)}</span>`
         : b.statut === 'Trêve' ? '<span>Trêve : la Compagnie est en vacances</span>'
         : `<div class="bar boss"><i style="width:${pct}%"></i></div>
-           <span>${Math.round(b.pv).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)} · ${j ? `encore ${j} j` : 'dernier jour'}</span>${miniCoup(b)}`}
+           <span>${Math.round(Math.min(b.pv, b.pvMax || b.pv)).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)} · ${j ? `encore ${j} j` : 'dernier jour'}</span>${miniCoup(b)}`}
     </div><span class="bm-go">›</span></button>`;
 }
 /** Grande carte d'un boss (onglet Compagnie) */
@@ -5087,7 +5087,7 @@ function carteBoss(b, s) {
     ${vaincu ? `<div class="bc-win">⚔ Vaincu le ${dateCourte(b.vaincuLe)} · +${b.xp} XP pour toi<br><span>Trophée : ${esc(b.trophee)}</span><br><button class="btn mini or" data-bw-revoir="${b.type}" style="margin-top:8px">▶ Revoir la victoire</button></div>`
       : b.statut === 'À venir' ? `<div class="bc-win avenir">Il attaque ${dateLongueCourte(b.debut)} avec ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV.<br><span>Préparez-vous : ses PV tiennent compte de vos vacances.</span></div>`
       : b.statut === 'Trêve' ? '<div class="bc-win">Trêve : toute la Compagnie est en vacances.</div>'
-      : `<div class="bc-pv"><b>${Math.round(b.pv).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} / ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV</b><span>${j ? `Plus que ${j} jour${j > 1 ? 's' : ''}` : 'Dernier jour !'}</span></div>
+      : `<div class="bc-pv"><b>${Math.round(Math.min(b.pv, b.pvMax || b.pv)).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} / ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV</b><span>${j ? `Plus que ${j} jour${j > 1 ? 's' : ''}` : 'Dernier jour !'}</span></div>
          <div class="bar boss big"><i style="width:${pct}%"></i></div>`}
     ${blocCoups(b)}
     ${b.statut === 'À venir' ? '' : `<div class="bc-dmg">Dégâts : ${noms.map(n => `<span style="color:${couleurHeros(n, s)}">${esc(nomAmbiance(n, s))} <b>${Math.round(b.degats[n]).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b></span>`).join(' · ')}${b.riposte ? ` · <span class="rip">riposte +${Math.round(b.riposte)}</span>` : ''}
@@ -7136,7 +7136,7 @@ function predire(s, nom, statut) {
     }
     if (statut === 'Raté' || (statut === 'undo' && res.annule === 'rate')) {
       const sens = statut === 'Raté' ? 1 : -1;
-      b.riposte = Math.max(0, (b.riposte || 0) + sens * rip); b.pv = Math.max(0, b.pv + sens * rip);
+      b.riposte = Math.max(0, (b.riposte || 0) + sens * rip); b.pv = Math.min(b.pvMax || Infinity, Math.max(0, b.pv + sens * rip)); // jamais au-dessus du maximum
       if (sens > 0 && t === 'semaine') res.ripBoss = rip;
       if (b.coups && sens > 0) b.coups.unshift({ date: n.today, heros: n.heros, quete: q.nom, type: 'riposte', valeur: rip });
       if (b.coups && sens < 0) { const k = b.coups.findIndex(c => c.type === 'riposte' && c.quete === q.nom && c.heros === n.heros); if (k >= 0) b.coups.splice(k, 1); }
