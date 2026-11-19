@@ -1858,6 +1858,7 @@ html.th-carte .defi, html.th-carte .bilan-garde { border: 3px solid #3a2a20; box
 .lien .la { fill: none; stroke-width: 2.4; }
 .lien .lo { fill: none; stroke: rgba(0,0,0,.5); stroke-width: 4.2; }
 .lien .la.att { stroke-dasharray: 2.2 2.2; opacity: .45; }
+.lien .la.vac { opacity: .2; } /* héros en vacances : anneau pâle, il n'est pas attendu */
 .lien .lh { fill: none; stroke: #ffd27a; stroke-width: 5.5; opacity: 0; }
 .lien em { font-style: normal; font: 800 12px var(--f-texte); letter-spacing: -.02em; }
 .lien.moi em { color: var(--muted); }
@@ -2778,7 +2779,7 @@ function defiFeteAFaire() {
  * c) Dans render(), sur la ligne « bilanRodageAFaire(); defiFeteAFaire(); souvenirAFaire(); » ajouter :   lienAFaire(); empreinteAFaire();
  */
 const lienBonus = L => String(Math.round((1 + (Number(L && L.bonus) || 0.05)) * 100) / 100).replace('.', ','); // « 1,05 »
-const lienAnneaux = (cM, cL, L) => { const a = L.moi ? '' : ' att', b = L.compagnon ? '' : ' att';
+const lienAnneaux = (cM, cL, L) => { const V = L.vacances || {}, a = V.moi ? ' vac' : L.moi ? '' : ' att', b = V.compagnon ? ' vac' : L.compagnon ? '' : ' att';
   return `<svg viewBox="0 0 30 18" aria-hidden="true">
     <rect class="lh" x="2" y="3.5" width="26" height="11" rx="5.5"/>
     <g class="lg"><rect class="lo" x="2" y="3.5" width="15" height="11" rx="5.5"/><rect class="la${a}" x="2" y="3.5" width="15" height="11" rx="5.5" style="stroke:${cM}"/></g>
@@ -2789,11 +2790,14 @@ const lienCouleurs = s => { const lui = (s.compagnons || [])[0];
 /** Sceau compact dans la carte du jour : anneau plein = a combattu aujourd'hui ; pointillé qui respire = on l'attend */
 function lienArmesHTML(s) {
   const L = s.lienArmes; if (!L || s.today < '2027-01-01' || !(s.compagnons || []).length) return '';
-  const [cM, cL] = lienCouleurs(s), x = lienBonus(L);
-  const etat = L.actif ? 'actif' : L.moi ? 'moi' : 'toi';
-  const mot = L.actif ? 'lié' : L.moi ? 'attend' : 'à toi'; // le ×1,05 reste sur l'étiquette du boss et dans les messages
-  const dit = L.actif ? `Lien d'armes actif : vos coups sur les boss font ×${x} aujourd'hui`
-    : L.moi ? 'Lien d\'armes : en attente de ton compagnon d\'armes' : 'Lien d\'armes : en attente de toi';
+  const V = L.vacances || {}; if (V.moi && V.compagnon) return ''; // tous deux en vacances : pas de lien ce jour-là
+  const [cM, cL] = lienCouleurs(s), x = lienBonus(L), seul = V.moi || V.compagnon, attend = L.moi || V.moi;
+  const etat = L.actif ? 'actif' : attend ? 'moi' : 'toi';
+  const mot = L.actif ? (seul ? 'tient' : 'lié') : attend ? 'attend' : 'à toi'; // le ×1,05 reste sur l'étiquette du boss et dans les messages
+  const dit = L.actif ? (V.compagnon ? `Lien d'armes : ton compagnon d'armes est en vacances, le lien tient avec toi seul : vos coups sur les boss font ×${x} aujourd'hui`
+      : V.moi ? `Lien d'armes : tu es en vacances, ton compagnon d'armes tient le lien seul : vos coups sur les boss font ×${x} aujourd'hui` : `Lien d'armes actif : vos coups sur les boss font ×${x} aujourd'hui`)
+    : attend ? (V.moi ? 'Lien d\'armes : tu es en vacances, en attente de ton compagnon d\'armes' : 'Lien d\'armes : en attente de ton compagnon d\'armes')
+    : V.compagnon ? 'Lien d\'armes : ton compagnon d\'armes est en vacances, en attente de toi' : 'Lien d\'armes : en attente de toi';
   return `<button class="lien ${etat}" data-lien="1" aria-label="${dit}">${lienAnneaux(cM, cL, L)}<em>${mot}</em></button>`;
 }
 /** Étiquette dans la grande carte du boss (seulement quand le lien est actif et le boss en cours) */
@@ -2805,7 +2809,12 @@ function lienTag(b, s) {
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-lien]')) return;
   const L = state && state.lienArmes; if (!L) return;
-  const x = lienBonus(L), n = Number(L.joursSemaine) || 0, sem = n ? ` (${n} jour${n > 1 ? 's' : ''} de lien cette semaine)` : '';
+  const x = lienBonus(L), n = Number(L.joursSemaine) || 0, sem = n ? ` (${n} jour${n > 1 ? 's' : ''} de lien cette semaine)` : '', V = L.vacances || {};
+  if (V.moi && V.compagnon) return;
+  if (V.compagnon) return toast(L.actif ? `⚔ Ton compagnon d'armes est en vacances : le lien tient avec toi seul. Tu as combattu, vos coups sur les boss font ×${x} aujourd'hui${sem}.`
+    : `⚔ Ton compagnon d'armes est en vacances : le lien tient avec toi seul. Une quête aujourd'hui et vos coups sur les boss font ×${x}${sem}.`);
+  if (V.moi) return toast(L.actif ? `⚔ Tu es en vacances : ton compagnon d'armes tient le lien seul. Il a combattu, vos coups sur les boss font ×${x} aujourd'hui${sem}.`
+    : `⚔ Tu es en vacances : ton compagnon d'armes tient le lien seul. Dès sa première quête du jour, vos coups font ×${x}${sem}.`);
   toast(L.actif ? `⚔ Lien d'armes : toi et ton compagnon d'armes avez combattu aujourd'hui. Vos coups sur les boss font ×${x}${sem}.`
     : L.moi ? `⚔ Lien d'armes : tu as combattu, ton compagnon d'armes pas encore. Dès sa première quête du jour, vos coups font ×${x}${sem}.`
     : L.compagnon ? `⚔ Ton compagnon d'armes a combattu. À toi : une quête et vos coups sur les boss font ×${x}${sem}.`
@@ -2822,7 +2831,10 @@ function lienAFaire() {
     const c = document.querySelector('.jour .lien.actif');
     if (!c || document.body.classList.contains('bloque')) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem(k, '1'); } catch (e) {}
-    vib([20, 40, 60]); toast(`⚔ Lien d'armes forgé : toi et ton compagnon d'armes avez combattu aujourd'hui. Vos coups sur les boss font ×${lienBonus(state.lienArmes)}.`);
+    const V = state.lienArmes.vacances || {}, x = lienBonus(state.lienArmes);
+    vib([20, 40, 60]); toast(V.compagnon ? `⚔ Ton compagnon d'armes est en vacances : le lien tient avec toi seul. Vos coups sur les boss font ×${x} aujourd'hui.`
+      : V.moi ? `⚔ Tu es en vacances : ton compagnon d'armes tient le lien seul. Vos coups sur les boss font ×${x} aujourd'hui.`
+      : `⚔ Lien d'armes forgé : toi et ton compagnon d'armes avez combattu aujourd'hui. Vos coups sur les boss font ×${x}.`);
     if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     c.classList.add('forge'); setTimeout(() => c.classList.remove('forge'), 1900);
     setTimeout(() => { const r = c.querySelector('svg').getBoundingClientRect(), [cM, cL] = lienCouleurs(state), cols = ['#ffd27a', cM, '#ffd27a', cL];
