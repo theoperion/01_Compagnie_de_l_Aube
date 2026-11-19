@@ -5184,6 +5184,7 @@ window.carteBoss = function (b, s) {
 
 window.carteBossMini = function (s) { // bandeau d'une ligne : l'onglet Quêtes reste aux quêtes (Théo, 19/11)
   const b = s.boss && s.boss.semaine; if (!b) return '';
+  if (b.statut !== 'En cours') return ''; // rien à faire contre lui (vaincu, enfui, à venir, trêve) : pas de bandeau (Théo, 19/11) ; la barre du bas garde le rappel
   const c = bossChiffres(b, s), vaincu = b.statut === 'Vaincu';
   let l;
   if (vaincu) l = `<span class="bfm-t bm-ok">⚔ Vaincu · 🏆</span>`;
