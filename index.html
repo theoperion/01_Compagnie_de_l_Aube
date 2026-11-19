@@ -668,11 +668,7 @@
   .trainee.tr_petales { color: #f7b6c8; } .trainee.tr_flammes { color: #ff9a3c; }
   @keyframes trainee { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.4); opacity: 0; } }
   .cdg { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
-  .cdg .eclipse { position: absolute; left: 50%; top: 30%; width: 120px; height: 120px; margin-left: -60px; border-radius: 50%; background: #05030a; box-shadow: 0 0 40px 18px rgba(255,230,180,.8), 0 0 90px 40px rgba(180,140,255,.4); animation: eclipse 2.2s ease-out forwards; }
-  .cdg .souffle { position: absolute; left: -10%; top: 30%; width: 120%; height: 90px; background: radial-gradient(ellipse at left, #fff6c8, #ff9a3c 35%, rgba(232,69,44,.6) 60%, transparent 75%); animation: souffle 1.6s ease-out forwards; }
-  @keyframes eclipse { from { transform: scale(.2); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
-  @keyframes souffle { from { transform: scaleX(0); transform-origin: left; opacity: 1; } 60% { transform: scaleX(1); opacity: 1; } to { opacity: 0; } }
-  .trainee.tr_givre { color: #bfe8ff; } .trainee.tr_runes { color: #b392ee; } .trainee.tr_bulles { color: #9fe8f0; } .trainee.tr_etoiles { color: #fff6c8; }
+  .trainee.tr_bulles { color: #9fe8f0; }
   .cdg.vi_foudre svg { position: absolute; left: 30%; top: 0; width: 40%; height: 70%; animation: foudre .9s steps(2) 2; filter: drop-shadow(0 0 12px #9fe4ff); }
   .cdg.vi_etoiles i { position: absolute; top: -10%; font-style: normal; color: #fff6c8; font-size: 18px; animation: etoileTombe 1.8s ease-in forwards; text-shadow: 0 0 8px #ffd27a; }
   @keyframes foudre { 0% { opacity: 1; } 50% { opacity: .2; } 100% { opacity: 1; } }
@@ -2405,7 +2401,7 @@ const ORNEMENTS = [
  * Le moteur dit ce que le héros possède (state.armurerie) et le catalogue (state.catalogueCosm) ; ici, les dessins et l'écran.
  * Emplacements (gardés avec les ornements) : cape, tete, aura, familier (fa_*), monture, repaire, trainee, victoire. */
 const COSM_COUL = { cape_rouge: ['#a83838', '#3a1010'], cape_verte: ['#3c7048', '#122016'], cape_bleue: ['#3c5ea0', '#121a32'], cape_aube: ['#f2a93c', '#7a2a5a'],
-  cape_veteran: ['#3a3270', '#120a22'], cape_hiver: ['#d6e8f4', '#4a6a8a'], cape_sable: ['#e2c48c', '#7a5a2a'], cape_corsaire: ['#2e2a3e', '#0c0a14'], cape_ecarlate: ['#e0283e', '#4a0a14'], cape_legende: ['#8ad0ff', '#4a2a8a'],
+  cape_veteran: ['#3a3270', '#120a22'], cape_corsaire: ['#2e2a3e', '#0c0a14'],
   procrastination: '#b48cff', dissipation: '#5ae6be', oubli: '#dfe3ff', fatigue: '#9fb0e0', doute: '#ff5a5a', tentation: '#ff78aa' };
 const RARETE_NOM = { commun: 'Commun', rare: 'Rare', epique: 'Épique', legendaire: 'Légendaire' };
 const SLOTS_COSM = [
@@ -2427,16 +2423,11 @@ function capeSvg(id, p) {
   return `<defs><linearGradient id="${p}ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs>
     <path class="orn-cape" d="M62 108 Q100 90 138 108 L168 246 Q134 236 100 242 Q66 236 32 246 Z" fill="url(#${p}ca)" stroke="#000" stroke-opacity=".35"/>
     <path d="M86 112 Q80 180 70 242 M114 112 Q120 180 130 242" stroke="#000" stroke-opacity=".14" stroke-width="3" fill="none"/>
-    ${id === 'cape_corsaire' || id === 'cape_legende' ? `<path d="M168 246 Q134 236 100 242 Q66 236 32 246" stroke="${id === 'cape_corsaire' ? '#d4ad3c' : '#e8f4ff'}" stroke-width="4" fill="none"/>` : ''}
-    ${id === 'cape_hiver' ? '<path d="M62 108 Q100 90 138 108" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>' : ''}
+    ${id === 'cape_corsaire' ? '<path d="M168 246 Q134 236 100 242 Q66 236 32 246" stroke="#d4ad3c" stroke-width="4" fill="none"/>' : ''}
     ${id === 'cape_veteran' ? capeVeteranSvg(p) : ''}`;
 }
-/* ===== 3. Cape du Vétéran du Rodage =====
- * a) COSM_COUL (index.html ~l. 2309) : ajouter   cape_veteran: ['#3a3270', '#120a22'],
- * b) capeSvg (~l. 2327) : ajouter, après la ligne « cape_hiver » :   ${id === 'cape_veteran' ? capeVeteranSvg(p) : ''}
- * c) coller capeVeteranSvg juste après capeSvg.
- * Nuit indigo ; l'aube monte de l'ourlet ; liseré d'or ; frise de runes sur les pans (visibles derrière le héros) ;
- * au centre (visible sur la tuile), Dagaz ᛞ, la rune du jour qui se lève, sur un soleil levant. */
+/* Cape du Vétéran du Rodage : nuit indigo, l'aube qui monte de l'ourlet, liseré d'or, frise de runes,
+ * et au centre Dagaz ᛞ (la rune du jour qui se lève) sur un soleil levant. */
 const NOM_COURT = { cape_veteran: 'Cape du Vétéran' }; // nom court sur les petites tuiles (nom complet dans la fiche)
 function capeVeteranSvg(p) {
   // point sur l'ourlet (deux arcs : 36,232 → 100,228 → 164,232), 12 px au-dessus du bord
@@ -2460,10 +2451,7 @@ function capeVeteranSvg(p) {
     <path d="M62 108 Q100 90 138 108" stroke="#e8c25a" stroke-width="3" fill="none" stroke-linecap="round"/>${broche(66)}${broche(134)}`;
 }
 
-/* ===== 1. Le Grand Recommencement : une fois par téléphone, AVANT l'ouverture de la Saison 1 =====
- * Déclenchement : appeler recommencementAFaire() dans render(), juste AVANT ouvertureSaisonAFaire() (~l. 5098).
- * Signal du moteur : state.armurerie.souvenirsRodage (tableau) n'existe qu'une fois le recommencement fait (resetFait_()).
- * Niveau d'avant : state.armurerie.niveau2026 (envoyé par le moteur), sinon le dernier niveau vu sur ce téléphone en 2026. */
+/* Le Grand Recommencement : la cinématique du 1er janvier, une fois par téléphone. */
 const recommencementDu = () => !!(state && state.today >= '2027-01-01' && state.armurerie && Array.isArray(state.armurerie.souvenirsRodage));
 let recoPrevu = false, recoMinuteurs = [];
 function recommencementAFaire() {
@@ -2504,7 +2492,7 @@ function ouvrirRecommencement() {
     <div class="rc-box">
       <div class="rc-sous">1er janvier · Le Grand Recommencement</div>
       <h1 aria-label="${titre}">${titre.split('').map((c, i) => `<span style="animation-delay:${.4 + i * .045}s">${c === ' ' ? '&nbsp;' : esc(c)}</span>`).join('')}</h1>
-      <small class="rc-gl">Tu gardes pour toujours</small><div class="rc-garde">${garde.map((g, i) => `<div class="rc-g" style="--i:${i}"><i>${g[0]}</i><b>${g[1]}</b><small>${esc(String(g[2]))}</small></div>`).join('')}</div>
+      <small class="rc-gl">Tu gardes pour toujours</small><div class="rc-garde">${garde.map((g, i) => `<div class="rc-g" style="--i:${i}"><i>${g[0]}</i><b>${esc(String(g[1]))}</b><small>${esc(String(g[2]))}</small></div>`).join('')}</div>
       <div class="rc-scene"><div class="rc-soleil"></div><div class="rc-heros">${heros}</div>
         <div class="rc-niv"><small>NIV</small><b>${anim && avant > 1 ? avant : 1}</b><div class="lvl-eclats">${anim && avant > 1 ? eclats : ''}</div></div></div>
       <p class="rc-txt">Le Rodage est accompli. Tu repars du <b>niveau 1</b>, plus fort que jamais : tout ce que tu as forgé reste en toi.</p>
@@ -2522,20 +2510,15 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-reco-go]')) { ov.classList.remove('on'); document.body.classList.remove('bloque'); render(); return; } // l'ouverture de la Saison 1 prend le relais
   if (!ov.classList.contains('vite') && !ov.classList.contains('calme')) passerRecommencement(ov);
 });
-/* Dans ouvertureSaisonAFaire(), dans essayer(), première ligne :
- *   if (recommencementDu() && !localStorage.getItem('recommencement2027')) { setTimeout(essayer, 2000); return; }
- * (le Grand Recommencement passe d'abord, même s'il a été retardé par un d20 ou un boss) */
 
-/* ===== 2. Souvenirs du Rodage (dans blocArmurerie, après la ligne « ✦ + N objets à découvrir », avant « Marchand ») =====
- *   ${blocSouvenirs(s)}
- * et ajouter <div class="orn-info" id="info-souv"></div> est déjà dans blocSouvenirs. */
+/* Souvenirs du Rodage : les objets gardés de la pré-saison, dans la Vitrine. */
 function blocSouvenirs(s) {
   const L = ((s.armurerie || {}).souvenirsRodage || []).map(id => cosmItem(id, s)).filter(Boolean);
   if (!L.length) return '';
   const ordre = { legendaire: 0, epique: 1, rare: 2, commun: 3 };
   L.sort((a, b) => (ordre[a.rarete] ?? 4) - (ordre[b.rarete] ?? 4));
   return `<div class="section"><h2>Souvenirs du Rodage</h2><span>${L.length} objet${L.length > 1 ? 's' : ''}</span></div>
-    <div class="souv-rang">${L.map(x => `<button class="souv-t ${x.rarete === 'legendaire' ? 'l' : ''}" data-souv="${x.id}" aria-label="${esc(x.nom)}, souvenir du Rodage"><span class="orn-ic">${apercuCosm(x)}</span></button>`).join('')}</div>
+    <div class="souv-rang">${L.map(x => `<button class="souv-t ${x.rarete === 'legendaire' ? 'l' : ''}" data-souv="${esc(x.id)}" aria-label="${esc(x.nom)}, souvenir du Rodage"><span class="orn-ic">${apercuCosm(x)}</span></button>`).join('')}</div>
     <div class="orn-info" id="info-souv"></div>`;
 }
 document.addEventListener('click', e => {
@@ -2549,9 +2532,7 @@ document.addEventListener('click', e => {
   box.classList.add('on');
 });
 
-/* ===== 4. Rappel des coffres du Rodage (du 24 au 31/12, tant qu'il en reste) =====
- * Dans render(), vueQuetes, juste après ${bandeauMontre(s)} :   ${bandeauCoffresRodage(s)}
- * Toucher = ouvre directement un coffre (même attribut que les boutons existants : data-coffre). */
+/* Rappel des coffres du Rodage (du 24 au 31/12, tant qu'il en reste) : toucher ouvre un coffre. */
 function bandeauCoffresRodage(s) {
   const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24' || s.today > '2026-12-31') return '';
   const n = (A.coffres || []).filter(c => c.saison === 'pre').length; if (!n) return '';
@@ -2559,9 +2540,11 @@ function bandeauCoffresRodage(s) {
   return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? ': dernier soir' : 'à ouvrir'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
 }
 
+const AURA_COUL = { aura_aube: '#ffb86b', aura_etincelles: '#ffd75a', aura_lune: '#dfe4ff', aura_abysses: '#2a9ab8' };
+const AURA_ETINC = ['aura_etincelles', 'aura_aube']; // auras parsemées d'étincelles
 function auraSvg(id, p) {
-  const c = { aura_aube: '#ffb86b', aura_etincelles: '#ffd75a', aura_givre: '#bfe8ff', aura_lune: '#dfe4ff', aura_abysses: '#2a9ab8', aura_legende: '#8ad0ff' }[id] || couleurPano(id) || '#b392ee';
-  const etinc = ['aura_etincelles', 'aura_aube', 'aura_givre', 'aura_legende'].includes(id) ? [[52, 90], [150, 120], [60, 170], [146, 196], [100, 60], [40, 130]].map(([x, y], i) =>
+  const c = AURA_COUL[id] || couleurPano(id) || '#b392ee';
+  const etinc = AURA_ETINC.includes(id) ? [[52, 90], [150, 120], [60, 170], [146, 196], [100, 60], [40, 130]].map(([x, y], i) =>
     `<circle class="orn-etinc" style="animation-delay:${i * .4}s" cx="${x}" cy="${y}" r="2.2" fill="#fff6c8"/>`).join('') : '';
   return `<defs><radialGradient id="${p}au" cx="50%" cy="55%" r="50%"><stop offset=".35" stop-color="${c}" stop-opacity="0"/><stop offset=".72" stop-color="${c}" stop-opacity=".42"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs>
     <ellipse class="orn-aura" cx="100" cy="150" rx="96" ry="118" fill="url(#${p}au)"/>${etinc}`;
@@ -2571,11 +2554,8 @@ function teteSvg(id, y) {
   let d;
   if (id === 'bandeau') d = `<path d="M-20 4 Q0 -6 20 4" stroke="#b07a3a" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="0" cy="-1" r="3.4" fill="#e0475a" stroke="#5a3a1a"/>`;
   else if (id === 'fleurs') d = [-18, -9, 0, 9, 18].map((x, i) => `<circle cx="${x}" cy="${Math.abs(x) / 4}" r="4.2" fill="${['#f7b6c8', '#ffe7b0', '#f4a3bb', '#ffd9a8', '#f7b6c8'][i]}"/><circle cx="${x}" cy="${Math.abs(x) / 4}" r="1.4" fill="#d4ad3c"/>`).join('');
-  else if (id === 'houx') d = [-18, -10, -2, 6, 14].map((x, i) => `<path d="M${x} ${Math.abs(x + 2) / 5} q4 -6 8 0 q-4 4 -8 0z" fill="#2f7a3a" stroke="#14401e" stroke-width=".8"/>`).join('') + '<circle cx="-4" cy="-1" r="2.6" fill="#d8203a"/><circle cx="0" cy="1" r="2.6" fill="#d8203a"/><circle cx="4" cy="-1" r="2.6" fill="#d8203a"/>';
-  else if (id === 'lierre') d = '<path d="M-22 6 Q0 -8 22 6" stroke="#4a7a2a" stroke-width="2" fill="none"/>' + [-16, -6, 4, 14].map(x => `<path d="M${x} ${2 - (12 - Math.abs(x)) / 3} q4 -6 8 -2 q-2 6 -8 2z" fill="#6aa04a"/>`).join('');
   else if (id === 'plumes') d = '<path d="M-20 6 Q0 -2 20 6" stroke="#8a5a2a" stroke-width="4" fill="none"/>' + [-14, -7, 0, 7, 14].map((x, i) => `<path d="M${x} 2 q${(x / 3).toFixed(1)} -12 ${(x / 6).toFixed(1)} -24 q${-(3 - i % 2)} 10 ${(-x / 6).toFixed(1)} 24z" fill="${['#e85a3c', '#f2c94c', '#3fa9c9', '#f2c94c', '#e85a3c'][i]}" stroke="#3a2a1a" stroke-width=".6"/>`).join('');
   else if (id === 'cornes') d = '<path d="M-14 6 C-30 0 -32 -18 -22 -26 C-24 -14 -18 -6 -8 -2Z M14 6 C30 0 32 -18 22 -26 C24 -14 18 -6 8 -2Z" fill="#e8dcc0" stroke="#5a4630" stroke-width="1.2"/><path d="M-14 6 Q0 0 14 6" stroke="#5a4630" stroke-width="3" fill="none"/>';
-  else if (id === 'tete_legende') d = `<path d="M-24 8 L-20 -14 L-10 -4 L0 -24 L10 -4 L20 -14 L24 8 Z" fill="#cfe9ff" stroke="#3a5a9a" stroke-width="1.6" stroke-linejoin="round"/><path d="M0 -16 L3 -9 L10 -8 L5 -3 L6 4 L0 0 L-6 4 L-5 -3 L-10 -8 L-3 -9 Z" fill="#8ad0ff" stroke="#fff" stroke-width=".8"/><circle cx="0" cy="-4" r="12" fill="#8ad0ff" opacity=".2"/>`;
   else if (id === 'tete_aube') d = `<g class="orn-rayons">${[-60, -30, 0, 30, 60].map(a => `<path d="M0 -6 L${(Math.sin(a * Math.PI / 180) * 26).toFixed(1)} ${(-6 - Math.cos(a * Math.PI / 180) * 26).toFixed(1)}" stroke="#ffd27a" stroke-width="2" opacity=".6"/>`).join('')}</g>
     <path d="M-24 8 L-18 -14 L-9 -2 L0 -22 L9 -2 L18 -14 L24 8 Z" fill="#f2c94c" stroke="#7a5512" stroke-width="1.6" stroke-linejoin="round"/><circle cx="0" cy="-4" r="3.6" fill="#ff6a8a"/><circle cx="-12" cy="2" r="2" fill="#5ab0ff"/><circle cx="12" cy="2" r="2" fill="#5ab0ff"/>`;
   else d = `<path d="M-22 6 L-17 -11 L-8 -1 L0 -17 L8 -1 L17 -11 L22 6 Z" fill="${c || '#f2c94c'}" stroke="#2a1d30" stroke-width="1.6" stroke-linejoin="round" opacity=".95"/>
@@ -2587,18 +2567,12 @@ const FAMILIERS_AUBE = {
   fa_dragon: ['#d9c7f0', '#8f6bd6', '#6a45b8', '#b392ee'],
   fa_loup: ['#e8eef4', '#b8c4d2', '#7f8ea2', '#e8eef4'],
   fa_chouette: ['#f3e3b0', '#8a6a4a', '#5a4430', '#cfb18a'],
-  fa_phenix: ['#ffd9a0', '#ff6a3c', '#a33a1a', '#ffd23a'], fa_renard: ['#ffd0a8', '#e8742c', '#5a2a10', '#fff'], fa_golem: ['#dcd6e8', '#8a7e9a', '#3a3446', '#7fe3ff']
+  fa_renard: ['#ffd0a8', '#e8742c', '#5a2a10', '#fff'], fa_golem: ['#dcd6e8', '#8a7e9a', '#3a3446', '#7fe3ff']
 };
 function familierAube(id, stade) {
   const c = FAMILIERS_AUBE[id] || FAMILIERS_AUBE.fa_dragon;
   if (stade <= 0) return `<ellipse cx="50" cy="66" rx="20" ry="26" fill="${c[0]}" stroke="${c[2]}" stroke-width="2"/><path d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5" stroke="${c[2]}" stroke-width="2" fill="none"/><circle cx="44" cy="74" r="3" fill="${c[1]}"/><circle cx="57" cy="56" r="2.5" fill="${c[1]}"/>`;
   const yeux = (y, k) => `<circle cx="${50 - 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 + 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 - 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/><circle cx="${50 + 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/>`;
-  if (id === 'fa_phenix') {
-    const k = [0, 1, 1.2, 1.45][stade];
-    return `<g transform="translate(50 92) scale(${k}) translate(-50 -92)"><path class="orn-aile" d="M30 66 Q8 50 14 30 Q26 44 40 54Z M70 66 Q92 50 86 30 Q74 44 60 54Z" fill="#ff8a3c" stroke="#a33a1a"/>
-      <path class="flam" d="M42 84 q-6 10 -2 14 q4 -6 10 -8 q6 2 10 8 q4 -4 -2 -14z" fill="#ffd23a"/><ellipse cx="50" cy="70" rx="14" ry="16" fill="#e8452c"/><circle cx="50" cy="48" r="11" fill="#ff6a3c"/>
-      <path d="M50 38 q-6 -10 0 -18 q2 8 6 6 q0 8 -6 12z" fill="#ffd23a"/><circle cx="46" cy="46" r="2" fill="#1a0a05"/><circle cx="54" cy="46" r="2" fill="#1a0a05"/><path d="M48 52 l2 4 l2 -4z" fill="#f2c94c"/></g>`;
-  }
   if (id === 'fa_renard') {
     const k = [0, 1, 1.2, 1.4][stade];
     return `<g transform="translate(50 92) scale(${k}) translate(-50 -92)"><path class="flam" d="M66 80 q26 -2 26 -24 q-6 8 -14 6 q8 10 -12 18z" fill="#ff8a3c"/><path d="M86 58 q4 -4 4 -10 q-4 6 -8 6z" fill="#fff"/>
@@ -2635,16 +2609,6 @@ function familierAubeSvg(id, stade, grand) {
   return `<g transform="translate(${grand ? -6 : 2} ${246 - 94 * k}) scale(${k})"><g class="orn orn-fam"><ellipse cx="50" cy="94" rx="24" ry="4" fill="#000" opacity=".35"/>${familierAube(id, stade)}</g></g>`;
 }
 function montureSvg(id) {
-  if (id === 'mo_loup') return `<g class="orn-monture"><ellipse cx="112" cy="186" rx="68" ry="28" fill="#8a94a8"/><path d="M60 180 Q40 140 30 120 Q26 104 40 100 L62 110 Q70 140 88 166Z" fill="#8a94a8"/>
-    <path d="M28 104 L20 84 L36 96Z M44 98 L46 78 L54 96Z" fill="#6a7488"/><path d="M30 118 q-16 2 -18 -8 l18 -6z" fill="#b8c2d4"/><circle cx="32" cy="108" r="2.2" fill="#ffd23a"/>
-    <path d="M176 178 q30 -10 26 -40 q-8 18 -24 22z" fill="#8a94a8"/><path d="M60 170 Q90 150 120 160 Q150 150 176 168" stroke="#dfe6f0" stroke-width="6" fill="none" opacity=".6"/>
-    ${[58, 82, 142, 166].map(x => `<rect x="${x}" y="200" width="11" height="46" rx="5" fill="#6a7488"/>`).join('')}</g>`;
-  if (id === 'mo_dragon') return `<g class="orn-monture"><path class="orn-aile" d="M90 130 Q30 40 -24 46 Q6 80 -6 100 Q30 104 26 128 Q60 120 70 150Z" fill="#7a2a3a" stroke="#2a0a12" stroke-width="1.5"/>
-    <path class="orn-aile" d="M110 130 Q170 40 224 46 Q194 80 206 100 Q170 104 174 128 Q140 120 130 150Z" fill="#7a2a3a" stroke="#2a0a12" stroke-width="1.5"/>
-    <ellipse cx="110" cy="190" rx="72" ry="30" fill="#a83a4a"/><path d="M50 182 Q30 140 24 112 Q22 96 36 92 L52 100 Q60 130 80 164Z" fill="#a83a4a"/>
-    <path d="M26 104 q-18 4 -22 -8 l20 -8z" fill="#c84a5a"/><path d="M30 92 l-6 -14 l12 10 M42 92 l2 -16 l6 14" fill="#f3dfa0"/><circle cx="30" cy="98" r="2.4" fill="#ffd23a"/>
-    <path class="flam" d="M4 98 q-14 -4 -18 4 q10 2 18 -4z" fill="#ff9a3c"/><path d="M180 186 q34 0 38 -30 l-6 6 l4 -12 l-10 8" stroke="#a83a4a" stroke-width="8" fill="none" stroke-linecap="round"/>
-    ${[56, 80, 140, 164].map(x => `<rect x="${x}" y="206" width="12" height="40" rx="5" fill="#8a2a3a"/>`).join('')}</g>`;
   if (id === 'mo_griffon') return `<g class="orn-monture"><path class="orn-aile" d="M96 120 Q40 40 -20 30 Q10 70 0 90 Q30 100 20 120 Q50 120 60 140 Z" fill="#c9a86a" stroke="#5a4020" stroke-width="1.5"/>
     <path class="orn-aile" d="M104 120 Q160 40 220 30 Q190 70 200 90 Q170 100 180 120 Q150 120 140 140 Z" fill="#c9a86a" stroke="#5a4020" stroke-width="1.5"/>
     <path d="M30 110 q-10 -22 10 -30 q16 -4 22 12 l-8 20 z" fill="#f3ead8" stroke="#5a4020"/><path d="M28 96 l-14 6 l14 4 z" fill="#d4ad3c"/><circle cx="38" cy="92" r="2.4" fill="#1a1028"/>
@@ -2656,6 +2620,7 @@ function montureSvg(id) {
     <path d="M92 158 h44 l-6 22 h-32 z" fill="#7a2a2a" stroke="#d4ad3c"/></g>`;
 }
 /** Décor du repaire (fond seul, cadre 200 × 260, sol vers y = 236–260) */
+const DECORS_REPAIRE = {}; // décors ajoutés par une saison : (p, aides) => contenu SVG
 function repaireSvg(id, p) {
   const nuit = `<linearGradient id="${p}n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d0a1c"/><stop offset=".7" stop-color="#2a1d3e"/><stop offset="1" stop-color="#3a2546"/></linearGradient>`;
   const lum = `<radialGradient id="${p}l" cx="50%" cy="70%" r="55%"><stop offset="0" stop-color="#ffcf7a" stop-opacity=".5"/><stop offset=".6" stop-color="#ff9a3c" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`;
@@ -2689,22 +2654,7 @@ function repaireSvg(id, p) {
     ${banniere(46, 30, '#2f5a3a', '💀')}${banniere(124, 30, '#7a2a1a', '🔥')}
     <path d="M0 236 L200 236 L200 260 L0 260 Z" fill="#2a2236"/><path d="M76 236 L124 236 L160 260 L40 260 Z" fill="#8a2424"/><rect width="200" height="260" fill="url(#${p}l)" opacity=".6"/>
     ${[[0, 26], [174, 26]].map(([x, w]) => `<rect x="${x}" y="0" width="${w}" height="250" fill="url(#${p}p)" stroke="#0e0a14" stroke-width="2"/><rect x="${x - 4}" y="0" width="${w + 8}" height="14" fill="#4a4258"/><rect x="${x - 4}" y="236" width="${w + 8}" height="14" fill="#4a4258"/>`).join('')}${torche(36)}${torche(164)}`;
-  else if (id === 're_forge') sc = `<rect width="200" height="260" fill="#241a18"/>${Array.from({ length: 18 }, (_, r) => Array.from({ length: 8 }, (_, c) => `<rect x="${(r % 2) * 14 + c * 28 - 14}" y="${r * 14}" width="27" height="13" fill="none" stroke="#120c0a"/>`).join('')).join('')}
-    <path d="M60 236 L60 120 Q100 90 140 120 L140 236 Z" fill="#120806"/><path d="M70 236 L70 150 Q100 128 130 150 L130 236Z" fill="#ff6a1c" opacity=".55"/><rect width="200" height="260" fill="url(#${p}l)"/>
-    <g transform="translate(22 196)"><path d="M0 0 h40 l-6 12 h-28z" fill="#3a3446"/><rect x="12" y="12" width="16" height="28" fill="#2a2430"/><path d="M4 -8 l10 4 l20 -2" stroke="#9aa0b0" stroke-width="3"/></g>
-    <g transform="translate(160 150)"><rect x="-4" y="0" width="8" height="86" fill="#3a2818"/>${[0, 1, 2].map(i => `<path d="M-14 ${10 + i * 22} h28" stroke="#9aa0b0" stroke-width="4"/>`).join('')}</g>
-    <path d="M0 236 L200 236 L200 260 L0 260 Z" fill="#1a1210"/>${feu(100, 236, 1.4)}
-    ${[30, 60, 140, 170].map((x, i) => `<circle class="orn-etinc" style="animation-delay:${i * .5}s" cx="${x}" cy="${120 + (i % 2) * 30}" r="1.6" fill="#ffb347"/>`).join('')}`;
-  else if (id === 're_biblio') sc = `<rect width="200" height="260" fill="url(#${p}n)"/>${etoiles}
-    ${[[0, 30], [150, 30]].map(([x]) => `<g transform="translate(${x} 20)"><rect width="50" height="216" fill="#3a2618" stroke="#140a06"/>${Array.from({ length: 7 }, (_, k) => Array.from({ length: 9 }, (_, j) => `<rect x="${3 + j * 5}" y="${6 + k * 30}" width="4" height="${20 - (j % 3) * 3}" fill="${['#7a2a2a', '#2f5a3a', '#2a4a7a', '#d4ad3c', '#6a3a8a'][(j + k) % 5]}"/>`).join('') + `<rect y="${28 + k * 30}" width="50" height="3" fill="#140a06"/>`).join('')}</g>`).join('')}
-    ${[[70, 60, -12], [120, 90, 10], [90, 40, 6], [130, 50, -8]].map(([x, y, a], i) => `<g class="orn-flotte" style="animation-delay:${i * .6}s"><g transform="translate(${x} ${y}) rotate(${a})"><path d="M-12 0 Q0 -6 12 0 L12 8 Q0 2 -12 8Z" fill="#efe6c4" stroke="#6a4a2a"/><path d="M0 -3 V5" stroke="#6a4a2a"/></g></g>`).join('')}
-    <rect width="200" height="260" fill="url(#${p}l)" opacity=".6"/><path d="M0 236 L200 236 L200 260 L0 260 Z" fill="#2a1c14"/><ellipse cx="100" cy="246" rx="70" ry="10" fill="#6a2a2a" opacity=".7"/>`;
-  else if (id === 're_navire') sc = `<rect width="200" height="260" fill="url(#${p}n)"/>${etoiles}<circle cx="40" cy="40" r="16" fill="#f3e3b0" opacity=".9"/>
-    ${[[30, 80], [150, 60], [110, 120]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="34" ry="8" fill="#efe6ff" opacity=".18"/>`).join('')}
-    <path d="M100 30 V200" stroke="#5a3a22" stroke-width="5"/><path d="M104 40 Q150 70 104 130Z" fill="#efe6c4" stroke="#8a6a4a"/><path d="M96 50 Q60 80 96 120Z" fill="#e8dcc0" stroke="#8a6a4a"/><path d="M100 30 l22 6 l-22 6" fill="#a33a3a"/>
-    <path d="M-10 200 Q100 230 210 200 L210 260 L-10 260Z" fill="#6a4428" stroke="#2a1a10" stroke-width="2"/><path d="M-10 214 Q100 244 210 214" stroke="#d4ad3c" stroke-width="3" fill="none"/>
-    ${[20, 50, 150, 180].map(x => `<rect x="${x - 2}" y="216" width="4" height="20" fill="#3a2a1a"/>`).join('')}<rect width="200" height="260" fill="url(#${p}l)" opacity=".5"/>
-    <path class="orn-aile" d="M-10 214 Q-40 180 -20 150 Q-6 180 10 200Z M210 214 Q240 180 220 150 Q206 180 190 200Z" fill="#efe6ff" opacity=".6"/>`;
+  else if (DECORS_REPAIRE[id]) sc = DECORS_REPAIRE[id](p, { etoiles, feu, lanterne, banniere, torche, arbres });
   else sc = `<rect width="200" height="260" fill="url(#${p}n)"/>${etoiles}<circle cx="150" cy="44" r="13" fill="#f3e3b0" opacity=".9"/>
     <path d="M0 200 Q60 170 100 186 Q150 168 200 196 L200 260 L0 260 Z" fill="#1a2a22"/>${arbres('#0f1c16')}<rect width="200" height="260" fill="url(#${p}l)"/>
     <path d="M0 238 Q100 226 200 238 L200 260 L0 260 Z" fill="#14201a"/>${feu(160, 246, 1.1)}`;
@@ -2784,8 +2734,9 @@ function apercuCosm(x) {
   if (x.slot === 'familier') return `<svg viewBox="0 0 100 100" width="34" height="34">${familierAube(x.id, 2)}</svg>`;
   if (x.slot === 'monture') return `<svg viewBox="-20 20 240 230" width="38" height="36">${montureSvg(x.id)}</svg>`;
   if (x.slot === 'repaire') return `<span class="ap-rep">${repaireSvg(x.id, p)}</span>`;
-  return `<span class="ap-ef">${{ tr_etincelles: '✨', tr_petales: '🌸', tr_flammes: '🔥', vi_etoiles: '🌠', vi_foudre: '⚡', tr_givre: '❄️', tr_runes: 'ᚱ', tr_bulles: '🫧', tr_etoiles: '💫', vi_eclipse: '🌑', vi_souffle: '🐉' }[x.id] || '✦'}</span>`;
+  return `<span class="ap-ef">${ICONES_EFFETS[x.id] || '✦'}</span>`;
 }
+const ICONES_EFFETS = { tr_etincelles: '✨', tr_petales: '🌸', tr_flammes: '🔥', vi_etoiles: '🌠', vi_foudre: '⚡', tr_bulles: '🫧' };
 const CHEMIN_APP = { 1: { item: 'cape_rouge' }, 2: { item: 'bandeau' }, 3: { coffre: 'commun' }, 4: { item: 'tr_etincelles' }, 5: { coffre: 'rare' },
   8: { coffre: 'commun' }, 10: { coffre: 'epique' }, 12: { item: 'fleurs' }, 14: { coffre: 'rare' }, 15: { item: 'aura_etincelles' }, 18: { coffre: 'rare' },
   20: { item: 'cape_aube' }, 22: { coffre: 'epique' }, 25: { item: 'mo_destrier' }, 28: { coffre: 'rare' }, 30: { coffre: 'epique' }, 33: { item: 'tr_flammes' },
@@ -3121,9 +3072,10 @@ document.addEventListener('click', e => {
 });
 
 /* --- Effets : traînée à chaque quête validée, coup de grâce sur les boss --- */
+const TRAINEES = { tr_etincelles: ['✦', '✧', '·'], tr_petales: ['🌸', '❀', '✿'], tr_flammes: ['🔥', '✹', '·'], tr_bulles: ['○', '◦', '°'] };
 function effetTrainee(x, y) {
   const id = (ornementsDe(state) || {}).trainee; if (!id || !confort().animations) return;
-  const sym = { tr_etincelles: ['✦', '✧', '·'], tr_petales: ['🌸', '❀', '✿'], tr_flammes: ['🔥', '✹', '·'], tr_givre: ['❄', '❅', '·'], tr_runes: ['ᚱ', 'ᚨ', 'ᛟ'], tr_bulles: ['○', '◦', '°'], tr_etoiles: ['★', '✦', '✧'] }[id]; if (!sym) return;
+  const sym = TRAINEES[id]; if (!sym) return;
   for (let i = 0; i < 12; i++) {
     const p = document.createElement('i'); p.className = 'trainee ' + id; p.textContent = sym[i % sym.length];
     p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.setProperty('--dx', (Math.cos(i / 12 * Math.PI * 2) * (40 + i % 3 * 18)) + 'px'); p.style.setProperty('--dy', (Math.sin(i / 12 * Math.PI * 2) * (40 + i % 3 * 18) - 30) + 'px');
@@ -3133,12 +3085,12 @@ function effetTrainee(x, y) {
 let dernierToucherXY = null;
 let dernierToucherCarte = null;
 document.addEventListener('pointerdown', e => { dernierToucherXY = [e.clientX, e.clientY]; const c = e.target.closest && e.target.closest('.card'); dernierToucherCarte = c ? c.getBoundingClientRect() : null; }, true);
+const COUPS_DE_GRACE = { vi_foudre: '<svg viewBox="0 0 100 200" preserveAspectRatio="none"><path d="M60 0 L30 90 L52 90 L28 200 L78 70 L54 70 L74 0 Z" fill="#fff6c8" stroke="#9fe4ff" stroke-width="3"/></svg>' };
 function effetCoupDeGrace() {
   const id = (ornementsDe(state) || {}).victoire; if (!id || !confort().animations) return;
   const sc = document.querySelector('.boss-win .bw-scene'); if (!sc) return;
   const f = document.createElement('div'); f.className = 'cdg ' + id;
-  f.innerHTML = id === 'vi_eclipse' ? '<div class="eclipse"></div>' : id === 'vi_souffle' ? '<div class="souffle"></div>' : id === 'vi_foudre' ? '<svg viewBox="0 0 100 200" preserveAspectRatio="none"><path d="M60 0 L30 90 L52 90 L28 200 L78 70 L54 70 L74 0 Z" fill="#fff6c8" stroke="#9fe4ff" stroke-width="3"/></svg>'
-    : Array.from({ length: 18 }, (_, i) => `<i style="left:${(i * 37) % 100}%;animation-delay:${(i % 6) * .12}s">✦</i>`).join('');
+  f.innerHTML = COUPS_DE_GRACE[id] || Array.from({ length: 18 }, (_, i) => `<i style="left:${(i * 37) % 100}%;animation-delay:${(i % 6) * .12}s">✦</i>`).join('');
   sc.appendChild(f); setTimeout(() => f.remove(), 2600);
 }
 
