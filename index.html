@@ -328,7 +328,7 @@
   .vit-chemin b { color: var(--text); } .vit-chemin span { flex: none; } .vit-chemin em { min-width: 0; font-style: normal; font-weight: 700; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .vit-ancre { flex: none; padding: 0 14px; font-size: 14px; } .vit-acts .vit-ancre:only-child { margin: 0 auto; }
   .vit-coffre { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0; font-size: 15px; } .vit-coffre b { min-width: 22px; padding: 0 6px; border-radius: 11px; background: rgba(0,0,0,.25); font-size: 13px; }
-  .orn-slot h4 { margin: 14px 0 8px; font: 600 14px var(--f-recit); color: var(--gold); } .orn-slot h4 span { font: 400 12px system-ui, sans-serif; color: var(--muted); margin-left: 6px; }
+  .orn-slot h4 { margin: 14px 0 8px; font: 600 14px var(--f-recit); color: var(--gold); } .orn-slot h4 span { font: 400 12px var(--f-texte); color: var(--muted); margin-left: 6px; }
   .orn-liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; }
   .orn-t { position: relative; }
   .orn-b { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 4px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
@@ -2265,7 +2265,8 @@ html[class] .hxc .hx-btn::after { content: ''; position: absolute; left: 50%; wi
 /* Bandeau du héros « plus grand » (Théo 19/11 : tout est tout petit, on voit à peine le visage) */
 .hxc { gap: 10px; padding: 9px 4px 10px 11px; }
 html[class] .hxc .hx-med { width: 66px; height: 66px; }
-html[class] .hxc .hx-med svg { width: 184px; top: -40px; }
+html[class] .hxc .hx-med svg { width: 200px; top: -52px; }
+.hxc .hxc-d { margin-left: 5px; } .hxc-j.pv.bas em small { margin-right: 4px; }
 html[class] .hxc .hx-med svg[aria-label^="Magicien"] { top: -32px; }
 html[class] .hxc .hx-med svg[aria-label^="Voleur"] { width: 240px; top: -60px; }
 html.th-olympe .hxc-m::before { left: -8px; top: -6px; width: 83px; height: 80px; }
@@ -6654,7 +6655,7 @@ function demanderLegende(p, afficher) {
 }
 function montrerLegende(c) {
   const el = document.getElementById('sheetPal');
-  el.innerHTML = `<h3>📖 ${esc(c.titre)}</h3><p style="font-family:Georgia,serif;line-height:1.55;font-size:14.5px;color:#eadfc6;margin:6px 0 10px">${esc(c.texte)}</p>
+  el.innerHTML = `<h3>📖 ${esc(c.titre)}</h3><p style="font-family:var(--f-recit);line-height:1.55;font-size:14.5px;color:#eadfc6;margin:6px 0 10px">${esc(c.texte)}</p>
     <p class="muted" style="font-size:12px;margin:0">Nouveau chapitre de ta légende · ${esc(c.palier || '')}. Tu le retrouves dans l'onglet Héros.</p>
     <button class="cancel" data-pal-close="1">Fermer</button>`;
   el.classList.add('on'); document.getElementById('sheetBg').classList.add('on');
