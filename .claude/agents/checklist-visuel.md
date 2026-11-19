@@ -7,6 +7,7 @@
 - [ ] Testé à **360 et 390 px**, dans les **4 thèmes** (Yggdrasil, Taverne, Olympe, Épopée) : aucun texte coupé, aucun chevauchement, aucun débordement horizontal.
 - [ ] Lisible **en petit** (bandeau ~30 px, tuile ~32 px) : silhouette pleine, pas de gribouillis, pas de détails microscopiques.
 - [ ] Contraste suffisant (pas de blanc sur blanc, pas de sombre sur sombre ; tête détachée du fond/des ailes).
+- [ ] Toute la carte réagit au toucher (pas seulement une petite flèche) ; les boutons internes gardent leur action.
 - [ ] Pas de lecture ambiguë : un objet ne doit pas ressembler à autre chose (rangées de cercles = « cave à vin », traits fins = « antennes », spirale = « queue de diablotin », membres raides = « bâtons »/« bottes », paupières pleines = « lunettes »).
 - [ ] Anatomie crédible (pattes en fuseau, épaule/coude/doigts ; têtes proportionnées).
 - [ ] Teintes des stades : pas de peau qui vire au vert/kaki ; vérifier chaque stade en capture.

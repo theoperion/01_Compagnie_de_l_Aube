@@ -662,6 +662,30 @@
     border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--card)); }
   .ph-final .ph-v { width: 48px; height: 48px; } .ph-final span:last-child { display: grid; } .ph-final small { font-size: 11px; color: var(--muted); } .ph-final b { font: 700 15px var(--f-titre); color: var(--gold); }
   .ph .orn-info { margin: 6px 0 0; }
+  /* Parcours v3 : zone de bascule, détail d'étape, contenu d'un coffre, « Tout le chemin » */
+  .ph-pano { cursor: pointer; -webkit-tap-highlight-color: transparent; } .ph-pano:active .ph-svg { opacity: .92; }
+  .ph-c.choisi, .ph-final.choisi { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--card)); }
+  .ph-detail { margin: 8px 0 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line)); background: color-mix(in srgb, var(--gold) 7%, var(--card)); animation: phOuvre .22s ease-out; }
+  .ph-detail p { margin: 4px 0 6px; font-size: 12px; color: var(--muted); } .ph-detail .pd-note { margin: 6px 0 0; color: var(--gold); }
+  .pd-t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; } .pd-t b { font-size: 13.5px; color: var(--text); } .pd-t span { flex: none; font-size: 11.5px; color: var(--muted); }
+  .pd-r { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+  .pd-n { flex: none; min-width: 116px; white-space: nowrap; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--text); } .pd-n em { margin-left: auto; padding-left: 6px; font-style: normal; font-weight: 600; color: var(--muted); }
+  .pd-n i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .r-commun .pd-n i { background: #8fc47a; } .r-rare .pd-n i { background: #5ab0ff; } .r-epique .pd-n i { background: #b392ee; } .r-legendaire .pd-n i { background: #f2c94c; }
+  .pd-o { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; } .pd-o small { font-size: 11px; color: var(--muted); }
+  .pd-ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, #3a3046, #120e18 75%); }
+  .pd-ic svg, .pd-ic .ap-rep svg { max-width: 24px; max-height: 24px; } .pd-ic .ap-rep { width: 24px; display: block; } .pd-ic .ap-ef { font-size: 15px; }
+  .ph-tout { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 8px; padding: 9px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--gold) 45%, var(--line)); background: none; color: var(--gold); font: inherit; cursor: pointer; text-align: left; }
+  .ph-tout span { font: 700 14px var(--f-titre); } .ph-tout small { flex: 1; font-size: 11.5px; color: var(--muted); } .ph-tout i { font-style: normal; font: 700 18px/1 var(--f-texte); }
+  .ph-liste { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px; }
+  .ph-liste button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 6px; border-radius: 10px; border: 0; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+  .ph-liste li:nth-child(odd) > button { background: color-mix(in srgb, var(--card) 70%, transparent); } .ph-liste li.choisi > button { background: color-mix(in srgb, var(--gold) 14%, var(--card)); }
+  .pt-n { flex: none; width: 22px; text-align: right; font-size: 11.5px; font-weight: 800; color: var(--muted); } .ph-liste li.proch .pt-n, .ph-liste li.gros .pt-n { color: var(--gold); }
+  .ph-v.pt-v { width: 30px; height: 30px; border-width: 1px; } .pt-v svg, .pt-v .ap-rep svg { max-width: 22px; max-height: 20px; } .pt-v .ap-rep { width: 22px; }
+  .pt-nom { flex: 1; min-width: 0; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pt-nom small { color: var(--muted); } .ph-liste li.gros .pt-nom { color: var(--gold); font-weight: 700; }
+  .pt-xp { flex: none; font-size: 11px; color: var(--muted); }
+  .ph-liste .ph-detail { margin: 4px 0 6px 30px; }
+  body.calme .ph-detail { animation: none; } @media (prefers-reduced-motion: reduce) { .ph-detail { animation: none; } }
   .ph-pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 6px 2px 0; font-size: 11.5px; color: var(--muted); } .ph-ec { color: #9fe4ff; display: inline-flex; align-items: center; gap: 4px; }
   .ph-actions { display: flex; gap: 8px; padding: 2px 12px 10px; } .ph-actions .btn { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
   .ph-bi { display: inline-grid; place-items: center; width: 20px; height: 18px; } .ph-bi svg { display: block; }
@@ -3823,16 +3847,36 @@ function vignetteEtape(e, w) {
   if (e.type === 'coffre') return coffreSvg(e.r.coffre).replace('width="128" height="107"', `width="${w || 30}" height="${Math.round((w || 30) * .84)}"`);
   return ECLAT_SVG(w ? Math.round(w * .75) : 22);
 }
+let parcoursTout = false, parcoursEtape = 0; // « Tout le chemin » déplié ; palier dont on montre le détail (0 = aucun)
 document.addEventListener('click', e => {
-  if (!e.target.closest('[data-parcours]')) return;
-  parcoursOuvert = !parcoursOuvert; render();
+  if (!e.target.closest('[data-parcours]') || e.target.closest('[data-regles], [data-coffre], [data-armurerie], [data-vitrine]')) return;
+  parcoursOuvert = !parcoursOuvert; if (!parcoursOuvert) { parcoursTout = false; parcoursEtape = 0; } render();
   if (parcoursOuvert) requestAnimationFrame(() => { const f = document.querySelector('.pc-frise'), c = f && f.querySelector('.proch'); if (f && c) f.scrollLeft = c.offsetLeft - f.clientWidth / 2 + c.clientWidth / 2; });
 });
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-etape]'); if (!c || !state || !state.armurerie) return;
-  const E = etapesParcours(state)[Number(c.dataset.etape) - 1], box = document.getElementById('pc-info'); if (!E || !box) return;
-  box.innerHTML = `<b>Palier ${E.n}</b> · ${esc(E.nom)}${E.it && E.it.rarete ? ' · ' + (RARETE_NOM[E.it.rarete] || '') : ''} · ${E.fait ? '✓ gagné' : 'encore ' + xpFr(E.reste) + ' XP'}`; box.classList.add('on');
+  const n = Number(c.dataset.etape); parcoursEtape = parcoursEtape === n ? 0 : n; render();
 });
+document.addEventListener('click', e => { if (e.target.closest('[data-parcours-tout]')) { parcoursTout = !parcoursTout; parcoursEtape = 0; render(); } });
+/* Ce qu'un coffre du chemin peut contenir AUJOURD'HUI : mêmes poids et mêmes règles que tirerCoffreLocal (Armurerie.js),
+ * objets du catalogue de la SAISON COURANTE seulement (au Rodage : rien d'autre que le Rodage), encore non possédés. */
+function contenuCoffre(type, s) {
+  const A = s.armurerie, sa = A.saison.id, a = {}; (A.possede || []).forEach(id => { a[id] = 1; });
+  const w = POIDS_COF[type] || POIDS_COF.rare, tot = w.reduce((x, y) => x + y, 0);
+  const dispo = rar => cosmListe(s).filter(x => x.butin && x.rarete === rar && !a[x.id] && (x.saison || 'pre') === sa);
+  const regles = sa !== 'pre' || String(s.today || '') >= COFFRES_S1_RODAGE;
+  return RARETES_COF.map((r, k) => ({ r, pct: Math.round(w[k] / tot * 100), liste: dispo(r), regles })).filter(x => x.pct > 0);
+}
+function detailEtape(E, s) {
+  const tete = `<div class="pd-t"><b>Palier ${E.n} · ${esc(E.nom)}</b><span>${E.fait ? 'gagné' : 'encore ' + xpFr(E.reste) + ' XP'}</span></div>`;
+  if (E.type !== 'coffre') return `<div class="ph-detail">${tete}<p>${E.it ? (RARETE_NOM[E.it.rarete] || '') + ' · à porter dans ta garde-robe.' : 'Les éclats s\'échangent chez le marchand contre l\'objet de ton choix.'}</p></div>`;
+  const C = contenuCoffre(E.r.coffre, s);
+  return `<div class="ph-detail">${tete}<p>Ce qu'il peut contenir, d'après ce qu'il te manque aujourd'hui :</p>
+    ${C.map(x => `<div class="pd-r r-${x.r}"><span class="pd-n"><i></i>${RARETE_NOM[x.r]}<em>${x.pct} %</em></span>
+      <span class="pd-o">${x.liste.length ? x.liste.slice(0, 5).map(o => `<span class="pd-ic" title="${esc(o.nom)}">${apercuCosm(o)}</span>`).join('') + (x.liste.length > 5 ? `<small>+${x.liste.length - 5}</small>` : '')
+        : `<small>${x.regles && x.r !== 'legendaire' && x.r !== 'epique' ? 'déjà tout : un objet plus rare à la place' : `déjà tout : ${DOUBLON_COF[x.r] * 2} éclats à la place`}</small>`}</span></div>`).join('')}
+    ${E.r.coffre === 'legendaire' && C[0] && C[0].regles ? '<p class="pd-note">Coffre légendaire : un objet légendaire tant qu\'il en reste.</p>' : ''}</div>`;
+}
 /* position du compagnon d'armes (déjà montrée par l'ancien plateau : on ne la perd pas) */
 const allieParcours = s => { const c = (s.compagnons || [])[0]; return c && c.palierSaison != null ? `Allié : palier ${c.palierSaison}` : ''; };
 /* Option C « L'Horizon » (v2) : panorama en silhouettes aux couleurs du thème ; le soleil de l'Aube monte avec ta progression
@@ -3875,16 +3919,23 @@ function parcoursHTML(s) {
     <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>
     <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles">?</button><em>${S.palier}<small> / ${N}</small></em></span>`;
   const suite = E.filter(e => !e.fait).slice(0, 6), fin = E[N - 1];
-  const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''}" data-etape="${e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
+  const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${parcoursEtape === e.n ? 'choisi' : ''}" data-etape="${e.n}" aria-expanded="${parcoursEtape === e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
+  const choisi = parcoursEtape ? E[parcoursEtape - 1] : null, dansGrille = choisi && (suite.includes(choisi) || choisi === fin);
+  const restants = E.filter(e => !e.fait), nCof = restants.filter(e => e.type === 'coffre').length;
+  const rang = e => `<li class="${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${choisi === e ? 'choisi' : ''}"><button data-etape="${e.n}" aria-expanded="${choisi === e}"><span class="pt-n">${e.n}</span>
+      <span class="ph-v pt-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 22)}</span><span class="pt-nom">${esc(e.nom)}${e.it && e.it.rarete ? `<small> · ${RARETE_NOM[e.it.rarete]}</small>` : ''}</span><span class="pt-xp">${xpFr(e.reste)} XP</span></button>
+      ${choisi === e && !dansGrille ? detailEtape(e, s) : ''}</li>`;
   const corps = parcoursOuvert ? `<div class="ph-corps">
       <div class="ph-grille">${suite.map(carte).join('')}</div>
       ${!fin.fait && !suite.includes(fin) ? `<button class="ph-final" data-etape="${fin.n}"><span class="ph-v">${vignetteEtape(fin, 36)}</span><span><small>Au bout du chemin · palier ${fin.n}</small><b>${esc(fin.nom)}</b></span></button>` : ''}
-      <div class="orn-info" id="pc-info"></div>
+      ${dansGrille ? detailEtape(choisi, s) : ''}
+      ${restants.length > 6 ? `<button class="ph-tout" data-parcours-tout="1" aria-expanded="${parcoursTout}"><span>Tout le chemin</span><small>${restants.length} paliers · ${nCof} coffre${nCof > 1 ? 's' : ''}</small><i aria-hidden="true">${parcoursTout ? '−' : '+'}</i></button>` : ''}
+      ${parcoursTout ? `<ol class="ph-liste">${restants.map(rang).join('')}</ol>` : ''}
       <div class="ph-pied"><span class="ph-ec">${ECLAT_SVG(13)} ${A.eclats} éclats</span>${allieParcours(s) ? `<span>${allieParcours(s)}</span>` : ''}${S.id === 'pre' ? '<span>jusqu\'au 31 décembre</span>' : ''}</div></div>` : '';
   const cof1 = coffres ? coffreSvg((A.coffres[0] || {}).type || 'commun').replace('width="128" height="107"', 'width="20" height="17"') : '';
   return `<section class="parcours ph ${parcoursOuvert ? 'ouvert' : ''}">
-    <div class="ph-pano">${pano}</div>
-    <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · ${xpFr(S.cout - S.dansPalier)} XP</span>`}${fini ? '' : '<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
+    <div class="ph-pano" data-parcours="1">${pano}</div>
+    <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · ${xpFr(S.cout - S.dansPalier)} XP</span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
     ${corps}
     <div class="ph-actions">${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Ouvrir un coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie</button></div>
   </section>`;
