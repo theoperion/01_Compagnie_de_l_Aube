@@ -2144,6 +2144,8 @@ html[class] .hxc .hx-btn::after { content: ''; position: absolute; left: 50%; wi
 .hxt-t { padding-top: 15px; padding-bottom: 15px; margin-top: -15px; margin-bottom: -15px; } /* overflow:hidden coupe un ::after : la zone vient du rembourrage */
 .cfu-voir { position: relative; } .cfu-voir::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
 .btn.contour-or { background: transparent; border-color: color-mix(in srgb, var(--gold) 70%, transparent); color: var(--gold); } /* action secondaire : contour or (critique) */
+.reg-bloc > .reg-tete { margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.reg-bloc > .reg-tete + .reg { margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-top: 0; }
 </style>
 </head>
 <body>
@@ -2685,8 +2687,10 @@ document.addEventListener('click', e => { if (e.target.closest('[data-apparence]
 const regOuverts = new Set();
 /** Bloc de réglage replié : une ligne (icône, titre, état en clair) ; déplié, son h3 sert à replier. */
 function regPlie(cle, ic, titre, resume, html) {
-  if (!regOuverts.has(cle)) return `<button class="reg reg-lien" id="reg-${cle}" data-reg-plie="${cle}" aria-expanded="false"><span>${ic}</span><div><b>${titre}</b><small>${resume}</small></div><i>▾</i></button>`;
-  return html.replace('<div class="reg">', `<div class="reg" id="reg-${cle}">`).replace(/<h3>[^<]*<\/h3>/, `<h3 data-reg-plie="${cle}" aria-expanded="true" style="cursor:pointer">${ic} ${titre} <small class="muted" style="font-weight:400">▴ replier</small></h3>`);
+  const tete = ouvert => `<button class="reg reg-lien${ouvert ? ' reg-tete' : ''}" ${ouvert ? '' : `id="reg-${cle}" `}data-reg-plie="${cle}" aria-expanded="${ouvert}"><span>${ic}</span><div><b>${titre}</b><small>${resume}</small></div><i>${ouvert ? '▴' : '▾'}</i></button>`;
+  if (!regOuverts.has(cle)) return tete(false);
+  // critique : même en-tête replié ou déplié ; on ajoute seulement le contenu en dessous
+  return `<div class="reg-bloc" id="reg-${cle}">${tete(true)}${html.replace(/<h3>[^<]*<\/h3>/, '')}</div>`;
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-reg-plie], [data-reg-ouvre]'); if (!b) return;
