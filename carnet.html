@@ -59,13 +59,14 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
   .quest{padding:10px 10px;gap:3px;border-radius:14px} .quest .k{font-size:.62rem;letter-spacing:.08em} .quest .big{font-size:1.1rem;line-height:1.05}
   .quest .row{gap:4px} .quest .pill{font-size:.7rem;padding:1px 6px} .quest .dots{display:none}
   .tabs{width:100%!important;justify-content:stretch} .tabs .tab{flex:1}
-  .quest .kx{display:none} .quest .k i{font-style:normal} .quest .row .pill+.pill,.quest .row .pill.neutral{display:none} .quest .big{font-size:.8rem;line-height:1.2;overflow-wrap:normal;word-break:normal;hyphens:none}
+  .quest .kx{display:none} .quest .k i{font-style:normal} .quest .row .pill+.pill{display:none} .quest .big{font-size:.8rem;line-height:1.2;overflow-wrap:normal;word-break:normal;hyphens:none}
   .quest .pill{white-space:nowrap}
   .top h1{font-size:1.12rem;letter-spacing:.1em;padding:0 50px;line-height:1.25} .top .sync{font-size:.7rem}}
 .pierre{background:linear-gradient(160deg,rgba(207,232,245,.08),transparent 50%),#12222c;border-color:#2a4556}
 .menhir{width:min(64%,230px);height:auto;justify-self:center;display:block}
 .menhir text{font:17px "Noto Sans Runic",serif;text-anchor:middle} .menhir .rv{fill:rgba(16,26,32,.28)} .menhir .rg{fill:#e8b06a;stroke:#3d2309;stroke-width:1.6;paint-order:stroke}
-.menhir .rg.neuve{fill:#9fe9cf;stroke:none;filter:drop-shadow(0 0 4px rgba(99,230,173,.95))}
+.menhir .rg.neuve{fill:#ffd08a;stroke:#5a3410;filter:drop-shadow(0 0 5px rgba(255,190,100,.95))}
+.quest .bsub{display:block;font-size:.72rem;font-weight:500;color:var(--muted);margin-top:2px}
 .runes span{color:rgba(160,210,235,.18)} .runes span.gr{color:#d39a5c;text-shadow:0 1px 0 #000}
 .runes span.neuve{color:#9fe9cf;text-shadow:0 0 10px rgba(99,230,173,.9);animation:runeNeuve 2.6s ease-in-out infinite}
 @keyframes runeNeuve{50%{text-shadow:0 0 18px rgba(99,230,173,1),0 0 4px #fff}}
@@ -578,6 +579,8 @@ function addDays(iso,n){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+
 function daysBetween(a,b){return Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/86400000)}
 function nextMonday(){const d=new Date();const k=(8-d.getDay())%7||7;d.setDate(d.getDate()+k);return isoDate(d)}
 function mondayOf(iso){const d=new Date(iso+"T12:00:00");const k=(d.getDay()+6)%7;d.setDate(d.getDate()-k);return isoDate(d)}
+const jourMois = iso => new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+const jourLong = iso => new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long"});
 const frDate = iso => new Date(iso+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
 
 function defaultState(){
@@ -1029,7 +1032,7 @@ function pierreRunique(){
       <path d="M38 236 Q28 150 34 80 Q38 26 74 12 Q112 6 124 44 Q134 110 128 236Z" fill="url(#gra)" stroke="#1d2a31" stroke-width="2"/>
       <path d="M38 236 Q28 150 34 80 Q38 26 74 12 Q112 6 124 44 Q134 110 128 236Z" filter="url(#grain)"/>
       <path d="M74 12 Q56 30 52 80 Q48 150 54 236" stroke="#9fb6c2" stroke-opacity=".25" stroke-width="3" fill="none"/>
-      <path d="M120 52 Q115 57 118 66 M42 210 Q47 215 44 224" stroke="#1d2a31" stroke-width="1.4" fill="none" opacity=".7"/>
+      <path d="M121 50 L116 58 L119 63 L114 72 M43 206 L48 213 L44 219 L47 227" stroke="#3d4c55" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
       <path d="M30 236 Q40 226 56 232 Q70 222 84 232 Q102 224 116 232 Q128 226 136 236Z" fill="#3e6b4e" opacity=".9"/>
       ${runes}
     </svg><span class="small muted">Chaque séance d'anglais grave une rune. 24 runes : la pierre est complète, une nouvelle se dresse.</span></div>`;
@@ -1043,7 +1046,7 @@ function renderEn(){
   const starsOf=i=>state.en.mods[a].stars?.[i]||0;
   p.innerHTML=`
   ${hasTTS()?"":'<p class="note">Ce navigateur ne sait pas lire l\'audio. Ouvre la page dans Safari ou Chrome pour les exercices d\'écoute.</p>'}
-  <div class="card prochaine"><span class="kicker">Ce soir, Theron…</span>
+  <div class="card prochaine"><span class="kicker">Ce soir</span>
     ${dueCount?`<div class="cs-big">${dueCount}<small>carte${dueCount>1?"s":""}</small></div><div class="cs-sub">~${Math.max(2,Math.round(dueCount/3))} min · Mémoire des mots</div>
     <button class="btn primary big" data-next="rev">Réviser ${dueCount} carte${dueCount>1?"s":""}</button>`:`<div class="cs-big">0<small>révision</small></div><div class="cs-sub">Mémoire à jour : place à la mission du jour</div>`}
     <button class="btn ${dueCount?"":"primary big"}" data-next="go">Lancer la mission · ${esc(M.name)}</button></div>
@@ -1954,8 +1957,8 @@ function renderQuestRun(){
   const today=W[wi]?.s.find(s=>s.date===todayISO());
   const pill=today?(state.run.logs[today.key]?'<span class="pill ok">Faite aujourd\'hui</span>':`<span class="pill warn">Aujourd'hui : ${esc(sessLabel(today,W[wi]).split(" · ")[0])}</span>`):"";
   $("#qRun").innerHTML=`<span class="k">Course<i class="kx"> · ${RUN_PER_WEEK} sorties / semaine</i></span>
-   <span class="big">${esc(label)}</span>
-   <span class="row"><span class="dots">${[0,1,2].map(i=>`<span class="dot ${i<done?"on":""}">${i<done?"✓":i+1}</span>`).join("")}</span>${pill||`<span class="pill neutral">Semaines complètes : ${streak}</span>`}</span>`;
+   <span class="big">${wi<0?esc(jourMois(W[0]?.monday||state.run.start))+'<small class="bsub">début '+esc(jourLong(W[0]?.monday||state.run.start))+'</small>':esc(label)}</span>
+   <span class="row"><span class="dots">${[0,1,2].map(i=>`<span class="dot ${i<done?"on":""}">${i<done?"✓":i+1}</span>`).join("")}</span>${pill||(wi<0?`<span class="pill neutral">J-${daysBetween(todayISO(),W[0]?.monday||state.run.start)}</span>`:`<span class="pill neutral">Semaines complètes : ${streak}</span>`)}</span>`;
 }
 function mapSVG(W){
   const nodes=[];W.forEach((w,wi)=>w.s.forEach(s=>nodes.push({...s,wi})));
@@ -2253,7 +2256,7 @@ function renderQuestStr(){
   else if(cur.date===t) pill='<span class="pill warn">Aujourd\'hui</span>';
   else if(cur.date<t) pill='<span class="pill bad">À rattraper</span>';
   else pill=`<span class="pill neutral">${frDate(cur.date)}</span>`;
-  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · le jeudi</i></span><span class="big">${esc(cur.phase)} · ~${tlMinutes(cur)} min</span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
+  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · le jeudi</i></span><span class="big">${esc(cur.phase)}<small class="bsub">~${tlMinutes(cur)} min</small></span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
 }
 
 /* ---------- Lecteur de séance guidée ---------- */

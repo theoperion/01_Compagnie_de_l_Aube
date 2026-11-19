@@ -906,7 +906,7 @@
   .am-h b { font: italic 900 20px var(--f-titre); color: var(--c); text-transform: uppercase; }
   .am-h.g { animation: amG .45s cubic-bezier(.2,1.3,.4,1) both; } .am-h.d { animation: amD .45s cubic-bezier(.2,1.3,.4,1) .05s both; }
   .am-vs { font: italic 900 64px var(--f-titre); color: #fff; text-shadow: 0 0 24px var(--gold), 3px 3px 0 var(--wax2); padding-bottom: 80px; animation: amVs .4s cubic-bezier(.3,1.8,.5,1) .45s both; }
-  .am-txt { text-align: center; animation: amFond .3s ease-out .7s both; } .am-txt span { display: block; font: 800 11px var(--f-texte); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+  .am-txt { text-align: center; animation: amFond .3s ease-out .7s both; } .am-txt span { display: block; margin-bottom: 10px; font: 800 13px var(--f-texte); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
   .am-txt b { display: block; font: italic 900 30px var(--f-titre); color: var(--text); text-transform: uppercase; } .am-txt small { color: var(--muted); }
   @keyframes amG { from { transform: translateX(-120%); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes amD { from { transform: translateX(120%); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -1061,8 +1061,10 @@
   .float { position: fixed; left: 50%; top: 40%; transform: translate(-50%, 0); z-index: 20;
     font-family: var(--f-titre); font-weight: 800; font-size: 28px; pointer-events: none; white-space: nowrap;
     animation: rise 2.9s ease-out forwards; text-shadow: 0 0 2px #000, 0 0 4px #000, 0 2px 12px rgba(0,0,0,.8); white-space: normal; text-align: center; width: max-content; max-width: 92vw; }
-  .float.sur-carte { font-size: 19px; padding: 5px 14px; border-radius: 99px; background: rgba(0,0,0,.72); box-shadow: 0 4px 14px rgba(0,0,0,.45); animation: riseCourt 2.2s ease-out forwards; }
-  @keyframes riseCourt { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.85); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -26px); } }
+  .float.sur-carte { font-size: 15px; padding: 3px 10px; border-radius: 99px; background: rgba(0,0,0,.82); border: 1px solid color-mix(in srgb, var(--xp2) 40%, transparent); box-shadow: 0 4px 14px rgba(0,0,0,.45); animation: riseCourt 2.2s ease-out forwards; }
+  @keyframes riseG { 0% { opacity: 0; transform: translate(0, 6px) scale(.9); } 7% { opacity: 1; transform: translate(0, 0) scale(1); } 75% { opacity: 1; transform: translate(0, -5px); } 100% { opacity: 0; transform: translate(0, -8px); } }
+  .float.sur-carte.gauche { animation-name: riseG; }
+  @keyframes riseCourt { 0% { opacity: 0; transform: translate(-100%, 6px) scale(.9); } 7% { opacity: 1; transform: translate(-100%, 0) scale(1); } 75% { opacity: 1; transform: translate(-100%, -5px); } 100% { opacity: 0; transform: translate(-100%, -8px); } }
   @keyframes rise { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.8); }
     8% { opacity: 1; transform: translate(-50%, 0) scale(1.1); }
     14% { transform: translate(-50%, 0) scale(1); }
@@ -1642,6 +1644,16 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
 
   html.th-carte .pl-tete b, html.th-carte .pl-tete span, html.th-carte .pl-legende { color: #fff; text-shadow: 0 2px 0 #3a2a20, 0 0 6px rgba(0,0,0,.35); }
   html.ygg .jour-d20:not(.fait)::before { display: none; } /* cercle du d20 retiré (jugé raté par le conseil) */
+
+  /* Corrections du critique (19/11) : onglets qui tiennent, troncatures, boutons posés au bon endroit */
+  .sous-onglets button { min-width: 0; overflow: hidden; padding-left: 4px; padding-right: 4px; }
+  html.ygg .sous-onglets button { font-size: 13px; letter-spacing: .05em; }
+  html.th-epopee .sous-onglets button { font-size: 15px; }
+  html.th-arene .sous-onglets button { font-size: 13px; letter-spacing: .02em; }
+  html.th-origine .hx-txt .hero-name { font-size: 17px; letter-spacing: 0; }
+  html.th-origine .section h2 { font-size: 19px; white-space: nowrap; }
+  .hero-perso .loupe { right: auto; left: 10px; }
+  .regles-reduire { top: 8px; right: 8px; }
 </style>
 </head>
 <body>
@@ -2091,9 +2103,9 @@ const CAPACITES_VOLEUR = [
 /* ---------- Classes jouables : dessin, évolutions, passif, capacités ---------- */
 const CLASSES = {
   'Magicien': { paliers: PALIERS_MAGE, dessin: (st, id) => magicien(st, id), capacites: CAPACITES_MAGE,
-    passif: cl => `Passif Érudit : quêtes épiques +${Math.round(((cl.epiques || 1.2) - 1) * 100)} %` },
+    passif: cl => `Passif Érudit : quêtes épiques +${Math.round(((cl.epiques || 1.2) - 1) * 100)}&nbsp;%` },
   'Voleur assassin': { paliers: PALIERS_VOLEUR, dessin: (st, id, look) => voleur(st, id, look), capacites: CAPACITES_VOLEUR,
-    passif: () => 'Passif Opportuniste : quêtes annexes +10 %' }
+    passif: () => 'Passif Opportuniste : quêtes annexes +10&nbsp;%' }
 };
 /** Classe du héros affiché (tolérant : « Voleur », « Assassin », « Roublard » → voleur assassin). */
 function classeDe(s) {
@@ -2487,7 +2499,7 @@ function blocSaison(s, court) {
   return `<div class="saison ${court ? 'court' : ''}">
     <div class="sa-t"><b>⚜ ${esc(S.nom)}</b><span>Palier ${S.palier} / ${S.paliers}</span></div>
     <div class="bar sa-bar"><i style="width:${pct}%"></i></div>
-    <div class="sa-n">${S.palier >= S.paliers ? 'Chemin terminé, bravo !' : `Encore ${Math.max(0, S.cout - S.dansPalier).toLocaleString('fr-FR')} XP · prochaine récompense : <b>${esc(recompenseTexte(S.prochaine))}</b>`}</div>
+    <div class="sa-n">${S.palier >= S.paliers ? 'Chemin terminé, bravo !' : `Encore ${Math.max(0, S.cout - S.dansPalier).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP · prochaine récompense : <b>${esc(recompenseTexte(S.prochaine))}</b>`}</div>
     ${S.id === 'pre' ? '<div class="sa-n">Rodage jusqu\'au 31 décembre. Le 1er janvier, la Saison 1 apporte de nouveaux objets et de nouveaux boss.</div>' : ''}
     <div class="sa-b">${coffres ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${coffres})</button>` : ''}${court ? '<button class="btn mini" data-vitrine="1" data-armurerie="1">⚔ Ouvrir l\'armurerie</button>' : `<span class="eclats">✦ ${A.eclats} éclats</span>`}</div>
   </div>`;
@@ -2703,7 +2715,7 @@ document.addEventListener('click', e => {
   const c = e.target.closest('[data-case]'); if (!c || !state || !state.armurerie) return;
   const n = Number(c.dataset.case), S = state.armurerie.saison, CC = state.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
   const r = CH[n] || { eclats: 20 }, box = document.getElementById('info-case');
-  if (box) { box.innerHTML = `<b>Palier ${n}</b> · ${esc(recompenseTexte(r))}${r.item2 ? ' + ' + esc((cosmItem(r.item2) || {}).nom || '') : ''} · ${n <= S.palier ? '✓ gagné' : `encore ${((n - S.palier) * S.cout - S.dansPalier).toLocaleString('fr-FR')} XP`}`; box.classList.add('on'); }
+  if (box) { box.innerHTML = `<b>Palier ${n}</b> · ${esc(recompenseTexte(r))}${r.item2 ? ' + ' + esc((cosmItem(r.item2) || {}).nom || '') : ''} · ${n <= S.palier ? '✓ gagné' : `encore ${((n - S.palier) * S.cout - S.dansPalier).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP`}`; box.classList.add('on'); }
 });
 /* --- Salle des trophées : un mur de pierre, une niche par boss vaincu (bronze = semaine, or = mois). Toucher = revoir la victoire --- */
 function salleTrophees(s) {
@@ -3224,7 +3236,7 @@ function gains(q, xp) {
   const chip = (c, v, prim) => { if (!c) return ''; const f = enCombat && c === b.faible && prim, r = enCombat && c === b.resiste && prim;
     return `<span class="g ${prim ? 'p' : ''} ${f ? 'f' : ''} ${r ? 'r' : ''}">${ICONES[c] || '⭐'} ${esc(c)} <b>+${v}</b>${f ? ` · ⚡ ×${String(mage ? (R.faibleMage || 2) : (R.faible || 1.5)).replace('.', ',')}` : r ? ' · 🛡 ×0,5' : ''}</span>`; };
   const pas = /10[ .\u202f\u00a0]?000 pas/i.test(q.nom) && state && state.reglages && state.reglages.pas != null ? state.reglages.pas : null;
-  return `<div class="gains">${chip(q.carac, x, true)}${chip(q.carac2, Math.round(x * part), false)}${state ? tagsCoups(state, q) : ''}${pas != null ? `<span class="g montre ${pas >= 10000 ? 'ok' : ''}">⌚ ${Number(pas).toLocaleString('fr-FR')} / 10 000 pas</span>` : ''}</div>`;
+  return `<div class="gains">${chip(q.carac, x, true)}${chip(q.carac2, Math.round(x * part), false)}${state ? tagsCoups(state, q) : ''}${pas != null ? `<span class="g montre ${pas >= 10000 ? 'ok' : ''}">⌚ ${Number(pas).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} / 10 000 pas</span>` : ''}</div>`;
 }
 
 const sortSur = nom => state && state.capacites && state.capacites.sortPrepare === nom ? ' · <span class="sort">✨ sort préparé : XP ×1,5 à la validation</span>' : '';
@@ -3930,10 +3942,10 @@ function carteBossMini(s) {
     <div class="bm-av" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">${bossSvg(b.visuel, 'mini', b)}</div>
     <div class="bm-txt"><b>${esc(b.nomStade || b.nom)}</b>
       ${b.statut === 'Vaincu' ? `<span class="bm-ok">⚔ Vaincu · ${esc(b.trophee || 'trophée gagné')}</span>`
-        : b.statut === 'À venir' ? `<span>Attaque ${dateLongueCourte(b.debut)} · ${Math.round(b.pvMax).toLocaleString('fr-FR')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)}</span>`
+        : b.statut === 'À venir' ? `<span>Attaque ${dateLongueCourte(b.debut)} · ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)}</span>`
         : b.statut === 'Trêve' ? '<span>Trêve : la Compagnie est en vacances</span>'
         : `<div class="bar boss"><i style="width:${pct}%"></i></div>
-           <span>${Math.round(b.pv).toLocaleString('fr-FR')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)} · ${j ? `encore ${j} j` : 'dernier jour'}</span>${miniCoup(b)}`}
+           <span>${Math.round(b.pv).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV · ⚡ ${esc(COURT[b.faible] || b.faible)} · ${j ? `encore ${j} j` : 'dernier jour'}</span>${miniCoup(b)}`}
     </div><span class="bm-go">›</span></button>`;
 }
 /** Grande carte d'un boss (onglet Compagnie) */
@@ -3952,12 +3964,12 @@ function carteBoss(b, s) {
         <div class="bc-tags"><span class="tag f">⚡ Faible : ${esc(b.faible)}</span><span class="tag r">🛡 Résiste : ${esc(b.resiste)}</span>${b.statut === 'En cours' && PHASES_BOSS[b.phase] ? `<span class="tag ph">${PHASES_BOSS[b.phase]}</span>` : ''}${b.enhardi && !vaincu ? `<span class="tag ph">🩹 Blessé −5 %${b.enhardi === 'fuite' ? ' · 😈 rancunier' : ''}</span>` : ''}</div>
       </div></div>
     ${vaincu ? `<div class="bc-win">⚔ Vaincu le ${dateCourte(b.vaincuLe)} · +${b.xp} XP pour toi<br><span>Trophée : ${esc(b.trophee)}</span><br><button class="btn mini or" data-bw-revoir="${b.type}" style="margin-top:8px">▶ Revoir la victoire</button></div>`
-      : b.statut === 'À venir' ? `<div class="bc-win avenir">Il attaque ${dateLongueCourte(b.debut)} avec ${Math.round(b.pvMax).toLocaleString('fr-FR')} PV.<br><span>Préparez-vous : ses PV tiennent compte de vos vacances.</span></div>`
+      : b.statut === 'À venir' ? `<div class="bc-win avenir">Il attaque ${dateLongueCourte(b.debut)} avec ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV.<br><span>Préparez-vous : ses PV tiennent compte de vos vacances.</span></div>`
       : b.statut === 'Trêve' ? '<div class="bc-win">Trêve : toute la Compagnie est en vacances.</div>'
-      : `<div class="bc-pv"><b>${Math.round(b.pv).toLocaleString('fr-FR')} / ${Math.round(b.pvMax).toLocaleString('fr-FR')} PV</b><span>${j ? `Plus que ${j} jour${j > 1 ? 's' : ''}` : 'Dernier jour !'}</span></div>
+      : `<div class="bc-pv"><b>${Math.round(b.pv).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} / ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV</b><span>${j ? `Plus que ${j} jour${j > 1 ? 's' : ''}` : 'Dernier jour !'}</span></div>
          <div class="bar boss big"><i style="width:${pct}%"></i></div>`}
     ${blocCoups(b)}
-    ${b.statut === 'À venir' ? '' : `<div class="bc-dmg">Dégâts : ${noms.map(n => `<span style="color:${couleurHeros(n, s)}">${esc(nomAmbiance(n, s))} <b>${Math.round(b.degats[n]).toLocaleString('fr-FR')}</b></span>`).join(' · ')}${b.riposte ? ` · <span class="rip">riposte +${Math.round(b.riposte)}</span>` : ''}
+    ${b.statut === 'À venir' ? '' : `<div class="bc-dmg">Dégâts : ${noms.map(n => `<span style="color:${couleurHeros(n, s)}">${esc(nomAmbiance(n, s))} <b>${Math.round(b.degats[n]).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b></span>`).join(' · ')}${b.riposte ? ` · <span class="rip">riposte +${Math.round(b.riposte)}</span>` : ''}
       <div class="bar split">${noms.map(n => `<i style="width:${(b.degats[n] || 0) / tot * 100}%;background:${couleurHeros(n, s)}"></i>`).join('')}</div></div>`}
     ${b.type === 'semaine' && textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')] ? `<div class="bc-parole">${plie(b.nom + ' : « ' + textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')] + ' »', '', 2)}</div>` : ''}
     ${b.conseil ? `<div class="bc-tip">« ${esc(b.conseil)} »</div>` : ''}
@@ -4063,7 +4075,7 @@ function vueCamp(s) {
     ${C.fil.length ? `<div class="section"><h2>Le fil de la Compagnie</h2><span>14 derniers jours</span></div>
     <div class="panel fil">${C.fil.map(f => `<div class="fil-l"><span>${esc(f.texte)}</span><small>${jour(f.date)}</small></div>`).join('')}</div>` : ''}
     ${fait ? `<details class="recap"><summary><div class="section"><h2>Récap de la semaine</h2><span>du ${dateCourte(R.lundi)} · toucher</span></div></summary>
-    <div class="panel">${R.heros.map(h => `<div class="camp-l"><b>${esc(h.nom.split(' ')[0])}</b><span>${h.faits} quêtes · ${h.xp.toLocaleString('fr-FR')} XP</span></div>`).join('')}
+    <div class="panel">${R.heros.map(h => `<div class="camp-l"><b>${esc(h.nom.split(' ')[0])}</b><span>${h.faits} quêtes · ${h.xp.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</span></div>`).join('')}
       ${s.mj && s.mj.pret ? '<p class="muted" style="font-size:13px">📜 Votre semaine est racontée dans le chapitre de la Saga, en haut du camp.</p>' : chron ? plie(chron, 'chronique') : '<p class="muted" style="font-size:13px">La chronique de la semaine s\'écrit…</p>'}</div></details>` : ''}`;
 }
 function demandesClaude(s) {
@@ -4111,12 +4123,12 @@ function ecransRecap(s, d) {
   if (d.meilleure.serie) E.push(`<div class="rc-flamme">🔥</div><p class="rc-sur">Meilleure série</p><h2>${esc(d.meilleure.nom)}</h2><div class="rc-gros" data-compte="${d.meilleure.serie}">0</div><p>jours d'affilée</p>`);
   const B = d.boss;
   if (B && !d.precedente) E.push(`<div class="rc-boss ${B.statut === 'Vaincu' ? 'vaincu' : ''}">${bossSvg(B.visuel, 'rcb', B)}</div><h2>${esc(B.nomStade || B.nom)}</h2>
-    <p>${B.statut === 'Vaincu' ? `⚔ Vaincu le ${dateCourte(B.vaincuLe)} ! Trophée : ${esc(B.trophee || '')}` : B.statut === 'En cours' ? `Il lui reste ${Math.round(B.pv).toLocaleString('fr-FR')} PV… ${joursRestants(B.fin) === 0 ? 'dernière chance ce soir !' : 'encore ' + joursRestants(B.fin) + ' jour' + (joursRestants(B.fin) > 1 ? 's' : '') + ' pour l\'achever.'}` : esc(B.statut || '')}</p>`);
+    <p>${B.statut === 'Vaincu' ? `⚔ Vaincu le ${dateCourte(B.vaincuLe)} ! Trophée : ${esc(B.trophee || '')}` : B.statut === 'En cours' ? `Il lui reste ${Math.round(B.pv).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV… ${joursRestants(B.fin) === 0 ? 'dernière chance ce soir !' : 'encore ' + joursRestants(B.fin) + ' jour' + (joursRestants(B.fin) > 1 ? 's' : '') + ' pour l\'achever.'}` : esc(B.statut || '')}</p>`);
   if (d.comp && !d.precedente && d.comp.xpSemaine != null) {
     const moi = b.xp, lui = Number(d.comp.xpSemaine) || 0, max = Math.max(1, moi, lui);
-    E.push(`<p class="rc-sur">La Compagnie</p><div class="rc-duel"><div><span>Toi</span><i style="--w:${Math.round(moi / max * 100)}%"></i><b>${moi.toLocaleString('fr-FR')} XP</b></div>
-      <div><span>${esc(String(d.comp.nom).split(' ')[0])}</span><i class="lui" style="--w:${Math.round(lui / max * 100)}%"></i><b>${lui.toLocaleString('fr-FR')} XP</b></div></div>
-      <p>${moi + lui > 0 ? `Ensemble : <b>${(moi + lui).toLocaleString('fr-FR')} XP</b> cette semaine.` : ''}</p>`);
+    E.push(`<p class="rc-sur">La Compagnie</p><div class="rc-duel"><div><span>Toi</span><i style="--w:${Math.round(moi / max * 100)}%"></i><b>${moi.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b></div>
+      <div><span>${esc(String(d.comp.nom).split(' ')[0])}</span><i class="lui" style="--w:${Math.round(lui / max * 100)}%"></i><b>${lui.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b></div></div>
+      <p>${moi + lui > 0 ? `Ensemble : <b>${(moi + lui).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> cette semaine.` : ''}</p>`);
   }
   const mot = b.aJour === b.total && b.total ? 'Semaine parfaite. Légendaire.' : b.rates === 0 ? 'Aucun raté. Continue comme ça !' : d.delta !== null && d.delta > 0 ? 'Plus fort que la semaine dernière !' : 'Une semaine plus dure. Choisis UNE habitude à sécuriser.';
   E.push(`<div class="rc-flamme">☀️</div><h2>${mot}</h2><p>À la semaine prochaine, héros.</p><button class="btn or" data-recap-fin="1">Fermer</button>`);
@@ -4139,7 +4151,7 @@ function recapAller(i) {
   const ec = ov.querySelector('.rc-ecran'); ec.innerHTML = `<div class="rc-in">${R.E[R.i]}</div>`;
   ov.querySelectorAll('.rc-barres i').forEach((b, k) => { b.className = k < R.i ? 'ok' : k === R.i ? 'en' : ''; });
   ec.querySelectorAll('[data-compte]').forEach(el => { const fin = Number(el.dataset.compte) || 0, t0 = performance.now();
-    const f = t => { const p = Math.min(1, (t - t0) / 900); el.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3))).toLocaleString('fr-FR'); if (p < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); });
+    const f = t => { const p = Math.min(1, (t - t0) / 900); el.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3))).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0'); if (p < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); });
   vib(12);
   if (R.i < R.E.length - 1) R.t = setTimeout(() => recapAller(R.i + 1), 3600);
 }
@@ -4301,7 +4313,7 @@ function dessinerVitrine() {
       <div class="vit-ombre"></div>
     </div>
     <p class="vit-aide">Incline-le du doigt · touche-le pour le saluer</p>
-    <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche une forme atteinte pour revoir son évolution' : 'toucher'}</span></div>
+    <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche pour revoir' : ''}</span></div>
     <div class="evo-rang">${evos}</div>
     ${moi ? blocArmurerie() : ''}
 
@@ -4405,7 +4417,7 @@ function vueRetro(s) {
   if (!R.texte) return `<div class="saga"><div class="saga-t">🎆 Rétrospective ${esc(R.annee)}</div><p class="muted" style="font-size:13px;margin:6px 0 0">Le Maître du Jeu rassemble les souvenirs de l'année…</p></div>`;
   return `<div class="saga"><div class="saga-t">🎆 L'année ${esc(R.annee)} de la Compagnie</div>
     ${plie(R.texte, 'saga-x', 2)}
-    ${(R.heros || []).map(h => `<div class="camp-l"><b>${esc(h.nom.split(' ')[0])}</b><span>${h.faits} quêtes · ${Number(h.xp).toLocaleString('fr-FR')} XP${R.honneurs && R.honneurs[h.nom] ? ` · <span class="surnom">« ${esc(R.honneurs[h.nom])} »</span>` : ''}</span></div>`).join('')}
+    ${(R.heros || []).map(h => `<div class="camp-l"><b>${esc(h.nom.split(' ')[0])}</b><span>${h.faits} quêtes · ${Number(h.xp).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP${R.honneurs && R.honneurs[h.nom] ? ` · <span class="surnom">« ${esc(R.honneurs[h.nom])} »</span>` : ''}</span></div>`).join('')}
     ${R.boss && R.boss.length ? `<p class="muted" style="font-size:12.5px;margin:8px 0 0">⚔️ ${R.boss.length} boss abattus : ${esc(R.boss.slice(0, 6).join(', '))}${R.boss.length > 6 ? '…' : ''}</p>` : ''}</div>`;
 }
 
@@ -4676,7 +4688,7 @@ function vueCombat(s) {
   const ligne = c => `<div class="coup ${c.type}">
       <span class="qui" style="color:${couleurHeros(c.heros, s)}">${esc(nomAmbiance(c.heros, s))}</span>
       <span class="quoi">${c.type === 'riposte' ? `rate « ${esc(c.quete)} » : le boss se soigne` : esc(c.quete)}${c.faible ? ' <b class="faible">⚡</b>' : c.resiste ? ' 🛡' : ''}<small>${jour(c.date)}</small></span>
-      <span class="val">${c.type === 'riposte' ? '+' : '−'}${Math.round(c.valeur).toLocaleString('fr-FR')}</span></div>`;
+      <span class="val">${c.type === 'riposte' ? '+' : '−'}${Math.round(c.valeur).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</span></div>`;
   return `
     <div class="section"><h2>Boss du Crépuscule</h2><span>à abattre ensemble</span></div>
     ${B.semaine || B.mois ? carteBoss(B.semaine, s) + carteBoss(B.mois, s)
@@ -5025,7 +5037,7 @@ function carteEpique(o) {
   const cls = { 'Accompli': 'st-done', 'Dans les temps': 'st-ok', 'En retard': 'st-late', 'Échoué': 'st-fail', 'À venir': 'st-ok' }[o.statut] || '';
   const pct = Math.min(100, o.progression * 100), temps = Math.min(100, o.temps * 100);
   return `<div class="epic">
-    <div class="epic-top"><div class="epic-name">${esc(o.sous || o.nom)}</div><div class="epic-reward">🏆 ${Number(o.recompense).toLocaleString('fr-FR')} XP</div></div>
+    <div class="epic-top"><div class="epic-name">${esc(o.sous || o.nom)}</div><div class="epic-reward">🏆 ${Number(o.recompense).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</div></div>
     <div class="bar"><i style="width:${pct}%"></i><span class="mark" style="left:calc(${temps}% - 1px)" title="Temps écoulé"></span></div>
     <div class="epic-meta"><span>${o.statut === 'À venir' && o.debut ? `commence le ${dateCourte(o.debut)}` : `${o.faites}/${o.visees} séances`} · fin ${dateCourte(o.echeance)}</span><span class="${cls}">${o.statut}</span></div>
   </div>`;
@@ -5071,8 +5083,10 @@ function poserApp(html) {
   document.getElementById('app').innerHTML = html;
   return true;
 }
+let ongletAffiche = null;
 function render() {
   if (!state) return;
+  if (ongletAffiche !== onglet) { ongletAffiche = onglet; document.querySelectorAll('.float').forEach(x => x.remove()); } // un gain ne flotte pas sur l'onglet suivant
   annonceBossAFaire();
   annonceAventureAFaire();
   ouvertureSaisonAFaire();
@@ -5151,7 +5165,7 @@ function render() {
       : `<div class="empty">${s.vacances ? 'Profite de tes vacances.' : 'Rien d\'obligatoire aujourd\'hui. Une quête annexe pour l\'XP bonus ?'}</div>`}</div>
     ${plusTard.length ? `<div class="section"><h2>Plus tard</h2><span>tap = séance bonus</span></div>
     <div class="list">${plusTard.map(h => carteHabitude(h, true)).join('')}</div>` : ''}
-    ${annexes.length ? `<div class="section"><h2>Quêtes annexes</h2><span>facultatives · XP ×1,5</span></div>
+    ${annexes.length ? `<div class="section"><h2>Quêtes annexes</h2><span>bonus XP ×1,5</span></div>
     <div class="list">${regrouperPaliers(annexes).map(a => a.membres ? carteGroupe(a) : carteAnnexe(a)).join('')}</div>` : ''}
     ${aVenirHTML(s)}
     ${epiques.length ? `<div class="section"><h2>Quêtes épiques</h2><span>trait doré = temps écoulé</span></div>
@@ -5195,7 +5209,7 @@ function render() {
     ${blocLegende(s)}
     <div class="section"><h2>Caractéristiques</h2><span>score · bonus au d20</span></div>
     <div class="panel">${statsHtml}
-      <div class="stat-note">Chaque quête donne 100 % de son XP à sa carac. principale et 50 % en plus à la secondaire. Les scores de départ viennent de ta classe et de tes caractéristiques favorites (15 · 14 · 13 · 12 · 10 · 10 · 8, comme une répartition de D&D), puis +1 tous les ${Number(s.xpParPoint).toLocaleString('fr-FR')} XP, jusqu'à 20. Les bases sont modifiables dans le Sheet (onglet Personnage, colonne H).</div></div>
+      <div class="stat-note">Chaque quête donne 100 % de son XP à sa carac. principale et 50 % en plus à la secondaire. Les scores de départ viennent de ta classe et de tes caractéristiques favorites (15 · 14 · 13 · 12 · 10 · 10 · 8, comme une répartition de D&D), puis +1 tous les ${Number(s.xpParPoint).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP, jusqu'à 20. Les bases sont modifiables dans le Sheet (onglet Personnage, colonne H).</div></div>
 ` : `
     <div class="hero-card">
       <div class="hero-perso" data-vitrine="1" role="button" aria-label="Voir ton personnage en grand"><span class="perso-fond">${repaireSvg(repaireDe(s), 'hf')}</span>${avatar(pal, 'h', s)}<span class="loupe">⤢ Vitrine</span></div>
@@ -5203,7 +5217,7 @@ function render() {
         <div class="classe">${esc(cl.nom || 'Magicien')}</div>
         <div class="classe-sub" style="color:var(--gold)">Veilleur de l'Aube</div>
         <div class="classe-sub">${esc(CL.paliers[pal].desc)}</div>
-        <div class="classe-sub">★ ${esc(cl.fav1)} et ${esc(cl.fav2)} : +${pctBonus} % d'XP<br>${CL.passif(cl)}</div>
+        <div class="classe-sub">★ ${esc(cl.fav1)} et ${esc(cl.fav2)} : +${pctBonus}&nbsp;% d'XP<br>${CL.passif(cl)}</div>
         ${prochain ? `<div class="next-evo">${avatar(pal + 1, 'n', s)}<div>Prochaine évolution<br><b>Niveau ${prochain.n}</b> · ${prochain.titre}</div></div>`
           : '<div class="next-evo">Forme ultime atteinte</div>'}
       </div>
@@ -5271,7 +5285,7 @@ function statsDe(s) {
       <div class="stat2-top"><span>${ICONES[st.nom] || ''} <b>${st.nom}</b></span>
         <span><span class="sc">${st.score}</span> <span class="md ${mod < 0 ? 'neg' : ''}">${mod >= 0 ? '+' : '−'}${Math.abs(mod)}</span></span></div>
       <div class="bar"><i style="width:${pct}%"></i></div>
-      <div class="stat2-sub">${max ? 'Score maximum atteint' : `${Math.round(dansPalier).toLocaleString('fr-FR')} / ${Number(xpp).toLocaleString('fr-FR')} XP avant ${st.score + 1}`} · ${Math.round(st.xp).toLocaleString('fr-FR')} XP au total</div>
+      <div class="stat2-sub">${max ? 'Score maximum atteint' : `${Math.round(dansPalier).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} / ${Number(xpp).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP avant ${st.score + 1}`} · ${Math.round(st.xp).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP au total</div>
     </div>`;
   }).join('');
 }
@@ -5312,7 +5326,7 @@ function vueCompagnonDetail(c) {
     <button class="lien retour" data-retour="1">‹ La Compagnie</button>
     <div class="comp moi"><div class="comp-av" data-vitrine-comp="1" role="button" aria-label="Voir en grand">${orner(cl.dessin(pal, 'cd', lookDe(c.look)), c.ornements, 'cd')}</div>
       <div class="comp-txt"><b>${esc(c.heros)}</b><span class="tt">${[c.titre, 'niveau ' + c.niveau, (c.classe || {}).nom].filter(Boolean).map(esc).join(' · ')}</span>
-        <div class="bar pv"><i style="width:${pv}%"></i></div><span>${c.pv} PV · ${Math.round(Number(c.xpTotale)).toLocaleString('fr-FR')} XP${c.d20 ? ` · 🎲 ${c.d20.de} (${esc(c.d20.titre)})` : ''}</span></div></div>
+        <div class="bar pv"><i style="width:${pv}%"></i></div><span>${c.pv} PV · ${Math.round(Number(c.xpTotale)).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP${c.d20 ? ` · 🎲 ${c.d20.de} (${esc(c.d20.titre)})` : ''}</span></div></div>
     ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}
     <div class="section"><h2>Aujourd'hui</h2><span>${auj.filter(h => h.jour.fait).length}/${auj.length}</span></div>
     <div class="panel">${auj.length ? auj.map(h => ligne(h, etat(h))).join('') : '<div class="muted">Rien d\'obligatoire aujourd\'hui.</div>'}</div>
@@ -5364,7 +5378,7 @@ function duelHTML(s, moi, lui) {
   const dessin = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
   const a = Number(moi.xpSemaine) || 0, b = Number(lui.xpSemaine) || 0, meneur = a === b ? '' : a > b ? 'g' : 'd';
   const barre = (titre, va, vb, unite) => { const t = Math.max(1, va + vb);
-    return `<div class="dl-bar"><div class="dl-t">${titre}</div><div class="dl-v"><b>${va.toLocaleString('fr-FR')}</b>${unite}<span></span><b>${vb.toLocaleString('fr-FR')}</b>${unite}</div>
+    return `<div class="dl-bar"><div class="dl-t">${titre}</div><div class="dl-v"><b>${va.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b>${unite}<span></span><b>${vb.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b>${unite}</div>
       <div class="dl-l">${va + vb ? `<i style="width:${va / t * 100}%;background:${couleurClasse(moi.classe)}"></i><i style="width:${vb / t * 100}%;background:${couleurClasse(lui.classe)}"></i>` : '<i class="vide"></i>'}</div></div>`; };
   return `<div class="duel" data-meneur="${meneur}">
     <div class="dl-face">
@@ -5375,7 +5389,7 @@ function duelHTML(s, moi, lui) {
     </div>
     <div class="dl-noms"><div style="color:${couleurClasse(moi.classe)}"><b>Toi</b><small>${esc(moi.classe || '')} · niv. ${moi.niveau}</small></div><div style="color:${couleurClasse(lui.classe)}"><b>Ton allié</b><small>${esc(lui.classe || '')} · niv. ${lui.niveau}</small></div></div>
     ${barre('XP de la semaine', a, b, ' XP')}
-    ${a !== b ? `<div class="dl-ecart">${a < b ? `Plus que <b>${(b - a).toLocaleString('fr-FR')} XP</b> pour prendre la couronne` : `Ton allié est à <b>${(a - b).toLocaleString('fr-FR')} XP</b> de la couronne`}</div>` : ''}
+    ${a !== b ? `<div class="dl-ecart">${a < b ? `Plus que <b>${(b - a).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> pour prendre la couronne` : `Ton allié est à <b>${(a - b).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> de la couronne`}</div>` : ''}
     ${CORNES_ACTIVES ? `<div class="cornes">${corneSvg(a, moi.classe)}<div class="cornes-t">Corne de la semaine<small>${Math.min(100, Math.round(a / SEMAINE_PARFAITE * 100))} % · ${Math.min(100, Math.round(b / SEMAINE_PARFAITE * 100))} %</small></div>${corneSvg(b, lui.classe, true)}</div>` : ''}
     ${B && B.statut !== 'À venir' ? barre('Dégâts au ' + esc(String(B.nomStade || B.nom).replace(/^(Le|La|L')\s*/, '')), dg(moi.nom), dg(lui.nom), '') : ''}
   </div>`;
@@ -5417,7 +5431,7 @@ function finSemaineAFaire(s) {
     const ov = document.createElement('div'); ov.className = 'am-ov on'; ov.setAttribute('role', 'dialog');
     ov.innerHTML = `<div class="am-txt"><span>Fin de semaine</span><b>À vos cornes !</b></div>
       <div class="cornes grand">${corneSvg(0, cl)}<div class="am-vs" style="font-size:40px;padding:0">⚔</div>${corneSvg(0, lui.classe, true)}</div>
-      <div class="am-txt"><small>Toi : ${a.toLocaleString('fr-FR')} XP · Ton allié : ${b.toLocaleString('fr-FR')} XP</small><b style="font-size:20px">${a >= SEMAINE_PARFAITE && b >= SEMAINE_PARFAITE ? 'Deux cornes pleines : skål !' : a >= b ? 'Ta corne est la plus pleine. Skål !' : 'Ton allié boit plus que toi cette semaine…'}</b></div>`;
+      <div class="am-txt"><small>Toi : ${a.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP · Ton allié : ${b.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</small><b style="font-size:20px">${a >= SEMAINE_PARFAITE && b >= SEMAINE_PARFAITE ? 'Deux cornes pleines : skål !' : a >= b ? 'Ta corne est la plus pleine. Skål !' : 'Ton allié boit plus que toi cette semaine…'}</b></div>`;
     document.body.appendChild(ov); document.body.classList.add('bloque');
     const cs = ov.querySelectorAll('.corne .hydromel'), vals = [a, b];
     setTimeout(() => cs.forEach((r, i) => { const h = Math.round(Math.max(0, Math.min(1, vals[i] / SEMAINE_PARFAITE)) * 34); r.setAttribute('y', 44 - h); r.setAttribute('height', h + 4); }), 400);
@@ -5459,9 +5473,9 @@ function vueCompagnie(s, faits, total) {
     : (moi.faitsAujourdhui > 0 ? 'Tu as fait ta part. Un mot d\'encouragement à ton compagnon ?' : 'Ton compagnon est déjà en route. À toi de jouer !');
   return `
     ${autres[0] ? duelHTML(s, moi, autres[0]) : ''}
-    <div class="section"><h2>La Compagnie</h2><span>touche un héros pour le voir en grand</span></div>
+    <div class="section"><h2>La Compagnie</h2><span>touche pour agrandir</span></div>
     <div class="list">${tous.map(carte).join('')}</div>
-    <div class="panel comp-bilan"><b>${xpComp.toLocaleString('fr-FR')} XP</b> gagnés ensemble cette semaine<br><span>${mot}</span></div>
+    <div class="panel comp-bilan"><b>${xpComp.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> gagnés ensemble cette semaine<br><span>${mot}</span></div>
     ${vueCamp(s)}
 `;
 }
@@ -5475,14 +5489,14 @@ function vueProfil(s) {
       : '<div class="grid-wrap"><div class="muted" style="font-size:13px">Chargement de ta Life Grid…</div></div>')
     : !p.grille ? '<div class="grid-wrap"><div class="muted" style="font-size:13px">Renseigne ta date de naissance dans le Sheet (Paramètres) pour afficher ta vie en semaines.</div></div>'
     : `<div class="grid-wrap">
-        <div class="grid-info"><span>Semaine <b>${p.semaineVie.toLocaleString('fr-FR')}</b> sur 4 160</span><span><b>${(p.semaineVie / 41.6).toFixed(1).replace('.', ',')} %</b> de la grille</span></div>
+        <div class="grid-info"><span>Semaine <b>${p.semaineVie.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b> sur 4 160</span><span><b>${(p.semaineVie / 41.6).toFixed(1).replace('.', ',')} %</b> de la grille</span></div>
         <canvas id="lifegrid" width="${52 * 6}" height="${80 * 6}"></canvas>
         <div class="legende">${[[4, 'parfaite'], [3, 'réussie'], [2, 'difficile'], [5, 'repos'], [6, 'cette semaine'], [1, 'avant le suivi']]
           .map(([c, t]) => `<span><i style="background:${COULEURS_GRILLE[c]}"></i>${t}</span>`).join('')}</div>
       </div>`;
   const records = !rec ? '' : `<div class="records">
       <div class="rec"><b>${rec.meilleureSerie.jours || 0} j</b><span>Plus longue série${rec.meilleureSerie.nom ? '<br>' + esc(rec.meilleureSerie.nom) : ''}</span></div>
-      <div class="rec"><b>${rec.meilleureSemaine.xp ? rec.meilleureSemaine.xp.toLocaleString('fr-FR') : '—'}</b><span>Meilleure semaine (XP)${rec.meilleureSemaine.lundi ? '<br>sem. du ' + dateCourte(rec.meilleureSemaine.lundi) : ''}</span></div>
+      <div class="rec"><b>${rec.meilleureSemaine.xp ? rec.meilleureSemaine.xp.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0') : '—'}</b><span>Meilleure semaine (XP)${rec.meilleureSemaine.lundi ? '<br>sem. du ' + dateCourte(rec.meilleureSemaine.lundi) : ''}</span></div>
       <div class="rec"><b>${rec.quetes}</b><span>Quêtes accomplies</span></div>
       <div class="rec"><b>${rec.parfaites} · ${rec.reussies}</b><span>Semaines parfaites · réussies</span></div>
       <div class="rec"><b>${rec.jours}</b><span>Jours d'aventure</span></div>
@@ -5730,13 +5744,16 @@ function exporterDonnees() {
   } catch (e) { toast('Export impossible : ' + ((e && e.message) || e), 'erreur'); }
 }
 /* ---------- Actions ---------- */
-function flotter(texte, couleur) {
+function flotter(texte, couleur, nom, gauche) {
   const el = document.createElement('div');
   el.className = 'float'; el.textContent = texte; el.style.color = couleur;
   // part du doigt (la carte touchée) plutôt que du milieu de l'écran : ne recouvre plus les titres
   // posé sur la carte touchée, dans une pastille sombre, monte à peine (avis du critique) ; la position est oubliée ensuite
-  const r = dernierToucherCarte; // position de la carte au moment du toucher (elle est redessinée avant l'affichage du gain)
-  if (r) { el.classList.add('sur-carte'); el.style.top = Math.max(70, r.top + r.height / 2 - 18) + 'px'; el.style.left = (r.left + r.width / 2) + 'px'; }
+  // position de la carte au moment du toucher (elle est redessinée avant l'affichage du gain) ; sinon la carte de la quête
+  let r = dernierToucherCarte;
+  if (!r && nom) { const c = document.querySelector('.card[data-q="' + CSS.escape(nom) + '"]'); if (c) r = c.getBoundingClientRect(); }
+  // à cheval sur le bord haut de la carte, calée à droite (au-dessus du sceau) : ne touche jamais le texte (critique)
+  if (r) { el.classList.add('sur-carte'); if (gauche) el.classList.add('gauche'); el.style.top = Math.max(64, r.top - 13) + 'px'; el.style.left = (gauche ? r.left + 16 : r.right - 16) + 'px'; }
   dernierToucherCarte = null; dernierToucherXY = null;
   document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
 }
@@ -5756,7 +5773,7 @@ function niveauSup(n, titre, nouveauTitre, avant, apres, evolue) {
   const ligne = (ic, html) => `<li><i>${ic}</i><span>${html}</span></li>`;
   const recap = [
     nouveauTitre ? ligne('👑', `Nouveau titre : <b>${esc(titre)}</b>`) : '',
-    ligne('⚡', `<b>${Math.round(Number(s.xpTotale) || 0).toLocaleString('fr-FR')} XP</b> au total`),
+    ligne('⚡', `<b>${Math.round(Number(s.xpTotale) || 0).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> au total`),
     capa ? ligne('🔓', `Capacité débloquée : <b>${esc(capa.nom)}</b><small>${esc(capa.d)}</small>`) : '',
     ...orn.map(o => ligne('✨', `Ornement gagné : <b>${esc(o.nom)}</b><small>à porter depuis la vitrine</small>`)),
     ...stats.map(x => ligne(ICONES[x.nom] || '🧬', `${esc(x.nom)} <b>${x.de} → ${x.a}</b>`)),
@@ -6006,16 +6023,16 @@ function agir(nom, statut) {
     if (pred.trace) (histoSaisies[nom] = histoSaisies[nom] || []).push(pred.trace);
     if (pred.annule) { const h = histoSaisies[nom] || []; const k = h.lastIndexOf(pred.annule); if (k >= 0) h.splice(k, 1); }
     state = pred.etat; render();
-    if (pred.annule) { toast('↩️ Saisie annulée'); if (pred.dXp < 0) flotter(`${pred.dXp} XP${pred.dPv ? ` · ${pred.dPv > 0 ? '+' : ''}${pred.dPv} PV` : ''}`, 'var(--muted)'); else if (pred.dPv) flotter(`+${pred.dPv} PV`, 'var(--ok)'); }
-    if (!pred.annule && pred.dXp > 0) flotter(`+${pred.dXp} XP${pred.dPv > 0 ? ` · +${pred.dPv} PV` : ''}`, 'var(--xp2)');
-    else if (!pred.annule && pred.dPv < 0) flotter(`Toi : ${pred.dPv} PV${pred.ripBoss ? ` · 🐉 boss +${pred.ripBoss} PV` : ''}`, 'var(--pv)');
-    else if (!pred.annule && pred.ripBoss) flotter(`🐉 Le boss se soigne : +${pred.ripBoss} PV`, 'var(--pv)');
-    else if (statut === 'Repos') flotter('Repos', 'var(--rest)');
+    if (pred.annule) { toast('↩️ Saisie annulée'); if (pred.dXp < 0) flotter(`${pred.dXp} XP${pred.dPv ? ` · ${pred.dPv > 0 ? '+' : ''}${pred.dPv} PV` : ''}`, 'var(--muted)', nom); else if (pred.dPv) flotter(`+${pred.dPv} PV`, 'var(--ok)', nom); }
+    if (!pred.annule && pred.dXp > 0) flotter(`+${pred.dXp} XP${pred.dPv > 0 ? ` · +${pred.dPv} PV` : ''}`, 'var(--xp2)', nom);
+    else if (!pred.annule && pred.dPv < 0) flotter(`Toi : ${pred.dPv} PV${pred.ripBoss ? ` · 🐉 boss +${pred.ripBoss} PV` : ''}`, 'var(--pv)', nom);
+    else if (!pred.annule && pred.ripBoss) flotter(`🐉 Le boss se soigne : +${pred.ripBoss} PV`, 'var(--pv)', nom);
+    else if (statut === 'Repos') flotter('Repos', 'var(--rest)', nom);
     if (pred.dXp > 0) vib(25);
     if (statut === 'Fait' && !pred.annule) { toastAnnuler(nom); sceauxFrais[nom] = Date.now();
       requestAnimationFrame(() => { const m = document.querySelector('.hx-med'); if (m && confort().animations) { m.classList.remove('salut'); void m.offsetWidth; m.classList.add('salut'); setTimeout(() => m.classList.remove('salut'), 1000); } }); }
     if (pred.dXp > 0 && dernierToucherXY) effetTrainee(dernierToucherXY[0], dernierToucherXY[1]);
-    if (pred.coups && pred.coups.length) setTimeout(() => flotter(`⚔ −${pred.coups[0].d} PV au boss`, '#ff8b7a'), 450);
+    if (pred.coups && pred.coups.length) setTimeout(() => flotter(`⚔ −${pred.coups[0].d} PV au boss`, '#ff8b7a', nom, true), 450);
     setTimeout(() => frapperBoss(pred.coups && pred.coups.length && pred.coups[0].d > 0 ? 'hit' : statut === 'Raté' ? 'riposte' : ''), 60);
     (pred.victoires || []).forEach((b, i) => setTimeout(() => bossVaincu(b), 700 + i * 300));
     if (pred.brise) setTimeout(() => { effetCoup('eclat'); toast('✨ Contré : ' + pred.brise.join(' et ') + ' ! Brèche : +25 % de dégâts aujourd\'hui'); }, 900);
@@ -6054,8 +6071,8 @@ function agir(nom, statut) {
     const avant = confirme; confirme = apres;
     if (!pred) { // saisie non prédite : retour visuel à l'arrivée
       const dXp = apres.xpTotale - avant.xpTotale, dPv = apres.pv - avant.pv;
-      if (dXp > 0) flotter(`+${Math.round(dXp)} XP${dPv > 0 ? ` · +${dPv} PV` : ''}`, 'var(--xp2)');
-      else if (dPv < 0) flotter(`Toi : ${dPv} PV`, 'var(--pv)');
+      if (dXp > 0) flotter(`+${Math.round(dXp)} XP${dPv > 0 ? ` · +${dPv} PV` : ''}`, 'var(--xp2)', nom);
+      else if (dPv < 0) flotter(`Toi : ${dPv} PV`, 'var(--pv)', nom);
     }
     celebrerChangements(avant, apres);
     if (envoisEnCours === 0) { state = avecAttente(apres); confirme = null; render(); }
