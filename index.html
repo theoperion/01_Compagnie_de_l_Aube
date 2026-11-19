@@ -1660,6 +1660,78 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
   html.th-origine .section h2 { font-size: 19px; white-space: nowrap; }
   .hero-perso .loupe { right: auto; left: 10px; }
   .regles-reduire { top: 8px; right: 8px; }
+
+  /* ===== Le Grand Recommencement, Souvenirs du Rodage, rappel des coffres (Enlumineur, 19/11) ===== */
+/* ===== 3. Cape du Vétéran du Rodage (respire doucement ; coupé par body.calme et prefers-reduced-motion grâce au préfixe orn-) ===== */
+.orn-vet-aube { animation: vetAube 5s ease-in-out infinite; }
+.orn-vet-rayons { transform-box: fill-box; transform-origin: 50% 100%; animation: vetRayons 4s ease-in-out infinite; }
+@keyframes vetAube { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
+@keyframes vetRayons { 0%, 100% { opacity: .55; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.05); } }
+
+/* ===== 1. Le Grand Recommencement (cinématique, ~7 s) ===== */
+#recoOv { position: fixed; inset: 0; z-index: 86; display: none; overflow: hidden; overscroll-behavior: contain; color: #fff3d6; cursor: pointer;
+  background: radial-gradient(circle at 50% 40%, #1c1838, #06050d 72%); }
+#recoOv.on { display: grid; place-items: center; animation: vitIn .6s ease-out; }
+#recoOv .rc-aube { position: absolute; inset: 0; pointer-events: none; opacity: 0; animation: rcAube 2.4s ease-in-out 3s forwards;
+  background: radial-gradient(ellipse 90% 55% at 50% 52%, rgba(255,186,110,.55), rgba(196,84,120,.28) 45%, transparent 75%), linear-gradient(180deg, transparent 30%, rgba(122,42,90,.35)); }
+#recoOv .ouv-ciel i { background: #ffe7b0; box-shadow: 0 0 6px #f2c94c; }
+.rc-box { position: relative; display: grid; gap: 10px; justify-items: center; text-align: center; padding: 16px 18px calc(16px + env(safe-area-inset-bottom)); width: min(94vw, 400px); }
+.rc-sous { letter-spacing: .2em; text-transform: uppercase; font-size: 11px; color: #f2c94c; animation: rcIn .6s .2s ease-out both; }
+.rc-box h1 { font-family: var(--f-titre); font-size: 28px; margin: 0; color: #fff3d6; text-shadow: 0 0 24px rgba(242,201,76,.55); }
+.rc-box h1 span { display: inline-block; animation: rcIn .5s ease-out both; }
+/* Ce que tu gardes */
+.rc-garde { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; width: 100%; }
+.rc-gl { margin-bottom: -4px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #d8c9a8; animation: rcIn .5s 1s ease-out both; }
+.rc-g { position: relative; padding: 8px 4px 7px; border-radius: 12px; border: 1px solid rgba(242,201,76,.45); background: rgba(40,28,10,.55); animation: rcIn .5s calc(1.15s + var(--i) * .22s) ease-out both; }
+.rc-g i { font-style: normal; font-size: 18px; display: block; } .rc-g b { display: block; font: 800 18px var(--f-titre); color: #f2c94c; line-height: 1.1; }
+.rc-g small { display: block; font-size: 10.5px; color: #d8c9a8; line-height: 1.25; }
+.rc-g::after { content: '✓'; position: absolute; top: -7px; right: -5px; width: 18px; height: 18px; border-radius: 50%; background: #f2c94c; color: #2a1a06; font: 800 11px/18px system-ui;
+  animation: rcSceau .45s calc(1.5s + var(--i) * .22s) cubic-bezier(.2,1.6,.4,1) both; }
+/* La scène : le soleil se lève derrière le héros, le niveau redescend à 1 */
+.rc-scene { position: relative; width: 190px; height: 196px; }
+.rc-soleil { position: absolute; left: 50%; bottom: 18px; width: 150px; height: 150px; margin-left: -75px; border-radius: 50%;
+  background: radial-gradient(circle, #fff3c4 0, #ffc46b 34%, rgba(242,120,90,.45) 58%, transparent 70%); animation: rcLeve 2.2s 3s cubic-bezier(.3,.7,.3,1) both; }
+.rc-heros { position: absolute; left: 50%; bottom: 0; width: 132px; margin-left: -66px; animation: rcIn .9s 2.3s ease-out both; }
+.rc-heros svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 14px rgba(242,201,76,.45)); }
+.rc-heros .orn-derriere { transform-box: fill-box; transform-origin: 50% 0; animation: rcCape .9s 5s cubic-bezier(.2,1.3,.4,1) both; }
+.rc-niv { position: absolute; right: -6px; bottom: 4px; width: 62px; height: 62px; border-radius: 50%; display: grid; place-content: center; text-align: center;
+  background: radial-gradient(circle at 50% 35%, #3a2a10, #120d1a); border: 2px solid #f2c94c; box-shadow: 0 0 16px rgba(242,201,76,.5); animation: rcIn .5s 2.4s ease-out both; }
+.rc-niv small { font-size: 8.5px; letter-spacing: .2em; color: #d8c9a8; } .rc-niv b { font: 800 26px/1 var(--f-titre); color: #f2c94c; }
+.rc-niv b.pop { animation: lvlPop .6s cubic-bezier(.2,1.6,.4,1); }
+.rc-niv .lvl-eclats { left: 50%; top: 50%; } .rc-niv .lvl-eclats i { animation-delay: calc(3s + var(--d)); }
+.rc-txt { margin: 0; font-size: 14.5px; line-height: 1.45; color: #f3e6c8; animation: rcIn .7s 3.6s ease-out both; } .rc-txt b { color: #ffd27a; }
+/* La cape offerte */
+.rc-lot { display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 14px; border: 1px solid #f2a93c; background: rgba(60,40,10,.6); text-align: left; animation: rcIn .7s 5.4s ease-out both; }
+.rc-lot span svg { width: 40px; height: 48px; display: block; filter: drop-shadow(0 0 8px rgba(255,196,107,.55)); }
+.rc-lot small { display: block; font-size: 10.5px; color: #ffc46b; letter-spacing: .06em; text-transform: uppercase; } .rc-lot b { font-size: 15px; color: #fff3d6; } .rc-lot em { display: block; font-style: normal; font-size: 12px; color: #d8c9a8; }
+.rc-box .btn { animation: rcIn .4s 6.4s ease-out both; min-width: 200px; }
+.rc-passer { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 14px; font-size: 11.5px; color: rgba(255,243,214,.55); animation: vitIn .4s 1s both; }
+@keyframes rcAube { to { opacity: 1; } }
+@keyframes rcLeve { from { transform: translateY(70px) scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes rcCape { from { transform: scaleY(0); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes rcSceau { from { transform: scale(0) rotate(-90deg); } to { transform: none; } }
+/* Toucher = tout de suite la fin ; même rendu sans animation (réglage ou téléphone) */
+#recoOv.vite *, #recoOv.vite *::after, #recoOv.vite .rc-aube, #recoOv.calme *, #recoOv.calme *::after, #recoOv.calme .rc-aube { animation: none !important; }
+#recoOv.vite .rc-aube, #recoOv.calme .rc-aube { opacity: 1; }
+#recoOv.vite .lvl-eclats, #recoOv.calme .lvl-eclats, #recoOv.vite .rc-passer, #recoOv.calme .rc-passer { display: none; }
+@media (prefers-reduced-motion: reduce) { #recoOv *, #recoOv *::after, #recoOv .rc-aube { animation: none !important; } #recoOv .rc-aube { opacity: 1; } #recoOv .lvl-eclats, #recoOv .rc-passer { display: none; } }
+
+/* ===== 2. Souvenirs du Rodage (armurerie) : ombres dorées, non portables ===== */
+.souv-rang { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; margin-bottom: 4px; scrollbar-width: none; overscroll-behavior-x: contain; }
+.souv-t { flex: 0 0 48px; height: 48px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); padding: 0; cursor: pointer; display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--panel) 75%); box-shadow: inset 0 0 8px rgba(0,0,0,.45); }
+.souv-t .orn-ic { height: 30px; filter: grayscale(1) sepia(1) saturate(1.7) hue-rotate(-6deg) brightness(.95) drop-shadow(0 0 3px rgba(242,201,76,.35)); opacity: .82; }
+.souv-t .orn-ic svg { max-width: 30px; max-height: 30px; } .souv-t .ap-rep { display: block; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; }
+.souv-t.l { border-color: color-mix(in srgb, #f2a93c 70%, transparent); }
+.souv-t.on { border-color: var(--gold); box-shadow: inset 0 0 8px rgba(0,0,0,.45), 0 0 0 1px var(--gold); }
+
+/* ===== 4. Rappel des coffres du Rodage (24 → 31/12) : une ligne ===== */
+.rappel-cof { display: flex; align-items: center; gap: 8px; width: 100%; margin: 10px 0 2px; padding: 9px 12px; border-radius: 12px; cursor: pointer; text-align: left;
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--card)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--panel)); color: var(--text); font: 600 13px var(--f-texte, system-ui); }
+.rappel-cof span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rappel-cof b { color: var(--gold); }
+.rappel-cof em { font-style: normal; flex: none; font-size: 11px; font-weight: 800; color: #2a1a06; background: var(--gold); border-radius: 8px; padding: 1px 6px; }
+.rappel-cof.dernier { border-color: color-mix(in srgb, var(--pv) 60%, var(--card)); } .rappel-cof.dernier b { color: var(--pv); }
+
 </style>
 </head>
 <body>
@@ -2307,7 +2379,7 @@ const ORNEMENTS = [
  * Le moteur dit ce que le héros possède (state.armurerie) et le catalogue (state.catalogueCosm) ; ici, les dessins et l'écran.
  * Emplacements (gardés avec les ornements) : cape, tete, aura, familier (fa_*), monture, repaire, trainee, victoire. */
 const COSM_COUL = { cape_rouge: ['#a83838', '#3a1010'], cape_verte: ['#3c7048', '#122016'], cape_bleue: ['#3c5ea0', '#121a32'], cape_aube: ['#f2a93c', '#7a2a5a'],
-  cape_hiver: ['#d6e8f4', '#4a6a8a'], cape_sable: ['#e2c48c', '#7a5a2a'], cape_corsaire: ['#2e2a3e', '#0c0a14'], cape_ecarlate: ['#e0283e', '#4a0a14'], cape_legende: ['#8ad0ff', '#4a2a8a'],
+  cape_veteran: ['#3a3270', '#120a22'], cape_hiver: ['#d6e8f4', '#4a6a8a'], cape_sable: ['#e2c48c', '#7a5a2a'], cape_corsaire: ['#2e2a3e', '#0c0a14'], cape_ecarlate: ['#e0283e', '#4a0a14'], cape_legende: ['#8ad0ff', '#4a2a8a'],
   procrastination: '#b48cff', dissipation: '#5ae6be', oubli: '#dfe3ff', fatigue: '#9fb0e0', doute: '#ff5a5a', tentation: '#ff78aa' };
 const RARETE_NOM = { commun: 'Commun', rare: 'Rare', epique: 'Épique', legendaire: 'Légendaire' };
 const SLOTS_COSM = [
@@ -2330,8 +2402,136 @@ function capeSvg(id, p) {
     <path class="orn-cape" d="M62 108 Q100 90 138 108 L168 246 Q134 236 100 242 Q66 236 32 246 Z" fill="url(#${p}ca)" stroke="#000" stroke-opacity=".35"/>
     <path d="M86 112 Q80 180 70 242 M114 112 Q120 180 130 242" stroke="#000" stroke-opacity=".14" stroke-width="3" fill="none"/>
     ${id === 'cape_corsaire' || id === 'cape_legende' ? `<path d="M168 246 Q134 236 100 242 Q66 236 32 246" stroke="${id === 'cape_corsaire' ? '#d4ad3c' : '#e8f4ff'}" stroke-width="4" fill="none"/>` : ''}
-    ${id === 'cape_hiver' ? '<path d="M62 108 Q100 90 138 108" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>' : ''}`;
+    ${id === 'cape_hiver' ? '<path d="M62 108 Q100 90 138 108" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>' : ''}
+    ${id === 'cape_veteran' ? capeVeteranSvg(p) : ''}`;
 }
+/* ===== 3. Cape du Vétéran du Rodage =====
+ * a) COSM_COUL (index.html ~l. 2309) : ajouter   cape_veteran: ['#3a3270', '#120a22'],
+ * b) capeSvg (~l. 2327) : ajouter, après la ligne « cape_hiver » :   ${id === 'cape_veteran' ? capeVeteranSvg(p) : ''}
+ * c) coller capeVeteranSvg juste après capeSvg.
+ * Nuit indigo ; l'aube monte de l'ourlet ; liseré d'or ; frise de runes sur les pans (visibles derrière le héros) ;
+ * au centre (visible sur la tuile), Dagaz ᛞ, la rune du jour qui se lève, sur un soleil levant. */
+function capeVeteranSvg(p) {
+  // point sur l'ourlet (deux arcs : 36,232 → 100,228 → 164,232), 12 px au-dessus du bord
+  const q = t => { const a = t < .5 ? [36, 232, 66, 222, 100, 228] : [100, 228, 134, 222, 164, 232], u = t < .5 ? t * 2 : t * 2 - 1, v = 1 - u;
+    return [v * v * a[0] + 2 * v * u * a[2] + u * u * a[4], v * v * a[1] + 2 * v * u * a[3] + u * u * a[5]]; };
+  const runes = ['M0 4V-4M0-4l3 2M0-1l3-2', 'M-1.5 4V-4l3 2-3 2 3 4', 'M-2.5-4V4l5-8V4Z', 'M0 4V-4M-2.5-1.5L0-4l2.5 2.5', 'M-2 4l2-3 2 3M0 1l-2-2.5L0-4l2 2.5Z', 'M0-4V4M-2.5-4l2.5 3 2.5-3'];
+  const frise = [.05, .14, .23, .77, .86, .95].map((t, i) => { const [x, y] = q(t); return `<path d="${runes[i]}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"/>`; }).join('');
+  const rayons = [-64, -42, -21, 0, 21, 42, 64].map(a => { const r = a * Math.PI / 180, s = Math.sin(r), c = Math.cos(r);
+    return `M${(100 + s * 27).toFixed(1)} ${(240 - c * 27).toFixed(1)}L${(100 + s * (a % 42 ? 36 : 44)).toFixed(1)} ${(240 - c * (a % 42 ? 36 : 44)).toFixed(1)}`; }).join('');
+  const broche = x => `<g transform="translate(${x} 113)"><path d="M0-6L4.5 0 0 6-4.5 0Z" fill="#f2c94c" stroke="#5a3a12" stroke-width=".8"/><circle r="1.8" fill="#ff8a5a"/></g>`;
+  return `<defs><linearGradient id="${p}vo" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" stop-color="#ff8a5a" stop-opacity="0"/><stop offset=".86" stop-color="#ff8a5a" stop-opacity=".5"/><stop offset="1" stop-color="#ffd27a" stop-opacity=".9"/></linearGradient>
+      <radialGradient id="${p}vs" cx="50%" cy="100%" r="100%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".6" stop-color="#ffc46b"/><stop offset="1" stop-color="#f2a93c"/></radialGradient></defs>
+    <path class="orn-vet-aube" d="M62 108 Q100 90 138 108 L168 246 Q134 236 100 242 Q66 236 32 246 Z" fill="url(#${p}vo)"/>
+    <path class="orn-vet-rayons" d="${rayons}" stroke="#ffd27a" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+    <path d="M78 241 A22 22 0 0 1 122 241 Z" fill="url(#${p}vs)" stroke="#7a4a12" stroke-width="1"/>
+    <path d="M86 150 V184 L114 150 V184 Z" fill="none" stroke="#f2c94c" stroke-width="3.4" stroke-linejoin="round"/>
+    <path d="M86 150 V184 L114 150 V184 Z" fill="none" stroke="#fff3c4" stroke-width="1" stroke-linejoin="round" opacity=".7"/>
+    <g fill="none" stroke="#f2c94c" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" opacity=".9">${frise}</g>
+    <path d="M62 108 L32 246 M138 108 L168 246" stroke="#e8c25a" stroke-width="1.6" stroke-opacity=".7" fill="none"/>
+    <path d="M168 246 Q134 236 100 242 Q66 236 32 246" stroke="#e8c25a" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+    <path d="M62 108 Q100 90 138 108" stroke="#e8c25a" stroke-width="3" fill="none" stroke-linecap="round"/>${broche(66)}${broche(134)}`;
+}
+
+/* ===== 1. Le Grand Recommencement : une fois par téléphone, AVANT l'ouverture de la Saison 1 =====
+ * Déclenchement : appeler recommencementAFaire() dans render(), juste AVANT ouvertureSaisonAFaire() (~l. 5098).
+ * Signal du moteur : state.armurerie.souvenirsRodage (tableau) n'existe qu'une fois le recommencement fait (resetFait_()).
+ * Niveau d'avant : state.armurerie.niveau2026 (envoyé par le moteur), sinon le dernier niveau vu sur ce téléphone en 2026. */
+const recommencementDu = () => !!(state && state.today >= '2027-01-01' && state.armurerie && Array.isArray(state.armurerie.souvenirsRodage));
+let recoPrevu = false, recoMinuteurs = [];
+function recommencementAFaire() {
+  if (!state) return;
+  // pendant le Rodage : on retient le niveau (il servira à la cinématique)
+  if (state.today < '2027-01-01') { try { localStorage.setItem('niveauRodage', String(state.niveau || '')); } catch (e) {} return; }
+  let vu = false; try { vu = !!localStorage.getItem('recommencement2027'); } catch (e) {}
+  if (vu || recoPrevu || !recommencementDu()) return;
+  recoPrevu = true;
+  const essayer = () => {
+    if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, .lvl-ov')].some(el => el.classList.contains('on') || el.classList.contains('lvl-ov'))) { setTimeout(essayer, 2000); return; }
+    try { localStorage.setItem('recommencement2027', '1'); } catch (e) {} ouvrirRecommencement();
+  };
+  setTimeout(essayer, 1200); // avant les 1 800 ms de l'ouverture de saison
+}
+function ouvrirRecommencement() {
+  const s = state, A = s.armurerie || {};
+  let ov = document.getElementById('recoOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'recoOv'; document.body.appendChild(ov); }
+  const anim = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let avant = Number(A.niveau2026) || 0; if (!avant) try { avant = Number(localStorage.getItem('niveauRodage')) || 0; } catch (e) {}
+  const nb = n => Number(n || 0).toLocaleString('fr-FR').replace(/ /g, ' ');
+  // trois choses gardées, avec les vrais nombres : trophées, titres (sinon jours de quêtes), la meilleure caractéristique
+  const T = (s.trophees || []).length, Ti = (((s.titres || {}).liste) || []).filter(t => t.obtenu).length, J = Number(A.joursActifs) || 0;
+  const st = (s.stats || []).slice().sort((a, b) => b.score - a.score), top = st[0];
+  const garde = [T && ['🏆', nb(T), T > 1 ? 'trophées' : 'trophée'], Ti && ['👑', nb(Ti), Ti > 1 ? 'titres' : 'titre'], J && ['📜', nb(J), 'jours de quêtes'],
+    ['🧬', top ? `${COURT[top.nom] || top.nom} ${top.score}` : (st.length || 7), st.length > 1 ? `+ ${st.length - 1} caractéristiques` : 'caractéristiques']].filter(Boolean);
+  garde.splice(2, garde.length - 3); // toujours 3 cases, la caractéristique en dernier
+  const cape = cosmItem('cape_veteran') || { id: 'cape_veteran', slot: 'cape', nom: 'Cape du Vétéran du Rodage' };
+  // le héros tel qu'il est maintenant (niveau 1), déjà drapé de sa cape : elle se déploie à 5 s
+  const orn = Object.assign({ _jours: joursDe(s) }, ornementsDe(s), { cape: 'cape_veteran' });
+  const heros = orner(classeDe(s).dessin(palierDe(1, classeDe(s)), 'reco', lookDe(s.look)), orn, 'reco');
+  const titre = 'L\'Aube se lève';
+  const eclats = Array.from({ length: 16 }, (_, i) => `<i style="--a:${(i * 22.5).toFixed(0)}deg;--d:${(i % 4) * .04}s;--l:${46 + (i % 3) * 16}px"></i>`).join('');
+  ov.className = anim ? '' : 'calme';
+  ov.innerHTML = `<div class="ouv-ciel">${Array.from({ length: 26 }, (_, i) => `<i style="left:${(i * 37) % 100}%;top:${(i * 53) % 70}%;animation-delay:${(i % 9) * .3}s"></i>`).join('')}</div><div class="rc-aube"></div>
+    <span class="rc-passer">toucher pour passer</span>
+    <div class="rc-box">
+      <div class="rc-sous">1er janvier · Le Grand Recommencement</div>
+      <h1 aria-label="${titre}">${titre.split('').map((c, i) => `<span style="animation-delay:${.4 + i * .045}s">${c === ' ' ? '&nbsp;' : esc(c)}</span>`).join('')}</h1>
+      <small class="rc-gl">Tu gardes pour toujours</small><div class="rc-garde">${garde.map((g, i) => `<div class="rc-g" style="--i:${i}"><i>${g[0]}</i><b>${g[1]}</b><small>${esc(String(g[2]))}</small></div>`).join('')}</div>
+      <div class="rc-scene"><div class="rc-soleil"></div><div class="rc-heros">${heros}</div>
+        <div class="rc-niv"><small>NIV</small><b>${anim && avant > 1 ? avant : 1}</b><div class="lvl-eclats">${anim && avant > 1 ? eclats : ''}</div></div></div>
+      <p class="rc-txt">Le Rodage est accompli. Tu repars du <b>niveau 1</b>, plus fort que jamais : tout ce que tu as forgé reste en toi.</p>
+      <div class="rc-lot"><span><svg viewBox="40 90 120 160">${capeSvg('cape_veteran', 'rclot')}</svg></span><div><small>Légendaire · offerte</small><b>${esc(cape.nom)}</b><em>pour toi et ton compagnon d'armes</em></div></div>
+      <button class="btn or" data-reco-go="1">Vers la Saison 1</button>
+    </div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+  recoMinuteurs.forEach(clearTimeout); recoMinuteurs = [];
+  if (anim && avant > 1) recoMinuteurs.push(setTimeout(() => { const b = ov.querySelector('.rc-niv b'); if (b) { b.textContent = '1'; b.classList.add('pop'); } vib([40, 60, 120]); }, 3050));
+  recoMinuteurs.push(setTimeout(() => vib([20, 30, 20]), 5050));
+}
+function passerRecommencement(ov) { ov.classList.add('vite'); recoMinuteurs.forEach(clearTimeout); recoMinuteurs = []; const b = ov.querySelector('.rc-niv b'); if (b) b.textContent = '1'; }
+document.addEventListener('click', e => {
+  const ov = e.target.closest('#recoOv'); if (!ov) return;
+  if (e.target.closest('[data-reco-go]')) { ov.classList.remove('on'); document.body.classList.remove('bloque'); render(); return; } // l'ouverture de la Saison 1 prend le relais
+  if (!ov.classList.contains('vite') && !ov.classList.contains('calme')) passerRecommencement(ov);
+});
+/* Dans ouvertureSaisonAFaire(), dans essayer(), première ligne :
+ *   if (recommencementDu() && !localStorage.getItem('recommencement2027')) { setTimeout(essayer, 2000); return; }
+ * (le Grand Recommencement passe d'abord, même s'il a été retardé par un d20 ou un boss) */
+
+/* ===== 2. Souvenirs du Rodage (dans blocArmurerie, après la ligne « ✦ + N objets à découvrir », avant « Marchand ») =====
+ *   ${blocSouvenirs(s)}
+ * et ajouter <div class="orn-info" id="info-souv"></div> est déjà dans blocSouvenirs. */
+function blocSouvenirs(s) {
+  const L = ((s.armurerie || {}).souvenirsRodage || []).map(id => cosmItem(id, s)).filter(Boolean);
+  if (!L.length) return '';
+  const ordre = { legendaire: 0, epique: 1, rare: 2, commun: 3 };
+  L.sort((a, b) => (ordre[a.rarete] ?? 4) - (ordre[b.rarete] ?? 4));
+  return `<div class="section"><h2>Souvenirs du Rodage</h2><span>${L.length} objet${L.length > 1 ? 's' : ''}</span></div>
+    <div class="souv-rang">${L.map(x => `<button class="souv-t ${x.rarete === 'legendaire' ? 'l' : ''}" data-souv="${x.id}" aria-label="${esc(x.nom)}, souvenir du Rodage"><span class="orn-ic">${apercuCosm(x)}</span></button>`).join('')}</div>
+    <div class="orn-info" id="info-souv"></div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-souv]'); if (!b) return;
+  const x = cosmItem(b.dataset.souv), box = document.getElementById('info-souv'); if (!x || !box) return;
+  const deja = b.classList.contains('on');
+  document.querySelectorAll('.souv-t.on').forEach(t => t.classList.remove('on'));
+  if (deja) { box.classList.remove('on'); return; }
+  b.classList.add('on');
+  box.innerHTML = `<b>${esc(x.nom)}</b> · ${RARETE_NOM[x.rarete] || ''}<br><span class="muted">Gagné pendant le Rodage. Il ne se porte plus : il reste ici, en souvenir.</span>`;
+  box.classList.add('on');
+});
+
+/* ===== 4. Rappel des coffres du Rodage (du 24 au 31/12, tant qu'il en reste) =====
+ * Dans render(), vueQuetes, juste après ${bandeauMontre(s)} :   ${bandeauCoffresRodage(s)}
+ * Toucher = ouvre directement un coffre (même attribut que les boutons existants : data-coffre). */
+function bandeauCoffresRodage(s) {
+  const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24' || s.today > '2026-12-31') return '';
+  const n = (A.coffres || []).filter(c => c.saison === 'pre').length; if (!n) return '';
+  const j = 31 - Number(s.today.slice(8, 10)), dernier = j === 0;
+  return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? ': dernier soir pour ouvrir' : 'à ouvrir avant l\'aube'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
+}
+
 function auraSvg(id, p) {
   const c = { aura_aube: '#ffb86b', aura_etincelles: '#ffd75a', aura_givre: '#bfe8ff', aura_lune: '#dfe4ff', aura_abysses: '#2a9ab8', aura_legende: '#8ad0ff' }[id] || couleurPano(id) || '#b392ee';
   const etinc = ['aura_etincelles', 'aura_aube', 'aura_givre', 'aura_legende'].includes(id) ? [[52, 90], [150, 120], [60, 170], [146, 196], [100, 60], [40, 130]].map(([x, y], i) =>
@@ -2541,6 +2741,7 @@ function blocArmurerie() {
     <div class="orn-info" id="info-cosm"></div><div class="orn-info" id="info-${E[0]}"></div>
     <div class="orn-liste gr-liste">${tuilesCosm}${tuilesOrn}</div>
     ${caches ? `<p class="muted" style="font-size:12px;margin:-4px 2px 10px">✦ + ${caches} objets à découvrir dans les saisons à venir</p>` : ''}
+    ${blocSouvenirs(s)}
     <div class="section"><h2>Marchand</h2><span>✦ ${A.eclats} éclats</span></div>
     <div class="sa-b">${(A.coffres || []).length ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${A.coffres.length})</button>` : ''}<button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} la boutique</button></div>
     ${marchand}
@@ -4219,6 +4420,8 @@ function ouvertureSaisonAFaire() {
   let vu = false; try { vu = !!localStorage.getItem('ouverture|' + S.id); } catch (e) {} if (vu || ouverturePrevue) return;
   ouverturePrevue = true;
   const essayer = () => {
+    let reco = false; try { reco = recommencementDu() && !localStorage.getItem('recommencement2027'); } catch (e) {}
+    if (reco) { setTimeout(essayer, 2000); return; } // le Grand Recommencement passe d'abord
     if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem('ouverture|' + S.id, '1'); } catch (e) {} ouvrirOuverture(S.id);
   };
@@ -5095,6 +5298,7 @@ function render() {
   if (ongletAffiche !== onglet) { ongletAffiche = onglet; document.querySelectorAll('.float').forEach(x => x.remove()); } // un gain ne flotte pas sur l'onglet suivant
   annonceBossAFaire();
   annonceAventureAFaire();
+  recommencementAFaire();
   ouvertureSaisonAFaire();
   if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
   if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
@@ -5164,6 +5368,7 @@ function render() {
     ${sousOnglet === 'nouvelles' ? vueNouvelles + '<div style="height:20px"></div>' : `
     ${bandeauHorsLigne(s)}
     ${bandeauMontre(s)}
+    ${bandeauCoffresRodage(s)}
     ${effetsActifs(s)}
     ${carteBossMini(s)}
     <div class="section"><h2>Aujourd'hui</h2></div>
