@@ -2101,12 +2101,13 @@ body.calme #sheetPal.ttr .ttr-b.on::after { animation: none; } @media (prefers-r
 .hxa .hxc-j.q.plein em b { color: var(--xp2); }
 .hxa .hxc-d { gap: 5px; justify-content: space-between; padding: 1px 0; }
 html[class] .hxa .hx-btn { height: 24px !important; } html[class] .hxa .hx-btn svg { width: 20px; height: 20px; }
-.hxa .hxd { position: relative; display: grid; place-items: center; }
+.hxa .hxd { position: relative; display: grid; place-items: center; margin-right: 5px; } /* critique : marge à droite du d20 et de « Lance » */
 .hxa .hxd svg { width: 32px; height: 32px; }
 .hxa .hxd small { position: absolute; right: -4px; bottom: -3px; padding: 0 3px; border-radius: 5px; background: var(--card); line-height: 12px; }
 .hxa .hxd:not(.fait) small { right: 50%; transform: translateX(50%); bottom: -5px; font-size: 8px; padding: 0 4px; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); }
 html.ygg .hxa .hxd:not(.fait)::before, html.th-epopee .hxa .hxd:not(.fait)::before { top: 16px; width: 40px; height: 40px; margin: -20px 0 0 -20px; }
 html.th-epopee .hxa .hxd svg { filter: drop-shadow(0 0 4px rgba(162,116,255,.6)); } /* halo resserré : ne passe plus sur les PV */
+.cfa-cl .cfa-ti { font-style: italic; color: var(--gold); }
 </style>
 </head>
 <body>
@@ -7103,7 +7104,7 @@ function compagnieFusion(s, moi, lui, total, xpComp, mot) {
   const col = (c, cote) => `<div class="cfa-col" style="--c:${cote === 'g' ? K.cM : K.cL}">
       <div class="dl-niche ${cote}" ${c.moi ? 'data-vitrine="1"' : `data-vitrine-nom="${esc(c.nom)}"`} role="button" aria-label="Voir ${c.moi ? 'ton héros' : 'ton compagnon d\'armes'} en grand">${K.dessin(c, 'dl' + cote)}<span class="loupe">⤢</span></div>
       <div class="dl-noms"><b>${K.prenom(c)}</b></div>
-      <small class="cfa-cl">${c.moi ? 'toi · ' : ''}${esc(c.classe || '')} · niv. ${c.niveau || 1}</small>
+      <small class="cfa-cl"><i class="cfa-ti">${esc(c.moi ? (surnomDe(s) || s.titre || '') : (c.surnom || c.titre || ''))}</i> · niv. ${c.niveau || 1}</small>
       <div class="cfu-pv"><i class="t pv"><i style="width:${K.pvPct(c)}%"></i></i><em><b>${c.pv}</b> PV</em></div>
       <div class="cfu-q">${K.pips(c, total)}<em>${K.quetes(c, total)} auj.</em></div>
     </div>`;
@@ -7133,7 +7134,7 @@ function ouvrirFeuilleTitre() {
 }
 document.addEventListener('click', e => {
   if (e.target.closest('[data-ttr]')) { e.stopPropagation(); ouvrirFeuilleTitre(); return; } // avant le data-tab="profil" de la plaque
-  if (e.target.closest('#sheetPal.ttr [data-ttr-eff]')) { e.stopPropagation(); regler('reglerDevise', '').then(ok => ok && toast('Devise effacée')); document.getElementById('sheetPal').classList.remove('ttr'); fermerMenu(); return; }
+  if (e.target.closest('#sheetPal.ttr [data-ttr-eff]')) { e.stopPropagation(); if (!confirm('Effacer ta devise ?')) return; regler('reglerDevise', '').then(ok => ok && toast('Devise effacée')); document.getElementById('sheetPal').classList.remove('ttr'); fermerMenu(); return; }
   if (e.target.closest('#sheetPal.ttr [data-titre], #sheetPal.ttr [data-pr="devise"]')) setTimeout(() => { document.getElementById('sheetPal').classList.remove('ttr'); fermerMenu(); }, 0);
 }, true);
 function vueCompagnie(s, faits, total) {
