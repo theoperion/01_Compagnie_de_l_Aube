@@ -1061,7 +1061,7 @@
   .float { position: fixed; left: 50%; top: 40%; transform: translate(-50%, 0); z-index: 20;
     font-family: var(--f-titre); font-weight: 800; font-size: 28px; pointer-events: none; white-space: nowrap;
     animation: rise 2.9s ease-out forwards; text-shadow: 0 0 2px #000, 0 0 4px #000, 0 2px 12px rgba(0,0,0,.8); white-space: normal; text-align: center; width: max-content; max-width: 92vw; }
-  .float.sur-carte { font-size: 15px; padding: 3px 10px; border-radius: 99px; background: rgba(0,0,0,.82); border: 1px solid color-mix(in srgb, var(--xp2) 40%, transparent); box-shadow: 0 4px 14px rgba(0,0,0,.45); animation: riseCourt 2.2s ease-out forwards; }
+  .float.sur-carte { font-size: 15px; padding: 3px 10px; border-radius: 99px; background: rgba(0,0,0,.82); border: 1px solid color-mix(in srgb, var(--xp2) 40%, transparent); box-shadow: 0 4px 14px rgba(0,0,0,.45); animation: riseCourt 2.2s ease-out forwards; font-family: var(--f-texte); font-style: normal; font-variant-numeric: tabular-nums; }
   @keyframes riseG { 0% { opacity: 0; transform: translate(0, 6px) scale(.9); } 7% { opacity: 1; transform: translate(0, 0) scale(1); } 75% { opacity: 1; transform: translate(0, -5px); } 100% { opacity: 0; transform: translate(0, -8px); } }
   .float.sur-carte.gauche { animation-name: riseG; }
   @keyframes riseCourt { 0% { opacity: 0; transform: translate(-100%, 6px) scale(.9); } 7% { opacity: 1; transform: translate(-100%, 0) scale(1); } 75% { opacity: 1; transform: translate(-100%, -5px); } 100% { opacity: 0; transform: translate(-100%, -8px); } }
@@ -1646,7 +1646,11 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
   html.ygg .jour-d20:not(.fait)::before { display: none; } /* cercle du d20 retiré (jugé raté par le conseil) */
 
   /* Corrections du critique (19/11) : onglets qui tiennent, troncatures, boutons posés au bon endroit */
-  .sous-onglets button { min-width: 0; overflow: hidden; padding-left: 4px; padding-right: 4px; }
+  .sous-onglets button { position: relative; flex: 1 1 auto; white-space: nowrap; padding-left: 8px; padding-right: 8px; }
+  .sous-onglets .pastille { position: absolute; top: -8px; right: 2px; margin: 0; font-size: 10px; line-height: 14px; padding: 1px 6px; }
+  .regles-btn > span:nth-child(2) { padding-right: 48px; }
+  @media (max-width: 400px) { .sous-onglets.trois .ic { display: none; } }
+  @media (max-width: 370px) { .sous-onglets button { letter-spacing: .02em !important; padding-left: 4px; padding-right: 4px; } }
   html.ygg .sous-onglets button { font-size: 13px; letter-spacing: .05em; }
   html.th-epopee .sous-onglets button { font-size: 15px; }
   html.th-arene .sous-onglets button { font-size: 13px; letter-spacing: .02em; }
@@ -5153,8 +5157,8 @@ function render() {
   const vueNouvelles = nouv.length ? nouv.map(n => `<div class="nouv ${nouvelleVue(n.id) ? '' : 'neuf'}">${nouvelleVue(n.id) ? '' : '<span class="new">NEW</span>'}${n.html}</div>`).join('')
     : '<div class="empty">Rien de neuf pour l\'instant. Le Maître du Jeu écrit chaque lundi, les événements arrivent au fil des saisons.</div>';
   const vueQuetes = `
-    <div class="sous-onglets"><button class="${sousOnglet === 'quetes' ? 'on' : ''}" data-sous="quetes">⚔ Quêtes</button>
-      <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles">📜 Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button></div>
+    <div class="sous-onglets"><button class="${sousOnglet === 'quetes' ? 'on' : ''}" data-sous="quetes"><span class="ic">⚔ </span>Quêtes</button>
+      <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles"><span class="ic">📜 </span>Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button></div>
     ${sousOnglet === 'nouvelles' ? vueNouvelles + '<div style="height:20px"></div>' : `
     ${bandeauHorsLigne(s)}
     ${bandeauMontre(s)}
@@ -5192,12 +5196,12 @@ function render() {
     <div><b>${c.nom}</b><span class="d">${c.d}</span>${ok && st ? `<span class="cst">${esc(st.statut)}</span>` : ''}${actions}</div></div>`;
   }).join('');
   const nbCoffres = ((s.armurerie || {}).coffres || []).length;
-  const sousH = `<div class="sous-onglets trois"><button class="${sousHeros === 'perso' ? 'on' : ''}" data-sous-heros="perso">🛡 Personnage</button>
-      <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure">🗺 Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
-      <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits">🏆 Exploits</button></div>`;
+  const sousH = `<div class="sous-onglets trois"><button class="${sousHeros === 'perso' ? 'on' : ''}" data-sous-heros="perso"><span class="ic">🛡 </span>Personnage</button>
+      <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure"><span class="ic">🗺 </span>Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
+      <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits"><span class="ic">🏆 </span>Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `<div class="aventure saison-${(s.armurerie && s.armurerie.saison && s.armurerie.saison.id) || 'pre'}">
     ${blocSaison(s, true)}
-    ${livretReduit() ? '' : `<div class="regles-box"><button class="regles-btn" data-regles="0"><span class="rq">?</span><span><b>Livret des règles</b><small>Comment marchent le plateau, les coffres et la garde-robe</small></span><span class="fl">›</span></button>
+    ${livretReduit() ? '' : `<div class="regles-box"><button class="regles-btn" data-regles="0"><span class="rq">?</span><span><b>Livret des règles</b><small>Comment marchent le plateau, les coffres et la garde-robe</small></span></button>
       <button class="regles-reduire" data-livret-reduire="1" aria-label="Réduire le livret des règles">✕</button></div>`}
     ${plateauHTML(s)}
     ${salleTrophees(s)}</div>`
@@ -5217,8 +5221,8 @@ function render() {
         <div class="classe">${esc(cl.nom || 'Magicien')}</div>
         <div class="classe-sub" style="color:var(--gold)">Veilleur de l'Aube</div>
         <div class="classe-sub">${esc(CL.paliers[pal].desc)}</div>
-        <div class="classe-sub">★ ${esc(cl.fav1)} et ${esc(cl.fav2)} : +${pctBonus}&nbsp;% d'XP<br>${CL.passif(cl)}</div>
-        ${prochain ? `<div class="next-evo">${avatar(pal + 1, 'n', s)}<div>Prochaine évolution<br><b>Niveau ${prochain.n}</b> · ${prochain.titre}</div></div>`
+        <div class="classe-sub">★ ${esc(cl.fav1)} et ${esc(cl.fav2)}&nbsp;: +${pctBonus}&nbsp;%&nbsp;d'XP<br>${CL.passif(cl)}</div>
+        ${prochain ? `<div class="next-evo">${avatar(pal + 1, 'n', s)}<div>Prochaine évolution<br><b>Niveau ${prochain.n}</b> · ${String(prochain.titre).replace(' ', '\u00a0')}</div></div>`
           : '<div class="next-evo">Forme ultime atteinte</div>'}
       </div>
     </div>
@@ -5747,15 +5751,15 @@ function exporterDonnees() {
 function flotter(texte, couleur, nom, gauche) {
   const el = document.createElement('div');
   el.className = 'float'; el.textContent = texte; el.style.color = couleur;
-  // part du doigt (la carte touchée) plutôt que du milieu de l'écran : ne recouvre plus les titres
-  // posé sur la carte touchée, dans une pastille sombre, monte à peine (avis du critique) ; la position est oubliée ensuite
-  // position de la carte au moment du toucher (elle est redessinée avant l'affichage du gain) ; sinon la carte de la quête
-  let r = dernierToucherCarte;
-  if (!r && nom) { const c = document.querySelector('.card[data-q="' + CSS.escape(nom) + '"]'); if (c) r = c.getBoundingClientRect(); }
-  // à cheval sur le bord haut de la carte, calée à droite (au-dessus du sceau) : ne touche jamais le texte (critique)
-  if (r) { el.classList.add('sur-carte'); if (gauche) el.classList.add('gauche'); el.style.top = Math.max(64, r.top - 13) + 'px'; el.style.left = (gauche ? r.left + 16 : r.right - 16) + 'px'; }
-  dernierToucherCarte = null; dernierToucherXY = null;
-  document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
+  const toucher = dernierToucherCarte; dernierToucherCarte = null; dernierToucherXY = null;
+  // mesuré à l'image suivante, après le redessin : la carte de la quête (même si l'écran a défilé), le toucher en dernier recours.
+  // La pastille se pose à cheval sur le bord haut de la carte, calée à droite (au-dessus du sceau) : elle ne touche jamais le texte.
+  requestAnimationFrame(() => {
+    const c = nom ? document.querySelector('.card[data-q="' + CSS.escape(nom) + '"]') : null;
+    const r = c ? c.getBoundingClientRect() : toucher;
+    if (r) { el.classList.add('sur-carte'); if (gauche) el.classList.add('gauche'); el.style.top = Math.max(64, r.top - 13) + 'px'; el.style.left = (gauche ? r.left + 16 : r.right - 16) + 'px'; }
+    document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
+  });
 }
 /**
  * Montée de niveau en plein écran : le chiffre grimpe dans un anneau qui se remplit, éclats dorés,
