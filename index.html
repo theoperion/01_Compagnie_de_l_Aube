@@ -43,6 +43,40 @@
     background: radial-gradient(ellipse at top, var(--haut) 0%, var(--bg) 55%); }
   .wrap { max-width: 520px; margin: 0 auto; padding: 0 16px; }
 
+  /* En-tête compact (charte Taverne, étape 2) : héros animé en médaillon, niveau, nom ; carte du jour sur Quêtes */
+  header.hx { padding: 14px 0 4px; position: relative; }
+  .hx-row { display: flex; align-items: center; gap: 10px; }
+  .hx-med { width: 58px; height: 58px; flex: none; border-radius: 50%; overflow: hidden; position: relative; padding: 0; cursor: pointer;
+    border: 0; background: radial-gradient(80% 80% at 50% 30%, #3a2a1e, #140e0a); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold), 0 0 18px rgba(242,165,65,.35); }
+  .hx-med svg { position: absolute; width: 112px; height: auto; left: 50%; top: -16px; transform: translateX(-50%); }
+  .hx-med .aura, .hx-med .p, .hx-med .spin { display: none; }
+  .hx-lvl { font: italic 900 44px/.8 var(--f-titre); color: var(--xp2); text-shadow: 0 0 18px rgba(242,165,65,.35); cursor: pointer; }
+  .hx-txt { flex: 1; min-width: 0; cursor: pointer; } .hx-txt .hero-name { font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hx-sub { margin-top: 3px; font: 600 12px var(--f-texte); color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; } .hx-sub .joker { margin: 0; }
+  .hx-btn { position: static !important; width: 44px !important; height: 44px !important; border-radius: 50% !important; display: grid; place-items: center; color: var(--text); }
+  .hx-btn svg { width: 22px; height: 22px; }
+  .t { display: block; height: 7px; border-radius: 4px; background: rgba(255,214,170,.09); overflow: hidden; transform: skewX(-14deg); }
+  .t > i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--xp2)); }
+  .t.pv > i, .jbar.pv .t > i { background: linear-gradient(90deg, var(--wax), var(--wax2)); }
+  .hx-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 2px 2px; } .hx-bars .t { height: 5px; }
+  .jour { margin-top: 12px; padding: 14px 14px 12px 16px; border-radius: 20px; border: 1px solid var(--line); display: flex; gap: 10px; align-items: stretch;
+    background: radial-gradient(120% 100% at 100% 0%, rgba(242,165,65,.14), transparent 55%), var(--card); }
+  .jour-g { flex: 1; min-width: 0; }
+  .jour .kick { font: 800 10.5px var(--f-texte); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+  .jour-big { font: italic 900 46px/.9 var(--f-titre); margin-top: 6px; } .jour-big small { font-size: 24px; color: var(--muted); } .jour-big em { font: italic 800 19px var(--f-titre); color: var(--muted); }
+  .jour-sub { display: flex; gap: 10px; margin: 6px 0 8px; font: 600 12px var(--f-texte); color: var(--muted); flex-wrap: wrap; } .jour-sub b { color: var(--xp2); font: italic 900 15px var(--f-titre); }
+  .jbar { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; margin-top: 5px; font: 800 10.5px var(--f-texte); letter-spacing: .08em; color: var(--muted); }
+  .jbar em { font: 600 11.5px var(--f-texte); font-style: normal; color: var(--muted); } .jbar em b { color: var(--text); font: italic 900 14px var(--f-titre); }
+  .jour-boss { width: 96px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: none; color: var(--text); cursor: pointer; padding: 0; }
+  .jour-boss svg { width: 70px; height: 76px; } .jour-boss b { font: italic 800 13px/1 var(--f-titre); text-align: center; }
+  .jour-boss .t { width: 80px; height: 5px; } .jour-boss em { font: italic 900 13px var(--f-titre); color: var(--wax2); }
+  /* Ambiance selon l'heure : aube le matin, jour neutre, bougie le soir, nuit profonde */
+  body.h-aube { --haut: #3a2418; } body.h-soir { --haut: #3a220e; } body.h-nuit { --haut: #1a120c; }
+  body.h-aube::before, body.h-soir::before { content: ''; position: fixed; inset: 0 0 auto; height: 260px; pointer-events: none; z-index: -1; }
+  body.h-aube::before { background: radial-gradient(70% 100% at 50% 0%, rgba(255,170,120,.16), transparent 70%); }
+  body.h-soir::before { background: radial-gradient(60% 100% at 85% 0%, rgba(255,170,60,.18), transparent 70%); animation: bougie 5s ease-in-out infinite; }
+  @keyframes bougie { 0%, 100% { opacity: .85; } 45% { opacity: 1; } 60% { opacity: .78; } }
+  body.calme.h-soir::before { animation: none; } @media (prefers-reduced-motion: reduce) { body.h-soir::before { animation: none; } }
   /* En-tête personnage */
   header { padding: 22px 0 6px; }
   .hero-row { display: flex; align-items: center; gap: 14px; }
@@ -88,7 +122,7 @@
 
   /* Cartes */
   .list { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
-  .card { display: flex; align-items: center; gap: 12px; padding: 13px 12px 13px 14px; border-radius: 14px;
+  .card { display: flex; align-items: center; gap: 10px; padding: 9px 6px 9px 11px; border-radius: 16px;
     background: var(--card); border: 1px solid var(--line); cursor: pointer; user-select: none;
     transition: transform .12s, background .25s, border-color .25s; position: relative; }
   .card:active { transform: scale(.98); }
@@ -100,12 +134,13 @@
   .card.missed { border-color: #6a2e2e; }
   .card.rest { border-color: #2e466a; }
   .card.busy { opacity: .5; pointer-events: none; }
-  .icon { width: 42px; height: 42px; flex: none; border-radius: 12px; display: grid; place-items: center;
-    font-size: 21px; background: #2a1f17; }
+  .icon { width: 36px; height: 36px; flex: none; border-radius: 11px; display: grid; place-items: center;
+    font-size: 18px; background: #2a1f17; }
   .card.done .icon { background: #24402f; }
   .body { flex: 1; min-width: 0; }
-  .name { font-weight: 600; font-size: 15px; line-height: 1.25; overflow-wrap: anywhere; }
-  .meta { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+  .name { font-weight: 700; font-size: 15.5px; line-height: 1.2; overflow-wrap: anywhere; }
+  .meta .week b { color: var(--text); }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
   .meta .pro { color: var(--warn); font-weight: 600; }
   .meta .bonus { color: var(--gold); font-weight: 600; }
   .right { text-align: right; flex: none; }
@@ -573,8 +608,9 @@
   /* Héros animés en 2D (repos) : respiration, tête qui penche, clignement, bâton. Les paupières restent fermées-invisibles partout ailleurs. */
   svg .h-paup ellipse { transform-box: fill-box; transform-origin: 50% 0%; transform: scaleY(0); }
   .hero-perso .h-corps { transform-origin: 100px 240px; animation: hResp 4.2s ease-in-out infinite; }
-  .hero-perso .h-tete, .vit-perso .h-tete { transform-origin: 100px 96px; animation: hTete 6.3s ease-in-out infinite; }
-  .hero-perso .h-paup ellipse, .vit-perso .h-paup ellipse { animation: hCligne 5.4s ease-in-out infinite; }
+  .hx-med .h-corps { transform-origin: 100px 240px; animation: hResp 4.2s ease-in-out infinite; }
+  .hx-med .h-tete, .hero-perso .h-tete, .vit-perso .h-tete { transform-origin: 100px 96px; animation: hTete 6.3s ease-in-out infinite; }
+  .hx-med .h-paup ellipse, .hero-perso .h-paup ellipse, .vit-perso .h-paup ellipse { animation: hCligne 5.4s ease-in-out infinite; }
   .hero-perso .h-arme, .vit-perso .h-arme { transform-origin: 134px 238px; animation: hArme 5s ease-in-out infinite; }
   @keyframes hResp { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.006, 1.016); } }
   @keyframes hTete { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(-1.4deg); } 70% { transform: rotate(1deg); } }
@@ -899,8 +935,8 @@
   @keyframes txtIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes brille { to { background-position: -200% 0; } }
   .comp-av { position: relative; cursor: pointer; } .comp-av .loupe { position: absolute; right: 0; bottom: 2px; font-size: 10px; padding: 1px 5px; border-radius: 99px; background: rgba(0,0,0,.5); color: var(--gold); }
-  .gains { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
-  .gains .g { font-size: 11px; padding: 2px 7px; border-radius: 99px; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .gains { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .gains .g { font-size: 10.5px; padding: 1px 6px; border-radius: 99px; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
   .gains .g b { color: var(--text); font-weight: 700; } .gains .g.p { color: var(--text); }
   .gains .g.f { border-color: rgba(242,165,65,.55); background: rgba(242,165,65,.12); color: var(--gold); } .gains .g.f b { color: var(--gold); }
   .gains .g.r { opacity: .75; }
@@ -1554,6 +1590,7 @@ const PICTO = {
   carnet: PICT_ + '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/><path d="M11 19c0 .8.5 1.5 1 1.5s1-.7 1-1.5"/></svg>',
   combat: PICT_ + '<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4M7 17l-3 3"/></svg>',
   compagnie: PICT_ + '<circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.8c2 .7 3.2 2.5 3.5 5.2"/></svg>',
+  reglages: PICT_ + '<circle cx="12" cy="12" r="3"/><path d="M10.3 3.6a1.7 1.7 0 0 1 3.4 0 1.7 1.7 0 0 0 2.5 1.1 1.7 1.7 0 0 1 2.4 2.4 1.7 1.7 0 0 0 1.1 2.5 1.7 1.7 0 0 1 0 3.4 1.7 1.7 0 0 0-1.1 2.5 1.7 1.7 0 0 1-2.4 2.4 1.7 1.7 0 0 0-2.5 1.1 1.7 1.7 0 0 1-3.4 0 1.7 1.7 0 0 0-2.5-1.1 1.7 1.7 0 0 1-2.4-2.4 1.7 1.7 0 0 0-1.1-2.5 1.7 1.7 0 0 1 0-3.4 1.7 1.7 0 0 0 1.1-2.5 1.7 1.7 0 0 1 2.4-2.4 1.7 1.7 0 0 0 2.5-1.1z"/></svg>',
   heros: PICT_ + '<path d="M12 3c4.4 0 7 3.2 7 7.5V19h-4.5v-5.5h-5V19H5v-8.5C5 6.2 7.6 3 12 3z"/><path d="M12 3v6M9.5 13.5h5"/></svg>'
 };
 const THEMES = [
@@ -1634,6 +1671,9 @@ function appliquerTheme(id) {
   try { localStorage.setItem('theme', T.id); localStorage.setItem('themeCarnet', JSON.stringify(T.id === 'aube' && !PT.css ? {} : { '--bg': V.bg, '--surface': V.panel, '--surface2': V.card, '--sunk': V.bg, '--line2': V.line, '--fg': V.text, '--muted': V.muted, '--gold': V.gold, '--gold2': V.gold, police: familles, titre: T.id === 'aube' ? '' : (V['f-titre'] || ''), texte: texte })); } catch (e) {}
 }
 appliquerTheme(themeChoisi());
+function ambianceHeure() { const h = new Date().getHours(), c = h >= 5 && h < 10 ? 'h-aube' : h >= 18 && h < 23 ? 'h-soir' : h >= 23 || h < 5 ? 'h-nuit' : 'h-jour';
+  ['h-aube', 'h-jour', 'h-soir', 'h-nuit'].forEach(k => document.body && document.body.classList.toggle(k, k === c)); }
+document.addEventListener('DOMContentLoaded', ambianceHeure); setInterval(ambianceHeure, 60000); try { ambianceHeure(); } catch (e) {}
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-theme]');
   if (!b) return;
@@ -4326,14 +4366,11 @@ function carteHabitude(h, petite) {
     <div class="icon">${ICONES[h.carac] || '⭐'}</div>
     <div class="body">
       <div class="name">${esc(h.sous || h.nom)}</div>
-      <div class="meta">${h.serieNb > 0 && h.serie > 0 ? `<span class="streak">🔥 ${h.serie} j</span> · ` : ''}${rythme}${h.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(h.nom)}</div>
+      <div class="meta">${h.serieNb > 0 && h.serie > 0 ? `<span class="streak">🔥 ${h.serie} j</span> · ` : ''}<span class="week ${okSem ? 'ok' : ''}"><b>${h.semaine}/${h.objectif}</b> sem.</span> · ${rythme}${h.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(h.nom)}</div>
       ${gains(h)}
       ${(h.decalages || []).map(x => `<span class="chip d">↔ séance du ${JOURS_LONGS[indexJour(x.de)]} déplacée au ${JOURS_LONGS[indexJour(x.a)]}</span>`).join(' ')}
     </div>
-    <div class="right">
-      <div class="week ${okSem ? 'ok' : ''}"><b>${h.semaine}/${h.objectif}</b> sem.</div>
-      ${droite}
-    </div>
+    ${droite ? `<div class="right">${droite}</div>` : ''}
     <button class="more" data-more="${esc(h.nom)}" aria-label="Plus d'options">⋯</button>
   </div>`;
 }
@@ -4483,29 +4520,31 @@ function render() {
 
   const entete = `
     ${enLigne || distant ? '' : '<div class="demo">Aperçu avec des données fictives : rien n\'est enregistré</div>'}
-    <div class="compagnie"><b>☀ La Compagnie de l'Aube ☀</b><span>Ce que l'on tient chaque jour forge ce que l'on devient.</span></div>
-    <header>
-      <div class="hero-row profil" data-tab="profil" data-mode="profil" role="button" aria-label="Ouvrir le profil du héros">
-        <div class="lvl" style="--p:${p}"><span>${s.niveau}</span><small>NIV</small></div>
-        <div class="hero-txt">
+    <header class="hx">
+      <div class="hx-row">
+        <button class="hx-med" data-tab="profil" data-mode="profil" aria-label="Ouvrir le profil du héros">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'hxm', s)}</button>
+        <div class="hx-lvl" data-tab="profil" data-mode="profil" role="button" aria-label="Niveau ${s.niveau}">${s.niveau}</div>
+        <div class="hx-txt" data-tab="profil" data-mode="profil" role="button">
           <div class="hero-name">${esc(s.heros)}</div>
-          <div class="hero-title">${esc(s.titre)}${surnomDe(s) ? ` <span class="surnom">« ${esc(surnomDe(s))} »</span>` : ''}</div>
-          <div class="hero-sub">${Math.round(Number(s.xpTotale)).toLocaleString('fr-FR')} XP · ${s.etat}<span class="joker">🃏 ${s.jokersRestants}/${s.jokersParSemaine}</span>${s.d20 ? `<span class="joker">🎲 ${s.d20.de}</span>` : ''}</div>
+          <div class="hx-sub">${esc(s.titre)}${surnomDe(s) ? ` · « ${esc(surnomDe(s))} »` : ''}<span class="joker">🃏 ${s.jokersRestants}/${s.jokersParSemaine}</span></div>
         </div>
-        <span class="chev"><small>Profil</small>›</span>
+        <button class="engrenage hx-btn" data-tab="profil" data-mode="reglages" aria-label="Réglages">${PICTO.reglages}</button>
       </div>
-      <button class="engrenage" data-tab="profil" data-mode="reglages" aria-label="Réglages">⚙️</button>
-      <div class="bars">
-        <div><div class="bar-label"><span>Expérience</span><span><b>${s.xpSuivant}</b> XP avant le niveau ${s.niveau + 1}</span></div>
-          <div class="bar xp"><i style="width:${p}%"></i></div></div>
-        <div><div class="bar-label"><span>Points de vie</span><span><b>${s.pv}</b> / ${s.pvMax}</span></div>
-          <div class="bar pv"><i style="width:${pvPct}%"></i></div></div>
-      </div>
+      ${onglet === 'quetes' ? (() => { const B = (s.boss || {}).semaine, bEnCours = B && B.statut === 'En cours' && B.pvMax, bp = bEnCours ? Math.round(B.pv / B.pvMax * 100) : 0;
+        const serie = (s.habitudes || []).reduce((m, h) => Math.max(m, h.serieNb > 0 ? Number(h.serie) || 0 : 0), 0);
+        return `<div class="jour">
+        <div class="jour-g"><span class="kick">${esc(dateLongue(s.today))}</span>
+          <div class="jour-big">${faits}<small>/${duJour.length}</small> <em>quêtes</em></div>
+          <div class="jour-sub">${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}<span>${Math.round(Number(s.xpTotale)).toLocaleString('fr-FR')} XP</span><span>${esc(s.etat)}</span></div>
+          <div class="jbar"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b> → ${s.niveau + 1}</em></div>
+          <div class="jbar pv"><span>PV</span><i class="t"><i style="width:${pvPct}%"></i></i><em><b>${s.pv}</b>/${s.pvMax}</em></div></div>
+        ${bEnCours ? `<button class="jour-boss" data-tab="combat" aria-label="Voir le boss">${bossSvg(B.visuel, 'hxb', B)}<b>${esc(String(B.nomStade || B.nom).replace(/^(Le|La|L')\s*/, ''))}</b><i class="t"><i style="width:${bp}%"></i></i><em>${bp} % PV</em></button>` : ''}
+      </div>`; })() : `<div class="hx-bars"><i class="t"><i style="width:${p}%"></i></i><i class="t pv"><i style="width:${pvPct}%"></i></i></div>`}
       ${s.debutSuivi ? `<div class="etat vac">🗓️ <b>Ton aventure commence le ${dateLongue(s.debutSuivi).toLowerCase()}.</b> D'ici là, rien n'est compté contre toi : tu peux tester l'app librement.</div>` : ''}
       ${s.vacances ? `<div class="etat vac">🏖️ <b>Mode vacances depuis le ${dateCourte(s.vacances.depuis)}</b> : aucun raté n'est compté et tes séries sont gelées. Tu peux quand même valider une quête si tu en fais une.<br><button data-vac="1">Je suis rentré</button></div>` : ''}
       ${s.arc ? `<div class="etat terre">⚔️ <b>À terre : arc d'entraînement.</b> Les ratés automatiques sont suspendus. Fais au moins une quête par jour pendant ${s.arc.requis} jours pour te relever
         <span class="pips">${Array.from({ length: s.arc.requis }, (_, i) => `<i class="${i < s.arc.jours ? 'on' : ''}"></i>`).join('')}</span></div>`
-      : s.pv < s.seuilEpuise ? `<div class="etat epuise court">😮‍💨 <b>Épuisé</b> : XP ×${String(s.malus).replace('.', ',')} · chaque quête te soigne</div>` : ''}
+      : ''}
     </header>
     ${aPro ? `<div class="filters">${['Tout', 'Perso', 'Pro'].map(f => `<button data-f="${f}" class="${f === filtre ? 'on' : ''}">${f}</button>`).join('')}</div>` : ''}`;
 
@@ -4522,7 +4561,7 @@ function render() {
     ${effetsActifs(s)}
     ${carteD20(s)}
     ${carteBossMini(s)}
-    <div class="section"><h2>Aujourd'hui</h2><span>${dateLongue(s.today)} · ${faits}/${duJour.length}</span></div>
+    <div class="section"><h2>Aujourd'hui</h2></div>
     <div class="list">${duJour.length ? duJour.map(h => carteHabitude(h, false)).join('')
       : `<div class="empty">${s.vacances ? 'Profite de tes vacances.' : 'Rien d\'obligatoire aujourd\'hui. Une quête annexe pour l\'XP bonus ?'}</div>`}</div>
     ${plusTard.length ? `<div class="section"><h2>Plus tard</h2><span>tap = séance bonus</span></div>
@@ -4603,7 +4642,7 @@ function render() {
   }
   if (onglet === 'carnet' && !(distant && s.carnet)) onglet = 'quetes';
   const vue = onglet === 'carnet' ? '' : onglet === 'heros' ? vueHeros : onglet === 'profil' ? vueProfil(s) : onglet === 'compagnie' ? vueCompagnie(s, faits, duJour.length) : onglet === 'combat' ? vueCombat(s) : vueQuetes;
-  const change = poserApp((onglet === 'carnet' ? '' : onglet === 'profil' ? entete.split('<header>')[0] : entete) + vue + `
+  const change = poserApp((onglet === 'carnet' ? '' : onglet === 'profil' ? entete.split('<header')[0] : entete) + vue + `
     <nav class="tabs">
       <button data-tab="quetes" class="${onglet === 'quetes' ? 'on' : ''}"><span>${PICTO.quetes}</span>Quêtes${duJour.length - faits > 0 && !s.vacances ? `<i>${duJour.length - faits}</i>` : ''}</button>
       ${distant && s.carnet ? `<button data-tab="carnet" class="carn ${onglet === 'carnet' ? 'on' : ''}"><span>${PICTO.carnet}</span>Carnet</button>` : ''}
