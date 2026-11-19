@@ -6,26 +6,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout : une colonne d'application (max 760px). Univers de La Compagnie de l'Aube : nuit violette, or et parchemin.
    Thème sombre assumé (comme le Grimoire), donc pas de variante claire. */
 :root{
-  /* Charte « Taverne de nuit » (21/11/2026), la même que l'app */
-  --bg:#100c09; --surface:#1c1510; --surface2:#251b14; --sunk:#0b0806;
-  --line:rgba(255,214,170,.12); --line2:#3a2c22;
-  --fg:#f6ecdf; --muted:#a8978a; --lav:#ffcf7d;
-  --gold:#f2a541; --gold2:#ffcf7d; --gold-soft:rgba(242,165,65,.14); --ink:#2a1606;
+  /* Charte « Yggdrasil » (21/11/2026), la même que l'app : fjord, givre, aurores, bronze */
+  --bg:#081117; --surface:#102029; --surface2:#142833; --sunk:#0a161d;
+  --line:rgba(160,210,235,.14); --line2:#1f3442;
+  --fg:#eaf3f6; --muted:#88a2b0; --lav:#9fe9cf;
+  --gold:#d39a5c; --gold2:#f3c88c; --gold-soft:rgba(211,154,92,.14); --ink:#1a0f06;
   --en:#b9a2ff; --en-soft:rgba(185,162,255,.14);
   --run:#6bbe79; --run-soft:rgba(107,190,121,.13);
   --str:#e0844f; --str-soft:rgba(224,132,79,.14);
   --ok:#6bbe79; --ok-soft:rgba(107,190,121,.16); --warn:#e8b04b; --warn-soft:rgba(232,176,75,.15); --bad:#e5737a; --bad-soft:rgba(229,115,122,.16);
-  --display:"Grenze", Georgia, serif;
-  --body:"Figtree", system-ui, sans-serif;
+  --display:"Josefin Sans", system-ui, sans-serif;
+  --body:"Inter", system-ui, sans-serif;
   --r:14px; color-scheme:dark;
 }
 body{background-color:var(--bg);color:var(--fg);font:16px/1.5 var(--body);
-  background-image:radial-gradient(ellipse 130% 38% at 50% -6%, rgba(242,165,65,.18), rgba(242,165,65,.04) 45%, transparent 70%),
+  background-image:radial-gradient(40% 18% at 20% 3%, rgba(99,230,173,.26), transparent 70%),radial-gradient(35% 16% at 88% 5%, rgba(169,139,255,.22), transparent 70%),
     radial-gradient(1px 1px at 18% 22%, rgba(238,226,199,.55), transparent),radial-gradient(1px 1px at 72% 14%, rgba(238,226,199,.45), transparent),
     radial-gradient(1px 1px at 86% 58%, rgba(238,226,199,.35), transparent),radial-gradient(1px 1px at 36% 78%, rgba(238,226,199,.3), transparent),
     radial-gradient(1.5px 1.5px at 56% 44%, rgba(255,207,125,.5), transparent);
@@ -33,8 +33,8 @@ body{background-color:var(--bg);color:var(--fg);font:16px/1.5 var(--body);
 html{background:var(--bg)} body{min-height:100vh}
 [hidden]{display:none!important}
 .wrap{max-width:760px;margin:0 auto;padding-block:18px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
-h1,h2,h3{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0;font-weight:800;font-style:italic}
-h1{font-style:italic;font-size:1.75rem;letter-spacing:.01em;text-transform:uppercase;color:var(--fg);text-shadow:0 0 24px rgba(242,165,65,.3)}
+h1,h2,h3{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0;font-weight:700;font-style:normal;letter-spacing:.06em}
+h1{font-size:1.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);text-shadow:0 0 24px rgba(99,230,173,.3)}
 h2{font-size:1.35rem;color:var(--fg);letter-spacing:.03em}
 h3{font-size:.98rem;letter-spacing:.03em}
 p{margin:0} ul{margin:0;padding-left:1.2em}
@@ -60,7 +60,7 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
   .quest .row{gap:4px} .quest .pill{font-size:.7rem;padding:1px 6px} .quest .dots{display:none}
   .tabs{width:100%!important;justify-content:stretch} .tabs .tab{flex:1}
   .quest .kx{display:none} .quest .k i{font-style:normal} .quest .row .pill+.pill{display:none} .quest .big{font-size:.98rem}}
-.cs-big{font:italic 900 3.4rem/.85 var(--display);color:var(--fg)} .cs-big small{font:italic 800 1.4rem var(--display);color:var(--muted);margin-left:6px}
+.cs-big{font:700 3.2rem/.85 var(--display);color:var(--fg)} .cs-big small{font:600 1.2rem var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-left:6px}
 .cs-sub{font-size:.85rem;color:var(--muted);margin-top:-4px}
 .quest{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:6px;cursor:pointer;text-align:left;font:inherit;color:inherit;min-width:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
 .quest:hover{border-color:var(--gold)}
@@ -78,7 +78,7 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
 .tab{border:0;background:transparent;color:var(--muted);font:700 .78rem var(--body);letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
 .tab[aria-selected="true"]{background:var(--surface2);color:var(--gold);box-shadow:inset 0 0 0 1px var(--line)}
 .panel{display:grid;gap:16px;min-width:0}
-.card{background:linear-gradient(180deg,#241a12,var(--surface));border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:12px;min-width:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 30px rgba(0,0,0,.25)}
+.card{background:linear-gradient(160deg,rgba(207,232,245,.06),transparent 45%),var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:12px;min-width:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 30px rgba(0,0,0,.25)}
 .btn{border:1px solid var(--line2);background:var(--surface2);color:var(--fg);font:600 .95rem var(--body);padding:8px 16px;border-radius:10px;cursor:pointer}
 .btn:hover{border-color:var(--gold)}
 .btn.primary{background:linear-gradient(180deg,var(--gold2),var(--gold));border-color:var(--gold);color:var(--ink);font:700 .8rem var(--body);letter-spacing:.08em;text-transform:uppercase;padding:11px 18px;box-shadow:0 0 18px rgba(242,165,65,.25)}
@@ -161,7 +161,7 @@ label{font-weight:600;font-size:.92rem;display:grid;gap:4px;color:var(--muted)}
 .fig .sk{fill:#e7b48f}.fig .shirt{fill:var(--str)}.fig .short{fill:#2f3b5c}.fig .shoe{fill:#3c4152}
 .fig .hair{fill:#3a281d}.fig .eye{fill:#2a1b12}.fig .halt{fill:#6f7684}
 .fig .loin{filter:brightness(.68) saturate(.85)}
-.player{display:grid;gap:12px;background:linear-gradient(180deg,#241a12,var(--surface));border:1px solid var(--str);border-radius:var(--r);padding:16px}
+.player{display:grid;gap:12px;background:linear-gradient(160deg,rgba(207,232,245,.06),transparent 45%),var(--surface);border:1px solid var(--str);border-radius:var(--r);padding:16px}
 .player .phase{font-family:var(--body);font-weight:800;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
 .player .phase.work{color:var(--str)} .player .phase.rest{color:var(--muted)}
 .player .count{font-family:var(--display);font-size:3.2rem;line-height:1;color:var(--gold2)}
@@ -245,7 +245,7 @@ details.parcours summary{cursor:pointer;color:var(--gold,#d3a84a);font-size:.95r
 /* Mode concentration (mission, révision, conversation) : seul l'exercice reste à l'écran */
 body.focus .top,body.focus .quests,body.focus .tabs{display:none}
 body.focus .wrap{padding-top:10px}
-body.focus .hud{position:sticky;top:0;z-index:6;background:linear-gradient(180deg,#241a12,var(--surface));padding:10px 14px;gap:8px}
+body.focus .hud{position:sticky;top:0;z-index:6;background:linear-gradient(160deg,rgba(207,232,245,.06),transparent 45%),var(--surface);padding:10px 14px;gap:8px}
 /* Micro intégré */
 .micbar{display:flex;gap:12px;align-items:center}
 .micbtn{width:60px;height:60px;flex:none;border-radius:50%;border:1px solid var(--en);background:radial-gradient(circle at 35% 30%,#d8caff,var(--en) 65%,#7a62c9);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 0 18px rgba(185,162,255,.35)}

@@ -25,16 +25,16 @@
   }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Grenze:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Charte « Taverne de nuit » (21/11/2026) : bois sombre, ambre, cire. L'ancienne (violet et or) reste en thème « Aube d'origine ». */
-    --bg: #100c09; --panel: #17110d; --card: #1f1712; --card-done: #1a2316;
-    --line: #3a2c22; --text: #f6ecdf; --muted: #a8978a;
-    --gold: #f2a541; --xp: #f2a541; --xp2: #ffcf7d; --pv: #e0584b; --ok: #9cc78a;
-    --warn: #e0a040; --rest: #6ea8ff; --epic: #c58cff; --wax: #b3302a; --wax2: #e0584b;
-    --theron: #6ea8ff; --allie: #45d1a6;
-    --haut: #2a1c12; --f-titre: Grenze, Georgia, serif; --f-recit: Grenze, Georgia, serif; --f-texte: Figtree, system-ui, -apple-system, sans-serif;
+    /* Charte « Yggdrasil » (21/11/2026) : nuit de fjord, givre, aurores, bronze et runes. Taverne et Aube d'origine restent en thèmes. */
+    --bg: #081117; --panel: #0e1a22; --card: #112029; --card-done: #0f2420;
+    --line: #1f3442; --text: #eaf3f6; --muted: #88a2b0;
+    --gold: #d39a5c; --xp: #d39a5c; --xp2: #f3c88c; --pv: #e8604f; --ok: #63e6ad;
+    --warn: #e0a040; --rest: #6fb3ff; --epic: #a98bff; --wax: #a3382f; --wax2: #e8604f;
+    --theron: #6fb3ff; --allie: #55e3c2;
+    --haut: #0f2230; --f-titre: 'Josefin Sans', system-ui, sans-serif; --f-recit: 'Josefin Sans', system-ui, sans-serif; --f-texte: Inter, system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
@@ -1158,6 +1158,99 @@
   .pause-note { display: block; width: 100%; margin-top: 14px; padding: 10px; border-radius: 12px; border: 1px dashed var(--line);
     background: transparent; color: var(--muted); font: 13px Inter, sans-serif; cursor: pointer; }
   .chip.d { background: #1f2a3a; color: #9fc2ef; }
+
+  /* ===== Habillage Yggdrasil (thème par défaut) ===== */
+/* Univers 3 : Yggdrasil — nuit de fjord, givre, aurores boréales, bronze et runes gravées */
+html.ygg { font-synthesis: none; }
+html.ygg, html.ygg body { background:#081117 !important; }
+html.ygg body { background:
+  radial-gradient(40% 18% at 20% 3%, rgba(99,230,173,.30), transparent 70%),
+  radial-gradient(45% 20% at 62% 0%, rgba(85,227,194,.22), transparent 70%),
+  radial-gradient(35% 16% at 92% 6%, rgba(169,139,255,.26), transparent 70%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='390' height='300'%3E%3Cg fill='%23d7f0ff'%3E%3Ccircle cx='40' cy='60' r='.9'/%3E%3Ccircle cx='120' cy='20' r='.7'/%3E%3Ccircle cx='250' cy='90' r='1'/%3E%3Ccircle cx='340' cy='30' r='.8'/%3E%3Ccircle cx='300' cy='200' r='.6'/%3E%3Ccircle cx='70' cy='240' r='.8'/%3E%3C/g%3E%3C/svg%3E") 0 0/390px 300px,
+  linear-gradient(180deg, #0c1c26 0, #081117 340px) !important; }
+html.ygg body::after { content:''; position:fixed; left:0; right:0; bottom:60px; height:180px; pointer-events:none; z-index:-1; opacity:.5;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 180' preserveAspectRatio='none'%3E%3Cpath d='M0 180 V120 L40 90 L70 110 L120 60 L160 100 L200 70 L240 105 L290 50 L330 95 L390 75 V180Z' fill='%230d1d27'/%3E%3Cpath d='M120 60 L132 72 L126 72 L138 84 M290 50 L302 63 L296 63 L308 76' stroke='%23cfe8f5' stroke-opacity='.35' fill='none'/%3E%3C/svg%3E") bottom/100% 100% no-repeat; }
+html.ygg body.h-aube::before, html.ygg body.h-soir::before { display:none; }
+html.ygg .hx-med { background: radial-gradient(80% 80% at 50% 25%, #23465a, #0b1820); box-shadow: 0 0 0 2px #081117, 0 0 0 4px #b97d45, 0 0 0 5px #6b4321, 0 0 20px rgba(99,230,173,.28); }
+html.ygg .hx-lvl { font-family:'Josefin Sans'; font-weight:700; font-size:42px; color:#f3c88c; text-shadow: 0 0 16px rgba(211,154,92,.35); }
+html.ygg .hero-name { font-family:'Josefin Sans'; font-weight:700; letter-spacing:.08em; }
+html.ygg .hx-txt .hero-name { font-size:17px; letter-spacing:.05em; }
+html.ygg .hx-btn, html.ygg .engrenage { background: rgba(255,255,255,.04) !important; border:1px solid #23394a !important; }
+/* carte du jour : plaque de givre, liseré de bronze */
+html.ygg .jour { border-radius:14px; border:1px solid #2a4556; backdrop-filter: blur(6px);
+  background: linear-gradient(160deg, rgba(207,232,245,.10), transparent 40%), radial-gradient(100% 120% at 100% 0%, rgba(99,230,173,.14), transparent 60%), rgba(17,32,41,.85);
+  box-shadow: inset 0 1px 0 rgba(220,240,255,.18), 0 10px 24px rgba(0,0,0,.35); }
+html.ygg .jour .kick { color:#9fe9cf; letter-spacing:.22em; }
+html.ygg .jour-big { font-family:'Josefin Sans'; font-weight:700; font-size:38px; }
+html.ygg .jour-big em { font-family:'Josefin Sans'; font-weight:600; font-size:17px; color:#9fb6c2; text-transform:uppercase; letter-spacing:.06em; }
+html.ygg .jour-sub b, html.ygg .jbar em b, html.ygg .dl-v b { font-family:'Josefin Sans'; font-weight:700; }
+html.ygg .t { transform:none; height:6px !important; border-radius:6px !important; background: rgba(160,210,235,.10) !important; }
+html.ygg .t > i { background: linear-gradient(90deg, #a96a33, #f3c88c) !important; }
+html.ygg .t.pv > i, html.ygg .jbar.pv .t > i { background: linear-gradient(90deg, #a3382f, #ff8a70) !important; }
+html.ygg .sous-onglets { border-radius:12px; background: rgba(10,22,30,.8); border-color:#1f3442; }
+html.ygg .sous-onglets button { font-family:'Josefin Sans'; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:14px; }
+html.ygg .sous-onglets button.on { background: linear-gradient(180deg, #17303d, #12252f); color:#fff; box-shadow: inset 0 0 0 1px rgba(99,230,173,.45), 0 0 14px rgba(99,230,173,.18); }
+/* titres : capitales espacées + rune gravée en bronze */
+html.ygg .section h2 { font-family:'Josefin Sans'; font-weight:700; font-style:normal; font-size:19px; letter-spacing:.16em; display:flex; align-items:center; gap:10px; white-space:nowrap; color:#e3f0f5; }
+html.ygg .section h2::before { content:''; width:14px; height:20px; flex:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20'%3E%3Cpath d='M3 1 V19 M3 3 L11 7 M3 9 L11 13' stroke='%23d39a5c' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+html.ygg .section span { font-size:11px; letter-spacing:.04em; }
+/* cartes : verre givré, coin de givre */
+html.ygg .card { border-radius:12px; background: linear-gradient(160deg, rgba(207,232,245,.06), transparent 45%), #102029; border:1px solid #1f3442; }
+html.ygg .card.annexe { border-left:2px solid #b97d45; }
+html.ygg .card.done { border-style:solid; border-color: rgba(99,230,173,.5); background: radial-gradient(70% 160% at 85% 50%, rgba(99,230,173,.14), transparent 60%), #0f2223; box-shadow: 0 0 18px rgba(99,230,173,.12); }
+html.ygg .card.done .name { color:#a9c4bd; }
+html.ygg .name { font-family:Inter; font-weight:700; font-size:15.5px; }
+html.ygg .icon { background:#16303c; border-radius:10px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+html.ygg .card.done .icon { background: rgba(99,230,173,.18); }
+/* sceau : rune de bronze */
+html.ygg .sceau { filter: sepia(1) saturate(1.6) hue-rotate(-18deg) brightness(.95) drop-shadow(0 3px 5px rgba(0,0,0,.6)); }
+html.ygg .gains .g { background: rgba(255,255,255,.03); border-color:#22394a; }
+html.ygg .streak { color:#f3a35c; }
+html.ygg .bar { background:#16303c; }
+html.ygg .epic { background: linear-gradient(135deg, #1b1e3a, #112029); border:1px solid #33386a; }
+html.ygg .tabs { background: rgba(8,17,23,.94); border-top:1px solid #1a2d3a; }
+html.ygg .tabs button { font-family:'Josefin Sans'; font-weight:700; letter-spacing:.12em; font-size:11px; }
+html.ygg .tabs button.on::before { background: linear-gradient(90deg, #63e6ad, #55e3c2, #a98bff); width:48px; height:3px; box-shadow: 0 0 10px rgba(99,230,173,.6); }
+html.ygg .duel { border-radius:14px; border:1px solid #2a4556;
+  background: radial-gradient(60% 70% at 22% 30%, rgba(111,179,255,.20), transparent 70%), radial-gradient(60% 70% at 78% 30%, rgba(85,227,194,.18), transparent 70%), rgba(14,26,34,.9); }
+html.ygg .dl-niche { border-radius:8px 8px 8px 8px; clip-path: polygon(50% 0, 100% 22%, 100% 100%, 0 100%, 0 22%); background: radial-gradient(70% 60% at 50% 40%, color-mix(in srgb, var(--c) 32%, transparent), transparent 75%), #0b1820 !important;
+  box-shadow: inset 0 0 0 2px var(--c), 0 0 22px color-mix(in srgb, var(--c) 30%, transparent) !important; }
+html.ygg .dl-vs { font-family:'Josefin Sans'; font-weight:700; font-style:normal; font-size:28px; color:#f3c88c; letter-spacing:.06em; text-shadow: 0 0 14px rgba(211,154,92,.5); }
+html.ygg .dl-noms b { font-family:'Josefin Sans'; font-weight:700; font-size:16px; letter-spacing:.1em; }
+html.ygg .dl-l i { transform:none; border-radius:4px; }
+html.ygg .comp { background:#102029 !important; border:1px solid #1f3442 !important; border-radius:12px !important; }
+html.ygg .comp.moi { border-color: rgba(185,125,69,.6) !important; }
+html.ygg .comp-txt b { font-family:'Josefin Sans'; font-weight:700; letter-spacing:.06em; }
+html.ygg .boss-card { border-radius:14px; border:1px solid rgba(232,96,79,.45) !important;
+  background: radial-gradient(80% 70% at 18% 25%, rgba(232,96,79,.18), transparent 60%), linear-gradient(160deg, rgba(207,232,245,.06), transparent 45%), #102029 !important; }
+html.ygg .boss-card b { font-family:'Josefin Sans'; letter-spacing:.03em; }
+html.ygg .bar.boss, html.ygg .bar.split { background:#16303c !important; }
+html.ygg .bar.boss i { background: linear-gradient(90deg, #a3382f, #ff8a70) !important; }
+html.ygg .empty { border-color:#24404f; }
+  /* ---- Animations propres à Yggdrasil ---- */
+  /* aurores qui ondulent lentement en haut de l'écran */
+  html.ygg body::before { content: ''; display: block !important; position: fixed; inset: -40px -20% auto; height: 300px; pointer-events: none; z-index: -1; opacity: .75;
+    background: radial-gradient(30% 40% at 25% 30%, rgba(99,230,173,.28), transparent 70%), radial-gradient(28% 36% at 60% 20%, rgba(85,227,194,.22), transparent 70%), radial-gradient(24% 34% at 85% 35%, rgba(169,139,255,.24), transparent 70%);
+    filter: blur(8px); animation: aurore 18s ease-in-out infinite alternate; }
+  @keyframes aurore { 0% { transform: translateX(-6%) skewX(-6deg); opacity: .55; } 50% { opacity: .85; } 100% { transform: translateX(6%) skewX(6deg); opacity: .65; } }
+  /* quelques flocons qui tombent doucement */
+  .flocons { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+  .flocons i { position: absolute; top: -10px; width: 3px; height: 3px; border-radius: 50%; background: #dff3ff; opacity: .55; animation: flocon linear infinite; }
+  @keyframes flocon { to { transform: translate(var(--dx, 20px), 105vh); } }
+  /* rune de validation : le liseré prend les couleurs de l'aurore, des éclats de givre partent du sceau */
+  html.ygg .card.flash::after { background: linear-gradient(90deg, transparent, #63e6ad, #fff, #a98bff, transparent) -60% 0 / 50% 100% no-repeat; }
+  .givre-eclat { position: fixed; width: 6px; height: 6px; pointer-events: none; z-index: 120; background: #dff3ff; clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+    animation: givreEclat .8s ease-out forwards; }
+  @keyframes givreEclat { from { transform: translate(0, 0) scale(1.4) rotate(0); opacity: 1; } to { transform: translate(var(--x), var(--y)) scale(.3) rotate(180deg); opacity: 0; } }
+  /* cercle de runes givré autour du d20 tant qu'il n'est pas lancé */
+  html.ygg .jour-d20 { position: relative; }
+  html.ygg .jour-d20:not(.fait)::before { content: ''; position: absolute; left: 50%; top: 20px; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%;
+    border: 1px dashed rgba(159,233,207,.55); box-shadow: 0 0 12px rgba(99,230,173,.25); animation: runeTourne 20s linear infinite; }
+  @keyframes runeTourne { to { transform: rotate(360deg); } }
+  body.calme .flocons, body.calme::before { display: none !important; } body.calme .jour-d20::before { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) { html.ygg body::before, .flocons i, html.ygg .jour-d20::before { animation: none !important; } .flocons { display: none; } }
 </style>
 </head>
 <body>
@@ -1648,7 +1741,9 @@ const PICTO = {
   heros: PICT_ + '<path d="M12 3c4.4 0 7 3.2 7 7.5V19h-4.5v-5.5h-5V19H5v-8.5C5 6.2 7.6 3 12 3z"/><path d="M12 3v6M9.5 13.5h5"/></svg>'
 };
 const THEMES = [
-  { id: 'aube', nom: 'Taverne de nuit', aide: 'bois sombre, ambre et cire', v: {} },
+  { id: 'aube', nom: 'Yggdrasil', aide: 'fjord, givre, aurores et bronze', v: {} },
+  { id: 'taverne', nom: 'Taverne de nuit', aide: 'bois sombre, ambre et cire', police: 'Grenze:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Figtree:wght@400;500;600;700;800',
+    v: { bg: '#100c09', panel: '#17110d', card: '#1f1712', 'card-done': '#1a2316', line: '#3a2c22', text: '#f6ecdf', muted: '#a8978a', gold: '#f2a541', xp: '#f2a541', xp2: '#ffcf7d', pv: '#e0584b', ok: '#9cc78a', haut: '#2a1c12', wax: '#b3302a', wax2: '#e0584b', 'f-titre': 'Grenze, Georgia, serif', 'f-recit': 'Grenze, Georgia, serif', 'f-texte': 'Figtree, system-ui, sans-serif' } },
   { id: 'origine', nom: 'Aube d\'origine', aide: 'violet et or (l\'ancienne charte)', police: 'Cinzel:wght@600;800&family=Inter:wght@400;500;600;700',
     v: { bg: '#110e15', panel: '#1c1722', card: '#241e2c', 'card-done': '#1d2a22', line: '#362e40', text: '#ece6f2', muted: '#9a90a6', gold: '#d4ad3c', xp: '#9b5de5', xp2: '#c08cff', pv: '#e05555', ok: '#4fbf7a', haut: '#2a1f38', 'f-titre': 'Cinzel, serif', 'f-recit': 'Cinzel, serif', 'f-texte': 'Inter, system-ui, sans-serif' } },
   { id: 'nuit', nom: 'Nuit d\'encre', aide: 'bleu nuit, argent', police: 'Cormorant+Garamond:wght@500;700',
@@ -1711,6 +1806,7 @@ function appliquerTheme(id) {
   Object.keys(T.v).forEach(k => r.style.setProperty('--' + k, T.v[k]));
   if (PT.css) r.style.setProperty('--f-texte', PT.css);
   r.style.setProperty('--zoom-texte', TA.z);
+  r.classList.toggle('ygg', T.id === 'aube'); // habillage Yggdrasil (fond, givre, runes) seulement pour ce thème
   const familles = [T.police, PT.g].filter(Boolean).join('&family=');
   let l = document.getElementById('policeTheme');
   if (familles) {
@@ -1718,13 +1814,31 @@ function appliquerTheme(id) {
     const href = 'https://fonts.googleapis.com/css2?family=' + familles + '&display=swap';
     if (l.href !== href) l.href = href;
   } else if (l) l.remove();
-  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = T.v.bg || '#100c09';
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = T.v.bg || '#081117';
   // le Carnet (même site) lit ce thème et l'applique aussi
-  const V = Object.assign({ bg: '#100c09', panel: '#17110d', card: '#1f1712', line: '#3a2c22', text: '#f6ecdf', muted: '#a8978a', gold: '#f2a541' }, T.v);
+  const V = Object.assign({ bg: '#081117', panel: '#0e1a22', card: '#112029', line: '#1f3442', text: '#eaf3f6', muted: '#88a2b0', gold: '#d39a5c' }, T.v);
   const texte = PT.css || V['f-texte'] || '';
   try { localStorage.setItem('theme', T.id); localStorage.setItem('themeCarnet', JSON.stringify(T.id === 'aube' && !PT.css ? {} : { '--bg': V.bg, '--surface': V.panel, '--surface2': V.card, '--sunk': V.bg, '--line2': V.line, '--fg': V.text, '--muted': V.muted, '--gold': V.gold, '--gold2': V.gold, police: familles, titre: T.id === 'aube' ? '' : (V['f-titre'] || ''), texte: texte })); } catch (e) {}
 }
 appliquerTheme(themeChoisi());
+/** Yggdrasil : éclats de givre qui partent du sceau, et flocons discrets en fond */
+function eclatsGivre(nom) {
+  if (!confort().animations) return;
+  const c = [...document.querySelectorAll('.card[data-q]')].find(x => x.dataset.q === nom), sc = c && c.querySelector('.sceau'); if (!sc) return;
+  const r = sc.getBoundingClientRect();
+  for (let i = 0; i < 7; i++) { const e = document.createElement('i'); e.className = 'givre-eclat'; const a = i / 7 * Math.PI * 2;
+    e.style.left = (r.left + r.width / 2 - 3) + 'px'; e.style.top = (r.top + r.height / 2 - 3) + 'px';
+    e.style.setProperty('--x', Math.round(Math.cos(a) * 46) + 'px'); e.style.setProperty('--y', Math.round(Math.sin(a) * 46) + 'px');
+    document.body.appendChild(e); setTimeout(() => e.remove(), 900); }
+}
+function flocons() {
+  if (document.querySelector('.flocons') || !document.documentElement.classList.contains('ygg')) return;
+  try { if (!confort().animations) return; } catch (e) {}
+  const f = document.createElement('div'); f.className = 'flocons'; f.setAttribute('aria-hidden', 'true');
+  f.innerHTML = Array.from({ length: 14 }, (_, i) => `<i style="left:${(i * 37) % 100}%;animation-duration:${14 + (i * 7) % 12}s;animation-delay:-${(i * 5) % 14}s;--dx:${(i % 2 ? 1 : -1) * (10 + i * 3)}px;width:${2 + i % 3}px;height:${2 + i % 3}px"></i>`).join('');
+  document.body.prepend(f);
+}
+document.addEventListener('DOMContentLoaded', () => setTimeout(flocons, 800));
 function ambianceHeure() { const h = new Date().getHours(), c = h >= 5 && h < 10 ? 'h-aube' : h >= 18 && h < 23 ? 'h-soir' : h >= 23 || h < 5 ? 'h-nuit' : 'h-jour';
   ['h-aube', 'h-jour', 'h-soir', 'h-nuit'].forEach(k => document.body && document.body.classList.toggle(k, k === c)); }
 document.addEventListener('DOMContentLoaded', ambianceHeure); setInterval(ambianceHeure, 60000); try { ambianceHeure(); } catch (e) {}
@@ -5449,6 +5563,7 @@ function agir(nom, statut) {
     else if (statut === 'Repos') flotter('Repos', 'var(--rest)');
     if (pred.dXp > 0) vib(25);
     if (statut === 'Fait' && !pred.annule) { toastAnnuler(nom); sceauxFrais[nom] = Date.now();
+      if (document.documentElement.classList.contains('ygg')) setTimeout(() => eclatsGivre(nom), 650);
       requestAnimationFrame(() => { const m = document.querySelector('.hx-med'); if (m && confort().animations) { m.classList.remove('salut'); void m.offsetWidth; m.classList.add('salut'); setTimeout(() => m.classList.remove('salut'), 1000); } }); }
     if (pred.dXp > 0 && dernierToucherXY) effetTrainee(dernierToucherXY[0], dernierToucherXY[1]);
     if (pred.coups && pred.coups.length) setTimeout(() => flotter(`⚔ −${pred.coups[0].d} PV au boss`, '#ff8b7a'), 450);
