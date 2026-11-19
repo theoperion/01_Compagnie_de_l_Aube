@@ -1740,6 +1740,15 @@ body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-moti
 html.th-carte .rappel-cof { border: 3px solid #3a2a20; box-shadow: 0 4px 0 #3a2a20; }
 html.th-carte .rappel-cof b, html.th-celeste .rappel-cof b { color: #b0500a; }
 
+
+  /* Veillée d'armes (31/12 au soir) : lueur d'aube qui respire derrière le héros */
+  html.veillee .hx-med { animation: veilleeLueur 3.6s ease-in-out infinite; }
+  @keyframes veilleeLueur { 0%, 100% { filter: drop-shadow(0 0 4px rgba(255,170,90,.35)); } 50% { filter: drop-shadow(0 0 16px rgba(255,190,110,1)) drop-shadow(0 0 6px rgba(255,150,80,.9)); } }
+  html.veillee .hero-perso .perso-fond::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; border-radius: inherit;
+    background: radial-gradient(90% 60% at 50% 100%, rgba(255,196,110,.85), rgba(255,130,90,.35) 50%, transparent 78%); mix-blend-mode: screen; animation: veilleeFond 3.6s ease-in-out infinite; }
+  @keyframes veilleeFond { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
+  body.calme .hx-med, body.calme .hero-perso .perso-fond::after { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) { html.veillee .hx-med, html.veillee .hero-perso .perso-fond::after { animation: none; } }
 </style>
 </head>
 <body>
@@ -2336,7 +2345,16 @@ function flocons() {
 // flocons retirés (avis du critique : décor permanent = bruit visuel et batterie)
 document.addEventListener('visibilitychange', () => document.body && document.body.classList.toggle('en-pause', document.hidden));
 function ambianceHeure() { const h = new Date().getHours(), c = h >= 5 && h < 10 ? 'h-aube' : h >= 18 && h < 23 ? 'h-soir' : h >= 23 || h < 5 ? 'h-nuit' : 'h-jour';
-  ['h-aube', 'h-jour', 'h-soir', 'h-nuit'].forEach(k => document.body && document.body.classList.toggle(k, k === c)); }
+  ['h-aube', 'h-jour', 'h-soir', 'h-nuit'].forEach(k => document.body && document.body.classList.toggle(k, k === c));
+  veilleeArmes(h); }
+/** Veillée d'armes : le soir du 31/12 (dès 17 h), une lueur d'aube derrière ton héros annonce le Grand Recommencement, sans rien dévoiler */
+function veilleeArmes(h) {
+  const v = !!(typeof state !== 'undefined' && state && state.today === '2026-12-31' && h >= 17);
+  document.documentElement.classList.toggle('veillee', v);
+  if (!v) return;
+  let vu = false; try { vu = !!localStorage.getItem('veillee2026'); } catch (e) {}
+  if (!vu) { try { localStorage.setItem('veillee2026', '1'); } catch (e) {} setTimeout(() => toast('🌅 Veillée d\'armes : demain, l\'Aube se lève.'), 2500); }
+}
 document.addEventListener('DOMContentLoaded', ambianceHeure); setInterval(ambianceHeure, 60000); try { ambianceHeure(); } catch (e) {}
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-theme]');
@@ -5309,6 +5327,7 @@ function render() {
   annonceBossAFaire();
   annonceAventureAFaire();
   recommencementAFaire();
+  try { veilleeArmes(new Date().getHours()); } catch (e) {}
   ouvertureSaisonAFaire();
   if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
   if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
@@ -5995,7 +6014,12 @@ function niveauSup(n, titre, nouveauTitre, avant, apres, evolue) {
   const orn = avant ? ORNEMENTS.filter(o => ornementDebloque(s, o) && !ornementDebloque(avant, o)) : [];
   const stats = avant && avant.stats && s.stats ? s.stats.map(x => { const a = avant.stats.find(y => y.nom === x.nom); return a && Number(x.score) > Number(a.score) ? { nom: x.nom, de: a.score, a: x.score } : null; }).filter(Boolean) : [];
   const ligne = (ic, html) => `<li><i>${ic}</i><span>${html}</span></li>`;
+  // premier niveau gagné après le Grand Recommencement : on referme l'histoire (une seule fois)
+  let premierPas = 0;
+  try { const n26 = Number((s.armurerie || {}).niveau2026) || 0;
+    if (n === 2 && s.today >= '2027-01-01' && n26 > 1 && !localStorage.getItem('premierPas2027')) { premierPas = n26; localStorage.setItem('premierPas2027', '1'); } } catch (e) {}
   const recap = [
+    premierPas ? ligne('🌅', `<b>Premier pas de la Saison 1</b><small>tu étais niveau ${premierPas} au Rodage : la légende reprend</small>`) : '',
     nouveauTitre ? ligne('👑', `Nouveau titre : <b>${esc(titre)}</b>`) : '',
     ligne('⚡', `<b>${Math.round(Number(s.xpTotale) || 0).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> au total`),
     capa ? ligne('🔓', `Capacité débloquée : <b>${esc(capa.nom)}</b><small>${esc(capa.d)}</small>`) : '',
