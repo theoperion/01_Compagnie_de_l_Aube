@@ -1650,6 +1650,8 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
   .sous-onglets .pastille { position: absolute; top: -8px; right: 2px; margin: 0; font-size: 10px; line-height: 14px; padding: 1px 6px; }
   .regles-btn > span:nth-child(2) { padding-right: 48px; }
   @media (max-width: 400px) { .sous-onglets.trois .ic { display: none; } }
+  html.th-celeste .float.sur-carte { text-shadow: none; }
+  @media (max-width: 380px) { .capa select { min-width: 0; text-overflow: ellipsis; } }
   @media (max-width: 370px) { .sous-onglets button { letter-spacing: .02em !important; padding-left: 4px; padding-right: 4px; } }
   html.ygg .sous-onglets button { font-size: 13px; letter-spacing: .05em; }
   html.th-epopee .sous-onglets button { font-size: 15px; }
@@ -5754,11 +5756,14 @@ function flotter(texte, couleur, nom, gauche) {
   const toucher = dernierToucherCarte; dernierToucherCarte = null; dernierToucherXY = null;
   // mesuré à l'image suivante, après le redessin : la carte de la quête (même si l'écran a défilé), le toucher en dernier recours.
   // La pastille se pose à cheval sur le bord haut de la carte, calée à droite (au-dessus du sceau) : elle ne touche jamais le texte.
+  const poser = r => { el.style.top = Math.max(64, r.top - 13) + 'px'; el.style.left = (gauche ? r.left + 16 : r.right - 16) + 'px'; };
+  const carte = () => nom ? document.querySelector('.card[data-q="' + CSS.escape(nom) + '"]') : null;
   requestAnimationFrame(() => {
-    const c = nom ? document.querySelector('.card[data-q="' + CSS.escape(nom) + '"]') : null;
-    const r = c ? c.getBoundingClientRect() : toucher;
-    if (r) { el.classList.add('sur-carte'); if (gauche) el.classList.add('gauche'); el.style.top = Math.max(64, r.top - 13) + 'px'; el.style.left = (gauche ? r.left + 16 : r.right - 16) + 'px'; }
+    const c = carte(), r = c ? c.getBoundingClientRect() : toucher;
+    if (r) { el.classList.add('sur-carte'); if (gauche) el.classList.add('gauche'); poser(r); }
     document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
+    // elle suit sa carte tant qu'elle est visible (défilement, redessin à la réponse du serveur)
+    if (c) { const suivre = () => { if (!el.isConnected) return; const k = carte(); if (k) poser(k.getBoundingClientRect()); requestAnimationFrame(suivre); }; requestAnimationFrame(suivre); }
   });
 }
 /**
