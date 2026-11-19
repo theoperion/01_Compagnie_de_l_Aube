@@ -1707,6 +1707,7 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
 .rc-lot small { display: block; font-size: 10.5px; color: #ffc46b; letter-spacing: .06em; text-transform: uppercase; } .rc-lot b { font-size: 15px; color: #fff3d6; } .rc-lot em { display: block; font-style: normal; font-size: 12px; color: #d8c9a8; }
 .rc-box .btn { animation: rcIn .4s 6.6s ease-out both; min-width: 200px; }
 #recoOv .rc-box { margin-block: auto; }
+@media (max-width: 380px) { #recoOv .rc-sous { font-size: 10px; letter-spacing: .12em; } }
 #recoOv .rr-go { background: linear-gradient(180deg, #ffd27a, #f2a93c); color: #2a1606; border: 0; font-weight: 800; box-shadow: 0 0 22px rgba(255,196,107,.45), 0 3px 0 #9a5a14; }
 .rc-passer { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 14px; font-size: 11.5px; color: rgba(255,243,214,.55); animation: vitIn .4s 1s both; }
 @keyframes rcAube { to { opacity: 1; } }
@@ -2729,7 +2730,7 @@ function blocArmurerie() {
   // on ne montre que ce que tu possèdes et ce qui se gagne cette saison ; le reste est résumé en une ligne
   const souv = new Set(A.souvenirsRodage || []); // objets du Rodage : montrés dans « Souvenirs », pas cadenassés dans la Garde-robe
   const visible = x => cosmPossede(x.id) || (!souv.has(x.id) && x.saison !== 'reserve' && (x.saison || 'pre') === A.saison.id);
-  const tout = cosmListe(s), liste = tout.filter(visible), caches = tout.length - liste.length;
+  const tout = cosmListe(s), liste = tout.filter(visible), caches = tout.filter(x => !visible(x) && !souv.has(x.id)).length;
   const objets = slot => liste.filter(x => x.slot === slot);
   const petits = slot => slot === 'poche' ? ORNEMENTS.filter(o => o.slot === 'familier' && ornementDebloque(s, o)) : slot === 'familier' ? [] : ORNEMENTS.filter(o => o.slot === slot);
   const compte = slot => [objets(slot).filter(x => cosmPossede(x.id)).length + petits(slot).filter(o => ornementDebloque(s, o)).length, objets(slot).length + petits(slot).length];
