@@ -661,6 +661,7 @@ let sample=null;
   try{
     const [user,db,s]=await Promise.all([claude.use("user"),claude.use("db"),claude.use("sample")]);
     sample=s; if(!ses) renderEn();
+    if(navigator.onLine!==false) loadAcct(); // profil et état du compte dès le démarrage (pas seulement dans les réglages)
     if(user&&db){
       const id=await user.id();
       if(id){
