@@ -3302,7 +3302,7 @@ document.addEventListener('click', e => {
  * Tous se débloquent avec ce qui existe déjà (niveau, séries, titres) : rien de nouveau à suivre.
  */
 const t_ = id => s => !!((s.titres && s.titres.liste) || []).find(x => x.id === id && x.obtenu);
-const recordMax = s => Math.max(0, ...(s.habitudes || []).map(h => Number(h.record) || 0));
+const recordMax = s => Number(s.recordJours) || Math.max(0, ...(s.habitudes || []).map(h => Number(h.record) || 0)); // jours de régularité (moteur), validations sinon
 const EMPLACEMENTS = [
   { id: 'familier', nom: 'Familier', aide: 'un petit compagnon à tes pieds' },
   { id: 'sol', nom: 'Sol', aide: 'sous tes pas' },
@@ -6383,7 +6383,7 @@ function ecransRecap(s, d) {
   E.push(`<div class="rc-perso">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'rc', s)}</div><h2>Ta semaine</h2><p>du ${dateCourte(b.lundi)} au ${dateCourte(b.dimanche)}</p><p class="rc-petit">Niveau ${s.niveau} · ${esc(s.titre || '')}</p>`);
   E.push(`<p class="rc-sur">XP gagnée</p><div class="rc-gros" data-compte="${b.xp}">0</div>${d.delta !== null ? `<p class="${d.delta >= 0 ? 'rc-up' : 'rc-down'}">${d.delta >= 0 ? '▲' : '▼'} ${Math.abs(d.delta)} % par rapport à la semaine d'avant</p>` : ''}`);
   E.push(`<p class="rc-sur">Sur le terrain</p><div class="rc-kpis"><div><b>${b.faits}</b><span>quêtes faites</span></div><div><b>${b.aJour}/${b.total}</b><span>habitudes à jour</span></div><div><b>${b.rates}</b><span>ratés</span></div><div><b>${b.bonus}</b><span>bonus de série</span></div></div>`);
-  if (d.meilleure.serie) E.push(`<div class="rc-flamme">🔥</div><p class="rc-sur">Meilleure série</p><h2>${esc(d.meilleure.nom)}</h2><div class="rc-gros" data-compte="${d.meilleure.serie}">0</div><p>jours d'affilée</p>`);
+  if (d.meilleure.serie) E.push(`<div class="rc-flamme">🔥</div><p class="rc-sur">Meilleure série</p><h2>${esc(d.meilleure.nom)}</h2><div class="rc-gros" data-compte="${d.meilleure.serie}">0</div><p>validations d'affilée</p>`);
   const B = d.boss;
   if (B && !d.precedente) E.push(`<div class="rc-boss ${B.statut === 'Vaincu' ? 'vaincu' : ''}">${bossSvg(B.visuel, 'rcb', B)}</div><h2>${esc(B.nomStade || B.nom)}</h2>
     <p>${B.statut === 'Vaincu' ? `⚔ Vaincu le ${dateCourte(B.vaincuLe)} ! Trophée : ${esc(B.trophee || '')}` : B.statut === 'En cours' ? `Il lui reste ${Math.round(B.pv).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV… ${joursRestants(B.fin) === 0 ? 'dernière chance ce soir !' : 'encore ' + joursRestants(B.fin) + ' jour' + (joursRestants(B.fin) > 1 ? 's' : '') + ' pour l\'achever.'}` : esc(B.statut || '')}</p>`);
@@ -7379,7 +7379,7 @@ function carteHabitude(h, petite) {
     <div class="icon">${ICONES[h.carac] || '⭐'}</div>
     <div class="body">
       <div class="name">${esc(h.sous || h.nom)}</div>
-      <div class="meta">${h.serieNb > 0 && h.serie > 0 ? `<span class="streak">🔥 ${h.serie} j</span> · ` : ''}<span class="week ${okSem ? 'ok' : ''}"><b>${h.semaine}/${h.objectif}</b> sem.</span> · ${rythme}${h.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(h.nom)}</div>
+      <div class="meta">${h.serieNb > 0 && h.serie > 0 ? `<span class="streak" title="${h.serie} validations d'affilée">🔥 ${h.serie}</span> · ` : ''}<span class="week ${okSem ? 'ok' : ''}"><b>${h.semaine}/${h.objectif}</b> sem.</span> · ${rythme}${h.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(h.nom)}</div>
       ${gains(h)}
       ${(h.decalages || []).map(x => `<span class="chip d">↔ séance du ${JOURS_LONGS[indexJour(x.de)]} déplacée au ${JOURS_LONGS[indexJour(x.a)]}</span>`).join(' ')}
     </div>
@@ -7481,7 +7481,7 @@ function carteBilan(s, dimanche) {
       <div class="kpi"><b>${b.jokers}</b><span>joker utilisé</span></div>
       <div class="kpi"><b>${b.bonus}</b><span>bonus de série</span></div>
     </div>
-    <p>${meilleure.serie ? `🔥 Meilleure série : <b>${esc(meilleure.nom)}</b>, ${meilleure.serie} jours. ` : ''}${mot}</p>
+    <p>${meilleure.serie ? `🔥 Meilleure série : <b>${esc(meilleure.nom)}</b>, ${meilleure.serie} validations d'affilée. ` : ''}${mot}</p>
     <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn mini or" data-recap="sem">▶ Récap animé</button>${s.bilan.precedente && s.bilan.precedente.faits ? '<button class="btn mini" data-recap="prec">▶ Semaine dernière</button>' : ''}</div>
   </div>`;
 }
@@ -7546,8 +7546,8 @@ function render() {
 
   const series = [...s.habitudes].sort((a, b) => (b.serieNb > 0 ? b.serie : 0) - (a.serieNb > 0 ? a.serie : 0)).map(h => `
     <div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span>
-      <span>${h.serieNb > 0 && h.serie > 0 ? `<span class="streak">🔥 ${h.serie} j</span>` : '<span class="muted">pas de série</span>'}
-      <span class="muted"> · record&nbsp;${h.record || 0}&nbsp;j</span></span></div>`).join('');
+      <span>${h.serieNb > 0 && h.serie > 0 ? `<span class="streak" title="${h.serie} validations d'affilée">🔥 ${h.serie}</span>` : '<span class="muted">pas de série</span>'}
+      <span class="muted"> · record&nbsp;${h.record || 0}</span></span></div>`).join('');
 
   const entete = `
     ${enLigne || distant ? '' : '<div class="demo">Aperçu avec des données fictives : rien n\'est enregistré</div>'}
@@ -7572,7 +7572,7 @@ function render() {
           <div class="hxt"><span class="hxt-t ${choisi ? 'gagne' : ''}" data-ttr="1" role="button" aria-label="Choisir ton titre et écrire ta devise">${choisi ? esc(choisi) : esc(s.titre)}</span>JOKER_L1</div>`;
         const jxp = `<div class="hxc-j"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b> XP → niv.&nbsp;${s.niveau + 1}</em></div>`;
         const reglages = `<button class="engrenage hx-btn" data-tab="profil" data-mode="reglages" aria-label="Réglages">${PICTO.reglages}</button>`, joker = `<span class="joker" title="Jokers de la semaine">🃏 ${s.jokersRestants}/${s.jokersParSemaine}</span>`;
-        const flamme = serie ? `<span class="hxs" title="Meilleure série en cours"><i>🔥</i><b>${serie}</b>&nbsp;j</span>` : '';
+        const flamme = serie ? `<span class="hxs" title="Meilleure série en cours : ${serie} validations d'affilée"><i>🔥</i><b>${serie}</b></span>` : '';
         const l1A = l1.replace('JOKER_L1', joker), l1B = l1.replace('JOKER_L1', '');
         return `<div class="hx-row hxc hxa">
         ${medaille}
@@ -7647,7 +7647,7 @@ function render() {
     ${blocBilanGarde(s)}
     ${salleTrophees(s)}
     ${blocTitres(s)}
-    <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
+    <div class="section"><h2>Séries</h2><span>validations d'affilée</span></div>
     <div class="panel">${series}</div>
     ${calendrierHTML(s)}
     ${blocLegende(s)}
@@ -7805,7 +7805,7 @@ document.addEventListener('toggle', e => { if (e.target.matches && e.target.matc
 function vueCompagnonDetail(c) {
   const cl = classeDe(c), pal = palierDe(Number(c.niveau) || 1, cl);
   const etat = h => h.jour.fait ? '<span class="chip f">✓ Fait</span>' : h.jour.rate ? '<span class="chip r">Raté</span>' : h.jour.repos ? '<span class="chip p">Repos</span>' : '<span class="chip n">à faire</span>';
-  const ligne = (h, droite) => `<div class="cl"><div><b>${esc(h.nom)}</b><span>${ICONES[h.carac] || '⭐'} ${caracs(h)}${h.serieNb > 0 && h.serie > 0 ? ` · 🔥 ${h.serie} j` : ''}</span></div>${droite}</div>`;
+  const ligne = (h, droite) => `<div class="cl"><div><b>${esc(h.nom)}</b><span>${ICONES[h.carac] || '⭐'} ${caracs(h)}${h.serieNb > 0 && h.serie > 0 ? ` · 🔥 ${h.serie}` : ''}</span></div>${droite}</div>`;
   const auj = c.habitudes.filter(h => !h.enPause && (h.aFaire || h.jour.fait || h.jour.rate || h.jour.repos));
   const sem = c.habitudes.filter(h => !h.enPause);
   const ann = c.annexes.filter(a => a.jour.fait || a.fois);
@@ -7823,7 +7823,7 @@ function vueCompagnonDetail(c) {
     ${ann.length ? `<div class="section"><h2>Quêtes annexes</h2><span>déjà accomplies</span></div>
     <div class="panel">${ann.map(a => ligne(a, `<span class="wk">${a.jour.fait ? '✓ aujourd\'hui' : a.fois + ' fois'}</span>`)).join('')}</div>` : ''}
     ${c.objectifs.length ? `<div class="section"><h2>Quêtes épiques</h2><span>progression</span></div><div class="list">${c.objectifs.map(carteEpique).join('')}</div>` : ''}
-    ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span><span><span class="streak">🔥 ${h.serie} j</span><span class="muted"> · record&nbsp;${h.record || 0}&nbsp;j</span></span></div>`).join('')}</div>` : ''}
+    ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span><span><span class="streak">🔥 ${h.serie}</span><span class="muted"> · record&nbsp;${h.record || 0}</span></span></div>`).join('')}</div>` : ''}
     <div class="aide-coop">Lecture seule : chacun valide ses propres quêtes avec sa clé.</div></div>`;
 }
 document.addEventListener('click', e => {
@@ -8047,7 +8047,7 @@ function vueProfil(s) {
           .map(([c, t]) => `<span><i style="background:${COULEURS_GRILLE[c]}"></i>${t}</span>`).join('')}</div>
       </div>`;
   const records = !rec ? '' : `<div class="records">
-      <div class="rec"><b>${rec.meilleureSerie.jours || 0} j</b><span>Plus longue série${rec.meilleureSerie.nom ? '<br>' + esc(rec.meilleureSerie.nom) : ''}</span></div>
+      <div class="rec"><b>${rec.meilleureSerie.jours || 0}</b><span>Plus longue série (validations)${rec.meilleureSerie.nom ? '<br>' + esc(rec.meilleureSerie.nom) : ''}</span></div>
       <div class="rec"><b>${rec.meilleureSemaine.xp ? rec.meilleureSemaine.xp.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0') : '—'}</b><span>Meilleure semaine (XP)${rec.meilleureSemaine.lundi ? '<br>sem. du ' + dateCourte(rec.meilleureSemaine.lundi) : ''}</span></div>
       <div class="rec"><b>${rec.quetes}</b><span>Quêtes accomplies</span></div>
       <div class="rec"><b>${rec.parfaites} · ${rec.reussies}</b><span>Semaines parfaites · réussies</span></div>
@@ -8895,10 +8895,10 @@ const demo = (() => {
   const jourAuj = JOURS[(now.getDay() + 6) % 7];
   const vide = () => ({ fait: 0, rate: 0, repos: 0 });
   const habs = [
-    { nom: 'La Course des Éclaireurs', sous: 'Course à pied', categorie: 'Perso', carac: 'Endurance', carac2: 'Agilité', type: 'Routine', jours: 'Lun, Mer, Sam', tousLes: 0, xp: 113, objectif: 3, semaine: 1, derniere: ilYa(2), serie: 12, serieNb: 5, record: 12 },
+    { nom: 'La Course des Éclaireurs', sous: 'Course à pied', categorie: 'Perso', carac: 'Endurance', carac2: 'Agilité', type: 'Routine', jours: 'Lun, Mer, Sam', tousLes: 0, xp: 113, objectif: 3, semaine: 1, derniere: ilYa(2), serie: 5, serieNb: 5, record: 9 },
     { nom: 'Forger l\'armure', sous: 'Renforcement musculaire', categorie: 'Perso', carac: 'Force', carac2: 'Endurance', type: 'Routine', jours: 'Jeu', tousLes: 0, xp: 90, objectif: 1, semaine: 0, derniere: 'Jamais', serie: 0, serieNb: 0, record: 0 },
-    { nom: 'Maîtrise de la Langue Ancienne', sous: 'Anglais 20 min', categorie: 'Perso', carac: 'Intelligence', carac2: 'Sagesse', type: 'Rythme', jours: '', tousLes: 2, xp: 100, objectif: 4, semaine: 1, derniere: ilYa(2), serie: 5, serieNb: 3, record: 9 },
-    { nom: 'Le Couvre-feu du Mage', sous: 'Coucher avant 22 h 30', categorie: 'Perso', carac: 'Endurance', carac2: 'Volonté', type: 'Routine', jours: 'Dim, Lun, Mar, Mer, Jeu', tousLes: 0, xp: 60, objectif: 5, semaine: 3, derniere: ilYa(1), serie: 4, serieNb: 3, record: 4 }
+    { nom: 'Maîtrise de la Langue Ancienne', sous: 'Anglais 20 min', categorie: 'Perso', carac: 'Intelligence', carac2: 'Sagesse', type: 'Rythme', jours: '', tousLes: 2, xp: 100, objectif: 4, semaine: 1, derniere: ilYa(2), serie: 3, serieNb: 3, record: 6 },
+    { nom: 'Le Couvre-feu du Mage', sous: 'Coucher avant 22 h 30', categorie: 'Perso', carac: 'Endurance', carac2: 'Volonté', type: 'Routine', jours: 'Dim, Lun, Mar, Mer, Jeu', tousLes: 0, xp: 60, objectif: 5, semaine: 3, derniere: ilYa(1), serie: 3, serieNb: 3, record: 4 }
   ].map(h => Object.assign(h, { jour: vide() }));
   // Pour que l'aperçu montre une routine du jour, la course tombe aujourd'hui
   habs[0].jours = jourAuj === 'Lun' || jourAuj === 'Mer' || jourAuj === 'Sam' ? 'Lun, Mer, Sam' : `Lun, Mer, ${jourAuj}`;
@@ -9040,7 +9040,7 @@ const demo = (() => {
         if (q.semaine !== undefined) { q.semaine++; q.derniere = today; }
         if (q.fois !== undefined) q.fois++;
         const o = objectifs.find(o => o.habitude === nom); if (o) o.faites++;
-        if (q.serie !== undefined) { if (!q.serieNb) q.serie = 1; q.serieNb++; if (q.nom === 'Maîtrise de la Langue Ancienne' && q.serie < 7) { q.serie = 7; nouveaux.push({ titre: '🔥 Série 7 jours', texte: q.nom + ' · +75 XP' }); xp += 75; } }
+        if (q.serie !== undefined) { q.serieNb++; q.serie = q.serieNb; q.record = Math.max(q.record || 0, q.serie); if (q.nom === 'Maîtrise de la Langue Ancienne' && q.serie === 4) { nouveaux.push({ titre: '🔥 Série 7 jours', texte: q.nom + ' · 4 validations d\'affilée · +75 XP' }); xp += 75; } }
         log.push({ nom, statut, g });
       } else if (statut === 'Raté') { q.jour.rate++; rates++; pvDemo -= 10; log.push({ nom, statut }); }
       else { if (jokers <= 0) throw new Error('Plus de joker cette semaine'); jokers--; q.jour.repos++; log.push({ nom, statut }); }
