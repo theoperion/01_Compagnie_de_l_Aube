@@ -670,6 +670,7 @@
   .pd-t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; } .pd-t b { font-size: 13.5px; color: var(--text); } .pd-t span { flex: none; font-size: 11.5px; color: var(--muted); }
   .pd-r { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
   .pd-n { flex: none; min-width: 116px; white-space: nowrap; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--text); } .pd-n em { margin-left: auto; padding-left: 6px; font-style: normal; font-weight: 600; color: var(--muted); }
+  .pd-n { min-width: 124px; } .pd-n em { white-space: nowrap; flex: none; } /* critique : « 20 % » ne se coupe plus en Yggdrasil */
   .pd-n i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
   .r-commun .pd-n i { background: #8fc47a; } .r-rare .pd-n i { background: #5ab0ff; } .r-epique .pd-n i { background: #b392ee; } .r-legendaire .pd-n i { background: #f2c94c; }
   .pd-o { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; } .pd-o small { font-size: 11px; color: var(--muted); }
@@ -3864,17 +3865,19 @@ function contenuCoffre(type, s) {
   const A = s.armurerie, sa = A.saison.id, a = {}; (A.possede || []).forEach(id => { a[id] = 1; });
   const w = POIDS_COF[type] || POIDS_COF.rare, tot = w.reduce((x, y) => x + y, 0);
   const dispo = rar => cosmListe(s).filter(x => x.butin && x.rarete === rar && !a[x.id] && (x.saison || 'pre') === sa);
-  const regles = sa !== 'pre' || String(s.today || '') >= COFFRES_S1_RODAGE;
-  return RARETES_COF.map((r, k) => ({ r, pct: Math.round(w[k] / tot * 100), liste: dispo(r), regles })).filter(x => x.pct > 0);
+  const regles = sa === 's1' || (sa === 'pre' && String(s.today || '') >= COFFRES_S1_RODAGE);
+  const existe = rar => cosmListe(s).some(x => x.butin && x.rarete === rar && (x.saison || 'pre') === sa);
+  if (type === 'legendaire' && regles && dispo('legendaire').length) return [{ r: 'legendaire', pct: 100, liste: dispo('legendaire'), existe: true, regles, monte: false }]; // gardien : 100 % légendaire tant qu'il en reste
+  return RARETES_COF.map((r, k) => ({ r, pct: Math.round(w[k] / tot * 100), liste: dispo(r), existe: existe(r), regles, monte: regles && k < 2 && RARETES_COF.slice(k + 1, 3).some(r2 => dispo(r2).length) })).filter(x => x.pct > 0);
 }
 function detailEtape(E, s) {
   const tete = `<div class="pd-t"><b>Palier ${E.n} · ${esc(E.nom)}</b><span>${E.fait ? 'gagné' : 'encore ' + xpFr(E.reste) + ' XP'}</span></div>`;
   if (E.type !== 'coffre') return `<div class="ph-detail">${tete}<p>${E.it ? (RARETE_NOM[E.it.rarete] || '') + ' · à porter dans ta garde-robe.' : 'Les éclats s\'échangent chez le marchand contre l\'objet de ton choix.'}</p></div>`;
   const C = contenuCoffre(E.r.coffre, s);
-  return `<div class="ph-detail">${tete}<p>Ce qu'il peut contenir, d'après ce qu'il te manque aujourd'hui :</p>
+  return `<div class="ph-detail">${tete}<p>Ce qu'il peut te donner aujourd'hui :</p>
     ${C.map(x => `<div class="pd-r r-${x.r}"><span class="pd-n"><i></i>${RARETE_NOM[x.r]}<em>${x.pct} %</em></span>
       <span class="pd-o">${x.liste.length ? x.liste.slice(0, 5).map(o => `<span class="pd-ic" title="${esc(o.nom)}">${apercuCosm(o)}</span>`).join('') + (x.liste.length > 5 ? `<small>+${x.liste.length - 5}</small>` : '')
-        : `<small>${x.regles && x.r !== 'legendaire' && x.r !== 'epique' ? 'déjà tout : un objet plus rare à la place' : `déjà tout : ${DOUBLON_COF[x.r] * 2} éclats à la place`}</small>`}</span></div>`).join('')}
+        : `<small>${x.monte ? 'un objet plus rare à la place' : !x.existe ? `pas d'objet ${RARETE_NOM[x.r].toLowerCase()} en coffre cette saison : ${DOUBLON_COF[x.r] * 2} éclats pour le marchand` : `tu les as tous : ${DOUBLON_COF[x.r] * 2} éclats à la place`}</small>`}</span></div>`).join('')}
     ${E.r.coffre === 'legendaire' && C[0] && C[0].regles ? '<p class="pd-note">Coffre légendaire : un objet légendaire tant qu\'il en reste.</p>' : ''}</div>`;
 }
 /* position du compagnon d'armes (déjà montrée par l'ancien plateau : on ne la perd pas) */
@@ -3924,11 +3927,11 @@ function parcoursHTML(s) {
   const restants = E.filter(e => !e.fait), nCof = restants.filter(e => e.type === 'coffre').length;
   const rang = e => `<li class="${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${choisi === e ? 'choisi' : ''}"><button data-etape="${e.n}" aria-expanded="${choisi === e}"><span class="pt-n">${e.n}</span>
       <span class="ph-v pt-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 22)}</span><span class="pt-nom">${esc(e.nom)}${e.it && e.it.rarete ? `<small> · ${RARETE_NOM[e.it.rarete]}</small>` : ''}</span><span class="pt-xp">${xpFr(e.reste)} XP</span></button>
-      ${choisi === e && !dansGrille ? detailEtape(e, s) : ''}</li>`;
+      ${choisi === e && (parcoursTout || !dansGrille) ? detailEtape(e, s) : ''}</li>`;
   const corps = parcoursOuvert ? `<div class="ph-corps">
-      <div class="ph-grille">${suite.map(carte).join('')}</div>
-      ${!fin.fait && !suite.includes(fin) ? `<button class="ph-final" data-etape="${fin.n}"><span class="ph-v">${vignetteEtape(fin, 36)}</span><span><small>Au bout du chemin · palier ${fin.n}</small><b>${esc(fin.nom)}</b></span></button>` : ''}
-      ${dansGrille ? detailEtape(choisi, s) : ''}
+      ${parcoursTout ? '' : `<div class="ph-grille">${suite.map(carte).join('')}</div>`}
+      ${!parcoursTout && !fin.fait && !suite.includes(fin) ? `<button class="ph-final" data-etape="${fin.n}"><span class="ph-v">${vignetteEtape(fin, 36)}</span><span><small>Au bout du chemin · palier ${fin.n}</small><b>${esc(fin.nom)}</b></span></button>` : ''}
+      ${dansGrille && !parcoursTout ? detailEtape(choisi, s) : ''}
       ${restants.length > 6 ? `<button class="ph-tout" data-parcours-tout="1" aria-expanded="${parcoursTout}"><span>Tout le chemin</span><small>${restants.length} paliers · ${nCof} coffre${nCof > 1 ? 's' : ''}</small><i aria-hidden="true">${parcoursTout ? '−' : '+'}</i></button>` : ''}
       ${parcoursTout ? `<ol class="ph-liste">${restants.map(rang).join('')}</ol>` : ''}
       <div class="ph-pied"><span class="ph-ec">${ECLAT_SVG(13)} ${A.eclats} éclats</span>${allieParcours(s) ? `<span>${allieParcours(s)}</span>` : ''}${S.id === 'pre' ? '<span>jusqu\'au 31 décembre</span>' : ''}</div></div>` : '';
