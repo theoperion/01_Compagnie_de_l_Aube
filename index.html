@@ -1544,6 +1544,8 @@ html.ygg .comp-txt b { font-family:var(--f-titre); font-weight:700; letter-spaci
 html.ygg .boss-card { border-radius:14px; border:1px solid rgba(232,96,79,.45) !important;
   background: radial-gradient(80% 70% at 18% 25%, rgba(232,96,79,.18), transparent 60%), linear-gradient(160deg, rgba(207,232,245,.06), transparent 45%), #102029 !important; }
 html.ygg .boss-card b { font-family:var(--f-titre); letter-spacing:.03em; }
+html.ygg, html.ygg *, html.ygg *::before, html.ygg *::after { font-feature-settings: "lnum" 1 !important; } /* gardien : chiffres alignés (sinon « niv. I2 », « I 5oo PV ») */
+html.ygg .hxc-niv, html.ygg .boss-card .bf-pvl b, html.ygg .capa .lv, html.ygg .stat2-top .sc, html.ygg .ph-titre em, html.ygg .hxd text { font-family: var(--f-texte); }
 html.ygg .bar.boss, html.ygg .bar.split { background:#16303c !important; }
 html.ygg .bar.boss i { background: linear-gradient(90deg, #a3382f, #ff8a70) !important; }
 html.ygg .empty { border-color:#24404f; }
@@ -8049,7 +8051,7 @@ function vueProfil(s) {
   const regTheme = !apparenceOuverte ? `<button class="reg reg-lien" data-apparence="1"><span>🎨</span><div><b>Apparence de l'app</b><small>Thème : ${esc(themeActuel)} · toucher pour changer</small></div></button>`
     : `<div class="reg"><h3 data-apparence="1" style="cursor:pointer">🎨 Apparence de l'app <small class="muted" style="font-weight:400">▴ replier</small></h3>
       <div class="aide">Choisis ton thème, sur ce téléphone. Le Carnet suit le même.</div>
-      <div class="themes">${themesVisibles().map(t => { const V = Object.assign({ bg: '#081117', card: '#112029', gold: '#d39a5c', text: '#eaf3f6', 'f-titre': "var(--f-texte), sans-serif" }, t.v);
+      <div class="themes">${themesVisibles().map(t => { const V = Object.assign({ bg: '#081117', card: '#112029', gold: '#d39a5c', text: '#eaf3f6', 'f-titre': "'IM Fell English SC', Georgia, serif" }, t.v);
         return `<button class="theme ${themeChoisi() === t.id ? 'on' : ''}" data-theme="${t.id}" style="background:${V.bg};color:${V.text}">
           <span class="th-pal"><i style="background:${V.card}"></i><i style="background:${V.gold}"></i><i style="background:${V.text}"></i></span>
           <b style="font-family:${V['f-titre'].replace(/"/g, '&quot;')};color:${V.gold}">${esc(t.nom)}</b><small>${esc(t.aide)}</small></button>`; }).join('')}</div>
