@@ -5120,13 +5120,17 @@ const css = `
 .enfui .bf-bande { background: #6f625a; color: #f1e6da; }
 @keyframes bfBande { from { transform: rotate(-30deg) translateX(-140px); } }
 /* carte compacte (Quêtes) : le dessin dépasse du haut */
-.boss-mini.bfm { position: relative; margin-top: 20px; padding: 8px 10px 8px 80px; min-height: 60px; overflow: visible;
-  background: radial-gradient(60% 120% at 0% 50%, rgba(var(--aura-c), .25), transparent 70%), linear-gradient(180deg, #2a1414, var(--panel)); }
-.bfm .bm-av { position: absolute; left: 4px; top: -18px; width: 72px; } /* accroché en haut : ne bouge plus avec le nombre de lignes */
-.bfm-txt { flex: 1; min-width: 0; }
-.bfm-txt strong { display: block; font: 800 clamp(12.5px, 3.9vw, 15px)/1.2 var(--f-recit); color: #ff9b8a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bfm .bk-vie { height: 8px; border-radius: 5px; margin: 5px 0 4px; }
-.bfm-l { display: flex; flex-wrap: wrap; gap: 0 8px; font-size: 12px; color: var(--muted); } .bfm-l b { color: var(--text); } .bfm-l .f { color: var(--gold); font-weight: 600; } .bfm-l .urg { color: #ff8b8b; font-weight: 700; }
+.boss-mini.bfm { position: relative; margin: 8px 0 2px; padding: 4px 8px 4px 4px; min-height: 0; gap: 8px; overflow: hidden; border-radius: 10px;
+  background: radial-gradient(40% 140% at 0% 50%, rgba(var(--aura-c), .22), transparent 70%), linear-gradient(180deg, #2a1414, var(--panel)); }
+.bfm .bm-av { position: static; flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; } .bfm .bm-av svg { width: 30px; height: 30px; }
+.bfm > strong { flex: 1 1 auto; min-width: 0; font: 700 13px/1.2 var(--f-recit); color: #ff9b8a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html.th-olympe .bfm > strong, html.th-epopee .bfm > strong { font-size: 12px; letter-spacing: 0; } /* petites capitales plus larges : le nom tient à 360 px */
+.bfm .bk-vie.bfm-vie { position: absolute; left: 42px; right: 10px; bottom: 5px; height: 4px; margin: 0; border-radius: 3px; } /* liseré de vie : le nom garde toute la ligne */
+.boss-mini.bfm:has(.bfm-vie) { padding-bottom: 9px; }
+.bfm-p, .bfm-j { flex: none; font: 600 11.5px var(--f-texte); color: var(--muted); white-space: nowrap; } .bfm-p { color: var(--text); }
+.bfm-j.urg { color: #ff8b8b; font-weight: 700; } .bfm-c { flex: none; font-size: 12px; line-height: 1; }
+.bfm-t { flex: 1; min-width: 0; font: 600 12px var(--f-texte); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bfm-t.bm-ok { color: var(--gold); }
+.bfm .bm-go { flex: none; margin-left: -2px; }
 body.calme .bk-vie .r, body.calme .bf-bande { animation: none; }
 @media (prefers-reduced-motion: reduce) { .bk-vie .r, .bf-bande { animation: none; } }
 `;
@@ -5178,19 +5182,18 @@ window.carteBoss = function (b, s) {
   return `<div class="boss-card bf ${mois ? 'mois' : ''} ${vaincu ? 'vaincu' : ''} ${enfui ? 'enfui' : ''}">${scene}<div class="bf-corps">${corps}</div></div>`;
 };
 
-window.carteBossMini = function (s) {
+window.carteBossMini = function (s) { // bandeau d'une ligne : l'onglet Quêtes reste aux quêtes (Théo, 19/11)
   const b = s.boss && s.boss.semaine; if (!b) return '';
   const c = bossChiffres(b, s), vaincu = b.statut === 'Vaincu';
   let l;
-  if (vaincu) l = `<div class="bfm-l"><span class="bm-ok">⚔ Vaincu · 🏆 ${esc(b.trophee || 'trophée gagné')}</span></div>`;
-  else if (b.statut === 'Enfui') l = `<div class="bfm-l"><span>💨 Enfui avec <b>${nbF(c.pv)}</b> PV</span></div>`;
-  else if (b.statut === 'À venir') l = `<div class="bfm-l"><span>Attaque ${dateLongueCourte(b.debut)}</span><span class="f">⚡ Faible : ${esc(b.faible)}</span></div>`;
-  else if (b.statut === 'Trêve') l = '<div class="bfm-l"><span>Trêve : la Compagnie est en vacances</span></div>';
-  else { const br = b.coupDuJour && b.coupDuJour.brise && b.coupDuJour.breche; // brèche : prend la place de la faiblesse, pas de 3e ligne (critique)
-    l = `${barreVie(c)}<div class="bfm-l"><span><b>${nbF(c.pv)}</b> PV</span>${br ? '<span class="f bm-ok">✨ Brèche +25 %</span>' : `<span class="f">⚡ ${esc(b.faible)}</span>`}<span${c.j ? '' : ' class="urg"'}>${c.j ? c.j + ' j' : 'Dernier jour'}</span></div>${br ? '' : miniCoup(b)}`; }
-  return `<button class="boss-mini bfm ${vaincu ? 'vaincu' : ''}" data-tab="combat" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">
-    <div class="bm-av">${bossSvg(b.visuel, 'mini', b)}</div>
-    <div class="bfm-txt"><strong>${nomBoss(b)}</strong>${l}</div><span class="bm-go">›</span></button>`;
+  if (vaincu) l = `<span class="bfm-t bm-ok">⚔ Vaincu · 🏆</span>`;
+  else if (b.statut === 'Enfui') l = `<span class="bfm-t">💨 Enfui</span>`;
+  else if (b.statut === 'À venir') l = `<span class="bfm-t">Attaque ${dateLongueCourte(b.debut)}</span>`;
+  else if (b.statut === 'Trêve') l = '<span class="bfm-t">Trêve</span>';
+  else { const br = b.coupDuJour && b.coupDuJour.brise && b.coupDuJour.breche; // seule la brèche (rare, pousse à agir) ; le reste est dans Combat (critique)
+    l = `${barreVie(c, 'bfm-vie')}<span class="bfm-p">${Math.round(c.pPv)}&nbsp;%</span>${br ? '<span class="bfm-c" aria-label="Brèche : +25 % de dégâts">✨</span>' : ''}<span class="bfm-j${c.j ? '' : ' urg'}">${c.j ? c.j + '&nbsp;j' : 'Auj.'}</span>`; }
+  return `<button class="boss-mini bfm ${vaincu ? 'vaincu' : ''}" data-tab="combat" aria-label="Boss de la semaine : ${esc(b.nomStade || b.nom)}, ouvrir le combat" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">
+    <div class="bm-av">${bossSvg(b.visuel, 'mini', b)}</div><strong>${nomBoss(b)}</strong>${l}<span class="bm-go">›</span></button>`;
 };
 })();
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
@@ -6430,7 +6433,7 @@ function render() {
   const entete = `
     ${enLigne || distant ? '' : '<div class="demo">Aperçu avec des données fictives : rien n\'est enregistré</div>'}
     <header class="hx">
-      ${onglet === 'heros' ? '' : `<div class="hx-row hxc">
+      ${onglet !== 'quetes' ? '' : `<div class="hx-row hxc">
         <div class="hxc-m"><button class="hx-med ${s.pv < s.seuilEpuise ? 'fatigue' : ''}" data-tab="profil" data-mode="profil" aria-label="Ouvrir le profil du héros">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'hxm', s)}</button>
           <span class="hxc-niv" data-tab="profil" data-mode="profil" aria-label="Niveau ${s.niveau}"><small>niv.</small>${s.niveau}${marqueSouvenir(s)}</span></div>
         <div class="hx-txt" data-tab="profil" data-mode="profil" role="button">
