@@ -5697,6 +5697,8 @@ function exporterDonnees() {
 function flotter(texte, couleur) {
   const el = document.createElement('div');
   el.className = 'float'; el.textContent = texte; el.style.color = couleur;
+  // part du doigt (la carte touchée) plutôt que du milieu de l'écran : ne recouvre plus les titres
+  if (dernierToucherXY) { const y = Math.max(90, Math.min(innerHeight - 180, dernierToucherXY[1] - 70)); el.style.top = y + 'px'; el.style.fontSize = '22px'; }
   document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
 }
 /**
