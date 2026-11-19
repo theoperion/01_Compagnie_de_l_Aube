@@ -1687,6 +1687,153 @@ html.th-carte .rappel-cof b, html.th-celeste .rappel-cof b { color: #b0500a; }
   @keyframes veilleeFond { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
   body.calme .hx-med, body.calme .hero-perso .perso-fond::after { animation: none !important; }
   @media (prefers-reduced-motion: reduce) { html.veillee .hx-med, html.veillee .hero-perso .perso-fond::after { animation: none; } }
+
+  /* ===== Bilan du Rodage, Les Premiers Pas, Souvenir retrouvé (Enlumineur, 19/11) ===== */
+/* ===== Base commune des petites cinématiques (Bilan du Rodage, Souvenir retrouvé) : autonome, même famille que le Grand Recommencement ===== */
+.bl-box { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; justify-items: center; text-align: center; width: min(94vw, 400px); margin-block: auto;
+  padding: calc(28px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom)); }
+.bl-sous { letter-spacing: .2em; text-transform: uppercase; font-size: 11px; color: #f2c94c; animation: rcIn .6s .2s ease-out both; }
+.bl-box h1 { font-family: var(--f-titre); font-size: 26px; margin: 0; color: #fff3d6; text-shadow: 0 0 24px rgba(242,201,76,.55); }
+.bl-box h1 span { display: inline-block; animation: rcIn .5s ease-out both; }
+.bl-passer { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 14px; font-size: 11.5px; color: rgba(255,243,214,.55); animation: vitIn .4s 1s both, blSort .4s 7.6s forwards; }
+.btn.bl-or { background: linear-gradient(180deg, #ffd27a, #f2a93c); color: #2a1606; border: 0; font-weight: 800; box-shadow: 0 0 22px rgba(255,196,107,.45), 0 3px 0 #9a5a14; }
+@keyframes blSort { to { opacity: 0; visibility: hidden; } }
+@media (max-width: 380px) { .bl-sous { font-size: 10px; letter-spacing: .12em; } }
+
+/* ===== Bilan du Rodage (31/12 → 10/01, une fois ; ~8 s) : base .bl-box/.bl-sous/.bl-passer/.bl-or ci-dessus ===== */
+#bilanOv { position: fixed; inset: 0; z-index: 86; display: none; overflow-y: auto; overscroll-behavior: contain; color: #fff3d6; cursor: pointer;
+  background: radial-gradient(ellipse 60% 26% at 50% 25%, rgba(255,140,70,.2), transparent 70%), radial-gradient(circle at 50% 40%, #1c1838, #06050d 72%); }
+#bilanOv.on { display: grid; place-items: center; animation: vitIn .6s ease-out; }
+#bilanOv .ouv-ciel { position: absolute; inset: 0; pointer-events: none; }
+#bilanOv .ouv-ciel i { background: #ffe7b0; box-shadow: 0 0 6px #f2c94c; }
+/* La scène : les deux héros de part et d'autre du feu de camp */
+.bl-scene { position: relative; display: grid; grid-template-columns: minmax(0,1fr) 76px minmax(0,1fr); align-items: end; width: 100%; height: 124px; }
+.bl-scene.solo { grid-template-columns: auto 76px; width: auto; justify-content: center; gap: 12px; }
+.bl-h { position: relative; justify-self: center; width: 92px; animation: blEntreG .9s 1s cubic-bezier(.2,.8,.3,1) both; }
+.bl-h.d { animation-name: blEntreD; }
+.bl-h::before { content: ''; position: absolute; left: 8%; right: 8%; bottom: 2px; height: 12px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 70%, transparent), transparent); }
+.bl-h svg { position: relative; display: block; width: 100%; height: auto; filter: drop-shadow(0 0 9px rgba(255,150,70,.38)); }
+.bl-feu { align-self: end; animation: rcIn .8s .7s ease-out both; } .bl-feu svg { display: block; width: 76px; height: 61px; overflow: visible; }
+.bl-fl { transform-box: fill-box; transform-origin: 50% 100%; animation: blFlamme 1.1s ease-in-out infinite alternate; }
+.bl-fl.b { animation-duration: .8s; } .bl-fl.c { animation-duration: .55s; }
+.bl-lueur { animation: blLueur 1.7s ease-in-out infinite alternate; }
+.bl-braise { opacity: 0; animation: blBraise 2.4s ease-out infinite; }
+.bl-noms { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 6px; width: 100%; margin-top: -2px; animation: rcIn .6s 1.4s ease-out both; } .bl-noms.solo { grid-template-columns: 1fr; width: 66%; justify-self: center; padding-right: 76px; }
+.bl-noms > div { display: grid; justify-items: center; gap: 1px; min-width: 0; }
+.bl-noms b { font: 800 13px var(--f-titre); color: var(--c); white-space: nowrap; } .bl-noms small { font-size: 10.5px; color: #d8c9a8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.bl-ep { margin-top: 4px; padding: 2px 14px; font: 800 11px var(--f-texte); font-style: normal; color: #2a1606; white-space: nowrap; background: linear-gradient(180deg, #ffd27a, #f2a93c);
+  clip-path: polygon(0 0, 100% 0, 93% 50%, 100% 100%, 0 100%, 7% 50%); animation: blPop .5s calc(6.2s + var(--i) * .3s) cubic-bezier(.2,1.6,.4,1) both; }
+/* Ce que la Compagnie a accompli */
+.bl-gl { margin: 4px 0 -3px; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #d8c9a8; animation: rcIn .5s 1.6s ease-out both; }
+.bl-cie { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; width: 100%; }
+.bl-g { padding: 7px 4px 6px; border-radius: 12px; border: 1px solid rgba(242,201,76,.45); background: rgba(40,28,10,.55); animation: rcIn .5s calc(1.8s + var(--i) * .2s) ease-out both; }
+.bl-g b { display: block; font: 800 19px/1.15 var(--f-titre); color: #f2c94c; font-variant-numeric: tabular-nums; white-space: nowrap; } .bl-g small { display: block; font-size: 10.5px; color: #d8c9a8; line-height: 1.25; }
+/* Côte à côte : toi à gauche, ton compagnon à droite, une couronne à qui mène (deux en cas d'égalité) */
+.bl-cmp { display: grid; gap: 4px; width: 100%; padding: 7px 10px; border-radius: 14px; border: 1px solid rgba(242,201,76,.22); background: rgba(18,12,28,.6); animation: rcIn .5s 3.4s ease-out both; }
+.bl-l { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 6px; min-height: 24px; animation: rcIn .45s calc(3.7s + var(--i) * .38s) ease-out both; }
+.bl-l + .bl-l { border-top: 1px solid rgba(255,243,214,.07); padding-top: 4px; }
+.bl-l .bl-t { font-size: 11px; color: #d8c9a8; white-space: nowrap; }
+.bl-l .bl-v { display: flex; align-items: center; gap: 5px; min-width: 0; } .bl-l .bl-v.d { justify-content: flex-end; }
+.bl-n { display: grid; line-height: 1.1; } .bl-v.d .bl-n { justify-items: end; }
+.bl-l .bl-v b { font: 800 15px var(--f-titre); color: var(--c); font-variant-numeric: tabular-nums; white-space: nowrap; } .bl-l .bl-v small { font-size: 10px; color: #b8acc8; white-space: nowrap; }
+.bl-l .bl-cr { flex: none; width: 16px; height: 12px; filter: drop-shadow(0 0 4px rgba(242,201,76,.6)); animation: blPop .45s calc(4s + var(--i) * .38s) cubic-bezier(.2,1.6,.4,1) both; }
+.bl-txt { margin: 2px 0 0; font-size: 14px; line-height: 1.45; color: #f3e6c8; animation: rcIn .7s 6.9s ease-out both; } .bl-txt b { color: #ffd27a; }
+.bl-act { display: flex; gap: 8px; width: 100%; justify-content: center; animation: rcIn .4s 7.6s ease-out both; } .bl-act .btn { flex: 1; max-width: 190px; }
+.bl-garde { background: rgba(40,28,10,.6) !important; border: 1px solid #f2a93c !important; color: #ffd27a !important; font-weight: 700 !important; } .bl-garde[disabled] { opacity: .75; cursor: default; }
+@keyframes blEntreG { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+@keyframes blEntreD { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
+@keyframes blPop { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: none; } }
+@keyframes blFlamme { from { transform: scale(1, 1) skewX(-3deg); } to { transform: scale(.93, 1.1) skewX(3deg); } }
+@keyframes blLueur { from { opacity: .55; } to { opacity: 1; } }
+@keyframes blBraise { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), -34px); } }
+/* Toucher = tout de suite la fin (les entrées sautent à leur état final, le feu continue de danser) ; sans animation : tout est déjà là */
+#bilanOv.vite .bl-in { animation-delay: -30s !important; }
+#bilanOv.vite .bl-passer, #bilanOv.calme .bl-passer { display: none; }
+#bilanOv.calme *, #bilanOv.calme *::before { animation: none !important; } #bilanOv.calme .bl-braise { display: none; }
+@media (prefers-reduced-motion: reduce) { #bilanOv *, #bilanOv *::before { animation: none !important; } #bilanOv .bl-passer, #bilanOv .bl-braise { display: none; } }
+@media (max-height: 700px) { #bilanOv .bl-box { gap: 5px; padding-top: calc(22px + env(safe-area-inset-top)); } .bl-scene { height: 104px; } .bl-h { width: 78px; } #bilanOv .bl-box h1 { font-size: 23px; } }
+
+/* Ligne « Bilan du Rodage » gardé (Héros → Exploits) */
+.bilan-garde { display: flex; align-items: center; gap: 10px; width: 100%; margin: 10px 0 2px; padding: 9px 12px; border-radius: 12px; cursor: pointer; text-align: left; color: var(--text); font: inherit;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--card)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 14%, var(--card)), var(--panel)); }
+.bilan-garde .bg-ic { font-size: 20px; } .bilan-garde .bg-t { flex: 1; min-width: 0; display: grid; } .bilan-garde b { font: 700 14px var(--f-titre); }
+.bilan-garde small { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bilan-garde em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--gold); flex: none; }
+
+/* ===== Les Premiers Pas (défi d'ouverture, 01/01 → 10/01) : 3 lignes, deux pas qui avancent, barre commune à deux couleurs ===== */
+.defi { display: flex; align-items: center; gap: 10px; width: 100%; margin: 10px 0 4px; padding: 8px 12px 8px 8px; border-radius: 14px; text-align: left; color: var(--text); cursor: pointer; font: inherit;
+  border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 8%, var(--card)), var(--panel)); }
+.dp-pas { flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--gold) 20%, var(--card)), var(--panel) 80%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 30%, transparent); }
+.dp-pas svg { width: 34px; height: 34px; overflow: visible; }
+.dp-p1, .dp-p2 { animation: dpPas 2.4s ease-in-out infinite; } .dp-p2 { animation-delay: 1.2s; }
+.dp-txt { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.dp-l1 { display: flex; align-items: center; gap: 6px; } .dp-l1 b { font: 700 14px var(--f-titre); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dp-n { margin-left: auto; font: 800 13px var(--f-texte); font-variant-numeric: tabular-nums; } .dp-n small { font-weight: 600; color: var(--muted); }
+.dp-j { flex: none; font-style: normal; font-size: 11px; font-weight: 800; color: #2a1a06; background: var(--gold); border-radius: 8px; padding: 1px 6px; }
+.dp-bar { position: relative; display: flex; height: 7px; border-radius: 4px; overflow: hidden; background: color-mix(in srgb, var(--text) 11%, transparent); }
+.dp-bar i { height: 100%; transition: width .6s ease; } .dp-bar i + i { box-shadow: inset 1.5px 0 0 rgba(0,0,0,.4); }
+.dp-l3 { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dp-l3 i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; } .dp-l3 b { color: var(--gold); font-weight: 700; }
+.defi.dernier .dp-j { background: #ff9f43; } .defi.dernier { animation: cofPulse 2.4s ease-in-out infinite; }
+.defi.reussi { border-color: var(--gold); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 18%, var(--card)), var(--panel)); }
+.defi.reussi .dp-p1, .defi.reussi .dp-p2 { animation: none; } .dp-et { transform-box: fill-box; transform-origin: center; animation: dpEtoile 3s ease-in-out infinite; }
+.defi.fete { animation: dpFete .8s cubic-bezier(.2,1.6,.4,1); }
+.defi.fete .dp-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.75) 50%, transparent 70%); transform: translateX(-100%); animation: dpBrille 1.1s .2s ease-out forwards; }
+.dp-eclat { position: fixed; z-index: 90; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; box-shadow: 0 0 8px currentColor; animation: dpEclat 1.1s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes dpPas { 0%, 100% { opacity: .45; } 25%, 45% { opacity: 1; } }
+@keyframes dpEtoile { 0%, 100% { transform: scale(.85) rotate(0); } 50% { transform: scale(1.1) rotate(18deg); } }
+@keyframes dpFete { 0% { transform: scale(1); } 40% { transform: scale(1.035); } 100% { transform: none; } }
+@keyframes dpBrille { to { transform: translateX(100%); } }
+@keyframes dpEclat { from { opacity: 1; transform: translate(0, 0) scale(1.3); } to { opacity: 0; transform: translate(var(--x), var(--y)) scale(.4); } }
+body.calme .defi, body.calme .defi * { animation: none !important; } body.calme .dp-p1, body.calme .dp-p2 { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .defi, .defi *, .dp-eclat { animation: none !important; } .dp-p1, .dp-p2 { opacity: 1; } }
+html.th-carte .defi, html.th-carte .bilan-garde { border: 3px solid #3a2a20; box-shadow: 0 4px 0 #3a2a20; }
+html.th-carte .dp-l3 b, html.th-celeste .dp-l3 b { color: #b0500a; }
+html.th-carte .dp-j { border: 1.5px solid #3a2a20; }
+@media (max-width: 379px) { .dp-date { display: none; } }
+.bl-l .bl-cr.cache { visibility: hidden; }
+#bilanOv .bl-act .btn { min-width: 0; }
+
+/* ===== Souvenir retrouvé : marque fantôme (en-tête) ===== */
+.hx-lvl { position: relative; }
+.orn-fant { position: absolute; left: 50%; top: calc(100% + 4px); transform: translateX(-50%); display: flex; align-items: center; gap: 1px; pointer-events: auto; cursor: help; padding: 3px 5px; margin-top: -3px;
+  font: 800 12px/1 var(--f-texte); font-style: normal; letter-spacing: 0; color: #bcd6f2; text-shadow: 0 0 6px rgba(160,200,255,.6); white-space: nowrap; opacity: .85; }
+.orn-fant svg { width: 13px; height: 14px; }
+html.th-celeste .orn-fant { color: #5a6aa8; text-shadow: none; } html.th-carte .orn-fant { color: #1f2a5a; text-shadow: none; }
+
+/* ===== Souvenir retrouvé : la scène (~3,5 s, même famille que le Grand Recommencement) ===== */
+#souvOv { position: fixed; inset: 0; z-index: 86; display: none; overflow-y: auto; overscroll-behavior: contain; color: #fff3d6; cursor: pointer;
+  background: radial-gradient(ellipse 60% 35% at 50% 40%, rgba(140,180,255,.14), transparent 70%), radial-gradient(circle at 50% 40%, #1c1838, #06050d 72%); }
+#souvOv.on { display: grid; place-items: center; animation: vitIn .5s ease-out; }
+#souvOv .ouv-ciel { position: absolute; inset: 0; pointer-events: none; z-index: 0; } #souvOv .ouv-ciel i { background: #e8f0ff; box-shadow: 0 0 6px #a8c8ff; }
+#souvOv .sv-box { gap: 10px; position: relative; z-index: 1; }
+#souvOv .bl-sous { animation-delay: .1s; }
+.sv-scene { position: relative; width: 220px; height: 200px; justify-self: center; }
+.sv-ombre, .sv-toi { position: absolute; bottom: 0; width: 138px; left: 50%; margin-left: -69px; }
+.sv-ombre svg, .sv-toi svg { display: block; width: 100%; height: auto; }
+/* l'ombre : pâle, bleutée, translucide ; elle attend, puis se dissout en éclats */
+.sv-ombre { opacity: .5; filter: grayscale(1) brightness(1.7) sepia(.3) hue-rotate(185deg) drop-shadow(0 0 12px rgba(150,200,255,.9));
+  animation: svOmbre 2.3s .2s ease-in-out both; }
+.sv-toi { animation: svMarche 1.6s .5s cubic-bezier(.3,.6,.3,1) both; }
+.sv-toi svg { filter: drop-shadow(0 0 12px rgba(242,201,76,.5)); }
+.sv-eclats { left: 50%; top: 45%; } .sv-eclats i { background: #dfeaff; box-shadow: 0 0 8px #a8c8ff; animation-delay: calc(1.6s + var(--d)); }
+.sv-niv { position: absolute; right: -8px; top: 8px; width: 56px; height: 56px; border-radius: 50%; display: grid; place-content: center; text-align: center;
+  background: radial-gradient(circle at 50% 35%, #3a2a10, #120d1a); border: 2px solid #f2c94c; box-shadow: 0 0 16px rgba(242,201,76,.5); animation: rcIn .5s .4s ease-out both; }
+.sv-niv small { font-size: 8px; letter-spacing: .2em; color: #d8c9a8; } .sv-niv b { grid-area: 2 / 1; font: 800 24px/1 var(--f-titre); }
+.sv-26 { color: #bcd6f2; animation: svSort .4s 1.6s ease-in forwards; } .sv-n { color: #f2c94c; animation: svPop .6s 1.75s cubic-bezier(.2,1.6,.4,1) both; }
+@keyframes svPop { from { opacity: 0; transform: scale(.4); } 60% { opacity: 1; transform: scale(1.25); } to { opacity: 1; transform: none; } }
+.sv-txt { margin: 0; font-size: 14.5px; line-height: 1.45; color: #f3e6c8; animation: rcIn .6s 2.1s ease-out both; } .sv-txt b { color: #ffd27a; }
+.sv-titre { justify-self: center; font-size: 12px; padding: 2px 20px; animation: blPop .5s 2.6s cubic-bezier(.2,1.6,.4,1) both; }
+#souvOv .btn { justify-self: center; min-width: 200px; animation: rcIn .4s 3.1s ease-out both; }
+#souvOv .bl-passer { animation: vitIn .4s .6s both, blSort .3s 3.1s forwards; }
+@keyframes svMarche { from { opacity: 0; transform: translateX(-90px); } 45% { opacity: 1; } to { opacity: 1; transform: none; } }
+@keyframes svOmbre { 0% { opacity: 0; } 20%, 55% { opacity: .5; transform: none; } 100% { opacity: 0; transform: translateY(-10px) scale(1.12); } }
+@keyframes svSort { to { opacity: 0; transform: scale(.6); } }
+/* toucher = la fin ; sans animation : tout est déjà là (l'ombre a disparu, le nouveau niveau est affiché) */
+#souvOv.vite .sv-in, #souvOv.vite .sv-26, #souvOv.vite .sv-n { animation-delay: -10s !important; } #souvOv.vite .sv-eclats, #souvOv.vite .bl-passer { display: none; }
+#souvOv.calme *, #souvOv.calme *::before { animation: none !important; } #souvOv.calme .bl-passer, #souvOv.calme .sv-ombre, #souvOv.calme .sv-26 { display: none; }
+#souvOv.calme .sv-n { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #souvOv *, #souvOv *::before { animation: none !important; } #souvOv .bl-passer, #souvOv .sv-ombre, #souvOv .sv-26 { display: none; } }
+
 </style>
 </head>
 <body>
@@ -2285,13 +2432,287 @@ document.addEventListener('visibilitychange', () => document.body && document.bo
 function ambianceHeure() { const h = new Date().getHours(), c = h >= 5 && h < 10 ? 'h-aube' : h >= 18 && h < 23 ? 'h-soir' : h >= 23 || h < 5 ? 'h-nuit' : 'h-jour';
   ['h-aube', 'h-jour', 'h-soir', 'h-nuit'].forEach(k => document.body && document.body.classList.toggle(k, k === c));
   veilleeArmes(h); }
+/* ===== Bilan du Rodage : une fois par téléphone, à la première ouverture du 31/12/2026 au 10/01/2027 (~8 s, toucher = la fin) =====
+ * Branchement : dans render(), juste APRÈS recommencementAFaire() :   bilanRodageAFaire(); defiFeteAFaire();
+ * Ordre : le 01/01, Grand Recommencement → Bilan → ouverture de la Saison 1 ; le 31/12, Bilan → toast de la Veillée.
+ * Données : state.bilanRodage (moteur). « Garder ce bilan » en fait une copie sur ce téléphone, rejouable depuis Héros → Exploits. */
+const BILAN_DU = '2026-12-31', BILAN_AU = '2027-01-10';
+const bilanRodageVu = () => { try { return !!localStorage.getItem('bilanRodage2026'); } catch (e) { return true; } };
+const bilanRodageEnAttente = () => !!(state && state.bilanRodage && state.today >= BILAN_DU && state.today <= BILAN_AU && !bilanRodageVu());
+const bilanGarde = () => { try { return JSON.parse(localStorage.getItem('bilanRodageGarde') || 'null'); } catch (e) { return null; } };
+let bilanPrevu = false, bilanMinuteurs = [], bilanRaf = 0;
+function bilanRodageAFaire() {
+  if (!state || bilanPrevu || !bilanRodageEnAttente()) return;
+  bilanPrevu = true;
+  const essayer = () => {
+    let reco = false; try { reco = typeof recommencementDu === 'function' && recommencementDu() && !localStorage.getItem('recommencement2027'); } catch (e) {}
+    const occupe = document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #recapOv, .am-ov, .lvl-ov')].some(el => el.classList.contains('on') || el.classList.contains('lvl-ov'));
+    if (reco || occupe) { setTimeout(essayer, 1500); return; } // le Grand Recommencement (ou un d20, un boss) passe d'abord
+    try { localStorage.setItem('bilanRodage2026', '1'); } catch (e) {}
+    ouvrirBilanRodage(state.bilanRodage);
+  };
+  setTimeout(essayer, 1600); // après les 1 200 ms du Grand Recommencement, avant les 1 800 ms de l'ouverture de saison
+}
+/** Épithètes d'honneur : chacun reçoit celle d'un domaine où il mène (jamais la même), sinon « Le Fidèle » */
+const BILAN_HONNEURS = [['couronnes', 'Porte-Couronne'], ['meilleureSerie', 'Le Roc'], ['quetes', 'L\'Infatigable'], ['xp', 'Le Flamboyant'], ['jourPhare', 'L\'Éclair'], ['bossVaincus', 'Le Pourfendeur'], ['trophees', 'Le Collectionneur']];
+function bilanHonneurs(a, b) {
+  const v = (h, k) => k === 'jourPhare' ? Number((h.jourPhare || {}).xp) || 0 : Number(h[k]) || 0;
+  const mene = (x, y) => BILAN_HONNEURS.filter(([k]) => v(x, k) > v(y, k)).map(([, t]) => t);
+  const ha = mene(a, b), hb = mene(b, a), ta = ha[0] || 'Le Fidèle';
+  return [ta, hb.find(t => t !== ta) || (ta === 'Le Fidèle' ? 'Le Vaillant' : 'Le Fidèle')];
+}
+function ouvrirBilanRodage(B, revoir) {
+  const s = state; if (!B || !(B.heros || []).length) return;
+  let ov = document.getElementById('bilanOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'bilanOv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Bilan du Rodage'); document.body.appendChild(ov); }
+  const anim = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nb = n => Math.round(Number(n) || 0).toLocaleString('fr-FR').replace(/[  ]/g, ' ');
+  const iMoi = Math.max(0, B.heros.findIndex(h => h.heros === s.heros)), moi = B.heros[iMoi], lui = B.heros.find((h, i) => i !== iMoi) || null;
+  const comp = (lui && ((s.compagnons || []).find(c => c.nom === lui.heros) || (s.compagnons || [])[0])) || {};
+  // les héros tels qu'ils étaient à la fin du Rodage (leur niveau de 2026), à la lueur du feu de camp
+  const dess = (h, id, estMoi) => { const cl = classeDe({ classe: { nom: h.classe } });
+    return orner(cl.dessin(palierDe(Number(h.niveau) || 1, cl), id, lookDe(estMoi ? s.look : comp.look)), estMoi ? Object.assign({ _jours: joursDe(s) }, ornementsDe(s)) : (comp.ornements || {}), id); };
+  const cM = couleurClasse(moi.classe), cL = lui ? couleurClasse(lui.classe) : '';
+  const C = B.compagnie || {}, P = B.periode || {};
+  const jp0 = h => (h && h.jourPhare) || {};
+  const paires = lui ? [[moi.couronnes, lui.couronnes], [moi.xp, lui.xp], [moi.quetes, lui.quetes], [moi.meilleureSerie, lui.meilleureSerie], [jp0(moi).xp, jp0(lui).xp]].map(([a, b]) => [+a || 0, +b || 0]) : [];
+  // un héros qui mène partout : pas de colonne de couronnes d'un seul côté (critique : la comparaison doit rester amicale)
+  const domine = lui && (paires.every(([a, b]) => a >= b) || paires.every(([a, b]) => b >= a)) && paires.some(([a, b]) => a !== b); // l'un ne gagne aucune ligne
+  const cour = gagne => `<svg class="bl-cr bl-in${gagne && !domine ? '' : ' cache'}" viewBox="0 0 40 30" aria-hidden="true"><path d="M4 24 L2 7 L12 15 L20 3 L28 15 L38 7 L36 24Z" fill="#f2c94c" stroke="#6b4321" stroke-width="2.2" stroke-linejoin="round"/><circle cx="20" cy="13" r="2.6" fill="#ff8a5a"/></svg>`;
+  const ligne = (i, ic, t, va, vb, unite, sa, sb) => { const egal = va === vb, g = !egal && va > vb, d = !egal && vb > va;
+    return `<div class="bl-l bl-in" style="--i:${i}" aria-label="${t} : toi ${va}, ton compagnon d'armes ${vb}">
+      <span class="bl-v" style="--c:${cM}">${cour(g || egal && va)}<span class="bl-n"><b>${nb(va)}${unite}</b>${sa ? `<small>${sa}</small>` : ''}</span></span>
+      <span class="bl-t">${ic} ${t}</span>
+      <span class="bl-v d" style="--c:${cL}"><span class="bl-n"><b>${nb(vb)}${unite}</b>${sb ? `<small>${sb}</small>` : ''}</span>${cour(d || egal && vb)}</span></div>`; };
+  const jp = h => h.jourPhare || {}, jpd = h => jp(h).date ? dateCourte(jp(h).date).replace('.', '') : '';
+  const lignes = lui ? [
+    ligne(0, '🏅', 'Couronnes portées', +moi.couronnes || 0, +lui.couronnes || 0, ''),
+    ligne(1, '✨', 'XP gagnée', +moi.xp || 0, +lui.xp || 0, ''),
+    ligne(2, '📜', 'Quêtes', +moi.quetes || 0, +lui.quetes || 0, ''),
+    ligne(3, '🔥', 'Meilleure série', +moi.meilleureSerie || 0, +lui.meilleureSerie || 0, ' j'),
+    ligne(4, '☀️', 'Jour phare', +jp(moi).xp || 0, +jp(lui).xp || 0, ' XP', jpd(moi), jpd(lui))].join('') : '';
+  const [epM, epL] = lui ? bilanHonneurs(moi, lui) : [moi.couronnes ? 'Porte-Couronne' : 'Le Fidèle'];
+  const titre = lui ? 'Ce que vous avez forgé' : 'Ce que tu as forgé';
+  const cases = [[C.xp, 'XP gagnée'], [C.quetes, 'quêtes accomplies'], [C.bossVaincus, (+C.bossVaincus || 0) > 1 ? 'boss vaincus' : 'boss vaincu']];
+  const ciel = Array.from({ length: 22 }, (_, i) => `<i style="left:${(i * 37) % 100}%;top:${(i * 53) % 60}%;animation-delay:${(i % 9) * .3}s"></i>`).join('');
+  const deja = !!bilanGarde();
+  ov.className = anim ? '' : 'calme';
+  ov.innerHTML = `<div class="ouv-ciel">${ciel}</div>
+    <span class="bl-passer">toucher pour passer</span>
+    <div class="bl-box">
+      <div class="bl-sous bl-in">Fin du Rodage · ${P.debut ? dateCourte(P.debut) : '2 nov.'} → ${P.fin ? dateCourte(P.fin) : '31 déc.'}</div>
+      <h1 aria-label="${titre}">${titre.split('').map((c, i) => `<span class="bl-in" style="animation-delay:${.35 + i * .04}s">${c === ' ' ? '&nbsp;' : esc(c)}</span>`).join('')}</h1>
+      <div class="bl-scene ${lui ? '' : 'solo'}">
+        <div class="bl-h g bl-in" style="--c:${cM}">${dess(moi, 'blg', true)}</div>
+        <div class="bl-feu bl-in">${feuDeCampSvg()}</div>
+        ${lui ? `<div class="bl-h d bl-in" style="--c:${cL}">${dess(lui, 'bld', false)}</div>` : ''}
+      </div>
+      <div class="bl-noms bl-in ${lui ? '' : 'solo'}">
+        <div style="--c:${cM}"><b>Toi</b><small>${esc(moi.heros || s.heros || '')} · niv. ${nb(moi.niveau)}</small><em class="bl-ep bl-in" style="--i:0">« ${epM} »</em></div>
+        ${lui ? `<div style="--c:${cL}"><b>Ton compagnon d'armes</b><small>${esc(lui.heros || '')} · niv. ${nb(lui.niveau)}</small><em class="bl-ep bl-in" style="--i:1">« ${epL} »</em></div>` : ''}
+      </div>
+      <small class="bl-gl bl-in">${lui ? 'La Compagnie, ensemble' : 'Ton Rodage'}</small>
+      <div class="bl-cie">${cases.map((c, i) => `<div class="bl-g bl-in" style="--i:${i}"><b data-compte="${Math.round(Number(c[0]) || 0)}">${anim && !revoir ? '0' : nb(c[0])}</b><small>${c[1]}</small></div>`).join('')}</div>
+      ${lui ? `<div class="bl-cmp bl-in">${lignes}</div>` : ''}
+      <p class="bl-txt bl-in">${lui ? 'Deux mois côte à côte. Le premier chapitre est écrit : il est <b>à vous deux, pour&nbsp;toujours</b>.' : 'Le premier chapitre est écrit : il est <b>à toi, pour&nbsp;toujours</b>.'}</p>
+      <div class="bl-act bl-in">${revoir ? '<button class="btn bl-or bl-go" data-bilan-fin="1">Fermer</button>'
+        : `<button class="btn bl-garde" data-bilan-garder="1" ${deja ? 'disabled' : ''}>${deja ? '✓ Gardé dans Exploits' : '📜 Garder ce bilan'}</button><button class="btn bl-or bl-go" data-bilan-fin="1">Continuer</button>`}</div>
+    </div>`;
+  ov._bilan = B;
+  ov.classList.add('on'); document.body.classList.add('bloque'); ov.scrollTop = 0;
+  bilanMinuteurs.forEach(clearTimeout); bilanMinuteurs = []; cancelAnimationFrame(bilanRaf);
+  if (!anim || revoir) { if (revoir && anim) bilanCompter(ov); return; }
+  bilanCompter(ov);
+  bilanMinuteurs.push(setTimeout(() => vib([15]), 4300), setTimeout(() => vib([20, 40, 20]), 6300));
+}
+/** Les trois nombres de la Compagnie montent de 0 à leur valeur (1,3 s, à partir de 1,9 s) */
+function bilanCompter(ov) {
+  const els = [...ov.querySelectorAll('[data-compte]')], fr = n => Number(n).toLocaleString('fr-FR').replace(/[  ]/g, ' ');
+  const t0 = performance.now() + 1900, d = 1300;
+  const pas = t => { const k = Math.max(0, Math.min(1, (t - t0) / d)), e = 1 - Math.pow(1 - k, 3);
+    els.forEach(x => { x.textContent = fr(Math.round(x.dataset.compte * e)); });
+    if (k < 1 && ov.classList.contains('on') && !ov.classList.contains('vite')) bilanRaf = requestAnimationFrame(pas); };
+  bilanRaf = requestAnimationFrame(pas);
+}
+function passerBilan(ov) {
+  ov.classList.add('vite'); bilanMinuteurs.forEach(clearTimeout); bilanMinuteurs = []; cancelAnimationFrame(bilanRaf);
+  ov.querySelectorAll('[data-compte]').forEach(x => { x.textContent = Number(x.dataset.compte).toLocaleString('fr-FR').replace(/[  ]/g, ' '); });
+}
+function fermerBilan(ov) { ov.classList.remove('on'); document.body.classList.remove('bloque'); bilanMinuteurs.forEach(clearTimeout); bilanMinuteurs = []; cancelAnimationFrame(bilanRaf); }
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-bilan-revoir]')) { const B = bilanGarde() || (state && state.bilanRodage); if (B) ouvrirBilanRodage(B, true); return; }
+  const ov = e.target.closest('#bilanOv'); if (!ov) return;
+  const g = e.target.closest('[data-bilan-garder]');
+  if (g) { if (!ov.classList.contains('vite') && !ov.classList.contains('calme')) passerBilan(ov);
+    try { localStorage.setItem('bilanRodageGarde', JSON.stringify(ov._bilan)); } catch (err) {}
+    g.disabled = true; g.textContent = '✓ Gardé dans Exploits'; vib([20]); toast('📜 Bilan gardé : Héros → Exploits pour le revoir.'); return; }
+  if (e.target.closest('[data-bilan-fin]')) { fermerBilan(ov); return; } // l'ouverture de la Saison 1 (le 01/01) prend le relais toute seule
+  if (!ov.classList.contains('vite') && !ov.classList.contains('calme')) passerBilan(ov);
+});
+/** Feu de camp entre les deux héros (dessiné main, 80 × 64) : flammes qui dansent, braises qui montent */
+function feuDeCampSvg() {
+  return `<svg viewBox="0 0 80 64" aria-hidden="true">
+    <defs><radialGradient id="blfL" cx="50%" cy="70%" r="50%"><stop offset="0" stop-color="#ffb35a" stop-opacity=".75"/><stop offset="1" stop-color="#ff7a3a" stop-opacity="0"/></radialGradient></defs>
+    <ellipse class="bl-lueur" cx="40" cy="44" rx="40" ry="22" fill="url(#blfL)"/>
+    <path class="bl-fl a" d="M40 56 C26 54 25 40 32 30 C32 37 36 39 37 36 C35 26 40 16 47 10 C45 20 53 27 53 39 C53 49 48 56 40 56Z" fill="#e8562e"/>
+    <path class="bl-fl b" d="M40 56 C31 55 30 46 34 39 C35 43 38 44 39 41 C38 34 41 28 45 24 C45 31 49 36 49 44 C49 51 45 56 40 56Z" fill="#ffa23a"/>
+    <path class="bl-fl c" d="M40 56 C35 56 34 50 37 46 C38 48 40 48 40 46 C40 42 42 39 44 37 C44 42 46 45 46 49 C46 53 43 56 40 56Z" fill="#fff0b0"/>
+    <g stroke="#2a160a" stroke-width="1.4" stroke-linejoin="round"><path d="M18 60 L58 50 L60 55 L20 64Z" fill="#7a4522"/><path d="M62 60 L22 50 L20 55 L60 64Z" fill="#8f552a"/></g>
+    <g fill="#5a5560" stroke="#2a2630" stroke-width="1"><ellipse cx="13" cy="61" rx="5" ry="3"/><ellipse cx="67" cy="61" rx="5" ry="3"/><ellipse cx="40" cy="63" rx="5" ry="2"/></g>
+    <g fill="#ffd27a"><circle class="bl-braise" style="--dx:-6px;animation-duration:2.1s" cx="38" cy="30" r="1.3"/><circle class="bl-braise" style="--dx:5px;animation-duration:2.7s;animation-delay:.6s" cx="44" cy="26" r="1.1"/>
+      <circle class="bl-braise" style="--dx:-2px;animation-duration:3.2s;animation-delay:1.3s" cx="41" cy="28" r="1"/><circle class="bl-braise" style="--dx:7px;animation-duration:2.4s;animation-delay:1.9s" cx="36" cy="32" r="1.2"/></g></svg>`;
+}
+
+/* ===== « Garder ce bilan » : une ligne en tête de Héros → Exploits =====
+ * Dans render(), vueHeros, branche « exploits », juste AVANT ${blocTitres(s)} :   ${blocBilanGarde(s)} */
+function blocBilanGarde(s) {
+  const B = bilanGarde(); if (!B) return '';
+  const C = B.compagnie || {}, P = B.periode || {}, nb = n => Math.round(Number(n) || 0).toLocaleString('fr-FR').replace(/[  ]/g, ' ');
+  return `<button class="bilan-garde" data-bilan-revoir="1"><span class="bg-ic" aria-hidden="true">📜</span><span class="bg-t"><b>Bilan du Rodage</b><small>${dateCourte(P.debut || '2026-11-02')} → ${dateCourte(P.fin || '2026-12-31')} · ${nb(C.xp)} XP ensemble</small></span><em>revoir ›</em></button>`;
+}
+
+/* ===== Veillée d'armes : le toast attend que le Bilan soit refermé (31/12) =====
+ * Dans veilleeArmes(h), remplacer
+ *   setTimeout(() => toast('🌅 Veillée d\'armes : demain, l\'Aube se lève.'), 2500);
+ * par
+ *   const dire = () => (bilanRodageEnAttente() || document.body.classList.contains('bloque')) ? setTimeout(dire, 2000) : toast('🌅 Veillée d\'armes : demain, l\'Aube se lève.'); setTimeout(dire, 2500);
+ *
+ * ===== Ouverture de la Saison 1 : passe APRÈS le Bilan (01/01) =====
+ * Dans ouvertureSaisonAFaire(), dans essayer(), juste après la ligne « if (reco) { … } » :
+ *   if (bilanRodageEnAttente()) { setTimeout(essayer, 2000); return; } // puis le Bilan du Rodage
+ */
+
+/* ===== Les Premiers Pas : défi d'ouverture (01/01 → 10/01), carte compacte dans Quêtes =====
+ * Dans render(), vueQuetes, juste après ${bandeauCoffresRodage(s)} :   ${carteDefi(s)}
+ * Visible du début à la fin du défi ; réussi, encore 2 jours après (la récompense reste lisible). Toucher = l'objectif en clair. */
+function carteDefi(s) {
+  const D = s.defi; if (!D || !D.debut || !D.fin || s.today < D.debut) return '';
+  if (s.today > D.fin && !(D.reussi && s.today <= isoPlus(D.fin, 2))) return '';
+  const P = D.parHeros || {}, a = Math.max(0, Number(P.moi) || 0), b = Math.max(0, Number(P.compagnon) || 0);
+  const obj = Math.max(1, Number(D.objectif) || 1), fait = Math.max(Number(D.fait) || 0, a + b);
+  const wa = Math.min(100, a / obj * 100), wb = Math.min(100 - wa, b / obj * 100);
+  const lui = (s.compagnons || [])[0], cM = couleurClasse((s.classe || {}).nom), cL = couleurClasse(lui && (lui.classe && lui.classe.nom ? lui.classe.nom : lui.classe));
+  const j = joursRestants(D.fin), ok = !!D.reussi, dernier = !ok && j === 0;
+  const pas = (x, y, r, c, cls) => `<g class="${cls}" transform="translate(${x} ${y}) rotate(${r})" fill="${c}"><ellipse cx="0" cy="0" rx="3.3" ry="5.2"/><ellipse cx=".3" cy="8" rx="2.5" ry="2.9"/>
+    <circle cx="-2.6" cy="-6.6" r="1.1"/><circle cx="-.6" cy="-7.6" r="1.2"/><circle cx="1.6" cy="-7.2" r="1.1"/><circle cx="3.2" cy="-5.6" r=".9"/></g>`;
+  const pieds = `<svg viewBox="0 0 32 32" aria-hidden="true">${pas(11, 19, -14, cM, 'dp-p1')}${lui ? pas(21, 11, 12, cL, 'dp-p2') : ''}${ok ? '<path class="dp-et" d="M26 23l1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4z" fill="#ffd27a" stroke="#7a4a12" stroke-width=".6"/>' : ''}</svg>`;
+  const unite = D.unite || 'quêtes';
+  return `<button class="defi ${ok ? 'reussi' : ''} ${dernier ? 'dernier' : ''}" data-defi="1" aria-label="${esc(D.nom || 'Les Premiers Pas')} : ${fait} sur ${obj} ${unite}${ok ? ', réussi' : ''}">
+    <span class="dp-pas">${pieds}</span>
+    <span class="dp-txt">
+      <span class="dp-l1"><b>${esc(D.nom || 'Les Premiers Pas')}</b><span class="dp-n">${Math.min(fait, obj)}<small>/${obj}</small></span>
+        <em class="dp-j">${ok ? '✓ Réussi' : dernier ? 'dernier jour' : 'J-' + j}</em></span>
+      <span class="dp-bar"><i style="width:${wa}%;background:${cM}"></i>${lui ? `<i style="width:${wb}%;background:${cL}"></i>` : ''}</span>
+      <span class="dp-l3">${ok ? `🎁 <b>Coffre de Saison 1 + 150 XP chacun</b>${D.dateReussite ? `<span class="dp-date"> · le ${dateCourte(D.dateReussite)}</span>` : ''}`
+        : `<i style="background:${cM}"></i>Toi ${a}${lui ? ` · <i style="background:${cL}"></i>Ton compagnon ${b}` : ''} · 🎁 +150 XP`}</span>
+    </span></button>`;
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-defi]')) return;
+  const D = state && state.defi; if (!D) return;
+  toast(D.reussi ? '👣 Défi réussi : un coffre de Saison 1 chacun et +150 XP sont à vous.'
+    : `👣 Ensemble, ${D.objectif} ${D.unite || 'quêtes'} avant le ${dateCourte(D.fin)} : un coffre de Saison 1 chacun et +150 XP.`);
+});
+/** Petite fête, une fois par téléphone, la première fois que la carte apparaît réussie (sur Quêtes, sans écran par-dessus) */
+let defiFetePrevue = false;
+function defiFeteAFaire() {
+  const D = state && state.defi; if (!D || !D.reussi || defiFetePrevue) return;
+  const k = 'defiFete|' + (D.nom || '') + '|' + D.debut; let vu = false; try { vu = !!localStorage.getItem(k); } catch (e) {} if (vu) return;
+  defiFetePrevue = true;
+  const essayer = () => {
+    const c = document.querySelector('.defi.reussi');
+    if (!c || document.body.classList.contains('bloque')) { if (state.today <= isoPlus(D.fin, 2)) setTimeout(essayer, 2000); return; }
+    try { localStorage.setItem(k, '1'); } catch (e) {}
+    vib([30, 50, 30, 50, 90]); toast('👣 Les Premiers Pas : défi réussi ! Un coffre de Saison 1 chacun et +150 XP.');
+    if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    c.classList.add('fete'); setTimeout(() => c.classList.remove('fete'), 1800);
+    const r = c.querySelector('.dp-pas').getBoundingClientRect(), lui = (state.compagnons || [])[0];
+    const cols = [couleurClasse((state.classe || {}).nom), couleurClasse(lui && (lui.classe && lui.classe.nom ? lui.classe.nom : lui.classe)), '#ffd27a'];
+    for (let i = 0; i < 14; i++) { const e = document.createElement('i'), an = i / 14 * Math.PI * 2, d = 38 + (i % 3) * 14;
+      e.className = 'dp-eclat'; e.style.cssText = `left:${r.left + r.width / 2 - 3}px;top:${r.top + r.height / 2 - 3}px;background:${cols[i % 3]};color:${cols[i % 3]};--x:${Math.round(Math.cos(an) * d)}px;--y:${Math.round(Math.sin(an) * d)}px`;
+      document.body.appendChild(e); setTimeout(() => e.remove(), 1200); }
+  };
+  setTimeout(essayer, 900);
+}
+
+/* ===== Souvenir retrouvé (2027) : ton ombre du Rodage t'attend à ton ancien niveau ; quand tu la dépasses, petite scène (~3,5 s) =====
+ * a) Marque fantôme, dans render() (en-tête), remplacer   >${s.niveau}</div>   de la ligne .hx-lvl par   >${s.niveau}${marqueSouvenir(s)}</div>
+ * b) Scène : dans celebrer(liste), au début du .filter(b => { … }), ajouter :
+ *      if (b.type === 'souvenir') { souvenirAFaire(b); return false; }
+ *    et dans render(), après bilanRodageAFaire() :   souvenirAFaire();   (filet de sécurité si l'événement du moteur s'est perdu)
+ * Une seule fois par téléphone (clé souvenir2027). Attend la fin de la montée de niveau (.lvl-ov) et de tout écran par-dessus. */
+const SOUVENIR_TITRE = 'L\'Ombre dépassée'; // « le Revenant » existe déjà (titre : tomber à 0 PV et se relever)
+const niveau2026De = s => Number(((s || {}).armurerie || {}).niveau2026) || 0;
+const FANTOME_SVG = '<svg viewBox="0 0 20 22" aria-hidden="true"><path d="M10 1.5C5.3 1.5 2.5 5 2.5 9.5V20l2.6-1.8L7.6 20l2.4-1.8 2.4 1.8 2.5-1.8 2.6 1.8V9.5C17.5 5 14.7 1.5 10 1.5Z" fill="currentColor" fill-opacity=".22" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><ellipse cx="7.4" cy="9.4" rx="1.3" ry="1.8" fill="currentColor"/><ellipse cx="12.6" cy="9.4" rx="1.3" ry="1.8" fill="currentColor"/></svg>';
+/** Marque fantôme sous le niveau : ton ancien niveau, tant que tu ne l'as pas dépassé */
+function marqueSouvenir(s) {
+  const n26 = niveau2026De(s); if (s.today < '2027-01-01' || n26 <= 1 || Number(s.niveau) > n26) return '';
+  const reste = n26 - Number(s.niveau) + 1;
+  return `<span class="orn-fant" data-fant="${n26}" role="button" aria-label="Ton ombre du Rodage t'attend au niveau ${n26} : encore ${reste} niveau${reste > 1 ? 'x' : ''} pour la dépasser">${FANTOME_SVG}<b>${n26}</b></span>`;
+}
+let souvenirPrevu = false;
+function souvenirAFaire(ev) {
+  const s = state; if (!s || souvenirPrevu) return;
+  const n26 = Number((ev && ev.niveau2026) || niveau2026De(s)), n = Number((ev && ev.niveau) || s.niveau);
+  if (!(n26 > 1) || !(n > n26) || s.today < '2027-01-01') return;
+  let vu = false; try { vu = !!localStorage.getItem('souvenir2027'); } catch (e) {} if (vu) return;
+  souvenirPrevu = true;
+  const essayer = () => {
+    if (document.body.classList.contains('bloque') || document.querySelector('.lvl-ov, .cine') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #bilanOv')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 1500); return; }
+    try { localStorage.setItem('souvenir2027', '1'); } catch (e) {}
+    ouvrirSouvenir(n26, n, (ev && ev.titre) || SOUVENIR_TITRE);
+  };
+  setTimeout(essayer, 900);
+}
+let souvMinuteurs = [];
+function ouvrirSouvenir(n26, n, titre) {
+  const s = state;
+  let ov = document.getElementById('souvOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'souvOv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Souvenir retrouvé'); document.body.appendChild(ov); }
+  const anim = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CL = classeDe(s), look = lookDe(s.look);
+  // l'ombre : ton héros tel qu'il était au Rodage ; toi : tel que tu es maintenant
+  const ombre = CL.dessin(palierDe(n26, CL), 'svo', look), toi = avatar(palierDe(n, CL), 'svt', s);
+  const eclats = Array.from({ length: 14 }, (_, i) => `<i style="--a:${(i * 360 / 14).toFixed(0)}deg;--d:${(i % 4) * .05}s;--l:${40 + (i % 3) * 18}px"></i>`).join('');
+  ov.className = anim ? '' : 'calme';
+  ov.innerHTML = `<div class="ouv-ciel">${Array.from({ length: 16 }, (_, i) => `<i style="left:${(i * 37) % 100}%;top:${(i * 53) % 70}%;animation-delay:${(i % 9) * .3}s"></i>`).join('')}</div>
+    <span class="bl-passer">toucher pour passer</span>
+    <div class="bl-box sv-box">
+      <div class="bl-sous sv-in">Souvenir retrouvé</div>
+      <div class="sv-scene">
+        <div class="sv-ombre sv-in">${ombre}</div>
+        <div class="sv-toi sv-in">${toi}</div>
+        <div class="lvl-eclats sv-eclats">${anim ? eclats : ''}</div>
+        <div class="sv-niv sv-in"><small>NIV</small><b class="sv-26">${n26}</b><b class="sv-n">${n}</b></div>
+      </div>
+      <p class="sv-txt sv-in">Tu rattrapes l'ombre du héros que tu étais au Rodage, <b>niveau ${n26}</b>… et tu la dépasses. Elle n'était qu'un souvenir : <b>la légende, c'est toi</b>.</p>
+      <em class="bl-ep sv-titre sv-in">Titre : « ${esc(titre)} »</em>
+      <button class="btn bl-or sv-in" data-souv-fin="1">Continuer</button>
+    </div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+  souvMinuteurs.forEach(clearTimeout); souvMinuteurs = [];
+  if (anim) souvMinuteurs.push(setTimeout(() => vib([40, 50, 120]), 1700));
+}
+document.addEventListener('click', e => {
+  const ov = e.target.closest('#souvOv'); if (!ov) return;
+  if (e.target.closest('[data-souv-fin]')) { ov.classList.remove('on'); document.body.classList.remove('bloque'); souvMinuteurs.forEach(clearTimeout); souvMinuteurs = []; render(); return; }
+  if (!ov.classList.contains('vite') && !ov.classList.contains('calme')) { ov.classList.add('vite'); souvMinuteurs.forEach(clearTimeout); souvMinuteurs = []; }
+});
+/** Toucher la marque fantôme : un mot (sans ouvrir le profil, d'où la phase de capture) */
+document.addEventListener('click', e => {
+  const m = e.target.closest('[data-fant]'); if (!m || !state) return;
+  e.stopImmediatePropagation(); e.preventDefault();
+  const n26 = Number(m.dataset.fant), reste = n26 - Number(state.niveau) + 1;
+  toast(`👻 Ton ombre du Rodage t'attend au niveau ${n26}\u00a0: encore ${reste}\u00a0niveau${reste > 1 ? "x" : ""} pour la dépasser.`);
+}, true);
+
 /** Veillée d'armes : le soir du 31/12 (dès 17 h), une lueur d'aube derrière ton héros, sans rien dévoiler */
 function veilleeArmes(h) {
   const v = !!(typeof state !== 'undefined' && state && state.today === '2026-12-31' && h >= 17);
   document.documentElement.classList.toggle('veillee', v);
   if (!v) return;
   let vu = false; try { vu = !!localStorage.getItem('veillee2026'); } catch (e) {}
-  if (!vu) { try { localStorage.setItem('veillee2026', '1'); } catch (e) {} setTimeout(() => toast('🌅 Veillée d\'armes : demain, l\'Aube se lève.'), 2500); }
+  if (!vu) { try { localStorage.setItem('veillee2026', '1'); } catch (e) {} const dire = () => (bilanRodageEnAttente() || document.body.classList.contains('bloque')) ? setTimeout(dire, 2000) : toast('🌅 Veillée d\'armes : demain, l\'Aube se lève.'); setTimeout(dire, 2500); }
 }
 document.addEventListener('DOMContentLoaded', ambianceHeure); setInterval(ambianceHeure, 60000); try { ambianceHeure(); } catch (e) {}
 document.addEventListener('click', e => {
@@ -4260,6 +4681,7 @@ function ouvertureSaisonAFaire() {
   const essayer = () => {
     let reco = false; try { reco = typeof recommencementDu === 'function' && recommencementDu() && !localStorage.getItem('recommencement2027'); } catch (e) {}
     if (reco) { setTimeout(essayer, 2000); return; } // la cinématique du 1er janvier passe d'abord
+    if (bilanRodageEnAttente()) { setTimeout(essayer, 2000); return; } // puis le Bilan du Rodage
     if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem('ouverture|' + S.id, '1'); } catch (e) {} ouvrirOuverture(S.id);
   };
@@ -5138,6 +5560,7 @@ function render() {
   annonceAventureAFaire();
   if (state.today < '2027-01-01') try { localStorage.setItem('niveauRodage', String(state.niveau || '')); } catch (e) {} // niveau atteint au Rodage
   if (typeof recommencementAFaire === 'function') recommencementAFaire();
+  bilanRodageAFaire(); defiFeteAFaire(); souvenirAFaire();
   try { veilleeArmes(new Date().getHours()); } catch (e) {}
   ouvertureSaisonAFaire();
   if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
@@ -5173,7 +5596,7 @@ function render() {
     <header class="hx">
       <div class="hx-row">
         <button class="hx-med ${s.pv < s.seuilEpuise ? 'fatigue' : ''}" data-tab="profil" data-mode="profil" aria-label="Ouvrir le profil du héros">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'hxm', s)}</button>
-        <div class="hx-lvl" data-tab="profil" data-mode="profil" role="button" aria-label="Niveau ${s.niveau}">${s.niveau}</div>
+        <div class="hx-lvl" data-tab="profil" data-mode="profil" role="button" aria-label="Niveau ${s.niveau}">${s.niveau}${marqueSouvenir(s)}</div>
         <div class="hx-txt" data-tab="profil" data-mode="profil" role="button">
           <div class="hero-name">${esc(s.heros)}</div>
           <div class="hx-sub">${esc(s.titre)}${surnomDe(s) ? ` · « ${esc(surnomDe(s))} »` : ''}<span class="joker"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3" y="1.5" width="10" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 5.2l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/></svg> ${s.jokersRestants}/${s.jokersParSemaine}</span></div>
@@ -5209,6 +5632,7 @@ function render() {
     ${bandeauHorsLigne(s)}
     ${bandeauMontre(s)}
     ${bandeauCoffresRodage(s)}
+    ${carteDefi(s)}
     ${effetsActifs(s)}
     ${carteBossMini(s)}
     <div class="section"><h2>Aujourd'hui</h2></div>
@@ -5253,6 +5677,7 @@ function render() {
     ${plateauHTML(s)}
     ${salleTrophees(s)}</div>`
     : sousHeros === 'exploits' ? `
+    ${blocBilanGarde(s)}
     ${blocTitres(s)}
     <div class="section"><h2>Séries</h2><span>jours sans raté</span></div>
     <div class="panel">${series}</div>
@@ -5861,6 +6286,7 @@ function niveauSup(n, titre, nouveauTitre, avant, apres, evolue) {
 }
 function celebrer(liste) {
   (liste || []).filter(b => {
+    if (b.type === 'souvenir') { souvenirAFaire(b); return false; }
     if (b.type !== 'boss') return true;
     const nom = String(b.titre).replace(/^⚔️ /, '').replace(/ est vaincu !$/, '');
     const vrai = state && state.boss && [state.boss.semaine, state.boss.mois].find(x => x && x.nom === nom);
