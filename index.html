@@ -1803,7 +1803,7 @@ body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-moti
 body.calme .defi, body.calme .defi * { animation: none !important; } body.calme .dp-p1, body.calme .dp-p2 { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .defi, .defi *, .dp-eclat { animation: none !important; } .dp-p1, .dp-p2 { opacity: 1; } }
 /* ===== Lien d'armes et empreinte du compagnon (Enlumineur, 19/11) ===== */
-/* ===== Lien d'armes (dès le 01/01) : deux anneaux enlacés dans la carte du jour, à côté de la série ===== */
+/* ===== Lien d'armes (dès le 01/12/2026) : deux anneaux enlacés dans la carte du jour, à côté de la série ===== */
 .jour-r1 { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; row-gap: 2px; }
 .lien { display: inline-flex; align-items: center; gap: 2px; border: 0; background: none; padding: 2px 0; margin: -2px 0; cursor: pointer; font: 700 12px var(--f-texte); color: var(--muted); white-space: nowrap; }
 .lien svg { width: 21px; height: 13px; overflow: visible; flex: none; }
@@ -2852,6 +2852,9 @@ function blocBilanGarde(s) {
 /* ===== Les Premiers Pas : défi d'ouverture (01/01 → 10/01), carte compacte dans Quêtes =====
  * Dans render(), vueQuetes, juste après ${bandeauCoffresRodage(s)} :   ${carteDefi(s)}
  * Visible du début à la fin du défi ; réussi, encore 2 jours après (la récompense reste lisible). Toucher = l'objectif en clair. */
+/** Récompense du défi envoyée par le moteur (D.recompense, D.xp) : « Le Défi de l'Avent » (Rodage) ou « Les Premiers Pas » (Saison 1) */
+const defiCoffre = D => /Rodage/.test(String((D && D.recompense) || '')) ? 'du Rodage' : 'de Saison 1';
+const defiXp = D => Number(D && D.xp) || 150;
 function carteDefi(s) {
   const D = s.defi; if (!D || !D.debut || !D.fin || s.today < D.debut) return '';
   // réussi : encore 2 jours ; pas réussi : visible jusqu'au 17/01 (les oublis se rattrapent jusqu'au 16)
@@ -2871,17 +2874,17 @@ function carteDefi(s) {
       <span class="dp-l1"><b>${esc(D.nom || 'Les Premiers Pas')}</b><span class="dp-n">${Math.min(fait, obj)}<small>/${obj}</small></span>
         ${retard ? '' : `<em class="dp-j">${ok ? '✓ Réussi' : dernier ? 'dernier jour' : 'J-' + j}</em>`}</span>
       <span class="dp-bar"><i style="width:${wa}%;background:${cM}"></i>${lui ? `<i style="width:${wb}%;background:${cL}"></i>` : ''}</span>
-      <span class="dp-l3">${ok ? `🎁 <b>Coffre de Saison 1 + 150 XP chacun</b>${D.dateReussite ? `<span class="dp-date"> · le ${dateCourte(D.dateReussite)}</span>` : ''}`
+      <span class="dp-l3">${ok ? `🎁 <b>Coffre ${defiCoffre(D)} + ${defiXp(D)} XP chacun</b>${D.dateReussite ? `<span class="dp-date"> · le ${dateCourte(D.dateReussite)}</span>` : ''}`
         : retard ? `<b class="dp-retard">⏳ Saisies en retard jusqu'au ${dateCourte(isoPlus(D.fin, 6))}</b>`
-        : `<i style="background:${cM}"></i>Toi ${a}${lui ? ` · <i style="background:${cL}"></i>Ton compagnon ${b}` : ''} · 🎁 +150 XP`}</span>
+        : `<i style="background:${cM}"></i>Toi ${a}${lui ? ` · <i style="background:${cL}"></i>Ton compagnon ${b}` : ''} · 🎁 +${defiXp(D)} XP`}</span>
     </span></button>`;
 }
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-defi]')) return;
   const D = state && state.defi; if (!D) return;
-  toast(D.reussi ? '👣 Défi réussi : un coffre de Saison 1 chacun et +150 XP sont à vous.'
+  toast(D.reussi ? `👣 Défi réussi : un coffre ${defiCoffre(D)} chacun et +${defiXp(D)} XP sont à vous.`
     : state.today > D.fin ? `👣 Défi terminé le ${dateCourte(D.fin)} : une quête oubliée de cette période compte encore si tu la saisis d'ici le ${dateCourte(isoPlus(D.fin, 6))}`
-    : `👣 Ensemble, ${D.objectif} ${D.unite || 'quêtes'} d'ici le ${dateCourte(D.fin)} inclus : un coffre de Saison 1 chacun et +150 XP.`);
+    : `👣 Ensemble, ${D.objectif} ${D.unite || 'quêtes'} d'ici le ${dateCourte(D.fin)} inclus : un coffre ${defiCoffre(D)} chacun et +${defiXp(D)} XP.`);
 });
 /** Petite fête, une fois par téléphone, la première fois que la carte apparaît réussie (sur Quêtes, sans écran par-dessus) */
 let defiFetePrevue = false;
@@ -2893,7 +2896,7 @@ function defiFeteAFaire() {
     const c = document.querySelector('.defi.reussi');
     if (!c || document.body.classList.contains('bloque')) { if (state.today <= isoPlus(D.fin, 2)) setTimeout(essayer, 2000); return; }
     try { localStorage.setItem(k, '1'); } catch (e) {}
-    vib([30, 50, 30, 50, 90]); toast('👣 Les Premiers Pas : défi réussi ! Un coffre de Saison 1 chacun et +150 XP.');
+    vib([30, 50, 30, 50, 90]); toast(`👣 ${D.nom || 'Les Premiers Pas'} : défi réussi ! Un coffre ${defiCoffre(D)} chacun et +${defiXp(D)} XP.`);
     if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     c.classList.add('fete'); setTimeout(() => c.classList.remove('fete'), 1800);
     const r = c.querySelector('.dp-pas').getBoundingClientRect(), lui = (state.compagnons || [])[0];
@@ -2905,7 +2908,7 @@ function defiFeteAFaire() {
   setTimeout(essayer, 900);
 }
 
-/* ===== Lien d'armes (dès le 01/01) : les deux héros ont validé au moins une quête aujourd'hui → dégâts aux boss ×1,05 =====
+/* ===== Lien d'armes (dès le 01/12/2026, fermé le 01/01 jusqu'au recommencement : le moteur n'envoie alors rien) : les deux héros ont validé au moins une quête aujourd'hui → dégâts aux boss ×1,05 =====
  * Le moteur envoie state.lienArmes = { actif, moi, compagnon, joursSemaine, bonus: 0.05 }.
  * a) Dans render(), carte du jour (.jour-sub), remplacer
  *      ${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}
@@ -2925,7 +2928,7 @@ const lienCouleurs = s => { const lui = (s.compagnons || [])[0];
   return [couleurClasse((s.classe || {}).nom), couleurClasse(lui && (lui.classe && lui.classe.nom ? lui.classe.nom : lui.classe))]; };
 /** Sceau compact dans la carte du jour : anneau plein = a combattu aujourd'hui ; pointillé qui respire = on l'attend */
 function lienArmesHTML(s) {
-  const L = s.lienArmes; if (!L || s.today < '2027-01-01' || !(s.compagnons || []).length) return '';
+  const L = s.lienArmes; if (!L || s.today < '2026-12-01' || !(s.compagnons || []).length) return '';
   const V = L.vacances || {}; if (V.moi && V.compagnon) return ''; // tous deux en vacances : pas de lien ce jour-là
   const [cM, cL] = lienCouleurs(s), x = lienBonus(L), seul = V.moi || V.compagnon, attend = L.moi || V.moi;
   const etat = L.actif ? 'actif' : attend ? 'moi' : 'toi';
@@ -4006,6 +4009,7 @@ function apercuSaison1() {
 /* Même tirage que le moteur (Armurerie.js, tirerCoffre_) : l'objet s'affiche tout de suite, le moteur l'enregistre en arrière-plan */
 const POIDS_COF = { commun: [70, 25, 5, 0], rare: [20, 55, 22, 3], epique: [0, 30, 60, 10], legendaire: [0, 0, 30, 70] };
 const DOUBLON_COF = { commun: 10, rare: 25, epique: 60, legendaire: 150 }, RARETES_COF = ['commun', 'rare', 'epique', 'legendaire'];
+const COFFRES_S1_RODAGE = '2026-12-01'; // règles de la Saison 1 aussi pour les coffres du Rodage ouverts à partir de ce jour (= Armurerie.js COFFRES_S1_RODAGE_)
 function hashCof(t) { let h = 2166136261; t = String(t); for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function tirerCoffreLocal(c, s) {
   const a = {}; ((s.armurerie || {}).possede || []).forEach(id => { a[id] = 1; });
@@ -4016,20 +4020,21 @@ function tirerCoffreLocal(c, s) {
   const rarete = RARETES_COF[k], sa = c.saison || 'pre';
   const dispo = rar => cosmListe(s).filter(x => x.butin && x.rarete === rar && !a[x.id] && (x.saison || 'pre') === sa);
   let pool = dispo(rarete);
-  // Saison 1 : coffre légendaire = un légendaire s'il en reste ; rareté épuisée → un cran au-dessus, jusqu'à épique (comme le moteur)
-  if (sa === 's1') {
+  // Saison 1 (et Rodage dès le 01/12) : coffre légendaire = un légendaire s'il en reste ; rareté épuisée → un cran au-dessus, jusqu'à épique (comme le moteur)
+  const regles = sa === 's1' || (sa === 'pre' && String(s.today || '') >= COFFRES_S1_RODAGE);
+  if (regles) {
     if (type === 'legendaire') { const L = dispo('legendaire'); if (L.length) pool = L; }
     for (let j = k; !pool.length && j < 2; j++) pool = dispo(RARETES_COF[j + 1]);
   }
-  if (!pool.length) return { item: '', eclats: DOUBLON_COF[rarete] * 2, rarete, saison: sa };
+  if (!pool.length) return { item: '', eclats: DOUBLON_COF[rarete] * 2, rarete, saison: sa, regles };
   return { item: pool[hashCof(graine + '|i') % pool.length].id, eclats: 0 };
 }
 /** Pourquoi des éclats : au Rodage, la rareté tirée est complète ; en Saison 1, il ne reste rien de cette rareté ni au-dessus (jusqu'à épique) */
 function texteEclatsCoffre(o) {
-  if (o.saison !== 's1' || !o.rarete) return 'Tu as déjà tous les objets de cette rareté';
+  if (!(o.regles || o.saison === 's1') || !o.rarete) return 'Tu as déjà tous les objets de cette rareté';
   const k = RARETES_COF.indexOf(o.rarete), noms = { commun: 'communs', rare: 'rares', epique: 'épiques', legendaire: 'légendaires' };
   const r = (k >= 2 ? [o.rarete] : RARETES_COF.slice(k, 3)).map(x => noms[x]);
-  return 'Tu as déjà tous les objets ' + (r.length > 1 ? r.slice(0, -1).join(', ') + ' et ' + r[r.length - 1] : r[0]) + ' de la Saison';
+  return 'Tu as déjà tous les objets ' + (r.length > 1 ? r.slice(0, -1).join(', ') + ' et ' + r[r.length - 1] : r[0]) + (o.saison === 'pre' ? ' du Rodage' : ' de la Saison');
 }
 let coffreRevele = null;
 const coffresEnVol = {}; // coffres ouverts sur le téléphone, pas encore confirmés par le moteur
@@ -7254,10 +7259,16 @@ function vueProfil(s) {
   const regCle = distant ? `<div class="reg"><h3>🔑 Ma clé de héros</h3>
       <div class="aide">Enregistrée sur ce téléphone : ${cleHeros ? esc(cleHeros.slice(0, 4)) + '••••-••••' : 'aucune'}. Si le Sheet dit « clé inconnue », retape-la ici.</div>
       <button class="btn plein" data-pr="cle-mod">Modifier ma clé</button></div>` : '';
-  const rp = R.rappel || { actif: true, heure: 20, dimanche: true };
+  const rp = R.rappel || { actif: true, heure: 20, dimanche: true, quotidien: true };
+  const rpQuot = rp.quotidien !== false; // absent (ancien moteur) = chaque soir
+  const rpAide = rpQuot && rp.dimanche ? 'Chaque soir, un e-mail seulement s\'il te reste des quêtes. Le dimanche, ton bilan de la semaine en plus.'
+    : rpQuot ? 'Chaque soir, un e-mail seulement s\'il te reste des quêtes.'
+    : rp.dimanche ? 'Un seul e-mail par semaine : ton bilan, le dimanche soir.'
+    : 'Aucun e-mail ne partira : active au moins une des deux options.';
   const regRap = `<div class="reg"><h3>🔔 Rappel du soir ${sw('rapOn', rp.actif)}</h3>
-      <div class="aide">Un e-mail seulement s'il te reste des quêtes. Le dimanche, il peut aussi t'envoyer ton bilan de la semaine.</div>
+      <div class="aide">${rpAide}</div>
       <div class="ligne"><span>Heure d'envoi</span><select id="rapH" ${rp.actif ? '' : 'disabled'}>${Array.from({ length: 17 }, (_, i) => i + 7).map(h => `<option value="${h}" ${h === rp.heure ? 'selected' : ''}>${h} h</option>`).join('')}</select></div>
+      <div class="ligne"><span>Chaque soir s'il reste des quêtes</span>${sw('rapQuot', rpQuot)}</div>
       <div class="ligne"><span>Bilan de la semaine le dimanche</span>${sw('rapDim', rp.dimanche)}</div>
       <button class="btn plein" data-pr="rap-test">Envoyer un e-mail de test</button>
     </div>`;
@@ -7994,8 +8005,9 @@ function actionProfil(b) {
 document.addEventListener('change', e => {
   const id = e.target.id;
   if (id === 'decQ') { decQuete = e.target.value; render(); return; }
-  if (id === 'rapOn' || id === 'rapH' || id === 'rapDim') {
-    regler('reglerRappel', { actif: document.getElementById('rapOn').checked, heure: Number(document.getElementById('rapH').value), dimanche: document.getElementById('rapDim').checked });
+  if (id === 'rapOn' || id === 'rapH' || id === 'rapDim' || id === 'rapQuot') {
+    regler('reglerRappel', { actif: document.getElementById('rapOn').checked, heure: Number(document.getElementById('rapH').value), dimanche: document.getElementById('rapDim').checked,
+      quotidien: document.getElementById('rapQuot').checked });
     return;
   }
   if (id === 'cfAnim' || id === 'cfVib') {
@@ -8032,7 +8044,7 @@ const demo = (() => {
     { nom: 'La Traversée des Contrées', sous: 'Course : 70 sorties avant fin avril', categorie: 'Perso', habitude: 'La Course des Éclaireurs', debut: ilYa(20), echeance: ilYa(-170), visees: 70, recompense: 1500, faites: 7 }
   ];
   const stats = { Force: 520, Endurance: 6300, 'Agilité': 1400, Intelligence: 2900, Sagesse: 1650, 'Volonté': 980, Charisme: 270 };
-  const regDemo = { vacances: [], pauses: [], decalages: [], rappel: { actif: true, heure: 20, dimanche: true },
+  const regDemo = { vacances: [], pauses: [], decalages: [], rappel: { actif: true, heure: 20, dimanche: true, quotidien: true },
     confort: { animations: true, vibrations: true }, devise: '', sauvegarde: { derniere: '', dossier: '', gardees: 8 },
     difficulte: { niveau: 'Normal', depuis: '', prochainChangement: '', modes: [
       { nom: 'Détendu', resume: 'PV perdus par raté ÷ 2 · 1 joker de plus par semaine' },
