@@ -59,11 +59,16 @@
   .t > i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--xp2)); }
   .t.pv > i, .jbar.pv .t > i { background: linear-gradient(90deg, var(--wax), var(--wax2)); }
   .hx-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 2px 2px; } .hx-bars .t { height: 5px; }
-  .jour { margin-top: 12px; padding: 14px 14px 12px 16px; border-radius: 20px; border: 1px solid var(--line); display: flex; gap: 10px; align-items: stretch;
+  .jour { margin-top: 10px; padding: 11px 12px 10px 14px; border-radius: 20px; border: 1px solid var(--line); display: flex; gap: 10px; align-items: stretch;
     background: radial-gradient(120% 100% at 100% 0%, rgba(242,165,65,.14), transparent 55%), var(--card); }
   .jour-g { flex: 1; min-width: 0; }
   .jour .kick { font: 800 10.5px var(--f-texte); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
-  .jour-big { font: italic 900 46px/.9 var(--f-titre); margin-top: 6px; } .jour-big small { font-size: 24px; color: var(--muted); } .jour-big em { font: italic 800 19px var(--f-titre); color: var(--muted); }
+  .jour-l1 { display: flex; align-items: center; gap: 10px; } .jour-l1 .jour-sub { flex: 1; flex-direction: column; gap: 2px; margin: 0; }
+  .jour-sub .epu { color: var(--wax2); font-weight: 700; }
+  .jour-d20 { flex: none; display: grid; justify-items: center; gap: 1px; border: 0; background: none; padding: 0; cursor: pointer; color: var(--gold); font: 800 10px var(--f-texte); text-transform: uppercase; letter-spacing: .06em; }
+  .jour-d20 svg { width: 40px; height: 40px; } .jour-d20:not(.fait) svg { animation: pulseD20 2s ease-in-out infinite; } .jour-d20.malus { color: var(--wax2); }
+  .jbars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; } .jbars .jbar { margin: 0; grid-template-columns: 20px 1fr auto; gap: 6px; }
+  .jour-big { font: italic 900 40px/.9 var(--f-titre); white-space: nowrap; } .jour-big small { font-size: 24px; color: var(--muted); } .jour-big em { font: italic 800 19px var(--f-titre); color: var(--muted); }
   .jour-sub { display: flex; gap: 10px; margin: 6px 0 8px; font: 600 12px var(--f-texte); color: var(--muted); flex-wrap: wrap; } .jour-sub b { color: var(--xp2); font: italic 900 15px var(--f-titre); }
   .jbar { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; margin-top: 5px; font: 800 10.5px var(--f-texte); letter-spacing: .08em; color: var(--muted); }
   .jbar em { font: 600 11.5px var(--f-texte); font-style: normal; color: var(--muted); } .jbar em b { color: var(--text); font: italic 900 14px var(--f-titre); }
@@ -130,7 +135,23 @@
   .card.small .icon { width: 34px; height: 34px; font-size: 17px; }
   .card.small .name { font-size: 14px; }
   .card.annexe { border-left: 3px solid var(--gold); }
-  .card.done { background: var(--card-done); border-color: #2f5a3e; }
+  .card.done { background: linear-gradient(90deg, rgba(156,199,138,.07), transparent 60%), var(--card); border-color: rgba(156,199,138,.35); border-style: dashed; }
+  .card.done .name { color: var(--muted); }
+  .sceau { position: absolute; right: 44px; top: 50%; width: 38px; height: 38px; margin-top: -19px; transform: rotate(-14deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,.55)); pointer-events: none; }
+  .sceau svg { width: 100%; height: 100%; display: block; }
+  .sceau.tombe { animation: sceauTombe .7s cubic-bezier(.3,1.4,.5,1) both; }
+  @keyframes sceauTombe { 0% { transform: translateY(-40px) rotate(-200deg) scale(1.8); opacity: 0; } 60% { opacity: 1; transform: translateY(2px) rotate(-10deg) scale(.92); } 80% { transform: rotate(-16deg) scale(1.06); } 100% { transform: rotate(-14deg) scale(1); } }
+  /* Médaillon d'humeur : sous le seuil d'épuisement, le héros respire lentement, cligne longuement et une lueur rouge pulse */
+  .hx-med.fatigue { animation: medFatigue 3.2s ease-in-out infinite; }
+  .hx-med.fatigue .h-corps { animation-duration: 6.5s; } .hx-med.fatigue .h-paup ellipse { animation: hCligneLent 4.2s ease-in-out infinite; }
+  .hx-med.fatigue .h-tete { animation: hTeteBas 6.3s ease-in-out infinite; }
+  @keyframes medFatigue { 0%, 100% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold), 0 0 14px rgba(224,88,75,.25); } 50% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--wax2), 0 0 24px rgba(224,88,75,.6); } }
+  @keyframes hCligneLent { 0%, 70%, 100% { transform: scaleY(0); } 78%, 90% { transform: scaleY(.85); } }
+  @keyframes hTeteBas { 0%, 100% { transform: rotate(2deg) translateY(1px); } 50% { transform: rotate(3deg) translateY(2px); } }
+  body.calme .hx-med.fatigue, body.calme .hx-med.fatigue * { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) { .hx-med.fatigue, .hx-med.fatigue * { animation: none !important; } }
+  .hx-med.salut .h-tete { animation: hSalut .9s ease-in-out; } .hx-med.salut .h-arme { animation: hLeve .9s ease-in-out; }
+  body.calme .sceau.tombe { animation: none; } @media (prefers-reduced-motion: reduce) { .sceau.tombe { animation: none; } }
   .card.missed { border-color: #6a2e2e; }
   .card.rest { border-color: #2e466a; }
   .card.busy { opacity: .5; pointer-events: none; }
@@ -2630,6 +2651,14 @@ function chipJour(j) {
   if (j.repos) return '<span class="chip p">Repos</span>';
   return '';
 }
+/** Sceau de cire posé sur une quête accomplie, avec l'emblème de la classe (étoile du mage, dague du voleur) */
+const sceauxFrais = {};
+function sceauSvg(s) {
+  const voleur = /voleur|assassin|roublard/i.test(String(((s || state || {}).classe || {}).nom || ''));
+  const emb = voleur ? '<path d="M24 12 l2.2 2.2 -8.4 8.4 -2.2 -2.2z M15.6 20.4 l-3 3 2.2 2.2 3 -3 M22 14 l3 -3" stroke="#ffe3c4" stroke-width="1.6" fill="#ffe3c4" stroke-linejoin="round"/>'
+    : '<path d="M18 9.5 l2.4 5.4 5.6 .5 -4.3 3.7 1.3 5.6 -5 -3 -5 3 1.3 -5.6 -4.3 -3.7 5.6 -.5z" fill="#ffe3c4"/>';
+  return `<svg viewBox="0 0 36 36" aria-hidden="true"><path d="M18 2.5c2 1.2 3.4.4 5.3 1.4 1.9 1 2 2.8 3.6 4.1 1.6 1.3 3.4 1 4.4 2.9 1 1.9-.1 3.4.4 5.4.5 2 2 3 1.6 5.1-.4 2.1-2.1 2.6-2.9 4.5-.8 1.9.1 3.6-1.4 5.1-1.5 1.5-3.2.8-5.1 1.6-1.9.8-2.6 2.6-4.7 2.9-2.1.3-3-1.4-5-1.6-2-.2-3.4 1-5.2.1-1.8-.9-1.7-2.8-3.1-4.2-1.4-1.4-3.3-1.4-4-3.3-.7-1.9.7-3.3.6-5.3-.1-2-1.7-3.1-1.1-5.1.6-2 2.5-2.2 3.6-3.9 1.1-1.7.6-3.6 2.3-4.8 1.7-1.2 3.4-.2 5.3-.8 1.9-.6 2.9-2.4 4.9-2.2z" fill="#b3302a"/><circle cx="18" cy="18" r="11" fill="none" stroke="#7a1d18" stroke-width="1.4"/><circle cx="18" cy="18" r="11" fill="none" stroke="#e0584b" stroke-width=".6" opacity=".7" transform="translate(-.4 -.4)"/>${emb}</svg>`;
+}
 function classeJour(j) { return j.fait ? 'done' : j.rate ? 'missed' : j.repos ? 'rest' : ''; }
 function caracs(q) { return (COURT[q.carac] || q.carac) + (q.carac2 ? ' · ' + (COURT[q.carac2] || q.carac2) : ''); }
 /** Ce que rapporte la quête à tes caractéristiques (100 % à la principale, 50 % en plus à la secondaire) et face au boss */
@@ -4361,7 +4390,7 @@ function carteHabitude(h, petite) {
   const libre = !h.jour.fait && !h.jour.rate && !h.jour.repos;
   const droite = petite && libre ? `<span class="chip n">${prochaine(h)}</span>`
     : !petite && libre && h.type === 'Rythme' && h.marge === 0 ? '<span class="chip r">⚠️ dernier jour</span>'
-    : chipJour(h.jour);
+    : h.jour.fait ? '' : chipJour(h.jour); // une quête faite porte le sceau de cire
   return `<div class="card ${petite ? 'small' : ''} ${classeJour(h.jour)} ${busy.has(h.nom) ? 'busy' : ''}" data-q="${esc(h.nom)}">
     <div class="icon">${ICONES[h.carac] || '⭐'}</div>
     <div class="body">
@@ -4371,6 +4400,7 @@ function carteHabitude(h, petite) {
       ${(h.decalages || []).map(x => `<span class="chip d">↔ séance du ${JOURS_LONGS[indexJour(x.de)]} déplacée au ${JOURS_LONGS[indexJour(x.a)]}</span>`).join(' ')}
     </div>
     ${droite ? `<div class="right">${droite}</div>` : ''}
+    ${h.jour.fait ? `<span class="sceau ${sceauxFrais[h.nom] && Date.now() - sceauxFrais[h.nom] < 2500 ? 'tombe' : ''}">${sceauSvg()}</span>` : ''}
     <button class="more" data-more="${esc(h.nom)}" aria-label="Plus d'options">⋯</button>
   </div>`;
 }
@@ -4522,7 +4552,7 @@ function render() {
     ${enLigne || distant ? '' : '<div class="demo">Aperçu avec des données fictives : rien n\'est enregistré</div>'}
     <header class="hx">
       <div class="hx-row">
-        <button class="hx-med" data-tab="profil" data-mode="profil" aria-label="Ouvrir le profil du héros">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'hxm', s)}</button>
+        <button class="hx-med ${s.pv < s.seuilEpuise ? 'fatigue' : ''}" data-tab="profil" data-mode="profil" aria-label="Ouvrir le profil du héros">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'hxm', s)}</button>
         <div class="hx-lvl" data-tab="profil" data-mode="profil" role="button" aria-label="Niveau ${s.niveau}">${s.niveau}</div>
         <div class="hx-txt" data-tab="profil" data-mode="profil" role="button">
           <div class="hero-name">${esc(s.heros)}</div>
@@ -4533,11 +4563,12 @@ function render() {
       ${onglet === 'quetes' ? (() => { const B = (s.boss || {}).semaine, bEnCours = B && B.statut === 'En cours' && B.pvMax, bp = bEnCours ? Math.round(B.pv / B.pvMax * 100) : 0;
         const serie = (s.habitudes || []).reduce((m, h) => Math.max(m, h.serieNb > 0 ? Number(h.serie) || 0 : 0), 0);
         return `<div class="jour">
-        <div class="jour-g"><span class="kick">${esc(dateLongue(s.today))}</span>
-          <div class="jour-big">${faits}<small>/${duJour.length}</small> <em>quêtes</em></div>
-          <div class="jour-sub">${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}<span>${Math.round(Number(s.xpTotale)).toLocaleString('fr-FR')} XP</span><span>${esc(s.etat)}</span></div>
-          <div class="jbar"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b> → ${s.niveau + 1}</em></div>
-          <div class="jbar pv"><span>PV</span><i class="t"><i style="width:${pvPct}%"></i></i><em><b>${s.pv}</b>/${s.pvMax}</em></div></div>
+        <div class="jour-g">
+          <div class="jour-l1"><div class="jour-big">${faits}<small>/${duJour.length}</small> <em>quêtes</em></div>
+            <div class="jour-sub">${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}<span class="${s.pv < s.seuilEpuise ? 'epu' : ''}">${s.pv < s.seuilEpuise ? '😮‍💨 Épuisé ×' + String(s.malus).replace('.', ',') : esc(s.etat)}</span></div>
+            <button class="jour-d20 ${s.d20 ? 'fait' : ''} ${s.d20 && s.d20.mult < 1 ? 'malus' : ''}" data-d20="1" aria-label="${s.d20 ? 'd20 du jour : ' + s.d20.de : 'Lancer le d20 du jour'}">${d20Svg(s.d20 ? s.d20.de : '?')}<small>${s.d20 ? (s.d20.mult !== 1 ? '×' + String(s.d20.mult).replace('.', ',') : '=') : 'Lance'}</small></button></div>
+          <div class="jbars"><div class="jbar"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b>→${s.niveau + 1}</em></div>
+          <div class="jbar pv"><span>PV</span><i class="t"><i style="width:${pvPct}%"></i></i><em><b>${s.pv}</b>/${s.pvMax}</em></div></div></div>
         ${bEnCours ? `<button class="jour-boss" data-tab="combat" aria-label="Voir le boss">${bossSvg(B.visuel, 'hxb', B)}<b>${esc(String(B.nomStade || B.nom).replace(/^(Le|La|L')\s*/, ''))}</b><i class="t"><i style="width:${bp}%"></i></i><em>${bp} % PV</em></button>` : ''}
       </div>`; })() : `<div class="hx-bars"><i class="t"><i style="width:${p}%"></i></i><i class="t pv"><i style="width:${pvPct}%"></i></i></div>`}
       ${s.debutSuivi ? `<div class="etat vac">🗓️ <b>Ton aventure commence le ${dateLongue(s.debutSuivi).toLowerCase()}.</b> D'ici là, rien n'est compté contre toi : tu peux tester l'app librement.</div>` : ''}
@@ -4559,7 +4590,6 @@ function render() {
     ${bandeauHorsLigne(s)}
     ${bandeauMontre(s)}
     ${effetsActifs(s)}
-    ${carteD20(s)}
     ${carteBossMini(s)}
     <div class="section"><h2>Aujourd'hui</h2></div>
     <div class="list">${duJour.length ? duJour.map(h => carteHabitude(h, false)).join('')
@@ -5330,7 +5360,8 @@ function agir(nom, statut) {
     else if (!pred.annule && pred.ripBoss) flotter(`🐉 Le boss se soigne : +${pred.ripBoss} PV`, 'var(--pv)');
     else if (statut === 'Repos') flotter('Repos', 'var(--rest)');
     if (pred.dXp > 0) vib(25);
-    if (statut === 'Fait' && !pred.annule) toastAnnuler(nom);
+    if (statut === 'Fait' && !pred.annule) { toastAnnuler(nom); sceauxFrais[nom] = Date.now();
+      requestAnimationFrame(() => { const m = document.querySelector('.hx-med'); if (m && confort().animations) { m.classList.remove('salut'); void m.offsetWidth; m.classList.add('salut'); setTimeout(() => m.classList.remove('salut'), 1000); } }); }
     if (pred.dXp > 0 && dernierToucherXY) effetTrainee(dernierToucherXY[0], dernierToucherXY[1]);
     if (pred.coups && pred.coups.length) setTimeout(() => flotter(`⚔ −${pred.coups[0].d} PV au boss`, '#ff8b7a'), 450);
     setTimeout(() => frapperBoss(pred.coups && pred.coups.length && pred.coups[0].d > 0 ? 'hit' : statut === 'Raté' ? 'riposte' : ''), 60);
