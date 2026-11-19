@@ -6807,7 +6807,7 @@ function render() {
         const devise = dv ? `<span class="hxt-d" data-ttr="1" title="${esc(dv)}"><span>« ${esc(dv)} »</span></span>`
           : '<span class="hxt-d vide" data-ttr="1"><span>✎ ta devise</span></span>';
         const l1 = `<div class="hxc-l1 ${String(s.heros).length > 18 ? 'long' : ''}" data-ttr="1"><span class="hero-name" style="--nl:${String(s.heros).length}">${esc(s.heros)}</span>JOKER_L1</div>
-          <div class="hxt"><span class="hxt-t ${choisi ? 'gagne' : ''}" data-ttr="1" role="button" aria-label="Choisir ton titre et écrire ta devise">${choisi ? esc(choisi) : esc(s.titre)}</span>${devise}</div>`;
+          <div class="hxt"><span class="hxt-t ${choisi ? 'gagne' : ''}" data-ttr="1" role="button" aria-label="Choisir ton titre et écrire ta devise">${choisi ? esc(choisi) : esc(s.titre)}</span></div>`;
         const jxp = `<div class="hxc-j"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b> XP → niv.&nbsp;${s.niveau + 1}</em></div>`;
         const reglages = `<button class="engrenage hx-btn" data-tab="profil" data-mode="reglages" aria-label="Réglages">${PICTO.reglages}</button>`, joker = `<span class="joker" title="Jokers de la semaine">🃏 ${s.jokersRestants}/${s.jokersParSemaine}</span>`;
         const flamme = serie ? `<span class="hxs" title="Meilleure série en cours"><i>🔥</i><b>${serie}</b>&nbsp;j</span>` : '';
