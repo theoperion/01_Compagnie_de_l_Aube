@@ -5312,6 +5312,7 @@ document.addEventListener('click', e => {
 }, true);
 /* Corne à boire : elle se remplit d'hydromel au fil de la semaine (XP / une semaine parfaite de quêtes du quotidien) */
 const SEMAINE_PARFAITE = 1500;
+const CORNES_ACTIVES = false; // retirées le 19/11 : à redessiner et faire valider par l'Enlumineur et l'Avocat du diable
 function corneSvg(xp, classe, miroir) {
   const r = Math.max(0, Math.min(1, (Number(xp) || 0) / SEMAINE_PARFAITE)), h = Math.round(r * 34), id = 'cr' + (miroir ? 'd' : 'g');
   return `<svg class="corne ${r >= 1 ? 'pleine' : ''}" viewBox="0 0 64 48" aria-hidden="true" style="--c:${couleurClasse(classe)}${miroir ? ';transform:scaleX(-1)' : ''}">
@@ -5339,7 +5340,7 @@ function duelHTML(s, moi, lui) {
     </div>
     <div class="dl-noms"><div style="color:${couleurClasse(moi.classe)}"><b>Toi</b><small>${esc(moi.classe || '')} · niv. ${moi.niveau}</small></div><div style="color:${couleurClasse(lui.classe)}"><b>Ton allié</b><small>${esc(lui.classe || '')} · niv. ${lui.niveau}</small></div></div>
     ${barre('XP de la semaine', a, b, ' XP')}
-    <div class="cornes">${corneSvg(a, moi.classe)}<div class="cornes-t">Corne de la semaine<small>${Math.min(100, Math.round(a / SEMAINE_PARFAITE * 100))} % · ${Math.min(100, Math.round(b / SEMAINE_PARFAITE * 100))} %</small></div>${corneSvg(b, lui.classe, true)}</div>
+    ${CORNES_ACTIVES ? `<div class="cornes">${corneSvg(a, moi.classe)}<div class="cornes-t">Corne de la semaine<small>${Math.min(100, Math.round(a / SEMAINE_PARFAITE * 100))} % · ${Math.min(100, Math.round(b / SEMAINE_PARFAITE * 100))} %</small></div>${corneSvg(b, lui.classe, true)}</div>` : ''}
     ${B && B.statut !== 'À venir' ? barre('Dégâts au ' + esc(String(B.nomStade || B.nom).replace(/^(Le|La|L')\s*/, '')), dg(moi.nom), dg(lui.nom), '') : ''}
   </div>`;
 }
@@ -5369,7 +5370,7 @@ function avantMatchAFaire(s) {
 /** Dimanche soir : les deux cornes se remplissent devant toi, une fois par semaine */
 let finSemainePrevue = false;
 function finSemaineAFaire(s) {
-  const lui = (s.compagnons || [])[0]; if (!lui || finSemainePrevue || !confort().animations) return;
+  const lui = (s.compagnons || [])[0]; if (!CORNES_ACTIVES || !lui || finSemainePrevue || !confort().animations) return;
   const d = new Date(s.today + 'T12:00:00'); if (d.getDay() !== 0 || new Date().getHours() < 18) return;
   const k = 'corne|' + s.today; let vu = false; try { vu = !!localStorage.getItem(k); } catch (e) {} if (vu) return;
   finSemainePrevue = true;

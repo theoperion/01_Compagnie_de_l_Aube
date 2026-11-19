@@ -9,3 +9,9 @@
 - La Saison 1 et ses boss sont **secrets** jusqu'au 1er janvier : ne rien proposer qui les dévoile.
 - Mode aperçu pour tester l'app : `python3 -m http.server 8765` dans le dossier de l'app, puis Playwright (Chromium préinstallé)
   en remplaçant `config.js` par `globalThis.COMPAGNIE={API_URL:''};` et en mettant `localStorage.annonceBoss2026 = annonceAventure1 = 'ouverture|pre' = '1'`.
+
+## Règle de validation visuelle (demandée par Théo le 19/11/2026)
+- **Aucune nouveauté visuelle n'est mise en ligne sans double validation sur capture réelle** (mode aperçu, téléphone 390 px) :
+  1. **l'Enlumineur** juge la qualité du dessin et de l'ambiance (« est-ce beau, au niveau du reste de l'app ? ») ;
+  2. **l'Avocat du diable** conteste (« est-ce utile, lisible, pas ridicule, pas chargé ? »).
+- Un seul « non » = on reprend avant de publier. Les captures validées sont montrées à Théo avec leur verdict.
