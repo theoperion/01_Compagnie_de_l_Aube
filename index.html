@@ -1801,6 +1801,49 @@ html.th-carte .rappel-cof b, html.th-celeste .rappel-cof b { color: #b0500a; }
 body.calme .defi, body.calme .defi * { animation: none !important; } body.calme .dp-p1, body.calme .dp-p2 { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .defi, .defi *, .dp-eclat { animation: none !important; } .dp-p1, .dp-p2 { opacity: 1; } }
 html.th-carte .defi, html.th-carte .bilan-garde { border: 3px solid #3a2a20; box-shadow: 0 4px 0 #3a2a20; }
+/* ===== Lien d'armes et empreinte du compagnon (Enlumineur, 19/11) ===== */
+/* ===== Lien d'armes (dès le 01/01) : deux anneaux enlacés dans la carte du jour, à côté de la série ===== */
+.jour-r1 { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; row-gap: 2px; }
+.lien { display: inline-flex; align-items: center; gap: 2px; border: 0; background: none; padding: 2px 0; margin: -2px 0; cursor: pointer; font: 700 12px var(--f-texte); color: var(--muted); white-space: nowrap; }
+.lien svg { width: 21px; height: 13px; overflow: visible; flex: none; }
+.lien .la { fill: none; stroke-width: 2.4; }
+.lien .lo { fill: none; stroke: rgba(0,0,0,.5); stroke-width: 4.2; }
+.lien .la.att { stroke-dasharray: 2.2 2.2; opacity: .45; }
+.lien .lh { fill: none; stroke: #ffd27a; stroke-width: 5.5; opacity: 0; }
+.lien em { font-style: normal; font: 800 12px var(--f-texte); letter-spacing: -.02em; }
+.lien.moi em { color: var(--muted); }
+.lien.toi em { color: var(--text); }
+.lien.actif em { color: var(--gold); }
+.lien.actif .lh { opacity: .28; }
+/* Le moment « forgé » (une fois par jour) : les anneaux se rapprochent, claquent, une étincelle d'or */
+.lien.forge .lg { animation: lienG .55s cubic-bezier(.3,1.7,.5,1) both; } .lien.forge .ld { animation: lienD .55s cubic-bezier(.3,1.7,.5,1) both; }
+.lien.forge .lh { animation: lienHalo 1.3s .45s ease-out both; }
+.lien.forge svg { transform-origin: 50% 50%; animation: lienBoum .8s .4s cubic-bezier(.2,1.5,.4,1) both; }
+.lien.forge em { animation: lienPop .5s .5s cubic-bezier(.2,1.8,.4,1) both; }
+.lien-eclat { position: fixed; z-index: 90; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; box-shadow: 0 0 6px currentColor; animation: dpEclat .9s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes lienG { from { transform: translateX(-5px); opacity: .4; } to { transform: none; opacity: 1; } }
+@keyframes lienD { from { transform: translateX(5px); opacity: .4; } to { transform: none; opacity: 1; } }
+@keyframes lienHalo { 0% { opacity: 0; stroke-width: 5.5; } 20% { opacity: .95; stroke-width: 7; } 100% { opacity: .28; stroke-width: 5.5; } }
+@keyframes lienBoum { 0% { transform: scale(1); } 25% { transform: scale(1.2); } 100% { transform: scale(1); } }
+@keyframes lienPop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+/* Étiquette dans la grande carte du boss (onglet Compagnie), seulement quand le lien est actif */
+.bc-tags .tag.lien-t { display: inline-flex; align-items: center; gap: 4px; border-color: color-mix(in srgb, var(--gold) 45%, var(--card)); color: var(--gold); }
+.bc-tags .tag.lien-t .lien { padding: 0; margin: 0; cursor: default; } .bc-tags .tag.lien-t svg { width: 18px; height: 11px; }
+
+/* ===== Empreinte du compagnon (carte « Les Premiers Pas ») : son pas se pose au bout de sa part de barre ===== */
+.dp-txt { position: relative; }
+.dp-emp { position: absolute; z-index: 2; width: 20px; height: 28px; margin: -16px 0 0 -10px; pointer-events: none; transform-origin: 50% 70%; animation: dpEmp 1.9s .35s ease-out both; filter: drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+.dp-emp svg { width: 100%; height: 100%; overflow: visible; }
+.dp-plus { position: absolute; z-index: 2; pointer-events: none; font: 800 12px var(--f-texte); text-shadow: 0 1px 2px rgba(0,0,0,.7); animation: dpPlus 1.9s .35s ease-out both; }
+.defi .dp-bar i.dp-avance { animation: dpAvance 1.2s ease-out; }
+@keyframes dpEmp { 0% { opacity: 0; transform: scale(1.6) rotate(-24deg); } 18% { opacity: 1; transform: scale(.92) rotate(10deg); } 26% { transform: scale(1) rotate(10deg); } 75% { opacity: 1; transform: scale(1) rotate(10deg); } 100% { opacity: 0; transform: scale(1) rotate(10deg); } }
+@keyframes dpPlus { 0%, 15% { opacity: 0; transform: translateY(4px); } 30% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(-6px); } }
+@keyframes dpAvance { 0%, 30% { filter: brightness(1.7); } 100% { filter: none; } }
+
+body.calme .lien *, body.calme .lien em, body.calme .dp-emp, body.calme .dp-plus { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .lien *, .lien em, .dp-emp, .dp-plus, .lien-eclat { animation: none !important; } }
+html.th-carte .lien .lo { stroke: #3a2a20; stroke-width: 4.6; }
+
 html.th-carte .dp-l3 b, html.th-celeste .dp-l3 b { color: #b0500a; }
 html.th-carte .dp-j { border: 1.5px solid #3a2a20; }
 @media (max-width: 379px) { .dp-date { display: none; } }
@@ -2645,6 +2688,98 @@ function defiFeteAFaire() {
     for (let i = 0; i < 14; i++) { const e = document.createElement('i'), an = i / 14 * Math.PI * 2, d = 38 + (i % 3) * 14;
       e.className = 'dp-eclat'; e.style.cssText = `left:${r.left + r.width / 2 - 3}px;top:${r.top + r.height / 2 - 3}px;background:${cols[i % 3]};color:${cols[i % 3]};--x:${Math.round(Math.cos(an) * d)}px;--y:${Math.round(Math.sin(an) * d)}px`;
       document.body.appendChild(e); setTimeout(() => e.remove(), 1200); }
+  };
+  setTimeout(essayer, 900);
+}
+
+/* ===== Lien d'armes (dès le 01/01) : les deux héros ont validé au moins une quête aujourd'hui → dégâts aux boss ×1,05 =====
+ * Le moteur envoie state.lienArmes = { actif, moi, compagnon, joursSemaine, bonus: 0.05 }.
+ * a) Dans render(), carte du jour (.jour-sub), remplacer
+ *      ${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}
+ *    par
+ *      ${(() => { const L = lienArmesHTML(s); return serie || L ? `<span class="jour-r1">${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}${L}</span>` : ''; })()}
+ * b) Dans carteBoss(), dans <div class="bc-tags">, juste après la balise .tag.r :   ${lienTag(b, s)}
+ * c) Dans render(), sur la ligne « bilanRodageAFaire(); defiFeteAFaire(); souvenirAFaire(); » ajouter :   lienAFaire(); empreinteAFaire();
+ */
+const lienBonus = L => String(Math.round((1 + (Number(L && L.bonus) || 0.05)) * 100) / 100).replace('.', ','); // « 1,05 »
+const lienAnneaux = (cM, cL, L) => { const a = L.moi ? '' : ' att', b = L.compagnon ? '' : ' att';
+  return `<svg viewBox="0 0 30 18" aria-hidden="true">
+    <rect class="lh" x="2" y="3.5" width="26" height="11" rx="5.5"/>
+    <g class="lg"><rect class="lo" x="2" y="3.5" width="15" height="11" rx="5.5"/><rect class="la${a}" x="2" y="3.5" width="15" height="11" rx="5.5" style="stroke:${cM}"/></g>
+    <g class="ld"><rect class="lo" x="13" y="3.5" width="15" height="11" rx="5.5"/><rect class="la${b}" x="13" y="3.5" width="15" height="11" rx="5.5" style="stroke:${cL}"/></g>
+    <g class="lg"><path class="lo" d="M17 9 A5.5 5.5 0 0 1 11.5 14.5"/><path class="la${a}" d="M17 9 A5.5 5.5 0 0 1 11.5 14.5" style="stroke:${cM}"/></g></svg>`; };
+const lienCouleurs = s => { const lui = (s.compagnons || [])[0];
+  return [couleurClasse((s.classe || {}).nom), couleurClasse(lui && (lui.classe && lui.classe.nom ? lui.classe.nom : lui.classe))]; };
+/** Sceau compact dans la carte du jour : anneau plein = a combattu aujourd'hui ; pointillé qui respire = on l'attend */
+function lienArmesHTML(s) {
+  const L = s.lienArmes; if (!L || s.today < '2027-01-01' || !(s.compagnons || []).length) return '';
+  const [cM, cL] = lienCouleurs(s), x = lienBonus(L);
+  const etat = L.actif ? 'actif' : L.moi ? 'moi' : 'toi';
+  const mot = L.actif ? 'lié' : L.moi ? 'attend' : 'à toi'; // le ×1,05 reste sur l'étiquette du boss et dans les messages
+  const dit = L.actif ? `Lien d'armes actif : vos coups sur les boss font ×${x} aujourd'hui`
+    : L.moi ? 'Lien d\'armes : en attente de ton compagnon d\'armes' : 'Lien d\'armes : en attente de toi';
+  return `<button class="lien ${etat}" data-lien="1" aria-label="${dit}">${lienAnneaux(cM, cL, L)}<em>${mot}</em></button>`;
+}
+/** Étiquette dans la grande carte du boss (seulement quand le lien est actif et le boss en cours) */
+function lienTag(b, s) {
+  const L = s.lienArmes; if (!L || !L.actif || !b || b.statut !== 'En cours' || !(s.compagnons || []).length) return '';
+  const [cM, cL] = lienCouleurs(s);
+  return `<span class="tag lien-t"><span class="lien actif" aria-hidden="true">${lienAnneaux(cM, cL, L)}</span>Lien d'armes ×${lienBonus(L)}</span>`;
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('[data-lien]')) return;
+  const L = state && state.lienArmes; if (!L) return;
+  const x = lienBonus(L), n = Number(L.joursSemaine) || 0, sem = n ? ` (${n} jour${n > 1 ? 's' : ''} de lien cette semaine)` : '';
+  toast(L.actif ? `⚔ Lien d'armes : toi et ton compagnon d'armes avez combattu aujourd'hui. Vos coups sur les boss font ×${x}${sem}.`
+    : L.moi ? `⚔ Lien d'armes : tu as combattu, ton compagnon d'armes pas encore. Dès sa première quête du jour, vos coups font ×${x}${sem}.`
+    : L.compagnon ? `⚔ Ton compagnon d'armes a combattu. À toi : une quête et vos coups sur les boss font ×${x}${sem}.`
+    : `⚔ Une quête chacun aujourd'hui et vos coups sur les boss font ×${x}${sem}.`);
+});
+/** Le lien s'allume : une fois par jour et par téléphone, sur Quêtes, sans écran par-dessus */
+let lienPrevuLe = '';
+function lienAFaire() {
+  const L = state && state.lienArmes, jour = state && state.today; if (!L || !L.actif || lienPrevuLe === jour) return;
+  const k = 'lienArmes|' + jour; let vu = false; try { vu = !!localStorage.getItem(k); } catch (e) {} if (vu) return;
+  lienPrevuLe = jour;
+  const essayer = () => {
+    if (!state.lienArmes || !state.lienArmes.actif || state.today !== jour) return;
+    const c = document.querySelector('.jour .lien.actif');
+    if (!c || document.body.classList.contains('bloque')) { setTimeout(essayer, 2000); return; }
+    try { localStorage.setItem(k, '1'); } catch (e) {}
+    vib([20, 40, 60]); toast(`⚔ Lien d'armes forgé : toi et ton compagnon d'armes avez combattu aujourd'hui. Vos coups sur les boss font ×${lienBonus(state.lienArmes)}.`);
+    if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    c.classList.add('forge'); setTimeout(() => c.classList.remove('forge'), 1900);
+    setTimeout(() => { const r = c.querySelector('svg').getBoundingClientRect(), [cM, cL] = lienCouleurs(state), cols = ['#ffd27a', cM, '#ffd27a', cL];
+      for (let i = 0; i < 10; i++) { const e = document.createElement('i'), an = i / 10 * Math.PI * 2 + .4, d = 20 + (i % 2) * 12;
+        e.className = 'lien-eclat'; e.style.cssText = `left:${r.left + r.width / 2 - 3}px;top:${r.top + r.height / 2 - 3}px;background:${cols[i % 4]};color:${cols[i % 4]};--x:${Math.round(Math.cos(an) * d)}px;--y:${Math.round(Math.sin(an) * d)}px`;
+        document.body.appendChild(e); setTimeout(() => e.remove(), 1000); } }, 420);
+  };
+  setTimeout(essayer, 1600); // après l'éventuelle empreinte du compagnon (0,9 s)
+}
+
+/* ===== Empreinte du compagnon : sa part du défi « Les Premiers Pas » a grandi depuis ta dernière visite =====
+ * Mémoire : localStorage 'defiCompagnon|' + debut (dernière valeur vue). Première visite : on mémorise sans rien jouer. */
+let empreintePrevue = false;
+function empreinteAFaire() {
+  const D = state && state.defi; if (!D || !D.debut || empreintePrevue || !(state.compagnons || []).length) return;
+  const k = 'defiCompagnon|' + D.debut, n = Math.max(0, Number((D.parHeros || {}).compagnon) || 0);
+  let avant = null; try { avant = localStorage.getItem(k); } catch (e) {}
+  if (avant === null || n <= Number(avant)) { try { localStorage.setItem(k, String(n)); } catch (e) {} return; }
+  empreintePrevue = true;
+  const essayer = () => {
+    const c = document.querySelector('.defi'), barre = c && c.querySelector('.dp-bar'), seg = barre && barre.querySelectorAll('i')[1];
+    if (!seg || document.body.classList.contains('bloque')) { empreintePrevue = false; return; } // pas visible : on rejouera à la prochaine ouverture de Quêtes
+    try { localStorage.setItem(k, String(n)); } catch (e) {}
+    if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) { empreintePrevue = false; return; }
+    const plus = n - Number(avant), txt = c.querySelector('.dp-txt'), rt = txt.getBoundingClientRect(), rb = barre.getBoundingClientRect(), rs = seg.getBoundingClientRect();
+    const x = Math.min(rs.right, rb.right - 6) - rt.left, y = rb.top - rt.top - 4, coul = lienCouleurs(state)[1];
+    const obj = Math.max(1, Number(D.objectif) || 1), fin = seg.style.width; // sa part de barre repart de l'ancienne valeur et avance
+    seg.style.transition = 'none'; seg.style.width = Math.min(parseFloat(fin) || 0, Number(avant) / obj * 100) + '%'; void seg.offsetWidth;
+    seg.style.transition = 'width .7s cubic-bezier(.3,.9,.4,1)'; seg.style.width = fin; seg.classList.add('dp-avance');
+    const pas = `<svg viewBox="-5 -10 10 22" aria-hidden="true"><g fill="${coul}" stroke="rgba(0,0,0,.45)" stroke-width=".5"><ellipse cx="0" cy="0" rx="3.3" ry="5.2"/><ellipse cx=".3" cy="8" rx="2.5" ry="2.9"/>
+      <circle cx="-2.6" cy="-6.6" r="1.1"/><circle cx="-.6" cy="-7.6" r="1.2"/><circle cx="1.6" cy="-7.2" r="1.1"/><circle cx="3.2" cy="-5.6" r=".9"/></g></svg>`;
+    txt.insertAdjacentHTML('beforeend', `<span class="dp-emp" style="left:${x}px;top:${y}px">${pas}</span><span class="dp-plus" style="left:${x + 11}px;top:${y - 22}px;color:${coul}">+${plus}</span>`);
+    setTimeout(() => { txt.querySelectorAll('.dp-emp, .dp-plus').forEach(e => e.remove()); seg.classList.remove('dp-avance'); empreintePrevue = false; }, 2400);
   };
   setTimeout(essayer, 900);
 }
@@ -4697,7 +4832,7 @@ function carteBoss(b, s) {
       <div class="bc-id"><span class="bc-type">${mois ? '🌑 Boss du mois' : '⚔ Boss de la semaine'}</span>
         <b>${esc(b.nomStade || b.nom)}</b>${b.stade > 1 ? `<span class="bc-stade">Stade ${ROMAIN[b.stade] || b.stade} · a évolué depuis ${esc(b.nom)}</span>` : ''}
         <span class="bc-rang">${b.statut === 'À venir' ? (mois ? 'Du ' + dateCourte(b.debut) + ' au ' + dateCourte(b.fin) : etoiles(b.rang) + ' rang ' + b.rang + ' · semaine du ' + dateCourte(b.debut)) : mois ? 'Fin le ' + dateCourte(b.fin) : etoiles(b.rang) + ' rang ' + b.rang + ' · fin dimanche'}</span>
-        <div class="bc-tags"><span class="tag f">⚡ Faible : ${esc(b.faible)}</span><span class="tag r">🛡 Résiste : ${esc(b.resiste)}</span>${b.statut === 'En cours' && PHASES_BOSS[b.phase] ? `<span class="tag ph">${PHASES_BOSS[b.phase]}</span>` : ''}${b.enhardi && !vaincu ? `<span class="tag ph">🩹 Blessé −5 %${b.enhardi === 'fuite' ? ' · 😈 rancunier' : ''}</span>` : ''}</div>
+        <div class="bc-tags"><span class="tag f">⚡ Faible : ${esc(b.faible)}</span><span class="tag r">🛡 Résiste : ${esc(b.resiste)}</span>${lienTag(b, s)}${b.statut === 'En cours' && PHASES_BOSS[b.phase] ? `<span class="tag ph">${PHASES_BOSS[b.phase]}</span>` : ''}${b.enhardi && !vaincu ? `<span class="tag ph">🩹 Blessé −5 %${b.enhardi === 'fuite' ? ' · 😈 rancunier' : ''}</span>` : ''}</div>
       </div></div>
     ${vaincu ? `<div class="bc-win">⚔ Vaincu le ${dateCourte(b.vaincuLe)} · +${b.xp} XP pour toi<br><span>Trophée : ${esc(b.trophee)}</span><br><button class="btn mini or" data-bw-revoir="${b.type}" style="margin-top:8px">▶ Revoir la victoire</button></div>`
       : b.statut === 'À venir' ? `<div class="bc-win avenir">Il attaque ${dateLongueCourte(b.debut)} avec ${Math.round(b.pvMax).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} PV.<br><span>Préparez-vous : ses PV tiennent compte de vos vacances.</span></div>`
@@ -5830,7 +5965,7 @@ function render() {
   annonceAventureAFaire();
   if (state.today < '2027-01-01') try { localStorage.setItem('niveauRodage', String(state.niveau || '')); } catch (e) {} // niveau atteint au Rodage
   if (typeof recommencementAFaire === 'function') recommencementAFaire();
-  bilanRodageAFaire(); defiFeteAFaire(); souvenirAFaire();
+  bilanRodageAFaire(); defiFeteAFaire(); souvenirAFaire(); lienAFaire(); empreinteAFaire();
   try { veilleeArmes(new Date().getHours()); } catch (e) {}
   ouvertureSaisonAFaire();
   if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
@@ -5878,7 +6013,7 @@ function render() {
         return `<div class="jour">
         <div class="jour-g">
           <div class="jour-l1"><div class="jour-big">${faits}<small>/${duJour.length}</small> <em>quêtes</em></div>
-            <div class="jour-sub">${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}<span class="${s.pv < s.seuilEpuise ? 'epu' : ''}">${s.pv < s.seuilEpuise ? '😮‍💨 Épuisé ×' + String(s.malus).replace('.', ',') : esc(s.etat)}</span></div>
+            <div class="jour-sub">${(() => { const L = lienArmesHTML(s); return serie || L ? `<span class="jour-r1">${serie ? `<span>🔥 <b>${serie}</b> j</span>` : ''}${L}</span>` : ''; })()}<span class="${s.pv < s.seuilEpuise ? 'epu' : ''}">${s.pv < s.seuilEpuise ? '😮‍💨 Épuisé ×' + String(s.malus).replace('.', ',') : esc(s.etat)}</span></div>
             <button class="jour-d20 ${s.d20 ? 'fait' : ''} ${s.d20 && s.d20.mult < 1 ? 'malus' : ''}" data-d20="1" aria-label="${s.d20 ? 'd20 du jour : ' + s.d20.de : 'Lancer le d20 du jour'}">${d20Svg(s.d20 ? s.d20.de : '?')}<small>${s.d20 ? (s.d20.mult !== 1 ? '×' + String(s.d20.mult).replace('.', ',') : '=') : 'Lance'}</small></button></div>
           <div class="jbars"><div class="jbar"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b> XP → niv. ${s.niveau + 1}</em></div>
           <div class="jbar pv"><span>PV</span><i class="t"><i style="width:${pvPct}%"></i></i><em><b>${s.pv}</b>/${s.pvMax}</em></div></div></div>
