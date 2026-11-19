@@ -1977,6 +1977,40 @@ html.th-epopee .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 21px); letter-
 /* 11. pastilles « NEW » et « 🎁 » : un rouge franc, lisible sur tous les fonds */
 :root .pastille, :root .nouv .new { background: #c9302c; }
 
+/* ===== Nouvelles A : le fil du jour ===== */
+.nf-tete { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; margin: 0 2px 2px; font-size: 13px; color: var(--muted); }
+.nf-tete b { color: var(--text); font-size: 15px; }
+.nf-tout { min-height: 34px; padding: 6px 12px; border-radius: 99px; border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line)); background: var(--panel); color: var(--gold); font: 700 12.5px var(--f-texte); cursor: pointer; }
+.nf-sec { display: flex; align-items: center; gap: 8px; margin: 14px 4px 7px; font: 800 10.5px var(--f-texte); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.nf-sec::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.nf-l { position: relative; display: flex; align-items: flex-start; gap: 11px; width: 100%; margin: 0 0 7px; padding: 11px 12px 11px 11px; text-align: left; border-radius: 13px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; cursor: pointer; }
+.nf-l.neuf, .nf-l.afaire { border-color: color-mix(in srgb, var(--gold) 50%, var(--line)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 13%, var(--card)), var(--card) 75%); box-shadow: inset 3px 0 0 var(--gold), 0 0 16px color-mix(in srgb, var(--gold) 10%, transparent); }
+.nf-ic { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--gold) 26%, var(--panel)), var(--panel)); border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line)); }
+.nf-l:not(.neuf) .nf-ic { filter: saturate(.6); opacity: .85; }
+.nf-c { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nf-t { font: 700 14.5px/1.25 var(--f-recit); color: var(--text); overflow-wrap: anywhere; }
+.nf-l.neuf { padding-right: 22px; }
+.nf-l.neuf .nf-t, .nf-l.afaire .nf-t { color: var(--gold); } .nf-l.afaire .nf-d { color: var(--text); } .nf-l.afaire .nf-ic { filter: none; opacity: 1; }
+.nf-nw { white-space: nowrap; }
+.nf-d { font-size: 12.5px; line-height: 1.38; color: var(--muted); } .nf-l.neuf .nf-d { color: var(--text); }
+.nf-d em { font-style: normal; font-weight: 700; color: var(--gold); white-space: nowrap; }
+.nf-x { margin-top: 5px; font-size: 12.5px; line-height: 1.42; font-style: italic; color: var(--muted); }
+.nf-b { flex: none; align-self: center; padding: 7px 13px; border-radius: 99px; background: var(--gold); color: #1d1608; font: 800 12.5px var(--f-texte); }
+.nf-ch { flex: none; align-self: center; font-size: 20px; color: var(--muted); }
+.nf-pt { position: absolute; top: 10px; right: 9px; width: 8px; height: 8px; border-radius: 50%; background: #c9302c; box-shadow: 0 0 0 2px var(--card), 0 0 8px #c9302c; animation: nfPt 2.6s ease-in-out infinite; }
+.nf-l.lu-va .nf-pt { animation: none; transform: scale(0); opacity: 0; transition: transform .26s ease-in, opacity .26s; }
+.nf-vig { border-radius: 14px; border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 8%, var(--card)), var(--panel)); overflow: hidden; }
+.nf-vig .nf-l { margin: 0; border: 0; border-radius: 0; background: none; box-shadow: none; } .nf-vig .nf-l + .nf-l { border-top: 1px dashed var(--line); }
+.nf-vig .nf-l.neuf { box-shadow: inset 3px 0 0 var(--gold); }
+.nf-vig .nf-t { color: var(--gold); } .nf-vig .nf-d { color: var(--text); }
+.nf-lus { display: flex; justify-content: center; gap: 6px; width: 100%; margin: 14px 0 7px; padding: 9px; border: 1px dashed var(--line); border-radius: 12px; background: none; color: var(--muted); font: 700 12.5px var(--f-texte); cursor: pointer; }
+.nf.entree .nf-l { animation: nfIn .38s cubic-bezier(.2,.8,.3,1) both; animation-delay: calc(var(--i) * 50ms); }
+.nf.entree .nf-l .nf-pt { animation: nfPt 2.6s ease-in-out infinite; }
+@keyframes nfIn { from { opacity: 0; transform: translateY(8px); } }
+@keyframes nfPt { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.75); } }
+body.calme .nf-l, body.calme .nf-pt, body.calme .nf-l * { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .nf-l, .nf-pt, .nf-l * { animation: none !important; transition: none !important; } }
+
 /* ===== barre du bas B (choix de Théo, 19/11/2026) ===== */
 
 html[class] .tabs button i { white-space: nowrap; letter-spacing: 0; font-style: normal; }
@@ -6203,21 +6237,55 @@ let vuesCache = null;
 function vues() { if (!vuesCache) { try { vuesCache = JSON.parse(localStorage.getItem(cleVues()) || '[]'); } catch (e) { vuesCache = []; } } return vuesCache; }
 function nouvelleVue(id) { return vues().includes(id); }
 function marquerVues(ids) { const v = vues(); ids.forEach(id => { if (!v.includes(id)) v.push(id); }); vuesCache = v.slice(-150); try { localStorage.setItem(cleVues(), JSON.stringify(vuesCache)); } catch (e) {} }
+function resteNouv(s, fin) { const n = ecartJours(s.today, fin); return n <= 0 ? 'dernier jour' : 'encore ' + n + ' j'; }
+/** Nouvelles v2 : g = action (il faut agir) | recit (à lire) | effet (bonus en vigueur) | info (annonce) | bilan */
 function nouvellesDe(s, dimanche) {
-  const L = [], m = s.mj;
-  if (s.retro && s.retro.texte) L.push({ id: 'retro|' + s.retro.annee, html: `<button class="evt on" data-tab="compagnie" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">🎆 La rétrospective ${esc(s.retro.annee)} est arrivée</div><div class="evt-e">À lire dans le camp de la Compagnie ›</div></button>` });
-  if (m && m.pret) L.push({ id: 'saga|' + m.lundi, html: `<button class="evt on" data-tab="compagnie" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">📜 Chapitre ${m.numero || ''} · ${esc(titreChapitre(m))}</div><div class="evt-e">${m.monVote == null ? 'Le Maître du Jeu attend ton choix pour la semaine ›' : 'Lire la Saga dans le camp ›'}</div></button>` });
+  const L = [], m = s.mj, dim = isoPlus(s.today, 6 - indexJour(s.today));
+  if (s.retro && s.retro.texte) L.push({ id: 'retro|' + s.retro.annee, g: 'recit', ic: '🎆', t: `La rétrospective ${esc(s.retro.annee)} est arrivée`, d: 'À lire dans le camp de la Compagnie', act: 'data-tab="compagnie"' });
+  if (m && m.pret) L.push({ id: 'saga|' + m.lundi, g: m.monVote == null ? 'action' : 'recit', ic: '📜', t: `Chapitre ${m.numero || ''} · ${esc(titreChapitre(m))}`,
+    d: m.monVote == null ? 'Le Maître du Jeu attend ton choix pour la semaine' : 'Lire la Saga dans le camp', act: 'data-tab="compagnie"', btn: m.monVote == null ? 'Voter' : '' });
+  const P = s.camp && s.camp.pacte;
+  if (P && !P.accepte && P.par !== s.heros) L.push({ id: 'pacte|' + (P.id || '') + '|' + (m ? m.lundi : ''), g: 'action', ic: '🤝', t: 'Un pacte t\'attend', d: `« ${esc(P.texte)} » · proposé par ${esc(nomCompagnon(P.par))}`, act: 'data-tab="compagnie"', btn: 'Sceller' });
   const B = beneditionActive(s);
-  if (B) L.push({ id: 'bene|' + m.lundi + '|' + m.decision, html: `<div class="evt on"><div class="evt-t">🎁 Bénédiction de la semaine</div><div class="evt-e">${esc(B.texte)} · jusqu'à dimanche</div></div>` });
-  if (m && m.rebond) L.push({ id: 'rebond|' + m.lundi, html: `<div class="evt on"><div class="evt-t">⚡ Rebondissement</div><div class="evt-e">${esc(m.rebond.effetTexte)}</div>${m.rebond.texte ? plie(m.rebond.texte, 'evt-x', 2) : ''}</div>` });
+  if (B) L.push({ id: 'bene|' + m.lundi + '|' + m.decision, g: 'effet', ic: '🎁', t: 'Bénédiction de la semaine', d: esc(B.texte), fin: resteNouv(s, dim) });
+  if (m && m.rebond) L.push({ id: 'rebond|' + m.lundi, g: 'effet', ic: '⚡', t: 'Rebondissement', d: esc(String(m.rebond.effetTexte).replace(/ jusqu'à dimanche/, '')), fin: resteNouv(s, dim), x: m.rebond.texte });
   const E = s.evenement, e = E && (E.actuel || E.prochain);
-  if (e) { const sansMJ = Object.assign({}, s, { mj: null }); L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), html: carteEvenement(sansMJ, 2) }); }
-  ((s.reglages && s.reglages.montre) || []).forEach(m => { const t = texteMontre(m); L.push({ id: 'montre|' + m.id, html: `<div class="evt on"><div class="evt-t">${t.titre}</div><div class="evt-e">${t.detail} · ${t.statut}</div></div>` }); });
-  if (s.armurerie && s.today <= AVENTURE_NOUVELLE_JUSQUA) L.push({ id: 'annonceAventure1', html: `<button class="evt on" data-annonce-aventure="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">🗺 Nouveau : l'Aventure</div><div class="evt-e">Chemin, coffres, garde-robe et salle des trophées, dans Héros → Aventure · relire ›</div></button>` });
-  if (s.today <= '2026-12-07') L.push({ id: 'annonceBoss2026', html: `<button class="evt on" data-annonce-boss="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">${s.today >= '2026-11-23' ? '⚔ Les boss ont changé' : '⚔ Les boss changent le 23 nov'}embre</div><div class="evt-e">PV à votre mesure, coups spéciaux à contrer, 3 stades d'évolution · relire ›</div></button>` });
-  if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, html: `<div class="section" style="margin-top:4px"><h2>Bilan du dimanche</h2><span>semaine du ${dateCourte(s.bilan.semaine.lundi)}</span></div>${carteBilan(s, true)}` });
+  if (e) {
+    carteEvenement(Object.assign({}, s, { mj: null }), 2); // garde la demande du récit à Claude (recitEvenement)
+    const r = textesClaude['evt|' + e.cle] || {};
+    L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), g: E.actuel ? 'effet' : 'info', ic: '✨', t: (E.actuel ? '' : 'Bientôt · ') + esc(r.nom || e.nom), d: esc(e.effetTexte),
+      fin: E.actuel ? 'jusqu\'au ' + dateCourte(e.fin) : 'dès le ' + dateCourte(e.debut), x: r.texte || e.texte });
+  }
+  ((s.reglages && s.reglages.montre) || []).forEach(mo => { const x = texteMontre(mo); L.push({ id: 'montre|' + mo.id, g: 'info', ic: '⌚', t: `${mo.type === 'renfo' ? 'Renfo' : 'Course'} reçue · <span class="nf-nw">${dateCourte(mo.date)}</span>`, d: x.detail + ' · ' + x.statut }); });
+  if (s.armurerie && s.today <= AVENTURE_NOUVELLE_JUSQUA) L.push({ id: 'annonceAventure1', g: 'info', ic: '🗺', t: 'Nouveau : l\'Aventure', d: 'Chemin, coffres, garde-robe et trophées, dans Héros → Aventure', act: 'data-annonce-aventure="1"' });
+  if (s.today <= '2026-12-07') L.push({ id: 'annonceBoss2026', g: 'info', ic: '⚔', t: s.today >= '2026-11-23' ? 'Les boss ont changé' : 'Les boss changent le <span class="nf-nw">23 novembre</span>', d: 'PV à votre mesure, coups spéciaux à contrer, 3 stades d\'évolution', act: 'data-annonce-boss="1"' });
+  if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, g: 'bilan', html: carteBilan(s, true) });
   return L;
 }
+/** Ordre d'importance : agir > lire du neuf > bonus nouveau > annonce nouvelle > le reste */
+function rangNouvelle(n) { const nv = !nouvelleVue(n.id); return n.g === 'action' ? (nv ? 100 : 90) : n.g === 'recit' ? (nv ? 70 : 10) : n.g === 'effet' ? (nv ? 60 : 0) : (nv ? 40 : 5); }
+let nfEntree = false, nfLusOuverts = false;
+/** « Tout marquer lu », avec « Annuler » quelques secondes (remet la liste des nouvelles vues d'avant) */
+function toutMarquerLu() {
+  const avant = vues().slice();
+  marquerVues(nouvellesDe(state, indexJour(state.today) === 6).map(n => n.id)); render();
+  toast('✓ Tout est marqué lu', 'info');
+  const t = document.getElementById('toast'); if (!t) return;
+  const b = document.createElement('button'); b.className = 'toast-annuler'; b.textContent = '↩ Annuler';
+  b.onclick = ev => { ev.stopPropagation(); clearTimeout(toastT); t.style.display = 'none'; vuesCache = avant; try { localStorage.setItem(cleVues(), JSON.stringify(avant)); } catch (er) {} render(); };
+  t.appendChild(b); clearTimeout(toastT); toastT = setTimeout(() => (t.style.display = 'none'), 5000);
+}
+document.addEventListener('click', e => {
+  if (!state) return;
+  if (e.target.closest('[data-tout-lu]')) { toutMarquerLu(); return; }
+  if (e.target.closest('[data-nf-lus]')) { nfLusOuverts = !nfLusOuverts; render(); return; }
+  const n = e.target.closest('[data-nv]'); if (!n || nouvelleVue(n.dataset.nv)) return;
+  const id = n.dataset.nv, part = n.matches('[data-tab],[data-annonce-aventure],[data-annonce-boss]');
+  if (part) { marquerVues([id]); return; } // l'écran change de toute façon
+  n.classList.add('lu-va'); // le sceau / le point s'efface, puis l'écran se redessine
+  const calme = document.body.classList.contains('calme') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  setTimeout(() => { marquerVues([id]); render(); }, calme ? 0 : 280);
+});
 /* ---------- Reçu de la montre : la course (ou le renfo) arrive sur l'écran d'accueil ---------- */
 const cleMontreVus = () => 'montreVus|' + (herosActif || '');
 function montreVus() { try { return JSON.parse(localStorage.getItem(cleMontreVus()) || '[]'); } catch (e) { return []; } }
@@ -6258,8 +6326,30 @@ document.addEventListener('click', e => {
   sousOnglet = b.dataset.sous;
   try { localStorage.setItem('sousOnglet', sousOnglet); } catch (err) {}
   render(); window.scrollTo(0, 0);
-  if (sousOnglet === 'nouvelles' && state) setTimeout(() => marquerVues(nouvellesDe(state, indexJour(state.today) === 6).map(n => n.id)), 1500);
+  if (sousOnglet === 'nouvelles') { nfEntree = true; render(); setTimeout(() => { nfEntree = false; }, 900); }
 });
+
+const VIDE_NOUVELLES = '<div class="empty">Rien de neuf pour l\'instant. Le Maître du Jeu écrit chaque lundi, les événements arrivent au fil des saisons.</div>';
+/* ---------- Nouvelles, option A : « le fil du jour » (à faire, nouveau, en vigueur, déjà lu replié) ---------- */
+function vueFil(s, L) {
+  if (!L.length) return VIDE_NOUVELLES;
+  const nv = n => !nouvelleVue(n.id), k = L.filter(nv).length;
+  const ligne = (n, i) => { const tag = n.act ? 'button' : 'div';
+    return `<${tag} class="nf-l ${nv(n) ? 'neuf' : ''} ${n.g === 'action' ? 'afaire' : ''}" data-nv="${esc(n.id)}" ${n.act || ''} style="--i:${i}">
+      <span class="nf-ic" aria-hidden="true">${n.ic}</span>
+      <span class="nf-c"><b class="nf-t">${n.t}</b><span class="nf-d">${n.d}${n.fin ? ` · <em>${n.fin}</em>` : ''}</span>${n.x && !n.act ? plie(n.x, 'nf-x', 2) : ''}</span>
+      ${n.btn ? `<span class="nf-b">${n.btn}</span>` : n.act ? '<span class="nf-ch" aria-hidden="true">›</span>' : ''}${nv(n) ? '<i class="nf-pt" aria-label="non lu"></i>' : ''}</${tag}>`; };
+  const tri = a => a.slice().sort((x, y) => rangNouvelle(y) - rangNouvelle(x));
+  const faire = tri(L.filter(n => n.g === 'action')), neuf = tri(L.filter(n => (n.g === 'recit' || n.g === 'info') && nv(n))),
+    vig = tri(L.filter(n => n.g === 'effet')), lus = L.filter(n => (n.g === 'recit' || n.g === 'info') && !nv(n)), bilan = L.filter(n => n.g === 'bilan');
+  let i = 0; const bloc = (titre, a, cls) => a.length ? `<div class="nf-sec">${titre}</div><div class="${cls || ''}">${a.map(n => ligne(n, i++)).join('')}</div>` : '';
+  return `<div class="nf ${nfEntree ? 'entree' : ''}">
+    <div class="nf-tete"><span>${k ? `<b>${k}</b> non lue${k > 1 ? 's' : ''}` : '✓ Tout est lu'}</span>${k ? '<button class="nf-tout" data-tout-lu="1">Tout marquer lu</button>' : ''}</div>
+    ${bloc('À faire', faire)}${bloc('Nouveau', neuf)}${bloc('En vigueur cette semaine', vig, 'nf-vig')}
+    ${bilan.map(n => `<div class="nf-sec">Bilan du dimanche</div>${n.html}`).join('')}
+    ${lus.length ? `<button class="nf-lus" data-nf-lus="1" aria-expanded="${nfLusOuverts}">Déjà lu · ${lus.length} <span>${nfLusOuverts ? '▴' : '▾'}</span></button>${nfLusOuverts ? lus.map(n => ligne(n, i++)).join('') : ''}` : ''}
+  </div>`;
+}
 
 /* ---------- Journal des quêtes : les 8 derniers jours, et la correction des oublis sans passer par le Sheet ---------- */
 const cleJournal = () => 'journalQ|' + (herosActif || '');
@@ -6947,8 +7037,7 @@ function render() {
 
   // Deux sous-onglets : les quêtes d'abord ; l'ambiance (saga, événements, bilan) à côté, avec « NEW » quand il y a du neuf
   const nouv = nouvellesDe(s, dimanche), nonVues = nouv.filter(n => !nouvelleVue(n.id)).length;
-  const vueNouvelles = nouv.length ? nouv.map(n => `<div class="nouv ${nouvelleVue(n.id) ? '' : 'neuf'}">${nouvelleVue(n.id) ? '' : '<span class="new">NEW</span>'}${n.html}</div>`).join('')
-    : '<div class="empty">Rien de neuf pour l\'instant. Le Maître du Jeu écrit chaque lundi, les événements arrivent au fil des saisons.</div>';
+  const vueNouvelles = vueFil(s, nouv);
   const vueQuetes = `
     <div class="sous-onglets"><button class="${sousOnglet === 'quetes' ? 'on' : ''}" data-sous="quetes"><span class="ic">⚔ </span>Quêtes</button>
       <button class="${sousOnglet === 'nouvelles' ? 'on' : ''}" data-sous="nouvelles"><span class="ic">📜 </span>Nouvelles${nonVues ? ` <i class="pastille">NEW${nonVues > 1 ? ' · ' + nonVues : ''}</i>` : ''}</button></div>
