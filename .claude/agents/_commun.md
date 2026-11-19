@@ -20,3 +20,13 @@
 - **Claude applique les verdicts du critique** (demande de Théo, 19/11/2026) : ce que l'Avocat du diable dit de garder, simplifier ou retirer est fait, sauf si Théo a explicitement décidé autrement.
 - **Tout est animé (Théo, 19/11/2026)** : chaque monstre, animal (familier, monture) et cosmétique créé ou retouché a son animation (mouvement de base + au moins une partie vivante : yeux, ailes, queue, flamme, tissu, lueur…). Un dessin statique n'est pas soumis au critique. Animations en transform/opacity seulement, coupées par le mode calme et `prefers-reduced-motion`. Le critique vérifie l'animation (pas seulement l'image arrêtée).
 - **Le gardien du code relit AVANT CHAQUE publication** (Théo, 19/11/2026), appli comme moteur, même pour un petit correctif : diff relu, tests lancés (secret-public BLOQUANT, tirage-sync, débordement à 360/412 px, 0 erreur JS dans les 4 thèmes), régressions cherchées sur les écrans touchés. Pas de « OK » du gardien = pas de mise en ligne.
+
+## Nouveau fonctionnement du Conseil (Théo, 19/11/2026 : « on part sur ça ») — remplace les boucles de notes
+1. **Liste de contrôle AVANT de rendre** : le créateur (Enlumineur, ou tout agent qui produit un visuel) vérifie lui-même `.claude/agents/checklist-visuel.md` et le dit dans son rapport.
+2. **Tri au lieu de boucles** : le critique classe chaque point en **BLOQUANT** (seul cas de nouveau passage devant lui) / **À CORRIGER** (le créateur ou Claude corrige, Claude vérifie sur capture, on publie sans 2e passage) / **PLUS TARD** (liste de finition, ne bloque rien). Il garde une note indicative (seuil 7,5).
+3. **Relectures en parallèle** : critique et gardien relisent le même lot en même temps.
+4. **Coup d'œil sur esquisse** pour les grosses nouveautés : une capture rapide au critique avant de tout dessiner.
+5. **Contrôle proportionné** : petit correctif / texte → gardien seul ; nouveau visuel → critique + gardien ; règle de jeu → maître du jeu + gardien.
+6. **Publication groupée** (environ une par demi-journée) avec une seule relecture du gardien.
+7. **Mêmes agents sur un même sujet** (on les relance avec leur contexte plutôt que d'en créer de nouveaux).
+Restent non négociables : gardien avant chaque publication, test secret-public BLOQUANT, contrôle de débordement 360/412 px, 0 erreur JS dans les 4 thèmes.
