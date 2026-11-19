@@ -1668,7 +1668,7 @@ html.th-epopee .empty { border-color:#4a3a28; border-radius:6px; font-style:ital
   @media (max-width: 380px) { .capa select { min-width: 0; text-overflow: ellipsis; } }
   /* Bug Héros (19/11) : en texte « Très grande », la colonne des capacités débordait et poussait la barre d'onglets hors de l'écran sur Chrome Android */
   .capa > div:last-child { flex: 1 1 auto; min-width: 0; } .cact select { max-width: 100%; }
-  .sous-onglets button { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .sous-onglets button { min-width: 0; } /* pas d'overflow:hidden : la pastille du compteur dépasse volontairement (gardien) */
   #app { overflow-x: clip; } /* filet : aucun débordement ne pourra plus cacher la barre fixe */
   @media (max-width: 370px) { .sous-onglets button { letter-spacing: .02em !important; padding-left: 4px; padding-right: 4px; } }
   html.ygg .sous-onglets button { font-size: 13px; letter-spacing: .05em; }
