@@ -1393,8 +1393,8 @@
   .btn { min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text);
     font: 600 13px Inter, sans-serif; cursor: pointer; }
   .btn.or { border-color: color-mix(in srgb, var(--gold) 75%, var(--card)); color: color-mix(in srgb, var(--xp2) 55%, #fff); text-shadow: 0 1px 2px rgba(0,0,0,.45);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--xp2) 42%, #1e140a), color-mix(in srgb, var(--gold) 34%, #1e140a)); /* fond brun chaud, pas --card : mêlé au bleu des thèmes, l'or virait au gris */
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--xp2) 35%, transparent); } /* vrai dégradé or, lisible dans les 4 thèmes (Yggdrasil et Olympe paraissaient éteints) */
+    background: linear-gradient(180deg, color-mix(in srgb, var(--xp2) 58%, #2a1c0c), color-mix(in srgb, var(--gold) 46%, #2a1c0c)); /* fond brun chaud, pas --card : mêlé au bleu des thèmes, l'or virait au gris */
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 45%, var(--xp2)); } /* vrai dégradé or, lisible dans les 4 thèmes (Yggdrasil et Olympe paraissaient éteints) */
   .btn.plein { width: 100%; margin-top: 8px; }
   .btn.mini { padding: 5px 10px; min-height: 38px; font-size: 12px; }
   .btn:disabled { opacity: .45; }
@@ -2141,6 +2141,7 @@ html[class] .hxc .hx-btn::after { content: ''; position: absolute; left: 50%; wi
 .hxc-niv::after { content: ''; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: 44px; transform: translate(-50%, -50%); }
 .hxt-t { padding-top: 15px; padding-bottom: 15px; margin-top: -15px; margin-bottom: -15px; } /* overflow:hidden coupe un ::after : la zone vient du rembourrage */
 .cfu-voir { position: relative; } .cfu-voir::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
+.btn.contour-or { background: transparent; border-color: color-mix(in srgb, var(--gold) 70%, transparent); color: var(--gold); } /* action secondaire : contour or (critique) */
 </style>
 </head>
 <body>
@@ -5538,7 +5539,7 @@ window.carteBoss = function (b, s) {
   const plaques = `<div class="bf-plaques"><span class="f" title="Sa faiblesse"><small>Faible</small>${esc(b.faible)}</span><span title="Il résiste à"><small>Résiste</small>${esc(b.resiste)}</span><button class="x" data-bf-butin="${esc(`Récompense : +${nbF(b.xp)} XP pour toi${mois ? ' et une relique (+1 joker le mois prochain)' : ''}.`)}" aria-label="Récompense">🎁 +${nbF(b.xp)} XP${mois ? ' ✦' : ''}</button></div>`;
   const coups = `<div class="bf-coups"><div class="bk-ch"><span>${c.tot ? `Vos coups : <b>${nbF(c.tot)}</b>` : 'Aucun coup porté : à vous !'}</span>${lienCourt(b, s)}</div>${c.tot ? barreCoups(c, s) : ''}</div>`;
   let corps;
-  if (vaincu) corps = `${repliqueB(b)}<div class="bf-fin"><b>⚔ Vaincu le ${dateCourte(b.vaincuLe)}</b><span>+${nbF(b.xp)} XP pour toi · 🏆 ${esc(b.trophee || '')}</span><button class="btn mini or" data-bw-revoir="${b.type}">▶ Revoir la victoire</button></div>${coups}`;
+  if (vaincu) corps = `${repliqueB(b)}<div class="bf-fin"><b>⚔ Vaincu le ${dateCourte(b.vaincuLe)}</b><span>+${nbF(b.xp)} XP pour toi · 🏆 ${esc(b.trophee || '')}</span><button class="btn mini contour-or" data-bw-revoir="${b.type}">▶ Revoir la victoire</button></div>${coups}`;
   else if (enfui) corps = `<div class="bf-fin"><b>💨 Enfui avec ${nbF(c.pv)} PV (${c.pct} %)</b><span>${bkFuite(c)}</span></div>${coups}`;
   else if (b.statut === 'À venir') corps = `${plaques}<div class="bf-fin"><b>Il attaque ${dateLongueCourte(b.debut)}</b><span>${nbF(c.max)} PV · ses PV tiennent compte de vos vacances.</span></div>`;
   else if (b.statut === 'Trêve') corps = '<div class="bf-fin"><b>Trêve</b><span>Toute la Compagnie est en vacances.</span></div>';
@@ -7529,12 +7530,12 @@ function flotter(texte, couleur, nom, dessus) {
   // mesuré à l'image suivante, après le redessin : la carte de la quête (même si l'écran a défilé), le toucher en dernier recours.
   // La pastille se pose à cheval sur le bord haut de la carte, calée à droite (au-dessus du sceau) : elle ne touche jamais le texte.
   // `dessus` (−N PV au boss) : empilée juste au-dessus de « +N XP », entièrement hors de la carte, pour ne jamais cacher la quête validée.
-  const poser = r => { el.style.top = (Math.max(64, r.top - 13) - (dessus ? 30 : 0)) + 'px'; el.style.left = (r.right - 16) + 'px'; };
+  const poser = r => { el.style.top = Math.max(64, r.top - 20) + 'px'; el.style.left = (dessus ? r.left + 16 + el.offsetWidth : r.right - 16) + 'px'; }; // critique : bulle du boss à gauche sur le bord haut de la carte validée, +XP à droite
   const carte = () => nom ? document.querySelector('.card[data-q="' + CSS.escape(nom) + '"]') : null;
   requestAnimationFrame(() => {
     const c = carte(), r = c ? c.getBoundingClientRect() : toucher;
-    if (r) { el.classList.add('sur-carte'); poser(r); }
-    document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
+    if (r) el.classList.add('sur-carte');
+    document.body.appendChild(el); if (r) poser(r); setTimeout(() => el.remove(), 3000);
     // elle suit sa carte tant qu'elle est visible (défilement, redessin à la réponse du serveur)
     if (c) { const suivre = () => { if (!el.isConnected) return; const k = carte(); if (k) poser(k.getBoundingClientRect()); requestAnimationFrame(suivre); }; requestAnimationFrame(suivre); }
   });
