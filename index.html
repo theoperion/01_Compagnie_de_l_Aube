@@ -4513,7 +4513,12 @@ let onglet = 'quetes';
 let profilErreur = '';
 let profil = null, profilCharge = false, decQuete = '', ongletPrec = 'quetes', modeProfil = 'profil'; // profil : perso, Grille de vie, records, histoire ; reglages : la roue ⚙️
 const confort = () => (state && state.reglages && state.reglages.confort) || { animations: true, vibrations: true };
-function vib(p) { if (confort().vibrations && navigator.vibrate) navigator.vibrate(p); }
+function vib(p) { if (p && confort().vibrations && navigator.vibrate) navigator.vibrate(p); }
+document.addEventListener('click', e => { // Réglages : savoir tout de suite si ce téléphone vibre
+  if (!e.target.closest('[data-test-vib]')) return; e.preventDefault();
+  const ok = !!navigator.vibrate && navigator.vibrate([60, 60, 160]);
+  toast(ok ? '📳 Ça a vibré ? Sinon, vérifie le mode économie d\'énergie et les « vibrations au toucher » de ton téléphone.' : '📳 Ce téléphone ou ce navigateur ne permet pas les vibrations.');
+});
 try { onglet = localStorage.getItem('onglet') || 'quetes'; } catch (e) {}
 if (onglet === 'profil') onglet = 'heros';
 try { filtre = localStorage.getItem('filtre') || 'Tout'; } catch (e) {}
@@ -8119,7 +8124,7 @@ function vueProfil(s) {
   const cf = R.confort || { animations: true, vibrations: true };
   const regConf = `<div class="reg"><h3>✨ Confort</h3>
       <div class="ligne"><span>Animations (niveau, évolution, bonus)</span>${sw('cfAnim', cf.animations)}</div>
-      <div class="ligne"><span>Vibrations</span>${sw('cfVib', cf.vibrations)}</div>
+      <div class="ligne"><span>Vibrations <button class="lien" data-test-vib="1" style="margin-left:6px">Tester</button></span>${sw('cfVib', cf.vibrations)}</div>
       ${s.sheetUrl ? `<a class="btn plein" style="display:block;text-align:center;text-decoration:none" href="${esc(s.sheetUrl)}" target="_blank">📊 Ouvrir le Sheet (quêtes, règles, Codex)</a>` : ''}
     </div>`;
 
@@ -8594,6 +8599,7 @@ function agir(nom, statut) {
     if (pred.annule) { const h = histoSaisies[nom] || []; const k = h.lastIndexOf(pred.annule); if (k >= 0) h.splice(k, 1); }
     state = pred.etat; render();
     if (pred.annule) { toast('↩️ Saisie annulée'); if (pred.dXp < 0) flotter(`${pred.dXp} XP${pred.dPv ? ` · ${pred.dPv > 0 ? '+' : ''}${pred.dPv} PV` : ''}`, 'var(--muted)', nom); else if (pred.dPv) flotter(`+${pred.dPv} PV`, 'var(--ok)', nom); }
+    if (!pred.annule) vib(pred.dXp > 0 ? 25 : pred.dPv < 0 ? [45] : 0); // Théo (19/11) : on sent chaque quête validée
     if (!pred.annule && pred.dXp > 0) flotter(`+${pred.dXp} XP${pred.dPv > 0 ? ` · +${pred.dPv} PV` : ''}`, 'var(--xp2)', nom);
     else if (!pred.annule && pred.dPv < 0) flotter(`Toi : ${pred.dPv} PV${pred.ripBoss ? ` · 🐉 boss +${pred.ripBoss} PV` : ''}`, 'var(--pv)', nom);
     else if (!pred.annule && pred.ripBoss) flotter(`🐉 Le boss se soigne : +${pred.ripBoss} PV`, 'var(--pv)', nom);
