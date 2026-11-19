@@ -642,7 +642,7 @@
   .ph-titre { position: absolute; left: 12px; right: 12px; top: 8px; display: flex; align-items: center; gap: 8px; text-shadow: 0 1px 4px rgba(0,0,0,.85); }
   .ph-titre b { font: 700 16px var(--f-titre); color: var(--gold); } .ph-titre em { margin-left: auto; font: 700 19px var(--f-titre); font-style: normal; color: var(--text); } .ph-titre small { font-size: 12px; color: var(--text); opacity: .75; }
   .ph-regles { position: relative; flex: none; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 1px solid color-mix(in srgb, var(--gold) 70%, transparent); background: color-mix(in srgb, var(--bg) 60%, transparent);
-    color: var(--gold); font: 800 13px var(--f-texte); cursor: pointer; text-shadow: none; } .ph-regles::after { content: ''; position: absolute; inset: -10px; } /* cible tactile 44 px */
+    color: var(--gold); font: 800 13px var(--f-texte); cursor: pointer; text-shadow: none; } .ph-regles::after { content: ''; position: absolute; inset: -12px; } /* cible tactile ≥ 44 px (le bord du bandeau en mange un peu) */
   .ph-ligne { display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 12px; background: none; border: 0; border-top: 1px solid var(--line); color: var(--muted); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
   .ph-lt { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ph-lt b { color: var(--text); }
   .ph-chev { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-style: normal; color: var(--gold); transition: transform .25s ease; } .ph.ouvert .ph-chev { transform: rotate(180deg); }
@@ -1286,8 +1286,6 @@
     font-family: var(--f-titre); font-weight: 800; font-size: 28px; pointer-events: none; white-space: nowrap;
     animation: rise 2.9s ease-out forwards; text-shadow: 0 0 2px #000, 0 0 4px #000, 0 2px 12px rgba(0,0,0,.8); white-space: normal; text-align: center; width: max-content; max-width: 92vw; }
   .float.sur-carte { font-size: 15px; padding: 3px 10px; border-radius: 99px; background: rgba(0,0,0,.82); border: 1px solid color-mix(in srgb, var(--xp2) 40%, transparent); box-shadow: 0 4px 14px rgba(0,0,0,.45); animation: riseCourt 2.2s ease-out forwards; font-family: var(--f-texte); font-style: normal; font-variant-numeric: tabular-nums; }
-  @keyframes riseG { 0% { opacity: 0; transform: translate(0, 6px) scale(.9); } 7% { opacity: 1; transform: translate(0, 0) scale(1); } 75% { opacity: 1; transform: translate(0, -5px); } 100% { opacity: 0; transform: translate(0, -8px); } }
-  .float.sur-carte.gauche { animation-name: riseG; }
   @keyframes riseCourt { 0% { opacity: 0; transform: translate(-100%, 6px) scale(.9); } 7% { opacity: 1; transform: translate(-100%, 0) scale(1); } 75% { opacity: 1; transform: translate(-100%, -5px); } 100% { opacity: 0; transform: translate(-100%, -8px); } }
   @keyframes rise { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.8); }
     8% { opacity: 1; transform: translate(-50%, 0) scale(1.1); }
@@ -1344,6 +1342,7 @@
   .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 200; max-width: min(92vw, 440px); width: max-content;
     background: #3a1f1f; color: #ffc2c2; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.4; display: none; text-align: center;
     border: 1px solid rgba(255,255,255,.08); box-shadow: 0 8px 26px rgba(0,0,0,.5); animation: toastIn .25s ease-out; }
+  body:has(.lvl-ov) .toast:not(.erreur) { visibility: hidden; } /* le toast « Annuler » ne passe plus par-dessus l'écran de montée de niveau */
   .toast-annuler { margin-left: 10px; min-height: 36px; padding: 4px 12px; border-radius: 9px; border: 1px solid currentColor; background: transparent; color: inherit; font: 700 13px var(--f-texte); cursor: pointer; pointer-events: auto; }
   .toast.erreur { background: #3a1f1f; color: #ffc2c2; border-color: rgba(224,85,85,.55); }
   .toast.erreur::before { content: '⚠️ '; }
@@ -1393,7 +1392,9 @@
   .reg .form label { font-size: 11px; color: var(--muted); display: grid; gap: 4px; }
   .btn { min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text);
     font: 600 13px Inter, sans-serif; cursor: pointer; }
-  .btn.or { border-color: color-mix(in srgb, var(--gold) 45%, var(--card)); background: color-mix(in srgb, var(--gold) 14%, var(--card)); color: var(--gold); }
+  .btn.or { border-color: color-mix(in srgb, var(--gold) 75%, var(--card)); color: color-mix(in srgb, var(--xp2) 55%, #fff); text-shadow: 0 1px 2px rgba(0,0,0,.45);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--xp2) 42%, #1e140a), color-mix(in srgb, var(--gold) 34%, #1e140a)); /* fond brun chaud, pas --card : mêlé au bleu des thèmes, l'or virait au gris */
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--xp2) 35%, transparent); } /* vrai dégradé or, lisible dans les 4 thèmes (Yggdrasil et Olympe paraissaient éteints) */
   .btn.plein { width: 100%; margin-top: 8px; }
   .btn.mini { padding: 5px 10px; min-height: 38px; font-size: 12px; }
   .btn:disabled { opacity: .45; }
@@ -2106,7 +2107,7 @@ body.calme .hxt-d { animation: none; } @media (prefers-reduced-motion: reduce) {
 @container (max-width: 40px) { .hxt-d > * { visibility: hidden; } } /* le titre d'abord : moins de 40 px pour la devise, elle se cache (elle reste dans la feuille) */
 @keyframes hxtFond { from { opacity: 0; transform: translateY(3px); } }
 .hxc-l1 .joker { margin-left: auto !important; align-self: center; }
-#sheetPal.ttr .ttr-aide { margin: -6px 0 6px; font-size: 12px; color: var(--muted); }
+#sheetPal.ttr .ttr-aide { margin: 8px 0 10px; font-size: 12px; color: var(--muted); }
 #sheetPal.ttr .ttr-b small { display: block; font-size: 11.5px; color: var(--muted); font-weight: 500; margin-top: 2px; }
 #sheetPal.ttr .ttr-b { position: relative; padding-right: 44px; }
 #sheetPal.ttr .ttr-b.on { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
@@ -2133,6 +2134,13 @@ html[class] .hxa .hx-btn { height: 24px !important; } html[class] .hxa .hx-btn s
 html.ygg .hxa .hxd:not(.fait)::before, html.th-epopee .hxa .hxd:not(.fait)::before { top: 16px; width: 40px; height: 40px; margin: -20px 0 0 -20px; }
 html.th-epopee .hxa .hxd svg { filter: drop-shadow(0 0 4px rgba(162,116,255,.6)); } /* halo resserré : ne passe plus sur les PV */
 .cfa-cl .cfa-ti { font-style: italic; color: var(--gold); }
+/* Cibles tactiles d'au moins 44 px sur la plaque et la Compagnie, sans changer le dessin (zone invisible autour du bouton) */
+html[class] .hxc .hx-btn { position: relative !important; inset: auto !important; } /* relative sans décalage (l'engrenage garde sa place) */
+html[class] .hxc .hx-btn::after { content: ''; position: absolute; left: 50%; width: 44px; margin-left: -22px; top: -20px; bottom: -3px; } /* engrenage : la zone monte, le d20 garde le bas */
+.hxa .hxd::after { content: ''; position: absolute; left: 50%; width: 44px; margin-left: -22px; top: -2px; bottom: -10px; }
+.hxc-niv::after { content: ''; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: 44px; transform: translate(-50%, -50%); }
+.hxt-t { padding-top: 15px; padding-bottom: 15px; margin-top: -15px; margin-bottom: -15px; } /* overflow:hidden coupe un ::after : la zone vient du rembourrage */
+.cfu-voir { position: relative; } .cfu-voir::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; }
 </style>
 </head>
 <body>
@@ -2772,7 +2780,7 @@ function ouvrirBilanRodage(B, revoir) {
   const domine = lui && (paires.every(([a, b]) => a >= b) || paires.every(([a, b]) => b >= a)) && paires.some(([a, b]) => a !== b); // l'un ne gagne aucune ligne
   const cour = gagne => `<svg class="bl-cr bl-in${gagne && !domine ? '' : ' cache'}" viewBox="0 0 40 30" aria-hidden="true"><path d="M4 24 L2 7 L12 15 L20 3 L28 15 L38 7 L36 24Z" fill="#f2c94c" stroke="#6b4321" stroke-width="2.2" stroke-linejoin="round"/><circle cx="20" cy="13" r="2.6" fill="#ff8a5a"/></svg>`;
   const ligne = (i, ic, t, va, vb, unite, sa, sb) => { const egal = va === vb, g = !egal && va > vb, d = !egal && vb > va;
-    return `<div class="bl-l bl-in" style="--i:${i}" aria-label="${t} : toi ${va}, ton compagnon d'armes ${vb}">
+    return `<div class="bl-l bl-in" style="--i:${i}" aria-label="${t} : toi ${va}, ${esc(nomCompagnon(lui && lui.heros, true))} ${vb}">
       <span class="bl-v" style="--c:${cM}">${cour(g || egal && va)}<span class="bl-n"><b>${nb(va)}${unite}</b>${sa ? `<small>${sa}</small>` : ''}</span></span>
       <span class="bl-t">${ic} ${t}</span>
       <span class="bl-v d" style="--c:${cL}"><span class="bl-n"><b>${nb(vb)}${unite}</b>${sb ? `<small>${sb}</small>` : ''}</span>${cour(d || egal && vb)}</span></div>`; };
@@ -2801,7 +2809,7 @@ function ouvrirBilanRodage(B, revoir) {
       </div>
       <div class="bl-noms bl-in ${lui ? '' : 'solo'}">
         <div style="--c:${cM}"><b>Toi</b><small>${esc(moi.heros || s.heros || '')} · niv. ${nb(moi.niveau)}</small><em class="bl-ep bl-in" style="--i:0">« ${epM} »</em></div>
-        ${lui ? `<div style="--c:${cL}"><b>Ton compagnon d'armes</b><small>${esc(lui.heros || '')} · niv. ${nb(lui.niveau)}</small><em class="bl-ep bl-in" style="--i:1">« ${epL} »</em></div>` : ''}
+        ${lui ? `<div style="--c:${cL}"><b>${esc(nomCompagnon(lui.heros))}</b><small>niv. ${nb(lui.niveau)}</small><em class="bl-ep bl-in" style="--i:1">« ${epL} »</em></div>` : ''}
       </div>
       <small class="bl-gl bl-in">${lui ? 'La Compagnie, ensemble' : 'Ton Rodage'}</small>
       <div class="bl-cie">${cases.map((c, i) => `<div class="bl-g bl-in" style="--i:${i}"><b data-compte="${Math.round(Number(c[0]) || 0)}">${anim && !revoir ? '0' : nb(c[0])}</b><small>${c[1]}</small></div>`).join('')}</div>
@@ -2958,10 +2966,11 @@ function lienArmesHTML(s) {
   const [cM, cL] = lienCouleurs(s), x = lienBonus(L), seul = V.moi || V.compagnon, attend = L.moi || V.moi;
   const etat = L.actif ? 'actif' : attend ? 'moi' : 'toi';
   const mot = L.actif ? (seul ? 'tient' : 'lié') : attend ? 'attend' : 'à toi'; // le ×1,05 reste sur l'étiquette du boss et dans les messages
-  const dit = L.actif ? (V.compagnon ? `Lien d'armes : ton compagnon d'armes est en vacances, le lien tient avec toi seul : vos coups sur les boss font ×${x} aujourd'hui`
-      : V.moi ? `Lien d'armes : tu es en vacances, ton compagnon d'armes tient le lien seul : vos coups sur les boss font ×${x} aujourd'hui` : `Lien d'armes actif : vos coups sur les boss font ×${x} aujourd'hui`)
-    : attend ? (V.moi ? 'Lien d\'armes : tu es en vacances, en attente de ton compagnon d\'armes' : 'Lien d\'armes : en attente de ton compagnon d\'armes')
-    : V.compagnon ? 'Lien d\'armes : ton compagnon d\'armes est en vacances, en attente de toi' : 'Lien d\'armes : en attente de toi';
+  const lc = esc(nomCompagnon((s.compagnons || [])[0], true)), Lc = esc(nomCompagnon((s.compagnons || [])[0]));
+  const dit = L.actif ? (V.compagnon ? `Lien d'armes : ${lc} est en vacances, le lien tient avec toi seul : vos coups sur les boss font ×${x} aujourd'hui`
+      : V.moi ? `Lien d'armes : tu es en vacances, ${lc} tient le lien seul : vos coups sur les boss font ×${x} aujourd'hui` : `Lien d'armes actif : vos coups sur les boss font ×${x} aujourd'hui`)
+    : attend ? (V.moi ? `Lien d'armes : tu es en vacances, en attente de ${lc}` : `Lien d'armes : en attente de ${lc}`)
+    : V.compagnon ? `Lien d'armes : ${lc} est en vacances, en attente de toi` : 'Lien d\'armes : en attente de toi';
   return `<button class="lien ${etat}" data-lien="1" aria-label="${dit}">${lienAnneaux(cM, cL, L)}<em>${mot}</em></button>`;
 }
 /** Étiquette dans la grande carte du boss (seulement quand le lien est actif et le boss en cours) */
@@ -2973,15 +2982,15 @@ function lienTag(b, s) {
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-lien]')) return; e.stopImmediatePropagation(); // le Lien d'armes est dans la plaque (data-tab=profil) : ne pas ouvrir le profil (gardien)
   const L = state && state.lienArmes; if (!L) return;
-  const x = lienBonus(L), n = Number(L.joursSemaine) || 0, sem = n ? ` (${n} jour${n > 1 ? 's' : ''} de lien cette semaine)` : '', V = L.vacances || {};
+  const lc = nomCompagnon((state.compagnons || [])[0], true), Lc = nomCompagnon((state.compagnons || [])[0]), x = lienBonus(L), n = Number(L.joursSemaine) || 0, sem = n ? ` (${n} jour${n > 1 ? 's' : ''} de lien cette semaine)` : '', V = L.vacances || {};
   if (V.moi && V.compagnon) return;
-  if (V.compagnon) return toast(L.actif ? `⚔ Ton compagnon d'armes est en vacances : le lien tient avec toi seul. Tu as combattu, vos coups sur les boss font ×${x} aujourd'hui${sem}.`
-    : `⚔ Ton compagnon d'armes est en vacances : le lien tient avec toi seul. Une quête aujourd'hui et vos coups sur les boss font ×${x}${sem}.`);
-  if (V.moi) return toast(L.actif ? `⚔ Tu es en vacances : ton compagnon d'armes tient le lien seul. Il a combattu, vos coups sur les boss font ×${x} aujourd'hui${sem}.`
-    : `⚔ Tu es en vacances : ton compagnon d'armes tient le lien seul. Dès sa première quête du jour, vos coups font ×${x}${sem}.`);
-  toast(L.actif ? `⚔ Lien d'armes : toi et ton compagnon d'armes avez combattu aujourd'hui. Vos coups sur les boss font ×${x}${sem}.`
-    : L.moi ? `⚔ Lien d'armes : tu as combattu, ton compagnon d'armes pas encore. Dès sa première quête du jour, vos coups font ×${x}${sem}.`
-    : L.compagnon ? `⚔ Ton compagnon d'armes a combattu. À toi : une quête et vos coups sur les boss font ×${x}${sem}.`
+  if (V.compagnon) return toast(L.actif ? `⚔ ${Lc} est en vacances : le lien tient avec toi seul. Tu as combattu, vos coups sur les boss font ×${x} aujourd'hui${sem}.`
+    : `⚔ ${Lc} est en vacances : le lien tient avec toi seul. Une quête aujourd'hui et vos coups sur les boss font ×${x}${sem}.`);
+  if (V.moi) return toast(L.actif ? `⚔ Tu es en vacances : ${lc} tient le lien seul. Il a combattu, vos coups sur les boss font ×${x} aujourd'hui${sem}.`
+    : `⚔ Tu es en vacances : ${lc} tient le lien seul. Dès sa première quête du jour, vos coups font ×${x}${sem}.`);
+  toast(L.actif ? `⚔ Lien d'armes : toi et ${lc} avez combattu aujourd'hui. Vos coups sur les boss font ×${x}${sem}.`
+    : L.moi ? `⚔ Lien d'armes : tu as combattu, ${lc} pas encore. Dès sa première quête du jour, vos coups font ×${x}${sem}.`
+    : L.compagnon ? `⚔ ${Lc} a combattu. À toi : une quête et vos coups sur les boss font ×${x}${sem}.`
     : `⚔ Une quête chacun aujourd'hui et vos coups sur les boss font ×${x}${sem}.`);
 });
 /** Le lien s'allume : une fois par jour et par téléphone, sur Quêtes, sans écran par-dessus */
@@ -2995,10 +3004,10 @@ function lienAFaire() {
     const c = document.querySelector('.hx .lien.actif');
     if (!c || document.body.classList.contains('bloque')) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem(k, '1'); } catch (e) {}
-    const V = state.lienArmes.vacances || {}, x = lienBonus(state.lienArmes);
-    vib([20, 40, 60]); toast(V.compagnon ? `⚔ Ton compagnon d'armes est en vacances : le lien tient avec toi seul. Vos coups sur les boss font ×${x} aujourd'hui.`
-      : V.moi ? `⚔ Tu es en vacances : ton compagnon d'armes tient le lien seul. Vos coups sur les boss font ×${x} aujourd'hui.`
-      : `⚔ Lien d'armes forgé : toi et ton compagnon d'armes avez combattu aujourd'hui. Vos coups sur les boss font ×${x}.`);
+    const lc = nomCompagnon((state.compagnons || [])[0], true), Lc = nomCompagnon((state.compagnons || [])[0]), V = state.lienArmes.vacances || {}, x = lienBonus(state.lienArmes);
+    vib([20, 40, 60]); toast(V.compagnon ? `⚔ ${Lc} est en vacances : le lien tient avec toi seul. Vos coups sur les boss font ×${x} aujourd'hui.`
+      : V.moi ? `⚔ Tu es en vacances : ${lc} tient le lien seul. Vos coups sur les boss font ×${x} aujourd'hui.`
+      : `⚔ Lien d'armes forgé : toi et ${lc} avez combattu aujourd'hui. Vos coups sur les boss font ×${x}.`);
     if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     c.classList.add('forge'); setTimeout(() => c.classList.remove('forge'), 1900);
     setTimeout(() => { const r = c.querySelector('svg').getBoundingClientRect(), [cM, cL] = lienCouleurs(state), cols = ['#ffd27a', cM, '#ffd27a', cL];
@@ -3812,9 +3821,9 @@ function plateauHTML(s) {
       <g transform="translate(28 95)"><rect x="-${nom.length * 3.3 + 6}" y="-9" width="${nom.length * 6.6 + 12}" height="15" rx="7.5" fill="${coul}" stroke="#fff" stroke-width="1"/><text y="2.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff">${esc(nom)}</text></g></g></g>`; };
   const comp = (s.compagnons || [])[0];
   const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
-  const lui = comp && comp.palierSaison != null ? pion(orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'plc', lookDe(comp.look)), comp.ornements || {}, 'plc'), comp.palierSaison, 22, 'lui', 'Allié', '#3a6ad8') : '';
+  const lui = comp && comp.palierSaison != null ? pion(orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'plc', lookDe(comp.look)), comp.ornements || {}, 'plc'), comp.palierSaison, 22, 'lui', nomCompagnon(comp), '#3a6ad8') : '';
   const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -8, 'moi', 'Toi', '#c8902a');
-  return `<div class="plateau"><div class="pl-tete"><b>🗺 ${s1 ? 'Le chemin de la Saison 1' : 'Le chemin du Rodage'}${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · Allié : ${comp.palierSaison}` : ''}</span></div>
+  return `<div class="plateau"><div class="pl-tete"><b>🗺 ${s1 ? 'Le chemin de la Saison 1' : 'Le chemin du Rodage'}${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(nomCompagnon(comp))} : ${comp.palierSaison}` : ''}</span></div>
     <div class="pl-legende"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>
     <div class="pl-cadre"><svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
       ${sol}${riviere}${deco.join('')}
@@ -3881,7 +3890,7 @@ function detailEtape(E, s) {
     ${E.r.coffre === 'legendaire' && C[0] && C[0].regles ? '<p class="pd-note">Coffre légendaire : un objet légendaire tant qu\'il en reste.</p>' : ''}</div>`;
 }
 /* position du compagnon d'armes (déjà montrée par l'ancien plateau : on ne la perd pas) */
-const allieParcours = s => { const c = (s.compagnons || [])[0]; return c && c.palierSaison != null ? `Allié : palier ${c.palierSaison}` : ''; };
+const allieParcours = s => { const c = (s.compagnons || [])[0]; return c && c.palierSaison != null ? `${esc(nomCompagnon(c))} : palier ${c.palierSaison}` : ''; };
 /* Option C « L'Horizon » (v2) : panorama en silhouettes aux couleurs du thème ; le soleil de l'Aube monte avec ta progression
  * et se lève tout à fait au dernier palier. Replié = panorama + ligne « prochaine » ; déplié = 6 prochaines récompenses + gros lot.
  * Le Livret des règles est rangé dans le « ? » de l'en-tête. Aucun émoji : coffres, éclats, épée et objets sont dessinés. */
@@ -3917,7 +3926,7 @@ function parcoursHTML(s) {
       <path d="${d}" class="ph-route"/><path d="${d}" class="ph-route2"/><path d="${d}" class="ph-fait" pathLength="1" stroke-dasharray="${pct.toFixed(3)} 1"/>
       ${marques}
       <g transform="translate(26 ${Y(26).toFixed(1)})"><path d="M0 0 V-14 l9 3.5 l-9 3.5" class="ph-drapeau"/></g>
-      ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>Allié</title></circle>` : ''}
+      ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>${esc(nomCompagnon(comp))}</title></circle>` : ''}
     </svg>
     <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>
     <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles">?</button><em>${S.palier}<small> / ${N}</small></em></span>`;
@@ -3938,7 +3947,7 @@ function parcoursHTML(s) {
   const cof1 = coffres ? coffreSvg((A.coffres[0] || {}).type || 'commun').replace('width="128" height="107"', 'width="20" height="17"') : '';
   return `<section class="parcours ph ${parcoursOuvert ? 'ouvert' : ''}">
     <div class="ph-pano" data-parcours="1">${pano}</div>
-    <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · ${xpFr(S.cout - S.dansPalier)} XP</span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
+    <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · encore ${xpFr(S.cout - S.dansPalier)} XP</span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
     ${corps}
     <div class="ph-actions">${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Ouvrir un coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie</button></div>
   </section>`;
@@ -4003,11 +4012,11 @@ document.addEventListener('click', e => {
 /* ---------- Livret de règles de l'Aventure : des pages illustrées, simples, avec des schémas ---------- */
 const REGLES_PAGES = [
   { t: 'L\'Aventure en un coup d\'œil', s: `<svg viewBox="0 0 320 210" class="rg-schema"><defs><marker id="rgF" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#d4ad3c"/></marker></defs>
-      ${[['⚔', 'Quêtes', 'tu gagnes de l\'XP', 20, 20], ['🗺', 'Plateau', 'l\'XP fait avancer ton pion', 170, 20], ['🎁', 'Coffres', 'gagnés sur le plateau et contre les boss', 20, 120], ['🧥', 'Garde-robe', 'tu portes ce que tu gagnes', 170, 120]]
-        .map(([i, n, d, x, y]) => `<g transform="translate(${x} ${y})"><rect width="130" height="70" rx="14" fill="#221a2e" stroke="#4a3a64"/><text x="16" y="30" font-size="22">${i}</text><text x="46" y="28" font-size="14" font-weight="800" fill="#f3dfa0">${n}</text><foreignObject x="46" y="34" width="80" height="34"><div style="font-size:9.5px;line-height:1.2;color:#b8acc8">${d}</div></foreignObject></g>`).join('')}
-      <path d="M152 55 H166" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/><path d="M235 92 V116" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/>
-      <path d="M166 155 H152" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 159 155)"/><path d="M85 92 V116" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 85 104)"/></svg>`,
-    p: ['Tu fais tes quêtes comme d\'habitude : tout le reste en découle.', 'L\'XP fait avancer ton pion sur le <b>plateau</b>. Chaque case donne une récompense.', 'Les <b>coffres</b> contiennent des objets ; tu les portes dans ta <b>garde-robe</b>.'] },
+      ${[['⚔', 'Quêtes', 'tu gagnes de l\'XP', 10, 12], ['🗺', 'Chemin', 'l\'XP te fait avancer d\'étape en étape', 170, 12], ['🎁', 'Coffres', 'gagnés sur le chemin et contre les boss', 10, 120], ['🧥', 'Garde-robe', 'tu portes ce que tu gagnes', 170, 120]]
+        .map(([i, n, d, x, y]) => `<g transform="translate(${x} ${y})"><rect width="140" height="84" rx="14" fill="#221a2e" stroke="#4a3a64"/><text x="12" y="30" font-size="22">${i}</text><text x="42" y="28" font-size="14" font-weight="800" fill="#f3dfa0">${n}</text><foreignObject x="42" y="35" width="94" height="47"><div style="font-size:12px;line-height:1.2;color:#b8acc8">${d}</div></foreignObject></g>`).join('')}
+      <path d="M152 54 H166" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/><path d="M240 99 V117" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/>
+      <path d="M166 162 H152" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 159 162)"/><path d="M80 99 V117" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 80 108)"/></svg>`,
+    p: ['Tu fais tes quêtes comme d\'habitude : tout le reste en découle.', 'L\'XP te fait avancer sur le <b>chemin</b>. Chaque étape donne une récompense.', 'Les <b>coffres</b> contiennent des objets ; tu les portes dans ta <b>garde-robe</b>.'] },
   { t: 'Le plateau', s: `<svg viewBox="0 0 320 120" class="rg-schema"><path d="M20 90 C80 20 140 110 200 50 S290 40 300 70" stroke="#b08a5a" stroke-width="14" fill="none" stroke-linecap="round"/>
       ${[[40, 70, '#4a8ae8', '🧥'], [95, 58, '#e84a5a', '🎁'], [150, 82, '#5ac86a', '✦'], [205, 50, '#f2c94c', '👑'], [270, 52, '#4a8ae8', '✨']].map(([x, y, c, i]) => `<g transform="translate(${x} ${y})"><ellipse cy="4" rx="18" ry="10" fill="#000" opacity=".35"/><ellipse rx="18" ry="10" fill="${c}" stroke="#fff" stroke-opacity=".6"/><text y="5" text-anchor="middle" font-size="11" fill="#fff">${i}</text></g>`).join('')}</svg>
       <div class="rg-leg"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>`,
@@ -4307,7 +4316,7 @@ let busy = new Set();
 let filtre = 'Tout';
 let onglet = 'quetes';
 let profilErreur = '';
-let profil = null, profilCharge = false, decQuete = '', ongletPrec = 'quetes', modeProfil = 'profil'; // profil : perso, Life Grid, records, histoire ; reglages : la roue ⚙️
+let profil = null, profilCharge = false, decQuete = '', ongletPrec = 'quetes', modeProfil = 'profil'; // profil : perso, Grille de vie, records, histoire ; reglages : la roue ⚙️
 const confort = () => (state && state.reglages && state.reglages.confort) || { animations: true, vibrations: true };
 function vib(p) { if (confort().vibrations && navigator.vibrate) navigator.vibrate(p); }
 try { onglet = localStorage.getItem('onglet') || 'quetes'; } catch (e) {}
@@ -5341,8 +5350,10 @@ function bossChiffres(b, s) {
   const dLui = Object.keys(D).filter(n => n !== moi).reduce((t, n) => t + Math.max(0, Number(D[n]) || 0), 0);
   const tot = dMoi + dLui;
   const j = joursRestants(b.fin);
+  // UN seul pourcentage de PV, UN seul arrondi pour tout l'affichage (bandeau Quêtes, Combat, fuite) : PV restants / PV max, riposte comprise
+  const pct = max ? Math.round(pv / max * 100) : 0;
   return { max, pv, rip, soin, pPv: max ? (pv - soin) / max * 100 : 0, pSoin: max ? soin / max * 100 : 0,
-    plein: max > 0 && pv >= max && rip > 0 && rip < pv, mort: rip > 0 && pv > 0 && rip >= pv, dMoi, dLui, tot, pMoi: tot ? dMoi / tot * 100 : 50, j, pctReste: max ? Math.round(pv / max * 100) : 0 };
+    plein: max > 0 && pv >= max && rip > 0 && rip < pv, mort: rip > 0 && pv > 0 && rip >= pv, dMoi, dLui, tot, pMoi: tot ? dMoi / tot * 100 : 50, j, pct };
 }
 /** Réplique du boss (semaine seulement), une ligne ; un toucher la déplie */
 const bkDitOuvert = {};
@@ -5367,9 +5378,9 @@ function barreVie(c, cls) {
     <i class="v" style="width:${c.pPv}%"></i><i class="r" style="width:${c.pSoin}%"></i></div>`;
 }
 /** Barre des dégâts à 2 couleurs + légende Toi / ton compagnon d'armes */
-function barreCoups(c) {
+function barreCoups(c, s) {
   return `<div class="bk-split" aria-hidden="true"><i style="width:${c.pMoi}%;background:var(--moi)"></i><i style="width:${100 - c.pMoi}%;background:var(--allie)"></i></div>
-    <div class="bk-leg"><span><i style="background:var(--moi)"></i>Toi <b>${nbF(c.dMoi)}</b></span><span><b>${nbF(c.dLui)}</b> ton compagnon d'armes<i style="background:var(--allie)"></i></span></div>`;
+    <div class="bk-leg"><span><i style="background:var(--moi)"></i>Toi <b>${nbF(c.dMoi)}</b></span><span><b>${nbF(c.dLui)}</b> ${esc(nomCompagnon(((s || state || {}).compagnons || [])[0], true))}<i style="background:var(--allie)"></i></span></div>`;
 }
 /** Coup du jour / de demain en une ligne (l'annonce complète au toucher) */
 function coupLigne(b) {
@@ -5522,13 +5533,13 @@ window.carteBoss = function (b, s) {
   const scene = `<div class="bf-scene" style="--aura-c:${aura}">
       <div class="bc-av" id="bossAv-${b.type}" data-boss-vue="${b.type}" role="button" aria-label="${vaincu ? 'Revoir la victoire' : 'Ouvrir la fiche du boss'}" style="--aura-c:${aura}">${bossSvg(b.visuel, b.type, b)}${vaincu ? '' : '<i class="bf-info" aria-hidden="true">i</i>'}</div>
       ${vaincu ? '<span class="bf-bande">Vaincu</span>' : enfui ? '<span class="bf-bande">Enfui</span>' : ''}
-      <div class="bf-id"><span class="bf-ruban">${mois ? '🌑 Boss du mois' : '⚔ Boss de la semaine · rang ' + b.rang}${b.stade > 1 ? ' · stade ' + (ROMAIN[b.stade] || b.stade) : ''}</span><b>${nomBoss(b)}</b>${bkEtats(b, vaincu)}</div>
+      <div class="bf-id"><span class="bf-ruban">${mois ? '🌑 Boss du mois' : '⚔ Boss de la semaine'}</span><b>${nomBoss(b)}</b>${b.stade > 1 ? `<span class="bk-et">Stade ${ROMAIN[b.stade] || b.stade}</span>` : ''}${bkEtats(b, vaincu)}</div>
     </div>`;
   const plaques = `<div class="bf-plaques"><span class="f" title="Sa faiblesse"><small>Faible</small>${esc(b.faible)}</span><span title="Il résiste à"><small>Résiste</small>${esc(b.resiste)}</span><button class="x" data-bf-butin="${esc(`Récompense : +${nbF(b.xp)} XP pour toi${mois ? ' et une relique (+1 joker le mois prochain)' : ''}.`)}" aria-label="Récompense">🎁 +${nbF(b.xp)} XP${mois ? ' ✦' : ''}</button></div>`;
-  const coups = `<div class="bf-coups"><div class="bk-ch"><span>${c.tot ? `Vos coups : <b>${nbF(c.tot)}</b>` : 'Aucun coup porté : à vous !'}</span>${lienCourt(b, s)}</div>${c.tot ? barreCoups(c) : ''}</div>`;
+  const coups = `<div class="bf-coups"><div class="bk-ch"><span>${c.tot ? `Vos coups : <b>${nbF(c.tot)}</b>` : 'Aucun coup porté : à vous !'}</span>${lienCourt(b, s)}</div>${c.tot ? barreCoups(c, s) : ''}</div>`;
   let corps;
   if (vaincu) corps = `${repliqueB(b)}<div class="bf-fin"><b>⚔ Vaincu le ${dateCourte(b.vaincuLe)}</b><span>+${nbF(b.xp)} XP pour toi · 🏆 ${esc(b.trophee || '')}</span><button class="btn mini or" data-bw-revoir="${b.type}">▶ Revoir la victoire</button></div>${coups}`;
-  else if (enfui) corps = `<div class="bf-fin"><b>💨 Enfui avec ${nbF(c.pv)} PV (${c.pctReste} %)</b><span>${bkFuite(c)}</span></div>${coups}`;
+  else if (enfui) corps = `<div class="bf-fin"><b>💨 Enfui avec ${nbF(c.pv)} PV (${c.pct} %)</b><span>${bkFuite(c)}</span></div>${coups}`;
   else if (b.statut === 'À venir') corps = `${plaques}<div class="bf-fin"><b>Il attaque ${dateLongueCourte(b.debut)}</b><span>${nbF(c.max)} PV · ses PV tiennent compte de vos vacances.</span></div>`;
   else if (b.statut === 'Trêve') corps = '<div class="bf-fin"><b>Trêve</b><span>Toute la Compagnie est en vacances.</span></div>';
   else corps = `${repliqueB(b)}${plaques}
@@ -5548,7 +5559,7 @@ window.carteBossMini = function (s) { // bandeau d'une ligne : l'onglet Quêtes 
   else if (b.statut === 'À venir') l = `<span class="bfm-t">Attaque ${dateLongueCourte(b.debut)}</span>`;
   else if (b.statut === 'Trêve') l = '<span class="bfm-t">Trêve</span>';
   else { const br = b.coupDuJour && b.coupDuJour.brise && b.coupDuJour.breche; // seule la brèche (rare, pousse à agir) ; le reste est dans Combat (critique)
-    l = `${barreVie(c, 'bfm-vie')}<span class="bfm-p">${Math.round(c.pPv)}&nbsp;%</span>${br ? '<span class="bfm-c" aria-label="Brèche : +25 % de dégâts">✨</span>' : ''}<span class="bfm-j${c.j ? '' : ' urg'}">${c.j ? c.j + '&nbsp;j' : 'Auj.'}</span>`; }
+    l = `${barreVie(c, 'bfm-vie')}<span class="bfm-p">${c.pct}&nbsp;%</span>${br ? '<span class="bfm-c" aria-label="Brèche : +25 % de dégâts">✨</span>' : ''}<span class="bfm-j${c.j ? '' : ' urg'}">${c.j ? c.j + '&nbsp;j' : 'Auj.'}</span>`; }
   return `<button class="boss-mini bfm ${vaincu ? 'vaincu' : ''}" data-tab="combat" aria-label="Boss de la semaine : ${esc(b.nomStade || b.nom)}, ouvrir le combat" style="--aura-c:${BOSS_AURA[b.visuel] || '255,120,90'}">
     <div class="bm-av">${bossSvg(b.visuel, 'mini', b)}</div><strong>${nomBoss(b)}</strong>${l}<span class="bm-go">›</span></button>`;
 };
@@ -5636,8 +5647,8 @@ function vueCamp(s) {
   if (!P) pacte = `<p class="muted" style="margin:0 0 8px;font-size:13px">Proposez-vous un défi commun. Tenu dimanche : +150 XP chacun, comptés le lundi suivant… donc aussi en dégâts sur le nouveau boss.</p>
       ${C.modeles.map(m => `<button class="pacte-m" data-pacte="${m.id}">${esc(m.texte)}</button>`).join('')}`;
   else if (!P.accepte) pacte = P.par === s.heros
-      ? `<p><b>« ${esc(P.texte)} »</b></p><p class="muted" style="font-size:13px">Proposé par toi · en attente de ton compagnon.</p>`
-      : `<p><b>« ${esc(P.texte)} »</b></p><p class="muted" style="font-size:13px">Ton compagnon d'armes te propose ce pacte.</p><button class="btn or plein" data-accepter="1">🤝 Sceller le pacte</button>`;
+      ? `<p><b>« ${esc(P.texte)} »</b></p><p class="muted" style="font-size:13px">Proposé par toi · en attente de ${esc(nomCompagnon((s.compagnons || [])[0], true))}.</p>`
+      : `<p><b>« ${esc(P.texte)} »</b></p><p class="muted" style="font-size:13px">${esc(nomCompagnon(P.par))} te propose ce pacte.</p><button class="btn or plein" data-accepter="1">🤝 Sceller le pacte</button>`;
   else pacte = `<p><b>« ${esc(P.texte)} »</b></p><p style="font-size:13px" class="${P.ok ? 'ok-t' : 'ko-t'}">${P.ok ? '✓ En bonne voie' : '✗ Compromis'} · ${esc(P.detail || '')}</p>`;
   const pp = C.pactePrecedent && C.pactePrecedent.statut ? `<p class="muted" style="font-size:12px;margin:6px 0 0">Semaine dernière : « ${esc(C.pactePrecedent.texte)} » · ${C.pactePrecedent.statut === 'Tenu' ? 'tenu ✓ (+150 XP)' : 'manqué'}</p>` : '';
   const R = C.recap, chron = R.chronique || textesClaude['chronique|' + R.lundi] || '';
@@ -5679,7 +5690,7 @@ document.addEventListener('click', e => {
     if (!txt) { toast('Écris un mot, ou choisis un des messages proposés'); return; }
     regler('encourager', txt).then(ok => ok && toast('Encouragement envoyé ⚔️')); return; }
   const pa = e.target.closest('[data-pacte]');
-  if (pa) { regler('proposerPacte', pa.dataset.pacte).then(ok => ok && toast('Pacte proposé : ton compagnon doit le sceller')); return; }
+  if (pa) { regler('proposerPacte', pa.dataset.pacte).then(ok => ok && toast('Pacte proposé : ' + nomCompagnon((state.compagnons || [])[0], true) + ' doit le sceller')); return; }
   if (e.target.closest('[data-accepter]')) { regler('accepterPacte').then(ok => ok && toast('🤝 Pacte scellé !')); return; }
 });
 /* ---------- Récap animé de la semaine : des écrans façon « stories » (toucher à droite = suivant, à gauche = retour) ----------
@@ -6067,7 +6078,7 @@ function vueSaga(s) {
   const autres = Object.keys(m.votes || {}).filter(n => n !== s.heros);
   return `<div class="saga"><div class="saga-t">📜 Chapitre ${m.numero} · ${esc(titreChapitre(m))}</div>
     ${plie(m.texte, 'saga-x')}
-    <div class="saga-q">${m.decision != null ? 'La bénédiction de la semaine' : 'Votre choix pour la semaine'}${autres.length && m.decision == null ? ' · ton compagnon d\'armes a voté' : ''}</div>${ch}
+    <div class="saga-q">${m.decision != null ? 'La bénédiction de la semaine' : 'Votre choix pour la semaine'}${autres.length && m.decision == null ? ' · ' + esc(nomCompagnon(autres[0], true)) + ' a voté' : ''}</div>${ch}
     ${m.decision == null ? '<p class="muted" style="font-size:11.5px;margin:6px 0 0">Votez tous les deux le même choix, sinon le Maître du Jeu tranche mercredi.</p>' : ''}
     ${m.rebond ? `<div class="rebond"><b>⚡ Rebondissement</b>${plie(m.rebond.texte, '', 2)}<span>${esc(m.rebond.effetTexte)}</span></div>` : ''}</div>`;
 }
@@ -6342,9 +6353,11 @@ function vueCombat(s) {
   const B = s.boss || {};
   const coups = (B.semaine && B.semaine.coups) || [];
   const jour = d => d === s.today ? 'aujourd\'hui' : d === isoPlus(s.today, -1) ? 'hier' : JOURS_LONGS[indexJour(d)];
+  // Même quête, même nom partout : le Journal montre le nom vu au carnet (nomVu) quand la quête est à soi
+  const nq = c => { const h = (!c.heros || String(c.heros) === String(s.heros || '')) && [...(s.habitudes || []), ...(s.annexes || [])].find(x => x.nom === c.quete); return h ? nomVu(h) : c.quete; };
   const ligne = c => `<div class="coup ${c.type}">
       <span class="qui" style="color:${couleurHeros(c.heros, s)}">${esc(nomAmbiance(c.heros, s))}</span>
-      <span class="quoi">${c.type === 'riposte' ? `rate « ${esc(c.quete)} » : le boss se soigne` : esc(c.quete)}${c.faible ? ' <b class="faible">⚡</b>' : c.resiste ? ' 🛡' : ''}<small>${jour(c.date)}</small></span>
+      <span class="quoi">${c.type === 'riposte' ? `rate « ${esc(nq(c))} » : le boss se soigne` : esc(nq(c))}${c.faible ? ' <b class="faible">⚡</b>' : c.resiste ? ' 🛡' : ''}<small>${jour(c.date)}</small></span>
       <span class="val">${c.type === 'riposte' ? '+' : '−'}${Math.round(c.valeur).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</span></div>`;
   return `
     <div class="section"><h2>Boss du Crépuscule</h2><span>à abattre ensemble</span></div>
@@ -6996,7 +7009,7 @@ function prechargerFiches(s) {
 }
 /* Fiche d'un compagnon, en lecture seule : ses quêtes du jour, sa semaine, ses épiques */
 let compVue = null;
-let lgOuverte = true; // Life Grid ouverte par défaut sur l'année en cours (compacte) ; reste repliée si on la replie
+let lgOuverte = true; // Grille de vie ouverte par défaut sur l'année en cours (compacte) ; reste repliée si on la replie
 let lgVie = false; // vue « toute ta vie » (80 ans) en option
 document.addEventListener('click', e => { if (e.target.closest('[data-lg-vie]')) { lgVie = !lgVie; dernierHtml = ''; render(); dessinerGrille(); } });
 document.addEventListener('toggle', e => { if (e.target.matches && e.target.matches('details.lg')) lgOuverte = e.target.open; }, true);
@@ -7070,12 +7083,12 @@ function duelHTML(s, moi, lui) {
     <div class="dl-face">
       <div class="dl-niche" style="--c:${couleurClasse(moi.classe)}" data-vitrine="1" role="button" aria-label="Voir ton héros">${dessin(moi, 'dlg')}</div>
       <div class="dl-vs">VS</div>
-      <div class="dl-niche" style="--c:${couleurClasse(lui.classe)}" data-vitrine-nom="${esc(lui.nom)}" role="button" aria-label="Voir ton compagnon d'armes">${dessin(lui, 'dld')}</div>
+      <div class="dl-niche" style="--c:${couleurClasse(lui.classe)}" data-vitrine-nom="${esc(lui.nom)}" role="button" aria-label="Voir ${esc(nomCompagnon(lui))}">${dessin(lui, 'dld')}</div>
       ${meneur ? `<span class="dl-couronne" aria-label="En tête cette semaine"><svg viewBox="0 0 40 30" aria-hidden="true"><defs><linearGradient id="crg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a8"/><stop offset=".55" stop-color="var(--xp2)"/><stop offset="1" stop-color="var(--gold)"/></linearGradient></defs><path d="M4 24 L2 7 L12 15 L20 3 L28 15 L38 7 L36 24Z" fill="url(#crg)" stroke="#6b4321" stroke-width="1.4" stroke-linejoin="round"/><rect x="4" y="23" width="32" height="5" rx="1.5" fill="url(#crg)" stroke="#6b4321" stroke-width="1.2"/><circle cx="20" cy="12" r="2.2" fill="var(--theron)"/><circle cx="11" cy="17" r="1.6" fill="var(--wax2)"/><circle cx="29" cy="17" r="1.6" fill="var(--allie)"/></svg></span>` : ''}
     </div>
-    <div class="dl-noms"><div style="color:${couleurClasse(moi.classe)}"><b>Toi</b><small>${esc(moi.classe || '')} · niv. ${moi.niveau}</small></div><div style="color:${couleurClasse(lui.classe)}"><b>Ton allié</b><small>${esc(lui.classe || '')} · niv. ${lui.niveau}</small></div></div>
+    <div class="dl-noms"><div style="color:${couleurClasse(moi.classe)}"><b>Toi</b><small>${esc(moi.classe || '')} · niv. ${moi.niveau}</small></div><div style="color:${couleurClasse(lui.classe)}"><b>${esc(nomCompagnon(lui))}</b><small>${esc(lui.classe || '')} · niv. ${lui.niveau}</small></div></div>
     ${barre('XP de la semaine', a, b, ' XP')}
-    ${a !== b ? `<div class="dl-ecart">${a < b ? `Plus que <b>${(b - a).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> pour prendre la couronne` : `Ton allié est à <b>${(a - b).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> de la couronne`}</div>` : ''}
+    ${a !== b ? `<div class="dl-ecart">${a < b ? `Plus que <b>${(b - a).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> pour prendre la couronne` : `${esc(nomCompagnon(lui))} est à <b>${(a - b).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> de la couronne`}</div>` : ''}
     ${CORNES_ACTIVES ? `<div class="cornes">${corneSvg(a, moi.classe)}<div class="cornes-t">Corne de la semaine<small>${Math.min(100, Math.round(a / SEMAINE_PARFAITE * 100))} % · ${Math.min(100, Math.round(b / SEMAINE_PARFAITE * 100))} %</small></div>${corneSvg(b, lui.classe, true)}</div>` : ''}
     ${B && B.statut !== 'À venir' ? barre('Dégâts ' + esc(aLaBoss(B.nomStade || B.nom)), dg(moi.nom), dg(lui.nom), '') : ''}
   </div>`;
@@ -7095,7 +7108,7 @@ function avantMatchAFaire(s) {
     const B = (s.boss || {}).semaine;
     const ov = document.createElement('div'); ov.className = 'am-ov on'; ov.setAttribute('role', 'dialog');
     ov.innerHTML = `<div class="am-scene"><div class="am-h g" style="--c:${couleurClasse(moi.classe)}">${dess(moi, 'amg')}<b>Toi</b></div>
-      <div class="am-vs">VS</div><div class="am-h d" style="--c:${couleurClasse(lui.classe)}">${dess(lui, 'amd')}<b>Ton allié</b></div></div>
+      <div class="am-vs">VS</div><div class="am-h d" style="--c:${couleurClasse(lui.classe)}">${dess(lui, 'amd')}<b>${esc(nomCompagnon(lui))}</b></div></div>
       <div class="am-txt"><span>Nouvelle semaine</span><b>Que le meilleur gagne !</b>${B ? `<small>Et ensemble, abattez ${esc(B.nomStade || B.nom)}.</small>` : ''}</div>`;
     document.body.appendChild(ov); document.body.classList.add('bloque'); vib([30, 60, 30]);
     const fermer = () => { ov.remove(); document.body.classList.remove('bloque'); };
@@ -7117,7 +7130,7 @@ function finSemaineAFaire(s) {
     const ov = document.createElement('div'); ov.className = 'am-ov on'; ov.setAttribute('role', 'dialog');
     ov.innerHTML = `<div class="am-txt"><span>Fin de semaine</span><b>À vos cornes !</b></div>
       <div class="cornes grand">${corneSvg(0, cl)}<div class="am-vs" style="font-size:40px;padding:0">⚔</div>${corneSvg(0, lui.classe, true)}</div>
-      <div class="am-txt"><small>Toi : ${a.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP · Ton allié : ${b.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</small><b style="font-size:20px">${a >= SEMAINE_PARFAITE && b >= SEMAINE_PARFAITE ? 'Deux cornes pleines : skål !' : a >= b ? 'Ta corne est la plus pleine. Skål !' : 'Ton allié boit plus que toi cette semaine…'}</b></div>`;
+      <div class="am-txt"><small>Toi : ${a.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP · ${esc(nomCompagnon(lui))} : ${b.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</small><b style="font-size:20px">${a >= SEMAINE_PARFAITE && b >= SEMAINE_PARFAITE ? 'Deux cornes pleines : skål !' : a >= b ? 'Ta corne est la plus pleine. Skål !' : esc(nomCompagnon(lui)) + ' boit plus que toi cette semaine…'}</b></div>`;
     document.body.appendChild(ov); document.body.classList.add('bloque');
     const cs = ov.querySelectorAll('.corne .hydromel'), vals = [a, b];
     setTimeout(() => cs.forEach((r, i) => { const h = Math.round(Math.max(0, Math.min(1, vals[i] / SEMAINE_PARFAITE)) * 34); r.setAttribute('y', 44 - h); r.setAttribute('height', h + 4); }), 400);
@@ -7140,8 +7153,8 @@ function cfuDonnees(s, moi, lui) {
   const dg = n => Math.round(Number(((B || {}).degats || {})[n]) || 0);
   const dessin = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
   const a = Number(moi.xpSemaine) || 0, b = Number(lui.xpSemaine) || 0, meneur = a === b ? '' : a > b ? 'g' : 'd';
-  const ecart = a === b ? '' : a < b ? `Plus que <b>${nbFr(b - a)} XP</b> pour prendre la couronne` : `Ton allié est à <b>${nbFr(a - b)} XP</b> de la couronne`;
-  const prenom = c => esc(String(c.nom || '').split(' ')[0] || (c.moi ? 'Toi' : 'Ton allié'));
+  const ecart = a === b ? '' : a < b ? `Plus que <b>${nbFr(b - a)} XP</b> pour prendre la couronne` : `${esc(nomCompagnon(lui))} est à <b>${nbFr(a - b)} XP</b> de la couronne`;
+  const prenom = c => esc(c.moi ? (String(c.nom || '').split(' ')[0] || 'Toi') : nomCompagnon(c));
   const pvPct = c => Math.max(0, Math.min(100, (Number(c.pv) || 0) / (s.pvMax || 100) * 100));
   /* losanges des quêtes du jour : pleins = faites ; le prochain respire */
   /* quêtes du jour de l'allié : champ du moteur s'il existe (quetesDuJour), sinon sa fiche déjà chargée si elle est du jour */
@@ -7161,7 +7174,7 @@ function compagnieFusion(s, moi, lui, total, xpComp, mot) {
     return `<div class="dl-bar"><div class="dl-t">${titre}</div><div class="dl-v"><b>${nbFr(va)}</b>${unite}<span></span><b>${nbFr(vb)}</b>${unite}</div>
       <div class="dl-l">${va + vb ? `<i style="width:${va / t * 100}%;background:${K.cM}"></i><i style="width:${vb / t * 100}%;background:${K.cL}"></i>` : '<i class="vide"></i>'}</div></div>`; };
   const col = (c, cote) => `<div class="cfa-col" style="--c:${cote === 'g' ? K.cM : K.cL}">
-      <div class="dl-niche ${cote}" ${c.moi ? 'data-vitrine="1"' : `data-vitrine-nom="${esc(c.nom)}"`} role="button" aria-label="Voir ${c.moi ? 'ton héros' : 'ton compagnon d\'armes'} en grand">${K.dessin(c, 'dl' + cote)}<span class="loupe">⤢</span></div>
+      <div class="dl-niche ${cote}" ${c.moi ? 'data-vitrine="1"' : `data-vitrine-nom="${esc(c.nom)}"`} role="button" aria-label="Voir ${c.moi ? 'ton héros' : esc(nomCompagnon(c))} en grand">${K.dessin(c, 'dl' + cote)}<span class="loupe">⤢</span></div>
       <div class="dl-noms"><b>${K.prenom(c)}</b></div>
       <small class="cfa-cl">${(t => t ? `<i class="cfa-ti">${esc(t)}</i> · ` : '')(c.moi ? (surnomDe(s) || s.titre || '') : (c.surnom || c.titre || ''))}niv. ${c.niveau || 1}</small>
       <div class="cfu-pv"><i class="t pv"><i style="width:${K.pvPct(c)}%"></i></i><em><b>${c.pv}</b> PV</em></div>
@@ -7232,8 +7245,8 @@ function vueProfil(s) {
   const CL = classeDe(s), pal = palierDe(s.niveau, CL);
   const p = profil;
   const rec = p && p.records;
-  const grille = !p ? (profilErreur ? `<div class="grid-wrap"><div class="muted" style="font-size:13px">Life Grid indisponible : ${esc(profilErreur)}</div><button class="btn mini or" data-pr="profil-retry" style="margin-top:8px">Réessayer</button></div>`
-      : '<div class="grid-wrap"><div class="muted" style="font-size:13px">Chargement de ta Life Grid…</div></div>')
+  const grille = !p ? (profilErreur ? `<div class="grid-wrap"><div class="muted" style="font-size:13px">Grille de vie indisponible : ${esc(profilErreur)}</div><button class="btn mini or" data-pr="profil-retry" style="margin-top:8px">Réessayer</button></div>`
+      : '<div class="grid-wrap"><div class="muted" style="font-size:13px">Chargement de ta Grille de vie…</div></div>')
     : !p.grille ? '<div class="grid-wrap"><div class="muted" style="font-size:13px">Renseigne ta date de naissance dans le Sheet (Paramètres) pour afficher ta vie en semaines.</div></div>'
     : `<div class="grid-wrap">
         ${lgVie ? `<div class="grid-info"><span>Semaine <b>${p.semaineVie.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b> sur 4 160</span><span><b>${(p.semaineVie / 41.6).toFixed(1).replace('.', ',')} %</b> de la grille</span></div>
@@ -7375,7 +7388,7 @@ function vueProfil(s) {
         <button class="lien" data-pr="devise">✎ ${R.devise ? 'Modifier ma devise' : 'Écrire ma devise'}</button>
       </div>
     </div>
-    <details class="lg" ${lgOuverte ? 'open' : ''}><summary><div class="section"><h2><span class="fl">›</span> Ta vie en semaines</h2><span>Life Grid</span></div></summary>
+    <details class="lg" ${lgOuverte ? 'open' : ''}><summary><div class="section"><h2><span class="fl">›</span> Ta vie en semaines</h2><span>Grille de vie</span></div></summary>
     ${grille}</details>
     ${records ? `<div class="section"><h2>Records</h2><span>depuis le début de l'aventure</span></div>${records}` : ''}
     ${histoire ? `<div class="section"><h2>Ton histoire</h2></div>${histoire}` : ''}`;
@@ -7509,17 +7522,18 @@ function exporterDonnees() {
   } catch (e) { toast('Export impossible : ' + ((e && e.message) || e), 'erreur'); }
 }
 /* ---------- Actions ---------- */
-function flotter(texte, couleur, nom, gauche) {
+function flotter(texte, couleur, nom, dessus) {
   const el = document.createElement('div');
   el.className = 'float'; el.textContent = texte; el.style.color = couleur;
   const toucher = dernierToucherCarte; dernierToucherCarte = null; dernierToucherXY = null;
   // mesuré à l'image suivante, après le redessin : la carte de la quête (même si l'écran a défilé), le toucher en dernier recours.
   // La pastille se pose à cheval sur le bord haut de la carte, calée à droite (au-dessus du sceau) : elle ne touche jamais le texte.
-  const poser = r => { el.style.top = Math.max(64, r.top - 13) + 'px'; el.style.left = (gauche ? r.left + 16 : r.right - 16) + 'px'; };
+  // `dessus` (−N PV au boss) : empilée juste au-dessus de « +N XP », entièrement hors de la carte, pour ne jamais cacher la quête validée.
+  const poser = r => { el.style.top = (Math.max(64, r.top - 13) - (dessus ? 30 : 0)) + 'px'; el.style.left = (r.right - 16) + 'px'; };
   const carte = () => nom ? document.querySelector('.card[data-q="' + CSS.escape(nom) + '"]') : null;
   requestAnimationFrame(() => {
     const c = carte(), r = c ? c.getBoundingClientRect() : toucher;
-    if (r) { el.classList.add('sur-carte'); if (gauche) el.classList.add('gauche'); poser(r); }
+    if (r) { el.classList.add('sur-carte'); poser(r); }
     document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
     // elle suit sa carte tant qu'elle est visible (défilement, redessin à la réponse du serveur)
     if (c) { const suivre = () => { if (!el.isConnected) return; const k = carte(); if (k) poser(k.getBoundingClientRect()); requestAnimationFrame(suivre); }; requestAnimationFrame(suivre); }
@@ -7637,10 +7651,16 @@ const RE_ERREUR = /impossible|indisponible|ne répond pas|erreur|échec|n'a pas 
 const RE_INFO = /^📴|hors connexion|pas de réseau|déjà|plus de joker|choisis|coche|pas encore|réservé|seules|on ne|attends|patiente/i;
 let toastT = null;
 /** Après une validation : 5 s pour revenir en arrière d'un toucher (un toucher accidentel sur une carte ne coûte plus rien) */
-/** Roleplay : on ne montre pas les vrais prénoms dans les petits textes (« Toi », « Ton allié » / « ton compagnon d'armes ») */
+/** Nom du compagnon d'armes : celui que l'app reçoit (premier mot de son nom, jamais écrit en dur), sinon « ton compagnon d'armes ».
+ *  `c` = la fiche du compagnon (nom / heros) ou directement son nom. Texte brut : l'appelant échappe pour le HTML. */
+function nomCompagnon(c, phrase) {
+  const n = String((c && typeof c === 'object' ? (c.nom || c.heros) : c) || '').trim().split(/\s+/)[0];
+  return n || (phrase ? 'ton compagnon d\'armes' : 'Ton compagnon d\'armes');
+}
+/** « Toi » pour soi, le nom du compagnon d'armes pour l'autre (Journal des coups…) */
 function nomAmbiance(nom, s, phrase) {
   s = s || state; const moi = s && String(nom || '') === String(s.heros || '');
-  return moi ? (phrase ? 'toi' : 'Toi') : (phrase ? 'ton compagnon d\'armes' : 'Ton allié');
+  return moi ? (phrase ? 'toi' : 'Toi') : nomCompagnon(nom, phrase);
 }
 function toastAnnuler(nom) {
   const q = ((state && state.habitudes) || []).concat((state && state.annexes) || []).find(x => x.nom === nom);
@@ -7886,7 +7906,7 @@ function ouvrirMenu(nom) {
   menuQuete = nom;
   const h = state && state.habitudes.find(x => x.nom === nom);
   document.getElementById('btnJour').style.display = h && h.type === 'Routine' && SEANCES_MOBILES.test(nom) ? '' : 'none';
-  document.getElementById('sheetTitle').textContent = nom;
+  document.getElementById('sheetTitle').textContent = nomVu(h || ((state && state.annexes) || []).find(x => x.nom === nom)) || nom;
   document.getElementById('sheet').classList.add('on');
   document.getElementById('sheetBg').classList.add('on');
 }
