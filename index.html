@@ -3698,7 +3698,7 @@ function parcoursHTML(s) {
   const pct = fini ? 1 : (S.palier + S.dansPalier / S.cout) / N;
   const X = n => 26 + n / N * 290, Y = x => 96 + 5 * Math.sin(x / 38);
   let d = ''; for (let x = 26; x <= 316; x += 5) d += (d ? ' L' : 'M') + x + ' ' + Y(x).toFixed(1);
-  const xm = X(S.palier + (fini ? 0 : S.dansPalier / S.cout));
+  const xm = fini ? 300 : X(S.palier + S.dansPalier / S.cout); // chemin fini : le héros se tient devant la porte du château (critique)
   // le soleil : à moitié sous les collines au départ, haut et rayonnant au dernier palier
   const sy = 82 - 62 * pct, sx = 262, rayons = fini || pct > .5;
   const dense = N > 20; // à 50 paliers : losanges pour les seuls gros lots, un point pour les coffres épiques, rien pour le reste (la grille dépliée détaille)
@@ -6652,7 +6652,7 @@ function render() {
   }).join('');
   const nbCoffres = ((s.armurerie || {}).coffres || []).length;
   const sousH = `<div class="sous-onglets trois"><button class="${sousHeros === 'perso' ? 'on' : ''}" data-sous-heros="perso"><span class="ic">🛡 </span>Personnage</button>
-      <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure"><span class="ic">🗺 </span>Aventure${nbCoffres ? ` <i class="pastille">🎁 ${nbCoffres}</i>` : ''}</button>
+      <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure"><span class="ic">🗺 </span>Aventure${nbCoffres ? ` <i class="pastille" aria-label="${nbCoffres} coffre${nbCoffres > 1 ? 's' : ''} à ouvrir">${nbCoffres}</i>` : ''}</button>
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits"><span class="ic">🏆 </span>Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `<div class="aventure saison-${(s.armurerie && s.armurerie.saison && s.armurerie.saison.id) || 'pre'}">
     ${parcoursHTML(s)}
@@ -6705,7 +6705,7 @@ function render() {
       ${distant && s.carnet ? `<button data-tab="carnet" class="carn ${onglet === 'carnet' ? 'on' : ''}"><span>📖</span>Carnet</button>` : ''}
       ${aBoss ? `<button data-tab="combat" class="${onglet === 'combat' ? 'on' : ''}"><span>🐉</span>Combat${bossEnCours ? `<i class="jr ${joursRestants(bs.fin) ? '' : 'urg'}" title="${joursRestants(bs.fin) ? 'Jours restants pour abattre le boss de la semaine' : 'Dernier jour pour abattre le boss'}">${joursRestants(bs.fin) ? 'J-' + joursRestants(bs.fin) : 'Auj.'}</i>` : ''}</button>` : ''}
       ${coop ? `<button data-tab="compagnie" class="${onglet === 'compagnie' ? 'on' : ''}"><span>🤝</span>Compagnie</button>` : ''}
-      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros${s.armurerie && (s.armurerie.coffres || []).length ? '<i class="pvb">🎁</i>' : ''}</button>
+      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros${s.armurerie && (s.armurerie.coffres || []).length ? `<i class="pvb" aria-label="Coffres à ouvrir">${s.armurerie.coffres.length}</i>` : ''}</button>
     </nav>`);
   if (onglet === 'profil' && change) dessinerGrille();
   afficherCarnet(onglet === 'carnet');
