@@ -14,4 +14,5 @@
 - **Aucune nouveauté visuelle n'est mise en ligne sans double validation sur capture réelle** (mode aperçu, téléphone 390 px) :
   1. **l'Enlumineur** juge la qualité du dessin et de l'ambiance (« est-ce beau, au niveau du reste de l'app ? ») ;
   2. **l'Avocat du diable** conteste (« est-ce utile, lisible, pas ridicule, pas chargé ? »).
+- **Note sur 10** donnée par l'Enlumineur (qualité visuelle, niveau d'une app grand public soignée) : **9 ou 10 obligatoire** pour publier. En dessous, on reprend.
 - Un seul « non » = on reprend avant de publier. Les captures validées sont montrées à Théo avec leur verdict.
