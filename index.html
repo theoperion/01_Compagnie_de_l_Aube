@@ -169,7 +169,7 @@
   .compagnie span { display: block; font-size: 11px; color: var(--muted); font-style: italic; margin-top: 3px; }
   @media (max-width: 520px) { .compagnie { padding-top: 10px; } .compagnie span { display: none; } }
   /* Avatar */
-  @keyframes pulse { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: .95; transform: scale(1.05); } }
+  @keyframes pulse { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: .95; transform: scale(1.05); } } /* un seul « pulse » : les autres ont leur nom (pulseVit, pulseD20) */
   @keyframes sway { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(1.4deg); } }
   @keyframes floatp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-70px); opacity: 0; } }
   @keyframes glow { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
@@ -181,6 +181,9 @@
   svg .eyes { animation: glow 1.8s ease-in-out infinite; }
   svg .spin { animation: spin 14s linear infinite; }
   svg .bob { animation: bob 2.6s ease-in-out infinite; }
+  /* réglage « animations » coupé ou téléphone en mouvement réduit : les héros et leurs ornements restent immobiles */
+  body.calme svg .aura, body.calme svg .cape, body.calme svg .p, body.calme svg .eyes, body.calme svg .spin, body.calme svg .bob, body.calme .pl-saute, body.calme [class*="orn-"], body.calme .h-anim, body.calme .h-anim * { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) { svg .aura, svg .cape, svg .p, svg .eyes, svg .spin, svg .bob, .pl-saute, [class*="orn-"], .h-anim, .h-anim * { animation: none !important; } }
   .hero-card { margin-top: 18px; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: center;
     padding: 12px; border-radius: 16px; border: 1px solid #4a3866; background: radial-gradient(circle at 25% 50%, #2c2142, #1c1722 70%); }
   .hero-card svg { width: 150px; height: auto; display: block; }
@@ -227,9 +230,9 @@
   .vit-x { position: sticky; top: 0; float: right; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: #1c1726; color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
   .vit-nom { text-align: center; margin: 6px 0 0; } .vit-nom b { display: block; font: 600 22px var(--f-recit); color: var(--gold); } .vit-nom span { font-size: 13px; color: var(--muted); }
   .vit-scene { position: relative; height: min(70vh, 470px); perspective: 900px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
-  .vit-scene::before { content: ''; position: absolute; left: 50%; top: 52%; width: 300px; height: 300px; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle, rgba(127,214,255,.18), transparent 65%); animation: pulse 5s ease-in-out infinite; }
+  .vit-scene::before { content: ''; position: absolute; left: 50%; top: 52%; width: 300px; height: 300px; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle, rgba(127,214,255,.18), transparent 65%); animation: pulseVit 5s ease-in-out infinite; }
   .vit-scene.voleur::before { background: radial-gradient(circle, rgba(170,110,255,.2), transparent 65%); }
-  @keyframes pulse { 0%,100% { opacity: .6; transform: translate(-50%,-50%) scale(.95); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.05); } }
+  @keyframes pulseVit { 0%,100% { opacity: .6; transform: translate(-50%,-50%) scale(.95); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.05); } }
   .vit-rot { position: relative; transform-style: preserve-3d; touch-action: none; cursor: grab; width: min(78vw, 330px); z-index: 1; }
   .vit-perso { animation: respire 4.2s ease-in-out infinite; transform-origin: 50% 95%; }
   .vit-perso svg { width: 100%; height: auto; display: block; }
@@ -288,8 +291,8 @@
   @keyframes rouler { 0% { transform: rotate(0) scale(.92); } 50% { transform: rotate(180deg) scale(1.05); } 100% { transform: rotate(360deg) scale(.92); } }
   .d20.pose { animation: poser .45s cubic-bezier(.2,1.6,.4,1); }
   @keyframes poser { 0% { transform: scale(1.35); } 100% { transform: scale(1); } }
-  .d20.crit { filter: drop-shadow(0 0 22px rgba(255,214,102,.95)) drop-shadow(0 0 40px rgba(255,170,40,.6)); animation: poser .45s cubic-bezier(.2,1.6,.4,1), pulse 1.2s ease-in-out .45s infinite; }
-  @keyframes pulse { 50% { transform: scale(1.06); } }
+  .d20.crit { filter: drop-shadow(0 0 22px rgba(255,214,102,.95)) drop-shadow(0 0 40px rgba(255,170,40,.6)); animation: poser .45s cubic-bezier(.2,1.6,.4,1), pulseD20 1.2s ease-in-out .45s infinite; }
+  @keyframes pulseD20 { 50% { transform: scale(1.06); } }
   .d20.fumble { filter: grayscale(.7) drop-shadow(0 8px 18px rgba(0,0,0,.6)); animation: secouer .5s; }
   @keyframes secouer { 20%, 60% { transform: translateX(-7px) rotate(-4deg); } 40%, 80% { transform: translateX(7px) rotate(4deg); } }
   .d20-res { min-height: 92px; }
@@ -559,6 +562,18 @@
   .hero-perso { position: relative; overflow: hidden; border-radius: 14px; }
   .hero-perso .perso-fond { position: absolute; inset: 0; z-index: 0; } .hero-perso .perso-fond svg { width: 100%; height: 100%; display: block; }
   .hero-perso > svg { position: relative; z-index: 1; } .hero-perso .loupe { z-index: 2; }
+  /* Héros animés en 2D (repos) : respiration, tête qui penche, clignement, bâton. Les paupières restent fermées-invisibles partout ailleurs. */
+  svg .h-paup ellipse { transform-box: fill-box; transform-origin: 50% 0%; transform: scaleY(0); }
+  .hero-perso .h-corps { transform-origin: 100px 240px; animation: hResp 4.2s ease-in-out infinite; }
+  .hero-perso .h-tete, .vit-perso .h-tete { transform-origin: 100px 96px; animation: hTete 6.3s ease-in-out infinite; }
+  .hero-perso .h-paup ellipse, .vit-perso .h-paup ellipse { animation: hCligne 5.4s ease-in-out infinite; }
+  .hero-perso .h-arme, .vit-perso .h-arme { transform-origin: 134px 238px; animation: hArme 5s ease-in-out infinite; }
+  @keyframes hResp { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.006, 1.016); } }
+  @keyframes hTete { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(-1.4deg); } 70% { transform: rotate(1deg); } }
+  @keyframes hCligne { 0%, 90%, 100% { transform: scaleY(0); } 93% { transform: scaleY(1); } 95% { transform: scaleY(.1); } 97% { transform: scaleY(1); } }
+  @keyframes hArme { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-1.2deg); } }
+  body.calme .h-corps, body.calme .h-tete, body.calme .h-arme, body.calme .h-paup ellipse { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) { .h-corps, .h-tete, .h-arme, .h-paup ellipse { animation: none !important; } }
   .orn-flotte { animation: flotteC 3.2s ease-in-out infinite; } .orn-aura { animation: etinc 3.4s ease-in-out infinite; opacity: .8; } .orn-etinc { animation: etinc 2.4s ease-in-out infinite; }
   .orn-aile { animation: aile 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
   @keyframes flotteC { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
@@ -829,8 +844,8 @@
   .vit-mode button { border: 0; background: transparent; color: var(--muted); font: 600 12px var(--f-texte); padding: 6px 12px; border-radius: 9px; cursor: pointer; }
   .vit-mode button.on { background: var(--card); color: var(--gold); }
   .etincelle { position: absolute; left: 50%; top: 55%; width: 6px; height: 6px; border-radius: 50%; background: #ffe7a0; box-shadow: 0 0 10px #ffd34d; pointer-events: none;
-    animation: etinc .9s ease-out forwards; }
-  @keyframes etinc { from { transform: rotate(var(--a)) translateY(0) scale(1); opacity: 1; } to { transform: rotate(var(--a)) translateY(-120px) scale(.2); opacity: 0; } }
+    animation: etincSalut .9s ease-out forwards; }
+  @keyframes etincSalut { from { transform: rotate(var(--a)) translateY(0) scale(1); opacity: 1; } to { transform: rotate(var(--a)) translateY(-120px) scale(.2); opacity: 0; } }
   /* Cinématique d'évolution */
   .cine { position: fixed; inset: 0; z-index: 150; overflow: hidden; background: radial-gradient(circle at 50% 45%, #1a1230 0%, #050308 75%); animation: cineIn .6s ease-out; display: grid; place-items: center; }
   .cine.sortie { animation: cineOut .45s ease-in forwards; }
@@ -1141,7 +1156,7 @@ function magicien(st, id) {
     s += `<ellipse cx="100" cy="243" rx="${st >= 5 ? 50 : 42}" ry="7" fill="#000" opacity=".45"/>`;
   }
 
-  s += `<g transform="translate(0,${lev})">`;
+  s += `<g transform="translate(0,${lev})"><g class="h-corps">`; // groupes animables (repos 2D) : h-corps, h-arme, h-tete, h-paup
   // Manteau (10+) derrière
   if (st >= 2) s += `<g class="cape"><path d="M78,100 L${st >= 5 ? 52 : 58},236 Q100,244 ${st >= 5 ? 148 : 142},236 L122,100 Z" fill="${C.manteau}"/>
     <path d="M122,100 L${st >= 5 ? 148 : 142},236 L${st >= 5 ? 132 : 128},238 L118,104Z" fill="#000" opacity=".25"/>
@@ -1149,6 +1164,7 @@ function magicien(st, id) {
     ${st >= 3 ? `<path d="M${st >= 5 ? 52 : 58},236 Q100,244 ${st >= 5 ? 148 : 142},236" fill="none" stroke="${C.or}" stroke-width="2.5"/>` : ''}</g>`;
 
   // Bâton (5+) à droite, derrière la main
+  s += '<g class="h-arme">';
   if (st >= 1) {
     const haut = st >= 2 ? 56 : 92;
     s += `<path d="M136,${haut} L134,238" stroke="${st >= 7 ? '#fff3c4' : C.bois}" stroke-width="${st >= 5 ? 5 : 4}" stroke-linecap="round"/>`;
@@ -1160,6 +1176,7 @@ function magicien(st, id) {
       s += `<circle cx="136" cy="${haut - 2}" r="4" fill="${C.bois}"/>`;
     }
   }
+  s += '</g>';
 
   // Robe longue (cache les jambes)
   s += `<path d="M76,102 Q100,93 124,102 L${st >= 5 ? 138 : 134},236 Q100,244 ${st >= 5 ? 62 : 66},236Z" fill="url(#mro${id})"/>`;
@@ -1196,6 +1213,7 @@ function magicien(st, id) {
   if (st === 0) s += `<path d="M132,168 L148,146" stroke="${C.bois}" stroke-width="3" stroke-linecap="round"/><circle cx="148" cy="146" r="2.5" fill="#bfefff"/>
     <rect x="56" y="150" width="20" height="24" rx="2" fill="#6a3a2a" transform="rotate(-10 66 162)"/><rect x="58" y="152" width="3" height="20" fill="${C.or}" transform="rotate(-10 66 162)"/>`;
 
+  s += '<g class="h-tete">';
   // Chapeau : arrière du bord, derrière la tête
   if (st >= 1 && st < 7) s += `<ellipse cx="100" cy="63" rx="${st >= 5 ? 33 : 29}" ry="7" fill="${C.robeOmbre}"/>
     <path d="M84,64 Q82,76 86,84 L90,80 L88,66Z M116,64 Q118,76 114,84 L110,80 L112,66Z" fill="${C.cheveux}"/>`;
@@ -1223,6 +1241,8 @@ function magicien(st, id) {
       <path d="M${a + .9 * sens},78 Q${cx},80.1 ${b - .4 * sens},77.1" stroke="#5a3a30" stroke-width=".7" opacity=".45" fill="none"/>`;
   };
   s += oeilM(93.3, -1) + oeilM(106.7, 1);
+  // paupières (fermées seulement pendant un clignement)
+  s += `<g class="h-paup"><ellipse cx="93.3" cy="76.6" rx="4.9" ry="3.3" fill="${C.peau}"/><ellipse cx="106.7" cy="76.6" rx="4.9" ry="3.3" fill="${C.peau}"/></g>`;
   s += `<path d="M100.4,78.5 L98.9,84.4 Q100.3,85.6 102,84.6" stroke="${C.peauOmbre}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
     <path d="M96.2,88.2 Q100,90.6 103.8,88.2" stroke="#8a4e42" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
 
@@ -1241,6 +1261,7 @@ function magicien(st, id) {
   }
   // Couronne de lumière (100)
   if (st >= 7) s += `<path d="M84,62 l5,-12 l6,8 l5,-14 l5,14 l6,-8 l5,12z" fill="#ffe9a0" stroke="${C.or}" stroke-width="1"/>`;
+  s += '</g>'; // fin h-tete
 
   // Grimoire flottant (35+)
   if (st >= 4) s += `<g class="bob"><rect x="38" y="108" width="24" height="18" rx="2" fill="${st >= 5 ? '#4a1f2a' : '#5a3a2a'}" transform="rotate(-12 50 117)"/>
@@ -1255,7 +1276,7 @@ function magicien(st, id) {
     const pts = [[36, 210, 0], [164, 196, 1.1], [52, 176, 2.2], [150, 226, .6], [28, 140, 1.7], [172, 150, 2.8]];
     s += pts.map(([x, y, d]) => `<circle class="p" style="animation-delay:${d}s" cx="${x}" cy="${y}" r="2" fill="${st >= 7 ? '#ffe9a0' : '#d9b8ff'}"/>`).join('');
   }
-  return s + '</g></svg>';
+  return s + '</g></g></svg>';
 }
 
 /* ====================== Voleur assassin : 8 paliers d'évolution ======================
@@ -1318,6 +1339,7 @@ function voleur(st, id, look) {
       <ellipse cx="100" cy="236" rx="52" ry="10" fill="${brume}" opacity=".22"/></g>`;
   } else s += `<ellipse cx="100" cy="240" rx="40" ry="6.5" fill="#000" opacity=".45"/>`;
 
+  s += '<g class="h-corps">'; // groupes animables (repos 2D) : h-corps, h-tete, h-paup
   /* ---------- Cape / manteau (derrière) ---------- */
   if (st >= 2) {
     const bas = st >= 5 ? 236 : 222;
@@ -1395,6 +1417,7 @@ function voleur(st, id, look) {
       <rect x="73" y="152" width="3" height="8" rx="1.2" fill="${C.cuir}" transform="rotate(30 74.5 156)"/>`;
   }
 
+  s += '<g class="h-tete">';
   /* ---------- Cou, tête, visage ---------- */
   s += `<path d="M94,86 L106,86 L107,100 Q100,104 93,100Z" fill="${L.peauOmbre}"/>`;
   if (st === 0) s += `<path d="M84,100 Q100,110 116,100 L118,106 Q100,116 82,106Z" fill="${C.tissuOmbre}"/>`; // capuche baissée sur les épaules
@@ -1422,6 +1445,7 @@ function voleur(st, id, look) {
   };
   if (yeuxLueur) s += `<g class="eyes"><ellipse cx="93.3" cy="77" rx="4.8" ry="2.6" fill="${yeuxLueur}" opacity=".45"/><ellipse cx="106.7" cy="77" rx="4.8" ry="2.6" fill="${yeuxLueur}" opacity=".45"/></g>`;
   s += oeil(93.3, -1) + oeil(106.7, 1);
+  s += `<g class="h-paup"><ellipse cx="93.3" cy="76.6" rx="4.9" ry="3.3" fill="${L.peau}"/><ellipse cx="106.7" cy="76.6" rx="4.9" ry="3.3" fill="${L.peau}"/></g>`;
   // Nez, bouche (cachés par le masque à partir du palier 3)
   if (!masque) s += `<path d="M100.4,78.5 L98.9,84.4 Q100.3,85.6 102,84.6" stroke="${L.peauOmbre}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
     <path d="M96.4,88.6 Q99.6,89.9 103.8,87.9" stroke="#8a4e42" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
@@ -1444,6 +1468,7 @@ function voleur(st, id, look) {
     <path d="M82,104 Q92,98 100,102 Q108,98 118,104" stroke="#000" stroke-width="1" opacity=".25" fill="none"/>
     ${st >= 5 ? `<path d="M87.5,92 Q84,78 88.5,66.5 Q93,58.5 100,58.2 Q107,58.5 111.5,66.5 Q116,78 112.5,92 Q100,101.5 87.5,92" stroke="${C.argent}" stroke-width=".9" opacity=".45" fill="none"/>` : ''}`;
 
+  s += '</g>'; // fin h-tete
   /* ---------- Effets des hauts paliers ---------- */
   // Ombres qui s'effilochent (75+)
   if (st >= 6) {
@@ -1455,7 +1480,7 @@ function voleur(st, id, look) {
     const lame = (x, y, r) => `<path d="M${x},${y - 9} l2.6,9 l-2.6,9 l-2.6,-9z" fill="${C.poison}" opacity=".85" transform="rotate(${r} ${x} ${y})"/>`;
     s += `<g class="spin" style="transform-origin:100px 150px">${lame(32, 150, 90)}${lame(168, 150, 90)}${lame(100, 228, 0)}</g>`;
   }
-  return s + '</svg>';
+  return s + '</g></svg>';
 }
 
 
