@@ -34,11 +34,12 @@
     --gold: #d39a5c; --xp: #d39a5c; --xp2: #f3c88c; --pv: #e8604f; --ok: #63e6ad;
     --warn: #e0a040; --rest: #6fb3ff; --epic: #a98bff; --wax: #a3382f; --wax2: #e8604f;
     --theron: #6fb3ff; --allie: #55e3c2;
-    --haut: #0f2230; --f-titre: 'Josefin Sans', system-ui, sans-serif; --f-recit: 'Josefin Sans', system-ui, sans-serif; --f-texte: Inter, system-ui, -apple-system, sans-serif;
+    --haut: #0f2230; --f-titre: 'Josefin Sans', system-ui, sans-serif; --f-recit: var(--f-texte); --f-texte: Inter, system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
-    font-family: var(--f-texte); }
+    font-family: var(--f-texte); font-synthesis: none; }
+  button, input, select, textarea { font-family: inherit; } svg text { font-family: var(--f-texte); }
   body { padding: 0 0 48px; min-height: 100vh;
     background: radial-gradient(ellipse at top, var(--haut) 0%, var(--bg) 55%); }
   .wrap { max-width: 520px; margin: 0 auto; padding: 0 16px; }
@@ -123,7 +124,7 @@
   /* Filtre Perso / Pro */
   .filters { display: flex; gap: 8px; margin: 18px 0 4px; }
   .filters button { flex: 1; padding: 8px 0; border-radius: 10px; border: 1px solid var(--line);
-    background: transparent; color: var(--muted); font: 600 13px Inter, sans-serif; cursor: pointer; }
+    background: transparent; color: var(--muted); font: 600 13px var(--f-texte); cursor: pointer; }
   .filters button.on { background: var(--card); color: var(--text); border-color: var(--gold); }
 
   .section { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 22px 0 10px; }
@@ -214,7 +215,7 @@
   .etat b { color: #fff; }
   .etat.vac { background: #12303a; border: 1px solid #2c6a7a; color: #bfe8f2; }
   .etat button, .vac-btn { margin-top: 8px; padding: 8px 12px; border-radius: 10px; border: 1px solid #2c6a7a;
-    background: #173d49; color: #e6f7fb; font: 600 13px Inter, sans-serif; cursor: pointer; }
+    background: #173d49; color: #e6f7fb; font: 600 13px var(--f-texte); cursor: pointer; }
   .vac-btn { display: block; width: 100%; margin-top: 22px; background: transparent; border-style: dashed; color: var(--muted); border-color: var(--line); }
   .pips { display: inline-flex; gap: 5px; margin-left: 6px; vertical-align: middle; }
   .pips i { width: 10px; height: 10px; border-radius: 50%; background: #5a2a2a; border: 1px solid #a04545; }
@@ -1068,7 +1069,7 @@
   @media (prefers-reduced-motion: reduce) { .bw-svg svg, .bc-av.hit svg { animation: none; } }
   .pliable .pl-t { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--l, 4); overflow: hidden; margin-bottom: 0; }
   .pliable.ouvert .pl-t { display: block; -webkit-line-clamp: unset; overflow: visible; }
-  .pl-b { background: none; border: 0; padding: 4px 0 0; color: var(--gold); font: 600 12.5px Inter, sans-serif; cursor: pointer; }
+  .pl-b { background: none; border: 0; padding: 4px 0 0; color: var(--gold); font: 600 12.5px var(--f-texte); cursor: pointer; }
   .panel.coach .pl-t { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; }
   .rebond { margin-top: 10px; padding: 9px 11px; border-radius: 12px; border-left: 3px solid var(--gold); background: rgba(242,165,65,.08); }
   .rebond b { color: var(--gold); display: block; font-size: 13px; } .rebond .pl-t { font-size: 13px; color: var(--text); margin: 4px 0 2px; }
@@ -1102,7 +1103,7 @@
   .camp-l:last-child { border-bottom: 0; } .camp-l b { width: 92px; flex: none; } .camp-l .camp-q { flex: 1; min-width: 0; letter-spacing: 1px; }
   .camp-l span { flex: 1; } .camp-l .btn { padding: 7px 10px; font-size: 12.5px; flex: none; }
   .pacte-m { display: block; width: 100%; text-align: left; margin-top: 6px; padding: 11px 12px; border-radius: 12px; border: 1px solid var(--line);
-    background: var(--card); color: var(--text); font: 500 13.5px Inter, sans-serif; cursor: pointer; }
+    background: var(--card); color: var(--text); font: 500 13.5px var(--f-texte); cursor: pointer; }
   .ok-t { color: var(--ok); } .ko-t { color: #ff8b8b; }
   .fil-l { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
   .fil-l:last-child { border-bottom: 0; } .fil-l small { color: var(--muted); white-space: nowrap; }
@@ -1212,7 +1213,7 @@
   .tabs button i { position: absolute; top: 4px; left: calc(50% + 10px); min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
     background: var(--pv); color: #fff; font: 800 10px/17px var(--f-texte); font-style: normal; letter-spacing: 0; }
   .rappel { display: flex; justify-content: space-between; width: 100%; margin-top: 16px; padding: 12px 14px; border-radius: 12px;
-    border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--card)); background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 14%, var(--card)), var(--panel)); color: var(--gold); font: 600 14px Inter, sans-serif; cursor: pointer; }
+    border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--card)); background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 14%, var(--card)), var(--panel)); color: var(--gold); font: 600 14px var(--f-texte); cursor: pointer; }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 6px 14px; }
   .serie-row { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; font-size: 13px; border-bottom: 1px solid var(--line); }
   .serie-row:last-child { border-bottom: 0; }
@@ -1340,7 +1341,7 @@
   .sheet.on { transform: none; visibility: visible; transition: transform .25s cubic-bezier(.2,.8,.2,1); }
   .sheet h3 { margin: 0 0 12px; font-size: 15px; }
   .sheet button { width: 100%; padding: 14px; margin-top: 8px; border-radius: 12px; border: 1px solid var(--line);
-    background: var(--card); color: var(--text); font: 600 15px Inter, sans-serif; text-align: left; cursor: pointer; }
+    background: var(--card); color: var(--text); font: 600 15px var(--f-texte); text-align: left; cursor: pointer; }
   .sheet button.cancel { text-align: center; background: transparent; color: var(--muted); }
 
   /* Retours visuels */
@@ -1415,7 +1416,7 @@
   .demo { text-align: center; font-size: 11px; color: var(--warn); padding-top: 10px; }
 
   /* Profil */
-  .back { margin: 16px 0 0; padding: 6px 0; border: 0; background: none; color: var(--gold); font: 600 14px Inter, sans-serif; cursor: pointer; }
+  .back { margin: 16px 0 0; padding: 6px 0; border: 0; background: none; color: var(--gold); font: 600 14px var(--f-texte); cursor: pointer; }
   .id-card { margin-top: 10px; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 14px; align-items: center;
     background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
   .id-card svg { width: 92px; height: auto; display: block; }
@@ -1423,7 +1424,7 @@
   .id-card .tt { color: var(--gold); font-size: 13px; margin-top: 2px; }
   .devise { margin-top: 8px; font-style: italic; font-size: 13px; color: #d9cfe6; line-height: 1.4; }
   .devise.vide { color: var(--muted); }
-  .lien { border: 0; background: none; color: var(--gold); font: 600 12px Inter, sans-serif; padding: 4px 0 0; cursor: pointer; }
+  .lien { border: 0; background: none; color: var(--gold); font: 600 12px var(--f-texte); padding: 4px 0 0; cursor: pointer; }
   .grid-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
   .grid-wrap canvas { display: block; margin: 0 auto; max-width: 100%; height: auto; }
   .grid-wrap canvas[data-vue="annee"] { width: 100%; }
@@ -1449,11 +1450,11 @@
   .reg .ligne { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
   .reg .ligne:first-of-type { border-top: 0; }
   .reg input[type=date], .reg select, .reg input[type=text] { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 8px;
-    padding: 7px 8px; font: 13px Inter, sans-serif; min-width: 0; }
+    padding: 7px 8px; font: 13px var(--f-texte); min-width: 0; }
   .reg .form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-top: 6px; }
   .reg .form label { font-size: 11px; color: var(--muted); display: grid; gap: 4px; }
   .btn { min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text);
-    font: 600 13px Inter, sans-serif; cursor: pointer; }
+    font: 600 13px var(--f-texte); cursor: pointer; }
   .btn.or { border-color: color-mix(in srgb, var(--gold) 75%, var(--card)); color: color-mix(in srgb, var(--xp2) 55%, #fff); text-shadow: 0 1px 2px rgba(0,0,0,.45);
     background: linear-gradient(180deg, color-mix(in srgb, var(--xp2) 58%, #2a1c0c), color-mix(in srgb, var(--gold) 46%, #2a1c0c)); /* fond brun chaud, pas --card : mêlé au bleu des thèmes, l'or virait au gris */
     box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 45%, var(--xp2)); } /* vrai dégradé or, lisible dans les 4 thèmes (Yggdrasil et Olympe paraissaient éteints) */
@@ -1467,12 +1468,12 @@
   .sw input:checked + span { background: var(--gold); }
   .sw input:checked + span::before { transform: translateX(18px); }
   .modes { display: grid; gap: 6px; }
-  .mode { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; font: 13px Inter, sans-serif; }
+  .mode { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; font: 13px var(--f-texte); }
   .mode b { display: block; margin-bottom: 2px; } .mode span { font-size: 12px; color: var(--muted); }
   .mode.on { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, var(--card)); } .mode.on b { color: var(--gold); }
   .mode:disabled:not(.on) { opacity: .45; }
   .pause-note { display: block; width: 100%; margin-top: 14px; padding: 10px; border-radius: 12px; border: 1px dashed var(--line);
-    background: transparent; color: var(--muted); font: 13px Inter, sans-serif; cursor: pointer; }
+    background: transparent; color: var(--muted); font: 13px var(--f-texte); cursor: pointer; }
   .chip.d { background: #1f2a3a; color: #9fc2ef; }
 
   /* ===== Habillage Yggdrasil (thème par défaut) ===== */
@@ -1517,7 +1518,7 @@ html.ygg .card { border-radius:12px; background: linear-gradient(160deg, rgba(20
 html.ygg .card.annexe { border-left:2px solid #b97d45; }
 html.ygg .card.done { border-style:solid; border-color: rgba(99,230,173,.5); background: radial-gradient(70% 160% at 85% 50%, rgba(99,230,173,.14), transparent 60%), #0f2223; box-shadow: 0 0 18px rgba(99,230,173,.12); }
 html.ygg .card.done .name { color:#a9c4bd; }
-html.ygg .name { font-family:Inter; font-weight:700; font-size:15.5px; }
+html.ygg .name { font-family:var(--f-texte); font-weight:700; font-size:15.5px; }
 html.ygg .icon { background:#16303c; border-radius:10px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
 html.ygg .card.done .icon { background: rgba(99,230,173,.18); }
 /* sceau : rune de bronze */
@@ -2783,7 +2784,7 @@ const PICTO = {
 };
 const THEMES = [ // Théo (19/11) : Yggdrasil et Olympe seulement ; un téléphone réglé sur un autre thème retombe sur Yggdrasil
   { id: 'aube', nom: 'Yggdrasil', aide: 'fjord, givre, aurores et bronze', v: {} },
-  { id: 'olympe', nom: "Olympe", aide: "marbre de nuit, or, constellations", police: "Cinzel:wght@500;600;700;800;900&family=Manrope:wght@500;600;700;800", v: { 'bg': "#0e1220", 'panel': "#151a2b", 'card': "#181e31", 'card-done': "#17241f", 'line': "#2c3450", 'text': "#f4eee2", 'muted': "#9aa1b8", 'gold': "#e0b866", 'xp': "#e0b866", 'xp2': "#f6dc9c", 'pv': "#e2715a", 'ok': "#9fd39a", 'haut': "#1b2238", 'wax': "#c0563f", 'wax2': "#e2715a", 'theron': "#7aa2ff", 'allie': "#5fd0c4", 'rest': "#7aa2ff", 'epic': "#b79cff", 'f-titre': "Cinzel, Georgia, serif", 'f-recit': "Cinzel, Georgia, serif", 'f-texte': "Manrope, system-ui, sans-serif" } },
+  { id: 'olympe', nom: "Olympe", aide: "marbre de nuit, or, constellations", police: "Cinzel:wght@500;600;700;800;900&family=Manrope:wght@500;600;700;800", v: { 'bg': "#0e1220", 'panel': "#151a2b", 'card': "#181e31", 'card-done': "#17241f", 'line': "#2c3450", 'text': "#f4eee2", 'muted': "#9aa1b8", 'gold': "#e0b866", 'xp': "#e0b866", 'xp2': "#f6dc9c", 'pv': "#e2715a", 'ok': "#9fd39a", 'haut': "#1b2238", 'wax': "#c0563f", 'wax2': "#e2715a", 'theron': "#7aa2ff", 'allie': "#5fd0c4", 'rest': "#7aa2ff", 'epic': "#b79cff", 'f-titre': "Cinzel, Georgia, serif", 'f-recit': "Manrope, system-ui, sans-serif", 'f-texte': "Manrope, system-ui, sans-serif" } },
 ];
 /* Police des textes et taille : réglables à part, par-dessus le thème (gardées sur ce téléphone) */
 const POLICES_TEXTE = [
@@ -2823,7 +2824,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-themes-plu
 function themeChoisi() { try { return localStorage.getItem('theme') || 'aube'; } catch (e) { return 'aube'; } }
 function appliquerTheme(id) {
   const T = THEMES.find(t => t.id === id) || THEMES[0], r = document.documentElement;
-  const PT = POLICES_TEXTE.find(x => x.id === lireOpt('policeTexte')) || POLICES_TEXTE[0];
+  const PT = POLICES_TEXTE[0]; try { localStorage.removeItem('policeTexte'); } catch (e) {} // Théo (19/11) : une seule police par thème, option retirée
   const TA = TAILLES[0]; // taille du texte : option retirée (Théo, 19/11), toujours « Normale »
   try { localStorage.removeItem('tailleTexte'); } catch (e) {}
   THEMES.forEach(t => Object.keys(t.v).forEach(k => r.style.removeProperty('--' + k)));
@@ -8028,9 +8029,7 @@ function vueProfil(s) {
         return `<button class="theme ${themeChoisi() === t.id ? 'on' : ''}" data-theme="${t.id}" style="background:${V.bg};color:${V.text}">
           <span class="th-pal"><i style="background:${V.card}"></i><i style="background:${V.gold}"></i><i style="background:${V.text}"></i></span>
           <b style="font-family:${V['f-titre'].replace(/"/g, '&quot;')};color:${V.gold}">${esc(t.nom)}</b><small>${esc(t.aide)}</small></button>`; }).join('')}</div>
-      ${THEMES.length > 4 ? `<button class="voir-themes" data-themes-plus="1">${themesOuverts ? '▴ Moins de thèmes' : `▾ Voir les ${THEMES.length - 3} autres thèmes`}</button>` : ''}
-      <div class="opt-titre">Police des textes</div>
-      <div class="opts">${POLICES_TEXTE.map(x => `<button class="${lireOpt('policeTexte') === x.id ? 'on' : ''}" data-opt-police="${x.id}" style="${x.css ? 'font-family:' + x.css.replace(/"/g, '&quot;') : ''}">${esc(x.nom)}</button>`).join('')}</div></div>`;
+      ${THEMES.length > 4 ? `<button class="voir-themes" data-themes-plus="1">${themesOuverts ? '▴ Moins de thèmes' : `▾ Voir les ${THEMES.length - 3} autres thèmes`}</button>` : ''}</div>`;
   const vac = R.vacances || [];
   const enCours = vac.find(v => v.enCours);
   const regVac = regPlie('vac', '🏖️', 'Vacances', enCours ? '<b>En cours</b> · toucher pour gérer' : vac.length ? `${vac.length > 1 ? vac.length + ' départs prévus' : 'Départ le ' + dateCourte(vac[0].debut)} · toucher pour gérer` : 'Aucun raté, PV figés · toucher pour planifier', `<div class="reg"><h3>🏖️ Vacances</h3>
