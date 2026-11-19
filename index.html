@@ -789,6 +789,11 @@
   .bw-coup { position: absolute; left: 50%; top: 34px; z-index: 2; white-space: nowrap; font: 800 15px var(--f-titre); color: #fff; text-shadow: 0 0 10px #ff7a3c, 0 2px 0 #7a2a10; opacity: 0; transform: translateX(-50%); }
   .bw-coup.c1 { animation: bwCoup 1s 1.5s ease-out; } .bw-coup.c2 { animation: bwCoup 1s 2.4s ease-out; }
   .bw-coup.c3 { font-size: 22px; color: #ffe08a; animation: bwCoup 1.1s 3.3s ease-out; }
+  /* Victoire (critique) : les coups s'affichent sous le boss, le coup final au-dessus ; pas de cadre vide pendant l'animation */
+  .bw-coup.c1, .bw-coup.c2 { top: 198px; } .bw-coup.c3 { top: 0; }
+  .boss-win.anim:not(.fin) .bw-txt { visibility: hidden; }
+  .boss-win.anim:not(.fin) .bw-box { background: none !important; border-color: transparent !important; box-shadow: none !important; }
+  .boss-win.anim:not(.fin) .bw-scene { margin-top: 14vh; }
   @keyframes bwCoup { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, -6px) scale(1.15); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
   .bw-p { position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -4px; border-radius: 2px; opacity: 0; animation: bwP 1.4s 3.65s ease-out forwards; }
   @keyframes bwP { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--r)) scale(.4); } }
