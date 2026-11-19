@@ -79,7 +79,7 @@
     background: transparent; color: var(--muted); font: 600 13px Inter, sans-serif; cursor: pointer; }
   .filters button.on { background: var(--card); color: var(--text); border-color: var(--gold); }
 
-  .section { display: flex; justify-content: space-between; align-items: baseline; margin: 22px 0 10px; }
+  .section { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 22px 0 10px; }
   .section h2 { margin: 0; font-family: var(--f-titre); font-size: 15px; letter-spacing: .06em; color: var(--gold); text-transform: uppercase; }
   .section span { font-size: 12px; color: var(--muted); }
   .empty { padding: 16px; border-radius: 14px; border: 1px dashed var(--line); color: var(--muted); font-size: 13px; text-align: center; }
@@ -115,7 +115,7 @@
   .chip.r { background: #4a2323; color: #ff8b8b; }
   .chip.p { background: #22344f; color: #8fb6ee; }
   .chip.n { background: #2f2739; color: var(--muted); font-weight: 600; }
-  .more { width: 32px; height: 32px; flex: none; border: 0; border-radius: 10px; background: transparent;
+  .more { width: 40px; height: 40px; flex: none; border: 0; border-radius: 10px; background: transparent;
     color: var(--muted); font-size: 20px; cursor: pointer; }
   .more:active { background: #2f2739; }
 
@@ -167,6 +167,7 @@
   .compagnie { text-align: center; padding-top: 16px; }
   .compagnie b { display: block; font-family: var(--f-titre); font-size: 12px; letter-spacing: .22em; color: var(--gold); text-transform: uppercase; }
   .compagnie span { display: block; font-size: 11px; color: var(--muted); font-style: italic; margin-top: 3px; }
+  @media (max-width: 520px) { .compagnie { padding-top: 10px; } .compagnie span { display: none; } }
   /* Avatar */
   @keyframes pulse { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: .95; transform: scale(1.05); } }
   @keyframes sway { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(1.4deg); } }
@@ -246,7 +247,7 @@
   .orn-liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; }
   .orn-t { position: relative; }
   .orn-b { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 4px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
-  .orn-b b { font-size: 10px; font-weight: 600; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .orn-b b { font-size: 10.5px; font-weight: 600; line-height: 1.15; max-width: 100%; overflow: hidden; white-space: normal; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .orn-t.eq .orn-b { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(212,173,60,.4) inset; background: rgba(212,173,60,.08); }
   .orn-t.lock .orn-ic { opacity: .22; filter: grayscale(1); }
   .orn-t.lock .orn-b b { color: var(--muted); }
@@ -450,9 +451,9 @@
   .orn-t.cosm { border-width: 1px; border-style: solid; }
   .ap-rep { display: block; width: 34px; height: 34px; border-radius: 6px; overflow: hidden; } .ap-rep svg { width: 100%; height: 100%; }
   .ap-ef { font-size: 22px; }
-  .gr-onglets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; padding: 2px 0 8px; }
-  .gr-b { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 5px 6px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; font: inherit; }
-  .gr-b span { font-size: 14px; flex: none; } .gr-b b { font-size: 10.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .gr-b small { font-size: 9.5px; opacity: .75; margin-left: auto; flex: none; }
+  .gr-onglets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; padding: 2px 0 8px; }
+  .gr-b { display: flex; align-items: center; gap: 4px; min-width: 0; min-height: 40px; padding: 5px 6px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; font: inherit; }
+  .gr-b span { font-size: 14px; flex: none; } .gr-b b { font-size: 11px; font-weight: 600; line-height: 1.15; white-space: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-width: 0; } .gr-b small { font-size: 9.5px; opacity: .75; margin-left: auto; flex: none; }
   .gr-b.on { border-color: var(--gold); color: var(--text); background: #2a2014; }
   .gr-liste { margin: 4px 0 10px; }
   .plateau { margin: 10px 0; } .pl-tete { display: flex; justify-content: space-between; align-items: baseline; margin: 0 4px 6px; } .pl-tete b { font-family: var(--f-titre); color: var(--gold); } .pl-tete span { font-size: 12.5px; color: var(--muted); }
@@ -499,14 +500,14 @@
   @keyframes rcIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
   @keyframes rcBarre { from { width: 0; } to { width: 100%; } } @keyframes rcBarreW { from { width: 0; } }
   @keyframes rcPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-  .regles-box { position: relative; } .regles-reduire { position: absolute; top: 2px; right: -2px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid #6a5320; background: #1a140e; color: var(--muted); font-size: 12px; cursor: pointer; display: grid; place-items: center; }
+  .regles-box { position: relative; } .regles-reduire::after { content: ''; position: absolute; inset: -6px; } .regles-reduire { position: absolute; top: 2px; right: -6px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #6a5320; background: #1a140e; color: var(--muted); font-size: 12px; cursor: pointer; display: grid; place-items: center; }
   .regles-mini { margin-left: 6px; padding: 2px 8px; border-radius: 99px; border: 1px solid #d4ad3c; background: #2a2014; color: var(--gold); font: 700 11px var(--f-texte); cursor: pointer; vertical-align: 2px; }
   .regles-btn { width: 100%; margin: 6px 0 12px; padding: 10px 12px; border-radius: 14px; border: 1.5px solid #d4ad3c; background: linear-gradient(90deg, #3a2a10, #221a2e);
     color: var(--text); font: inherit; cursor: pointer; display: flex; align-items: center; gap: 12px; text-align: left; box-shadow: 0 0 0 0 rgba(212,173,60,.5); animation: rgAppel 2.6s ease-in-out 3; }
   .regles-btn .rq { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: #1a1208; font: 800 20px var(--f-titre); }
   .regles-btn b { display: block; color: var(--gold); font-size: 15px; } .regles-btn small { display: block; color: var(--muted); font-size: 12px; } .regles-btn .fl { margin-left: auto; color: var(--gold); font-size: 22px; }
   @keyframes rgAppel { 0%, 100% { box-shadow: 0 0 0 0 rgba(212,173,60,0); } 50% { box-shadow: 0 0 14px 2px rgba(212,173,60,.45); } }
-  .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 0; }
+  .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 10px; margin: -10px; }
   #reglesOv { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(8,6,12,.88); padding: 16px; }
   #reglesOv.on { display: grid; }
   .rg-livre { position: relative; width: min(100%, 440px); max-height: 92vh; overflow-y: auto; padding: 18px 18px 14px; border-radius: 18px; border: 2px solid #6a5320;
@@ -883,7 +884,7 @@
   .gains .g.montre { color: var(--rest); border-color: rgba(91,143,214,.45); } .gains .g.montre.ok { color: var(--ok); border-color: rgba(79,191,122,.5); }
   .etat.court { padding: 7px 12px; font-size: 12.5px; }
   .sous-onglets { display: flex; gap: 6px; margin: 14px 0 10px; padding: 4px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
-  .sous-onglets button { flex: 1; padding: 9px 6px; border-radius: 10px; border: 0; background: transparent; color: var(--muted); font: 600 13.5px var(--f-texte); cursor: pointer; }
+  .sous-onglets button { flex: 1; min-height: 40px; white-space: nowrap; padding: 9px 6px; border-radius: 10px; border: 0; background: transparent; color: var(--muted); font: 600 13.5px var(--f-texte); cursor: pointer; }
   .sous-onglets button.on { background: var(--card); color: var(--text); box-shadow: 0 1px 0 rgba(255,255,255,.05) inset; }
   .pastille { font-style: normal; font-size: 9.5px; font-weight: 800; letter-spacing: .04em; padding: 2px 6px; border-radius: 99px; background: var(--pv); color: #fff; margin-left: 4px; vertical-align: 1px; }
   .nouv { position: relative; } .nouv .new { position: absolute; top: 6px; right: 8px; z-index: 1; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 99px; background: var(--pv); color: #fff; letter-spacing: .05em; }
@@ -1026,7 +1027,7 @@
     font: 600 13px Inter, sans-serif; cursor: pointer; }
   .btn.or { border-color: #6a5320; background: #2b2410; color: var(--gold); }
   .btn.plein { width: 100%; margin-top: 8px; }
-  .btn.mini { padding: 5px 9px; font-size: 12px; }
+  .btn.mini { padding: 5px 10px; min-height: 38px; font-size: 12px; }
   .btn:disabled { opacity: .45; }
   .sw { position: relative; width: 44px; height: 26px; flex: none; }
   .sw input { opacity: 0; width: 0; height: 0; }
@@ -2006,7 +2007,7 @@ function plateauHTML(s) {
   const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
   const lui = comp && comp.palierSaison != null ? pion(orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'plc', lookDe(comp.look)), comp.ornements || {}, 'plc'), comp.palierSaison, 22, 'lui', String(comp.nom).split(' ')[0], '#3a6ad8') : '';
   const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -8, 'moi', 'Toi', '#c8902a');
-  return `<div class="plateau"><div class="pl-tete"><b>🗺 ${s1 ? 'Le chemin des Légendes' : 'Le chemin du Rodage'}${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
+  return `<div class="plateau"><div class="pl-tete"><b>🗺 ${s1 ? 'Le chemin de la Saison 1' : 'Le chemin du Rodage'}${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(String(comp.nom).split(' ')[0])} : ${comp.palierSaison}` : ''}</span></div>
     <div class="pl-legende"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>
     <div class="pl-cadre"><svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
       ${sol}${riviere}${deco.join('')}
@@ -2081,19 +2082,21 @@ const REGLES_PAGES = [
   { t: 'Le plateau', s: `<svg viewBox="0 0 320 120" class="rg-schema"><path d="M20 90 C80 20 140 110 200 50 S290 40 300 70" stroke="#b08a5a" stroke-width="14" fill="none" stroke-linecap="round"/>
       ${[[40, 70, '#4a8ae8', '🧥'], [95, 58, '#e84a5a', '🎁'], [150, 82, '#5ac86a', '✦'], [205, 50, '#f2c94c', '👑'], [270, 52, '#4a8ae8', '✨']].map(([x, y, c, i]) => `<g transform="translate(${x} ${y})"><ellipse cy="4" rx="18" ry="10" fill="#000" opacity=".35"/><ellipse rx="18" ry="10" fill="${c}" stroke="#fff" stroke-opacity=".6"/><text y="5" text-anchor="middle" font-size="11" fill="#fff">${i}</text></g>`).join('')}</svg>
       <div class="rg-leg"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>`,
-    p: ['Une case = un <b>palier</b>. Un palier ≈ <b>60 % d\'une semaine parfaite</b> d\'XP : environ <b>1 à 2 cases par semaine</b>.', 'Ton compagnon d\'armes et toi avancez au <b>même rythme</b> pour une semaine complète, même avec des quêtes différentes.', 'Touche une case pour voir ce qu\'elle donne et combien d\'XP il te manque.'] },
+    p: ['Une case = un <b>palier</b>. Un palier ≈ <b>60 % d\'une semaine parfaite</b> d\'XP en pré-saison (la moitié d\'une semaine ensuite) : environ <b>1 à 2 cases par semaine</b>.', 'Ton compagnon d\'armes et toi avancez au <b>même rythme</b> pour une semaine complète, même avec des quêtes différentes.', 'Touche une case pour voir ce qu\'elle donne et combien d\'XP il te manque.'] },
   { t: 'Les coffres', s: `<div class="rg-ligne"><div class="rg-bloc">🗺<small>case coffre du plateau</small></div><b>+</b><div class="rg-bloc">🐉<small>chaque boss vaincu</small></div><b>=</b><div class="rg-bloc or">🎁<small>coffre à ouvrir</small></div></div>
       <div class="rg-rar"><span style="border-color:#a99bb6">Commun</span><span style="border-color:#5ab0ff">Rare</span><span style="border-color:#b392ee">Épique</span><span style="border-color:#f2a93c">Légendaire</span></div>`,
     p: ['Un coffre s\'ouvre dans <b>Héros → Aventure</b> (pastille 🎁). Touche-le pour l\'ouvrir tout de suite.', 'Plus le coffre est rare, plus l\'objet a de chances d\'être <b>épique ou légendaire</b>.', 'Un <b>boss du mois</b> laisse toujours une pièce de <b>sa panoplie</b> (cape, puis couronne, puis aura).'] },
   { t: 'Éclats et marchand', s: `<div class="rg-ligne"><div class="rg-bloc">🎁<small>objet déjà possédé</small></div><b>→</b><div class="rg-bloc bleu">✦<small>éclats</small></div><b>→</b><div class="rg-bloc">🏪<small>le marchand</small></div></div>
       <div class="rg-rar"><span>Commun ✦ 40</span><span>Rare ✦ 100</span><span>Épique ✦ 250</span><span>Légendaire ✦ 600</span></div>`,
-    p: ['Les cases vertes du plateau et les objets en double donnent des <b>éclats</b>.', 'Avec les éclats, tu achètes <b>l\'objet de ton choix</b> chez le marchand (dans la vitrine, sous la garde-robe).'] },
-  { t: 'Ce qui se gagne autrement', s: `<div class="rg-grille"><div>🏰<b>Repaire</b><small>avec ton niveau (10, 20, 35, 50)</small></div><div>🐎<b>Monture</b><small>niveau 25 et 50</small></div><div>🐉<b>Familier</b><small>une série de 7 jours ; il grandit avec tes jours de quêtes (7, 30, 90)</small></div><div>🏆<b>Trophée</b><small>chaque boss vaincu, dans la salle des trophées</small></div></div>`,
+    p: ['Les cases vertes du plateau donnent des <b>éclats</b>. Un coffre en donne aussi si tu as déjà <b>tous les objets</b> de la rareté tirée.', 'Avec les éclats, tu achètes <b>l\'objet de ton choix</b> chez le marchand (dans la vitrine, sous la garde-robe).'] },
+  { t: 'Ce qui se gagne autrement', s: `<div class="rg-grille"><div>🏰<b>Repaire</b><small>avec ton niveau (10, 20, 35, 50)</small></div><div>🐎<b>Monture</b><small>niveau 25 et 50</small></div><div>🐉<b>Familier</b><small>un nouveau par saison, après 7 jours de suite ; il grandit avec tes jours de quêtes (7, 30, 90)</small></div><div>🏆<b>Trophée</b><small>chaque boss vaincu, dans la salle des trophées</small></div></div>`,
     p: ['Ces récompenses viennent d\'elles-mêmes en jouant : pas besoin de coffre.'] },
   { t: 'La garde-robe', s: `<div class="rg-ligne"><div class="rg-bloc">👆<small>touche ton personnage</small></div><b>→</b><div class="rg-bloc">🧥<small>choisis un emplacement</small></div><b>→</b><div class="rg-bloc or">✓<small>touche un objet pour le porter</small></div></div>`,
-    p: ['11 emplacements : cape, couronne, aura, familier, monture, repaire, traînée (quand tu valides une quête), coup de grâce (quand un boss tombe), emblème, sol, lueur.', 'Un cadenas = pas encore gagné. Le « ? » dit comment l\'obtenir.', 'Ton compagnon voit ce que tu portes.'] },
+    p: ['12 emplacements : cape, couronne, aura, familier, familier de poche, monture, repaire, traînée (quand tu valides une quête), coup de grâce (quand un boss tombe), emblème, sol, lueur.', 'Un cadenas = pas encore gagné. Le « ? » dit comment l\'obtenir.', 'Ton compagnon voit ce que tu portes.'] },
   { t: 'Les saisons', s: `<div class="rg-ligne"><div class="rg-bloc">🌱<small>Pré-saison<br>jusqu'au 31 déc.</small></div><b>→</b><div class="rg-bloc or">✦<small>Saison 1<br>janv. → juin</small></div><b>→</b><div class="rg-bloc">✦<small>Saison 2<br>juil. → déc.</small></div></div>`,
-    p: ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Ce que tu as gagné <b>reste à toi</b> d\'une saison à l\'autre.', 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.'] }
+    get p() { const s1 = String((typeof state !== 'undefined' && state && state.today) || '') >= '2027-01-01';
+      return ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Tes <b>trophées</b> et ton niveau racontent ton histoire ; ce que deviennent les objets du Rodage, la Compagnie en décidera au 1er janvier.',
+        s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.']; } }
 ];
 let pageRegles = 0;
 function livretReduit() { try { return localStorage.getItem('livretReduit') === '1'; } catch (e) { return false; } }
@@ -2121,7 +2124,7 @@ document.addEventListener('click', e => {
 /* --- Aperçu de la Saison 1 (pendant la pré-saison) --- */
 function apercuSaison1() {
   return `<details class="apercu-s1"><summary>✦ La Saison 1 arrive le 1er janvier</summary>
-    <p class="muted" style="font-size:12.5px">Un nouveau bestiaire à affronter, un chemin de 50 paliers, de nouveaux repaires, de nouvelles montures, de nouveaux familiers et des panoplies à arracher aux boss du mois. Tout reste secret jusqu'au jour J… Ce que tu gagnes d'ici là reste à toi.</p>
+    <p class="muted" style="font-size:12.5px">Un nouveau bestiaire à affronter, un chemin de 50 paliers, de nouveaux repaires, de nouvelles montures, un nouveau familier et des panoplies à arracher aux boss du mois. Tout reste secret jusqu'au jour J… Ce que tu gagnes d'ici là reste à toi.</p>
     <div class="s1-boss">${Array.from({ length: 6 }, () => '<div><div class="s1-myst">?</div></div>').join('')}</div></details>`;
 }
 /* --- Ouverture d'un coffre : il tremble, s'ouvre, l'objet apparaît --- */
@@ -2141,6 +2144,14 @@ function tirerCoffreLocal(c, s) {
   return { item: pool[hashCof(graine + '|i') % pool.length].id, eclats: 0 };
 }
 let coffreRevele = null;
+const coffresEnVol = {}; // coffres ouverts sur le téléphone, pas encore confirmés par le moteur
+function appliquerCoffre(n, source, o) {
+  const A = n.armurerie; if (!A) return n;
+  const avant = (A.coffres || []).length; A.coffres = (A.coffres || []).filter(x => x.source !== source);
+  if (A.coffres.length === avant) return n; // déjà compté par le moteur
+  if (o.item && !A.possede.includes(o.item)) A.possede.push(o.item); else A.eclats += o.eclats || 0;
+  return n;
+}
 function ouvrirUnCoffre() {
   const A = state && state.armurerie; if (!A || !(A.coffres || []).length) return;
   const c = A.coffres[0];
@@ -2151,11 +2162,23 @@ function ouvrirUnCoffre() {
   ov.classList.add('on'); document.body.classList.add('bloque');
   const o = tirerCoffreLocal(c, state);
   // l'état local avance tout de suite (coffre retiré, objet ou éclats ajoutés)
-  const n = copie(state); n.armurerie.coffres = n.armurerie.coffres.slice(1);
-  if (o.item && !n.armurerie.possede.includes(o.item)) n.armurerie.possede.push(o.item); else n.armurerie.eclats += o.eclats || 0;
-  state = n;
-  api('ouvrirCoffre', c.source).then(r => { state = avecAttente(r); if (!document.getElementById('coffreOv').classList.contains('on')) render(); })
-    .catch(e => toast(estHorsLigne(e) ? '📴 Coffre pas encore enregistré : il le sera au prochain réseau' : (e.message || String(e)), 'info'));
+  state = appliquerCoffre(copie(state), c.source, o);
+  coffresEnVol[c.source] = o;
+  // un envoi à la fois (coffres ouverts à la suite) ; chaque réponse garde ouverts les coffres pas encore confirmés
+  apiFond('ouvrirCoffre', c.source).then(r => {
+    delete coffresEnVol[c.source];
+    let n = avecAttente(r);
+    if (n && n.armurerie) { n = copie(n); Object.keys(coffresEnVol).forEach(src => { n = appliquerCoffre(n, src, coffresEnVol[src]); }); }
+    state = n; if (!document.getElementById('coffreOv').classList.contains('on')) render();
+  }).catch(e => {
+    delete coffresEnVol[c.source];
+    // rien n'est enregistré : le coffre revient, l'objet ou les éclats repartent
+    const n = copie(state), A2 = n.armurerie;
+    if (!A2.coffres.some(x => x.source === c.source)) A2.coffres.unshift(c);
+    if (o.item) A2.possede = A2.possede.filter(id => id !== o.item); else A2.eclats = Math.max(0, A2.eclats - (o.eclats || 0));
+    state = n; if (!document.getElementById('coffreOv').classList.contains('on')) render();
+    toast(estHorsLigne(e) ? '📴 Coffre non ouvert : il t\'attend, réessaie avec du réseau' : 'Coffre non ouvert : ' + (e.message || String(e)), 'info');
+  });
   coffreRevele = () => {
     coffreRevele = null;
     const x = o.item ? cosmItem(o.item) : null;
@@ -2843,191 +2866,6 @@ const BOSS_DESSINS = {
     <circle cx="104" cy="80" r="9" fill="#d4ad3c" stroke="#6a5320" stroke-width="1.5"/>
     <path d="M104 72 l-2 -6 M104 72 q5 -6 8 -3" stroke="#5a7a2a" stroke-width="2" fill="none"/>
     <path d="M100 76 l3 3 l5 -5" stroke="#fff6c2" stroke-width="1.6" fill="none"/>`,
-  /* ---------- Saison 1 · L'Éveil des Légendes ---------- */
-  kraken: p => `
-    <defs><radialGradient id="${p}k" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#e37a9a"/><stop offset=".6" stop-color="#9b3a62"/><stop offset="1" stop-color="#4a1630"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="40" ry="4" fill="#000" opacity=".3"/>
-    ${[[18, 120, -1], [32, 124, -1], [88, 124, 1], [102, 120, 1]].map(([x, y, s]) => `<path class="b-queue" d="M60 84 Q${60 + s * 14} 104 ${x} ${y} q${s * 6} -10 ${s * 14} -4" stroke="#8a3058" stroke-width="9" fill="none" stroke-linecap="round"/>`).join('')}
-    <path d="M28 76 Q14 60 10 40 q8 4 10 -2" stroke="#8a3058" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M92 76 Q106 60 110 40 q-8 4 -10 -2" stroke="#8a3058" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <circle cx="11" cy="40" r="5" fill="#e5383b"/><text x="11" y="42.4" font-size="6" text-anchor="middle" fill="#fff" font-weight="700" font-family="system-ui">3</text>
-    <circle cx="109" cy="40" r="5" fill="#e5383b"/><text x="109" y="42.4" font-size="6" text-anchor="middle" fill="#fff" font-weight="700" font-family="system-ui">!</text>
-    <path d="M60 14 C86 14 96 40 94 64 C92 86 78 92 60 92 C42 92 28 86 26 64 C24 40 34 14 60 14Z" fill="url(#${p}k)" stroke="#3a1024" stroke-width="1.8"/>
-    ${[[44, 30, 3], [74, 26, 2.5], [80, 44, 2], [40, 50, 2.2], [66, 36, 1.6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#f2a6bf" opacity=".6"/>`).join('')}
-    <g class="b-oeil"><ellipse cx="47" cy="62" rx="9" ry="10" fill="#fff8e6"/><ellipse cx="73" cy="62" rx="9" ry="10" fill="#fff8e6"/>
-      <rect x="45" y="56" width="4" height="12" rx="2" fill="#1a0a12"/><rect x="71" y="56" width="4" height="12" rx="2" fill="#1a0a12"/></g>
-    <path d="M50 80 q10 6 20 0" stroke="#3a1024" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
-
-  sirene: p => `
-    <defs><linearGradient id="${p}q" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fd1c5"/><stop offset="1" stop-color="#1d6b7a"/></linearGradient>
-      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a9e"/><stop offset="1" stop-color="#4a2a5e"/></linearGradient></defs>
-    <ellipse cx="60" cy="124" rx="44" ry="4" fill="#000" opacity=".3"/>
-    <rect x="12" y="92" width="96" height="30" rx="12" fill="url(#${p}c)" stroke="#2a1638" stroke-width="1.6"/><rect x="18" y="80" width="26" height="22" rx="8" fill="#9a6aae" stroke="#2a1638"/><rect x="76" y="80" width="26" height="22" rx="8" fill="#9a6aae" stroke="#2a1638"/>
-    <path class="b-queue" d="M58 104 Q36 112 30 98 Q24 86 40 84 l-10 -8 l16 2 l-4 -10 l12 12" fill="url(#${p}q)" stroke="#124a54" stroke-width="1.4"/>
-    <path d="M60 104 Q76 80 74 56 Q72 44 60 44 Q48 44 46 56 Q44 80 60 104Z" fill="url(#${p}q)" stroke="#124a54" stroke-width="1.4"/>
-    ${[0, 1, 2, 3].map(i => `<path d="M${52 + (i % 2) * 8} ${66 + i * 8} q4 3 8 0" stroke="#9ff0e6" stroke-width="1.2" fill="none" opacity=".7"/>`).join('')}
-    <path d="M42 28 Q38 54 30 66 Q44 58 46 44 M78 28 Q82 54 90 66 Q76 58 74 44" fill="#e8945a"/>
-    <circle cx="60" cy="34" r="15" fill="#f2c4a8" stroke="#6a3a2a" stroke-width="1.2"/>
-    <path d="M44 32 Q46 14 60 16 Q76 14 76 32 Q70 22 60 22 Q50 22 44 32Z" fill="#e8945a" stroke="#7a3a1a"/>
-    <g class="b-oeil"><path d="M52 34 q3 -3 6 0" stroke="#1a2a3a" stroke-width="1.8" fill="none"/><path d="M62 34 q3 -3 6 0" stroke="#1a2a3a" stroke-width="1.8" fill="none"/></g>
-    <path d="M56 41 q4 3 8 0" stroke="#a33a4a" stroke-width="1.6" fill="none"/>
-    <g class="b-volute" fill="#fff" font-family="serif" font-size="9" opacity=".8"><text x="84" y="24">♪</text><text x="94" y="38">♫</text><text x="22" y="22">♪</text></g>`,
-
-  minotaure: p => `
-    <defs><radialGradient id="${p}m" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#9a5a3a"/><stop offset=".7" stop-color="#5a2e1a"/><stop offset="1" stop-color="#2e160a"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="34" ry="4" fill="#000" opacity=".35"/>
-    <rect x="40" y="100" width="14" height="22" rx="4" fill="#4a2414"/><rect x="66" y="100" width="14" height="22" rx="4" fill="#4a2414"/><rect x="38" y="118" width="18" height="6" rx="2" fill="#1a0e08"/><rect x="64" y="118" width="18" height="6" rx="2" fill="#1a0e08"/>
-    <path d="M30 60 Q30 46 60 46 Q90 46 90 60 L84 104 H36Z" fill="url(#${p}m)" stroke="#1e0e06" stroke-width="1.8"/>
-    <path d="M30 62 Q16 70 18 90" stroke="#5a2e1a" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M90 62 Q104 70 102 90" stroke="#5a2e1a" stroke-width="10" fill="none" stroke-linecap="round"/>
-    <path d="M42 88 h36 v6 h-36z" fill="#7a5a2a"/><circle cx="60" cy="91" r="4" fill="#d4ad3c"/>
-    <path d="M36 26 Q16 22 12 6 Q26 16 40 18 M84 26 Q104 22 108 6 Q94 16 80 18" fill="#efe2c4" stroke="#6a5a3a" stroke-width="1.2"/>
-    <path d="M38 22 Q60 8 82 22 Q86 40 76 50 Q60 58 44 50 Q34 40 38 22Z" fill="url(#${p}m)" stroke="#1e0e06" stroke-width="1.6"/>
-    <ellipse cx="60" cy="46" rx="12" ry="8" fill="#b07a5a"/><circle cx="56" cy="46" r="1.8" fill="#2a120a"/><circle cx="64" cy="46" r="1.8" fill="#2a120a"/>
-    <circle cx="60" cy="52" r="4" fill="none" stroke="#d4ad3c" stroke-width="1.8"/>
-    <g class="b-oeil"><circle cx="50" cy="32" r="3.2" fill="#ff5a3c"/><circle cx="70" cy="32" r="3.2" fill="#ff5a3c"/></g>
-    <path d="M44 28 l10 3 M76 28 l-10 3" stroke="#1e0e06" stroke-width="2.2" stroke-linecap="round"/>
-    <g class="b-volute" stroke="#ddd" stroke-width="1.6" fill="none" opacity=".6"><path d="M48 54 q-6 2 -8 8"/><path d="M72 54 q6 2 8 8"/></g>`,
-
-  vampire: p => `
-    <defs><linearGradient id="${p}v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a2e"/><stop offset="1" stop-color="#0e0812"/></linearGradient></defs>
-    <ellipse cx="60" cy="124" rx="34" ry="4" fill="#000" opacity=".35"/>
-    <path d="M60 40 L16 50 Q20 90 34 120 L60 110 L86 120 Q100 90 104 50 Z" fill="url(#${p}v)" stroke="#000" stroke-width="1.6"/>
-    <path d="M60 40 L26 54 Q30 88 40 112 L60 104 L80 112 Q90 88 94 54 Z" fill="#8a1a2a"/>
-    <path d="M44 52 L60 46 L76 52 L74 104 H46 Z" fill="#1a1020"/><path d="M54 52 L60 70 L66 52" fill="#efe6e6"/>
-    <path d="M40 40 L30 18 L50 34 Z M80 40 L90 18 L70 34 Z" fill="#2a1a2e"/>
-    <ellipse cx="60" cy="32" rx="14" ry="16" fill="#d8d0e0" stroke="#3a2a40" stroke-width="1.2"/>
-    <path d="M46 26 Q60 8 74 26 Q66 18 60 24 Q54 18 46 26Z" fill="#14101a"/>
-    <g class="b-oeil"><path d="M50 32 l7 2 l-7 2z" fill="#e5383b"/><path d="M70 32 l-7 2 l7 2z" fill="#e5383b"/></g>
-    <path d="M54 42 q6 3 12 0" stroke="#3a2a40" stroke-width="1.4" fill="none"/><path d="M56 42 l1.5 4 l1.5 -4 M62 42 l1.5 4 l1.5 -4" fill="#fff"/>
-    <g class="b-volute" fill="#14101a"><path d="M14 24 q6 -6 10 0 q4 -6 10 0 q-6 2 -10 6 q-4 -4 -10 -6z"/><path d="M90 14 q5 -5 8 0 q3 -5 8 0 q-5 2 -8 5 q-3 -3 -8 -5z"/></g>
-    <circle cx="100" cy="30" r="2" fill="#e5383b" opacity=".7"/>`,
-
-  cyclope: p => `
-    <defs><radialGradient id="${p}y" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#8ab07a"/><stop offset=".7" stop-color="#4a6a3a"/><stop offset="1" stop-color="#22341a"/></radialGradient>
-      <radialGradient id="${p}e" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#bfe8ff"/><stop offset=".5" stop-color="#3fa0ff"/><stop offset="1" stop-color="#0a2a5a"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="36" ry="4" fill="#000" opacity=".3"/>
-    <path d="M30 60 Q24 30 60 22 Q96 30 90 60 L86 112 H34 Z" fill="url(#${p}y)" stroke="#1a2a12" stroke-width="1.8"/>
-    <rect x="38" y="112" width="16" height="10" rx="3" fill="#2a3a1e"/><rect x="66" y="112" width="16" height="10" rx="3" fill="#2a3a1e"/>
-    <path d="M32 76 Q14 84 16 104" stroke="#4a6a3a" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M88 76 Q104 82 106 96" stroke="#4a6a3a" stroke-width="10" fill="none" stroke-linecap="round"/>
-    <rect x="94" y="88" width="22" height="16" rx="2" fill="#141820" stroke="#3fa0ff" stroke-width="1.4"/><rect x="96" y="90" width="18" height="11" fill="#3fa0ff" opacity=".7"/>
-    <circle cx="60" cy="50" r="36" fill="#3fa0ff" opacity=".12" class="b-lueur"/>
-    <g class="b-oeil"><ellipse cx="60" cy="46" rx="18" ry="16" fill="#f4f8ff" stroke="#1a2a12" stroke-width="1.6"/><circle cx="60" cy="47" r="10" fill="url(#${p}e)"/><circle cx="60" cy="47" r="4" fill="#06101e"/><circle cx="64" cy="43" r="2.4" fill="#fff"/></g>
-    <path d="M42 30 q18 -10 36 0" stroke="#1a2a12" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M48 76 q12 8 24 0" stroke="#1a2a12" stroke-width="2.4" fill="none"/><path d="M54 78 v4 M66 78 v4" stroke="#efe6c4" stroke-width="2"/>`,
-
-  meduse: p => `
-    <defs><radialGradient id="${p}d" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#ffd6f2" stop-opacity=".95"/><stop offset=".6" stop-color="#e48ad0" stop-opacity=".8"/><stop offset="1" stop-color="#8a3a9e" stop-opacity=".6"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="30" ry="3.5" fill="#000" opacity=".25"/>
-    ${[30, 42, 54, 66, 78, 90].map((x, i) => `<path class="b-queue" d="M${x} 62 q${i % 2 ? 8 : -8} 14 0 28 q${i % 2 ? -8 : 8} 14 0 28" stroke="#c36ab8" stroke-width="3" fill="none" opacity=".85" stroke-linecap="round"/>`).join('')}
-    <g transform="translate(16 96)"><rect width="16" height="20" rx="2" fill="#d4ad3c" stroke="#6a4a12"/><text x="8" y="13" font-size="7" text-anchor="middle" fill="#6a1a1a" font-family="system-ui" font-weight="700">BIS</text></g>
-    <path d="M18 64 Q18 18 60 16 Q102 18 102 64 Q90 58 80 66 Q70 58 60 66 Q50 58 40 66 Q30 58 18 64Z" fill="url(#${p}d)" stroke="#8a3a9e" stroke-width="1.6"/>
-    <path d="M32 34 q10 -14 26 -14" stroke="#fff" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>
-    <g class="b-oeil"><circle cx="48" cy="44" r="6" fill="#2a0a2e"/><circle cx="72" cy="44" r="6" fill="#2a0a2e"/><circle cx="50" cy="42" r="2" fill="#fff"/><circle cx="74" cy="42" r="2" fill="#fff"/></g>
-    <path d="M52 54 q8 7 16 0" stroke="#2a0a2e" stroke-width="2.2" fill="none"/>
-    <g class="b-volute" fill="#ffd6f2" opacity=".7"><circle cx="14" cy="30" r="2"/><circle cx="106" cy="24" r="1.6"/><circle cx="100" cy="90" r="1.8"/></g>`,
-
-  lougarou: p => `
-    <defs><radialGradient id="${p}l" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#8a8496"/><stop offset=".7" stop-color="#4a4456"/><stop offset="1" stop-color="#24202c"/></radialGradient></defs>
-    <circle cx="96" cy="20" r="12" fill="#f3e9c0" opacity=".9"/>
-    <ellipse cx="60" cy="124" rx="34" ry="4" fill="#000" opacity=".35"/>
-    <path d="M36 66 Q34 50 60 48 Q86 50 84 66 L82 110 H38Z" fill="url(#${p}l)" stroke="#14101a" stroke-width="1.8"/>
-    <path d="M44 70 q16 10 32 0 L74 96 Q60 104 46 96Z" fill="#b8b0c4" opacity=".6"/>
-    <rect x="40" y="108" width="14" height="14" rx="4" fill="#3a3446"/><rect x="66" y="108" width="14" height="14" rx="4" fill="#3a3446"/>
-    <path d="M36 70 Q18 82 22 104 l-4 4 l6 -1 l1 5 l3 -6" stroke="#4a4456" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M84 70 Q102 82 98 104" stroke="#4a4456" stroke-width="9" fill="none" stroke-linecap="round"/>
-    <path d="M38 34 L34 10 L50 24 Z M82 34 L86 10 L70 24 Z" fill="#4a4456" stroke="#14101a"/>
-    <path d="M40 30 Q60 16 80 30 Q84 46 74 54 L60 66 L46 54 Q36 46 40 30Z" fill="url(#${p}l)" stroke="#14101a" stroke-width="1.6"/>
-    <path d="M50 50 Q60 46 70 50 L64 62 L56 62Z" fill="#c8c0d4"/><ellipse cx="60" cy="52" rx="4" ry="3" fill="#14101a"/>
-    <path d="M55 60 l2 4 l2 -4 M61 60 l2 4 l2 -4" fill="#fff"/>
-    <g class="b-oeil"><path d="M46 38 l8 2 l-8 3z" fill="#ffd23a"/><path d="M74 38 l-8 2 l8 3z" fill="#ffd23a"/></g>
-    <g class="b-volute" fill="#efe6c4" font-family="system-ui" font-size="6" opacity=".8"><text x="8" y="40">demain…</text><text x="88" y="56">plus tard</text></g>`,
-
-  ogre: p => `
-    <defs><radialGradient id="${p}o" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#b8a46a"/><stop offset=".7" stop-color="#7a6a3a"/><stop offset="1" stop-color="#3a3018"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="44" ry="4" fill="#000" opacity=".35"/>
-    ${[[10, 106, '#a33a3a'], [20, 112, '#3a6aa3'], [94, 108, '#d4ad3c'], [104, 114, '#5a8a3a'], [14, 118, '#efe6c4']].map(([x, y, c], i) => `<rect x="${x}" y="${y}" width="14" height="8" rx="2" fill="${c}" transform="rotate(${i * 17 - 20} ${x + 7} ${y + 4})"/>`).join('')}
-    <ellipse cx="60" cy="82" rx="38" ry="34" fill="url(#${p}o)" stroke="#2a2210" stroke-width="1.8"/>
-    <ellipse cx="60" cy="90" rx="22" ry="18" fill="#d8c48a" opacity=".55"/>
-    <rect x="38" y="110" width="16" height="12" rx="4" fill="#4a3e1e"/><rect x="66" y="110" width="16" height="12" rx="4" fill="#4a3e1e"/>
-    <path d="M24 72 Q8 82 12 102" stroke="#7a6a3a" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M96 72 Q110 80 106 98" stroke="#7a6a3a" stroke-width="12" fill="none" stroke-linecap="round"/>
-    <path d="M104 98 L116 66" stroke="#5a3a1e" stroke-width="7" stroke-linecap="round"/><ellipse cx="116" cy="62" rx="7" ry="9" fill="#6a4a2a"/>
-    <path d="M40 40 Q60 22 80 40 Q84 58 60 62 Q36 58 40 40Z" fill="url(#${p}o)" stroke="#2a2210" stroke-width="1.6"/>
-    <g class="b-oeil"><circle cx="52" cy="42" r="3" fill="#1a1408"/><circle cx="68" cy="42" r="3" fill="#1a1408"/></g>
-    <path d="M48 52 q12 8 24 0" stroke="#2a2210" stroke-width="2.4" fill="none"/><path d="M52 52 l2 -5 l2 5 M64 52 l2 -5 l2 5" fill="#efe6c4"/>
-    <path d="M44 34 q4 -6 10 -2 M76 34 q-4 -6 -10 -2" stroke="#2a2210" stroke-width="2" fill="none"/>`,
-
-  leviathan: p => `
-    <defs><linearGradient id="${p}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a4a6a" stop-opacity="0"/><stop offset="1" stop-color="#0a2a44"/></linearGradient>
-      <radialGradient id="${p}s" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#5ac8d8"/><stop offset=".7" stop-color="#1f6a8a"/><stop offset="1" stop-color="#0a2a44"/></radialGradient></defs>
-    <rect x="0" y="96" width="120" height="34" fill="url(#${p}w)"/>
-    <path class="b-queue" d="M8 104 Q24 70 40 100 Q56 128 72 96" stroke="#1f6a8a" stroke-width="12" fill="none" stroke-linecap="round"/>
-    <path d="M14 92 l4 -10 l4 8 M30 84 l4 -10 l4 8" fill="#5ac8d8"/>
-    <path d="M70 100 Q78 40 64 22 Q86 16 100 34 Q110 50 96 62 Q86 70 86 100Z" fill="url(#${p}s)" stroke="#06243a" stroke-width="1.8"/>
-    <path d="M72 30 l-6 -12 l10 6 M84 22 l2 -14 l6 12 M96 28 l8 -10 l-2 14" fill="#3fa9c9" stroke="#06243a"/>
-    <path d="M92 52 Q104 60 112 52 L104 46Z" fill="#efe6c4"/><path d="M96 54 v4 M102 54 v4 M106 53 v3" stroke="#06243a" stroke-width="1.2"/>
-    <g class="b-oeil"><ellipse cx="88" cy="40" rx="5" ry="4" fill="#ffd23a"/><rect x="87" y="37" width="2" height="6" rx="1" fill="#06243a"/></g>
-    ${[78, 74, 76].map((x, i) => `<path d="M${x} ${66 + i * 10} q6 -4 12 0" stroke="#9fe8f0" stroke-width="1.2" fill="none" opacity=".6"/>`).join('')}
-    <g class="b-volute" stroke="#9fe8f0" stroke-width="1.4" fill="none" opacity=".7"><path d="M10 120 q10 -6 20 0 q10 6 20 0"/><path d="M60 126 q10 -6 20 0 q10 6 20 0"/></g>
-    <g fill="#9fe8f0" opacity=".6"><circle cx="50" cy="60" r="2"/><circle cx="46" cy="50" r="1.4"/><circle cx="52" cy="42" r="1"/></g>`,
-
-  chimere: p => `
-    <defs><radialGradient id="${p}h" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#e8b04a"/><stop offset=".7" stop-color="#a8682a"/><stop offset="1" stop-color="#5a3010"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="44" ry="4" fill="#000" opacity=".35"/>
-    <path class="b-queue" d="M100 90 Q118 76 110 56 q-4 -6 -10 -2" stroke="#3a7a3a" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M100 52 l-6 -6 l10 0 z" fill="#3a7a3a"/><circle cx="98" cy="50" r="1.4" fill="#ff5a3c"/>
-    <ellipse cx="66" cy="92" rx="38" ry="20" fill="url(#${p}h)" stroke="#2a1608" stroke-width="1.6"/>
-    ${[36, 50, 80, 94].map(x => `<rect x="${x}" y="100" width="10" height="22" rx="4" fill="#8a5420"/>`).join('')}
-    <path d="M70 76 Q76 50 86 44 Q98 46 96 60 Q90 70 80 78Z" fill="#e8e2d0" stroke="#4a4030"/><path d="M84 42 l-2 -10 l6 8 M94 44 l6 -8 l-2 10" fill="#d4ad3c"/>
-    <g class="b-oeil"><circle cx="90" cy="54" r="2" fill="#2a1608"/></g>
-    <circle cx="40" cy="64" r="22" fill="#ff8a3c" opacity=".9" class="b-lueur"/>
-    ${Array.from({ length: 10 }, (_, i) => { const a = i / 10 * Math.PI * 2; return `<path d="M${(40 + Math.cos(a) * 18).toFixed(1)} ${(64 + Math.sin(a) * 18).toFixed(1)} l${(Math.cos(a) * 10).toFixed(1)} ${(Math.sin(a) * 10).toFixed(1)}" stroke="#e85a1c" stroke-width="5" stroke-linecap="round"/>`; }).join('')}
-    <circle cx="40" cy="64" r="15" fill="url(#${p}h)" stroke="#2a1608" stroke-width="1.4"/>
-    <g class="b-oeil"><circle cx="34" cy="60" r="2.6" fill="#ffd23a"/><circle cx="46" cy="60" r="2.6" fill="#ffd23a"/></g>
-    <path d="M32 70 q8 6 16 0" stroke="#2a1608" stroke-width="2.2" fill="none"/><path d="M36 70 l1.5 4 l1.5 -4 M43 70 l1.5 4 l1.5 -4" fill="#fff"/>
-    <path d="M58 70 Q50 40 60 30 Q66 40 64 48" stroke="#5a8a3a" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="60" cy="28" rx="6" ry="4" fill="#5a8a3a"/><circle cx="62" cy="27" r="1.2" fill="#ffd23a"/>`,
-
-  titan: p => `
-    <defs><radialGradient id="${p}t" cx="40%" cy="25%" r="85%"><stop offset="0" stop-color="#c8bca4"/><stop offset=".6" stop-color="#8a7e66"/><stop offset="1" stop-color="#4a4234"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="50" ry="4" fill="#000" opacity=".35"/>
-    <path d="M14 124 L30 60 Q34 30 60 26 Q86 30 90 60 L106 124 Z" fill="url(#${p}t)" stroke="#2a2418" stroke-width="2"/>
-    <path d="M30 70 L44 76 L36 90 M86 64 L74 74 L84 86 M50 100 L58 112 L66 102" stroke="#4a4234" stroke-width="1.6" fill="none"/>
-    <path d="M38 52 L22 36 L34 40 Z" fill="#6a8a4a"/><path d="M84 48 l10 -10 l2 12z" fill="#6a8a4a"/><circle cx="72" cy="96" r="3" fill="#6a8a4a"/><circle cx="76" cy="94" r="2" fill="#7aa05a"/>
-    <path d="M44 54 Q60 46 76 54" stroke="#2a2418" stroke-width="2.4" fill="none"/>
-    <g class="b-oeil"><path d="M46 62 q6 -3 12 0" stroke="#2a2418" stroke-width="2.6" fill="none"/><path d="M62 62 q6 -3 12 0" stroke="#2a2418" stroke-width="2.6" fill="none"/></g>
-    <path d="M50 78 q10 -3 20 0" stroke="#2a2418" stroke-width="2.4" fill="none"/>
-    <g class="b-volute" fill="#efe6c4" font-family="system-ui" font-size="9" opacity=".7"><text x="88" y="24">z</text><text x="96" y="16">z</text><text x="102" y="8">z</text></g>
-    <path d="M40 30 Q60 4 80 30 Q72 22 60 22 Q48 22 40 30Z" fill="#9aa86a" opacity=".8"/>`,
-
-  banshee: p => `
-    <defs><linearGradient id="${p}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8fff6" stop-opacity=".95"/><stop offset=".6" stop-color="#8ae0d0" stop-opacity=".7"/><stop offset="1" stop-color="#3a8a8a" stop-opacity=".1"/></linearGradient></defs>
-    <ellipse cx="60" cy="124" rx="24" ry="3" fill="#000" opacity=".2"/>
-    <path class="b-queue" d="M60 16 C88 18 96 44 98 70 Q100 96 92 122 q-6 -8 -12 0 q-6 -10 -12 0 q-8 -10 -14 0 q-6 -8 -12 0 q-6 -10 -12 0 Q20 96 22 70 C24 44 32 18 60 16Z" fill="url(#${p}b)" stroke="#a8f0e0" stroke-width="1.2"/>
-    <path d="M30 36 Q26 70 18 92 M90 36 Q94 70 102 92" stroke="#d8fff6" stroke-width="5" fill="none" opacity=".6" stroke-linecap="round"/>
-    <ellipse cx="60" cy="44" rx="16" ry="19" fill="#eafffb" stroke="#6ac8b8"/>
-    <g class="b-oeil"><ellipse cx="53" cy="42" rx="4" ry="5.5" fill="#0e2a2a"/><ellipse cx="67" cy="42" rx="4" ry="5.5" fill="#0e2a2a"/></g>
-    <ellipse cx="60" cy="56" rx="5" ry="7" fill="#0e2a2a"/>
-    <path d="M50 50 l-1 8 M70 50 l1 8" stroke="#6ac8b8" stroke-width="1.4" opacity=".8"/>
-    <g class="b-volute" stroke="#a8f0e0" stroke-width="1.6" fill="none" opacity=".7"><path d="M84 52 q8 -2 12 4 q4 6 12 4"/><path d="M86 62 q8 -2 12 4 q4 6 10 4"/><path d="M36 52 q-8 -2 -12 4 q-4 6 -12 4"/></g>`,
-
-  sphinx: p => `
-    <defs><radialGradient id="${p}x" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#f2d68a"/><stop offset=".7" stop-color="#c49a3a"/><stop offset="1" stop-color="#6a4a14"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="48" ry="4" fill="#000" opacity=".35"/>
-    <path d="M8 118 Q10 96 34 92 L96 88 Q112 90 114 108 L114 122 H8Z" fill="url(#${p}x)" stroke="#3a280a" stroke-width="1.6"/>
-    <path d="M14 122 q8 -10 24 -8 M80 122 q8 -10 26 -8" stroke="#3a280a" stroke-width="1.4" fill="none"/>
-    <path d="M30 30 L90 30 L96 80 L24 80Z" fill="#2a4a8a" stroke="#14244a"/>${[0, 1, 2, 3, 4].map(i => `<path d="M${28 + i * 3} ${38 + i * 9} H${92 - i * 3}" stroke="#d4ad3c" stroke-width="3"/>`).join('')}
-    <ellipse cx="60" cy="52" rx="16" ry="20" fill="url(#${p}x)" stroke="#3a280a" stroke-width="1.4"/>
-    <path d="M46 26 L60 14 L74 26 Z" fill="#d4ad3c" stroke="#6a4a14"/><circle cx="60" cy="22" r="2.4" fill="#3fa0ff"/>
-    <g class="b-oeil"><path d="M50 48 q4 -3 8 0 q-4 3 -8 0z" fill="#1a1408"/><path d="M62 48 q4 -3 8 0 q-4 3 -8 0z" fill="#1a1408"/><path d="M48 48 h-4 M72 48 h4" stroke="#1a1408" stroke-width="1.4"/></g>
-    <path d="M56 62 q4 2 8 0" stroke="#3a280a" stroke-width="1.6" fill="none"/><rect x="57" y="66" width="6" height="10" rx="2" fill="#2a4a8a" stroke="#d4ad3c"/>
-    <g class="b-volute" fill="#f3dfa0" font-family="serif" font-size="13" font-weight="700" opacity=".8"><text x="14" y="30">?</text><text x="100" y="22">?</text><text x="104" y="60" font-size="9">?</text></g>`,
-
-  wyrm: p => `
-    <defs><radialGradient id="${p}r" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#9ae08a"/><stop offset=".6" stop-color="#3a8a4a"/><stop offset="1" stop-color="#14401e"/></radialGradient></defs>
-    <ellipse cx="60" cy="124" rx="48" ry="4" fill="#000" opacity=".35"/>
-    <path d="M10 112 Q10 84 34 90 Q56 96 52 112 Q48 126 70 122 Q100 116 104 90 Q106 70 86 64" stroke="url(#${p}r)" stroke-width="20" fill="none" stroke-linecap="round"/>
-    ${[20, 40, 60, 80, 96].map((x, i) => `<path d="M${x} ${[96, 98, 116, 112, 92][i]} l3 -8 l3 8" fill="#d4ad3c" opacity=".8"/>`).join('')}
-    <path d="M86 64 Q62 54 60 36 Q62 18 82 18 Q104 20 106 38 Q106 54 86 64Z" fill="url(#${p}r)" stroke="#0a2a10" stroke-width="1.8"/>
-    <path d="M66 22 l-8 -14 l14 8 M90 18 l6 -14 l2 16" fill="#d4ad3c" stroke="#6a4a14"/>
-    <path d="M62 40 Q50 44 46 52 L60 50Z" fill="#14401e"/><path d="M50 48 l2 4 l2 -4" fill="#fff"/>
-    <g class="b-oeil"><ellipse cx="80" cy="34" rx="5" ry="4" fill="#ffd23a"/><rect x="79" y="31" width="2" height="6" rx="1" fill="#0a2a10"/></g>
-    <g class="b-volute" fill="#8a8aa0" opacity=".5"><path d="M20 40 q6 -8 14 -4 q-2 8 -14 4z"/><path d="M30 24 q4 -6 10 -3 q-1 6 -10 3z"/></g>`
 };
 /* Boss redessinés (2e vague) : même cadre 120 × 130, sol vers y = 124.
    Parties animées : b-oeil, b-lueur, b-bras-g/d, b-aile-g/d, b-onde, b-badge, b-tete, b-couvercle, b-sable, b-orbite, b-volute, b-zz, b-queue */
@@ -3368,8 +3206,8 @@ document.addEventListener('click', e => {
 });
 /* Chaque boss a sa façon de bouger (respiration lourde, flottement, ondulation…) ; certaines parties s'animent aussi */
 const BOSS_MOUV = { golem: 'lourd', liche: 'flotte', spectre: 'flotte', basilic: 'ondule', harpie: 'vole', troll: 'lourd', hydre: 'balance', necro: 'flotte',
-  gargouille: 'lourd', mimique: 'claque', dragon: 'respire', archidemon: 'respire', procrastination: 'balance', dissipation: 'flotte', oubli: 'flotte', fatigue: 'flotte', kraken: 'ondule', sirene: 'balance', minotaure: 'lourd', vampire: 'flotte', cyclope: 'respire', meduse: 'flotte', lougarou: 'respire', ogre: 'lourd', leviathan: 'ondule', chimere: 'respire', titan: 'lourd', banshee: 'flotte', sphinx: 'respire', wyrm: 'ondule', doute: 'flotte', tentation: 'balance' };
-const BOSS_AURA = { kraken: '230,90,140', sirene: '80,210,200', minotaure: '255,110,60', vampire: '230,40,60', cyclope: '63,160,255', meduse: '230,140,210', lougarou: '255,210,60', ogre: '200,170,90', leviathan: '63,169,201', chimere: '255,138,60', titan: '200,180,140', banshee: '168,240,224', sphinx: '232,195,74', wyrm: '122,208,106', golem: '255,154,60', liche: '63,224,176', spectre: '160,190,255', basilic: '140,220,90', harpie: '200,120,255', troll: '120,170,110', hydre: '80,200,200', necro: '150,255,110',
+  gargouille: 'lourd', mimique: 'claque', dragon: 'respire', archidemon: 'respire', procrastination: 'balance', dissipation: 'flotte', oubli: 'flotte', fatigue: 'flotte', doute: 'flotte', tentation: 'balance' };
+const BOSS_AURA = { golem: '255,154,60', liche: '63,224,176', spectre: '160,190,255', basilic: '140,220,90', harpie: '200,120,255', troll: '120,170,110', hydre: '80,200,200', necro: '150,255,110',
   gargouille: '255,140,60', mimique: '255,200,80', dragon: '120,160,255', archidemon: '255,70,50', procrastination: '190,140,255', dissipation: '90,230,190', oubli: '230,230,255', fatigue: '170,180,220', doute: '230,90,90', tentation: '255,120,170' };
 function bossSvg(cle, id, b) {
   const f = BOSS_DESSINS[cle] || BOSS_DESSINS.golem;
@@ -3436,14 +3274,14 @@ function carteBoss(b, s) {
       <div class="bc-id"><span class="bc-type">${mois ? '🌑 Boss du mois' : '⚔ Boss de la semaine'}</span>
         <b>${esc(b.nomStade || b.nom)}</b>${b.stade > 1 ? `<span class="bc-stade">Stade ${ROMAIN[b.stade] || b.stade} · a évolué depuis ${esc(b.nom)}</span>` : ''}
         <span class="bc-rang">${b.statut === 'À venir' ? (mois ? 'Du ' + dateCourte(b.debut) + ' au ' + dateCourte(b.fin) : etoiles(b.rang) + ' rang ' + b.rang + ' · semaine du ' + dateCourte(b.debut)) : mois ? 'Fin le ' + dateCourte(b.fin) : etoiles(b.rang) + ' rang ' + b.rang + ' · fin dimanche'}</span>
-        <div class="bc-tags"><span class="tag f">⚡ Faible : ${esc(b.faible)}</span><span class="tag r">🛡 Résiste : ${esc(b.resiste)}</span>${b.statut === 'En cours' && PHASES_BOSS[b.phase] ? `<span class="tag ph">${PHASES_BOSS[b.phase]}</span>` : ''}${b.enhardi && !vaincu ? `<span class="tag ph">😈 Enhardi${b.enhardi === 'fuite' ? ' +10 %' : ' +5 %'}</span>` : ''}</div>
+        <div class="bc-tags"><span class="tag f">⚡ Faible : ${esc(b.faible)}</span><span class="tag r">🛡 Résiste : ${esc(b.resiste)}</span>${b.statut === 'En cours' && PHASES_BOSS[b.phase] ? `<span class="tag ph">${PHASES_BOSS[b.phase]}</span>` : ''}${b.enhardi && !vaincu ? `<span class="tag ph">🩹 Blessé −5 %${b.enhardi === 'fuite' ? ' · 😈 rancunier' : ''}</span>` : ''}</div>
       </div></div>
-    ${blocCoups(b)}
     ${vaincu ? `<div class="bc-win">⚔ Vaincu le ${dateCourte(b.vaincuLe)} · +${b.xp} XP pour toi<br><span>Trophée : ${esc(b.trophee)}</span><br><button class="btn mini or" data-bw-revoir="${b.type}" style="margin-top:8px">▶ Revoir la victoire</button></div>`
       : b.statut === 'À venir' ? `<div class="bc-win avenir">Il attaque ${dateLongueCourte(b.debut)} avec ${Math.round(b.pvMax).toLocaleString('fr-FR')} PV.<br><span>Préparez-vous : ses PV tiennent compte de vos vacances.</span></div>`
       : b.statut === 'Trêve' ? '<div class="bc-win">Trêve : toute la Compagnie est en vacances.</div>'
       : `<div class="bc-pv"><b>${Math.round(b.pv).toLocaleString('fr-FR')} / ${Math.round(b.pvMax).toLocaleString('fr-FR')} PV</b><span>${j ? `Plus que ${j} jour${j > 1 ? 's' : ''}` : 'Dernier jour !'}</span></div>
          <div class="bar boss big"><i style="width:${pct}%"></i></div>`}
+    ${blocCoups(b)}
     ${b.statut === 'À venir' ? '' : `<div class="bc-dmg">Dégâts : ${noms.map(n => `<span style="color:${couleurHeros(n, s)}">${esc(n.split(' ')[0])} <b>${Math.round(b.degats[n]).toLocaleString('fr-FR')}</b></span>`).join(' · ')}${b.riposte ? ` · <span class="rip">riposte +${Math.round(b.riposte)}</span>` : ''}
       <div class="bar split">${noms.map(n => `<i style="width:${(b.degats[n] || 0) / tot * 100}%;background:${couleurHeros(n, s)}"></i>`).join('')}</div></div>`}
     ${b.type === 'semaine' && textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')] ? `<div class="bc-parole">${plie(b.nom + ' : « ' + textesClaude['boss|' + b.debut + (vaincu ? '|fin' : '')] + ' »', '', 2)}</div>` : ''}
@@ -3453,11 +3291,11 @@ function carteBoss(b, s) {
 }
 /** Onglet Combat : les deux boss, le journal des coups de la Compagnie, les règles */
 /* Familles de victoire par boss (app 5.2) */
-const MORT_BOSS = { kraken: 'eau', sirene: 'eau', leviathan: 'eau', meduse: 'eau', hydre: 'eau',
-  vampire: 'ombre', spectre: 'ombre', liche: 'ombre', necro: 'ombre', banshee: 'ombre', oubli: 'ombre', doute: 'ombre', lougarou: 'ombre',
-  golem: 'pierre', titan: 'pierre', gargouille: 'pierre', troll: 'pierre', ogre: 'pierre', sphinx: 'pierre', fatigue: 'pierre', minotaure: 'pierre', mimique: 'pierre',
-  dragon: 'feu', chimere: 'feu', archidemon: 'feu', procrastination: 'feu', cyclope: 'feu',
-  basilic: 'nature', wyrm: 'nature', harpie: 'nature', dissipation: 'nature', tentation: 'nature' };
+const MORT_BOSS = { hydre: 'eau',
+  spectre: 'ombre', liche: 'ombre', necro: 'ombre', oubli: 'ombre', doute: 'ombre', 
+  golem: 'pierre', gargouille: 'pierre', troll: 'pierre', fatigue: 'pierre', mimique: 'pierre',
+  dragon: 'feu', archidemon: 'feu', procrastination: 'feu', 
+  basilic: 'nature', harpie: 'nature', dissipation: 'nature', tentation: 'nature' };
 const MORTS = { eau: { c: ['#3fa9c9', '#bfe8ff', '#7ad0f0'], e: ['💧', '🫧', '💦'] }, ombre: { c: ['#2a1a3a', '#6a4a8a', '#14101a'], e: ['🦇', '💨', '🦇'] },
   pierre: { c: ['#8a8496', '#5a5468', '#b8b0c4'], e: ['🪨', '💥', '🪨'] }, feu: { c: ['#ff9a3c', '#ffd23a', '#e8452c'], e: ['🔥', '✨', '🔥'] },
   nature: { c: ['#5aa85a', '#9ae08a', '#d4ad3c'], e: ['🍃', '🍂', '🌿'] }, eclat: { c: ['var(--gold)', 'var(--gold)', '#8a7aa8'], e: ['✨', '⭐', '✨'] } };
@@ -3598,7 +3436,7 @@ function ecransRecap(s, d) {
   if (d.meilleure.serie) E.push(`<div class="rc-flamme">🔥</div><p class="rc-sur">Meilleure série</p><h2>${esc(d.meilleure.nom)}</h2><div class="rc-gros" data-compte="${d.meilleure.serie}">0</div><p>jours d'affilée</p>`);
   const B = d.boss;
   if (B && !d.precedente) E.push(`<div class="rc-boss ${B.statut === 'Vaincu' ? 'vaincu' : ''}">${bossSvg(B.visuel, 'rcb', B)}</div><h2>${esc(B.nomStade || B.nom)}</h2>
-    <p>${B.statut === 'Vaincu' ? `⚔ Vaincu le ${dateCourte(B.vaincuLe)} ! Trophée : ${esc(B.trophee || '')}` : B.statut === 'En cours' ? `Il lui reste ${Math.round(B.pv).toLocaleString('fr-FR')} PV… dernière chance ce soir !` : esc(B.statut || '')}</p>`);
+    <p>${B.statut === 'Vaincu' ? `⚔ Vaincu le ${dateCourte(B.vaincuLe)} ! Trophée : ${esc(B.trophee || '')}` : B.statut === 'En cours' ? `Il lui reste ${Math.round(B.pv).toLocaleString('fr-FR')} PV… ${joursRestants(B.fin) === 0 ? 'dernière chance ce soir !' : 'encore ' + joursRestants(B.fin) + ' jour' + (joursRestants(B.fin) > 1 ? 's' : '') + ' pour l\'achever.'}` : esc(B.statut || '')}</p>`);
   if (d.comp && !d.precedente && d.comp.xpSemaine != null) {
     const moi = b.xp, lui = Number(d.comp.xpSemaine) || 0, max = Math.max(1, moi, lui);
     E.push(`<p class="rc-sur">La Compagnie</p><div class="rc-duel"><div><span>Toi</span><i style="--w:${Math.round(moi / max * 100)}%"></i><b>${moi.toLocaleString('fr-FR')} XP</b></div>
@@ -3682,9 +3520,7 @@ document.addEventListener('click', e => {
 });
 /* ---------- Ouverture d'une saison : une petite cinématique, une fois par téléphone ---------- */
 const OUVERTURES = { pre: { nom: 'Le Rodage', sous: 'Pré-saison · jusqu\'au 31 décembre', lot: 'tete_aube', heros: true,
-  texte: 'Ton aventure commence au campement. Un chemin de 15 paliers mène au château de l\'Aube : chaque quête t\'en rapproche, coffres et trésors jalonnent la route.' },
-  s1: { nom: 'L\'Éveil des Légendes', sous: 'Saison 1 · janvier → juin', lot: 'tete_legende', boss: 'kraken',
-  texte: 'Les créatures légendaires sortent de leur sommeil. Un nouveau chemin de 50 paliers vous attend jusqu\'au temple des Légendes.' } };
+  texte: 'Ton aventure commence au campement. Un chemin de 15 paliers mène au château de l\'Aube : chaque quête t\'en rapproche, coffres et trésors jalonnent la route.' } };
 function ouvertureSaisonAFaire() {
   const S = state && state.armurerie && state.armurerie.saison, O = S && OUVERTURES[S.id]; if (!O) return;
   let vu = false; try { vu = !!localStorage.getItem('ouverture|' + S.id); } catch (e) {} if (vu || ouverturePrevue) return;
@@ -3718,8 +3554,8 @@ document.addEventListener('click', e => {
 const ANNONCE_BOSS = [
   ['🎯', 'Des PV à votre mesure', 'les PV du boss sont calés sur votre vrai rythme des dernières semaines : la victoire se mérite, elle n\'est plus garantie.'],
   ['⚔', 'Des coups spéciaux', 'le mardi et le jeudi (le samedi pour le boss du mois), annoncés la veille. Chacun se contre : la quête qui le brise est marquée « 🗡 brise… » et ouvre une Brèche (+25 % de dégâts).'],
-  ['🔥', 'Enragé puis Aux abois', 'sous 50 % de PV il riposte plus fort ; sous 20 % il tente un dernier recours.'],
-  ['😈', 'S\'il s\'enfuit', 'le boss suivant arrive enhardi : plus de PV et une malédiction de départ.'],
+  ['🔥', 'Enragé puis Aux abois', 'sous 30 % de PV il riposte plus fort ; sous 20 % il tente un dernier recours.'],
+  ['😈', 'S\'il s\'enfuit', 'le boss suivant arrive blessé par la poursuite (−5 % de PV) ; s\'il s\'est enfui de loin, il maudit la Compagnie deux jours. Une quête saisie en retard compte encore pour le boss terminé.'],
   ['🐉', 'Ils évoluent', 'chaque boss a 3 stades : nouveau nom, nouvelles couleurs, une capacité de plus.']
 ];
 function ouvrirAnnonceBoss() {
@@ -3782,7 +3618,7 @@ function dessinerVitrine() {
     return `<button class="evo-t ${ok ? '' : 'lock'} ${i === pal ? 'ici' : ''}" data-evo="${i}"><span>${cl.dessin(i, 'ev' + i, lookDe(s.look))}</span><b>Niv ${e.n}</b></button>`; }).join('');
   ov.innerHTML = `<div class="vit-box">
     <button class="vit-x" data-vit-close="1" aria-label="Fermer">✕</button>
-    <div class="vit-nom"><b>${esc(s.heros || s.nom || '')}</b><span>${esc([s.titre, 'niveau ' + s.niveau, P && P.titre].filter(Boolean).join(' · '))}</span></div>
+    <div class="vit-nom"><b>${esc(s.heros || s.nom || '')}</b><span>${esc([s.titre, 'niveau ' + s.niveau, P && P.titre !== s.titre && P.titre].filter(Boolean).join(' · '))}</span></div>
     <div class="vit-scene ${mage ? 'mage' : 'voleur'} ${confort().animations ? '' : 'calme'}">
       <div class="vit-repaire">${repaireSvg(repaireDe(s), 'vr')}</div>
       <div class="vit-parts">${parts}</div>
@@ -4618,7 +4454,7 @@ function render() {
       ${s.vacances ? `<div class="etat vac">🏖️ <b>Mode vacances depuis le ${dateCourte(s.vacances.depuis)}</b> : aucun raté n'est compté et tes séries sont gelées. Tu peux quand même valider une quête si tu en fais une.<br><button data-vac="1">Je suis rentré</button></div>` : ''}
       ${s.arc ? `<div class="etat terre">⚔️ <b>À terre : arc d'entraînement.</b> Les ratés automatiques sont suspendus. Fais au moins une quête par jour pendant ${s.arc.requis} jours pour te relever
         <span class="pips">${Array.from({ length: s.arc.requis }, (_, i) => `<i class="${i < s.arc.jours ? 'on' : ''}"></i>`).join('')}</span></div>`
-      : s.pv < s.seuilEpuise ? `<div class="etat epuise court">😮‍💨 <b>Épuisé :</b> XP ×${String(s.malus).replace('.', ',')} sous ${s.seuilEpuise} PV · chaque quête faite te soigne</div>` : ''}
+      : s.pv < s.seuilEpuise ? `<div class="etat epuise court">😮‍💨 <b>Épuisé</b> : XP ×${String(s.malus).replace('.', ',')} · chaque quête te soigne</div>` : ''}
     </header>
     ${aPro ? `<div class="filters">${['Tout', 'Perso', 'Pro'].map(f => `<button data-f="${f}" class="${f === filtre ? 'on' : ''}">${f}</button>`).join('')}</div>` : ''}`;
 
@@ -5828,7 +5664,7 @@ const demo = (() => {
 })();
 /* Aperçu : une armurerie de démonstration (le vrai catalogue vient du moteur) */
 (function () {
-  const CAT = {"liste":[{"id":"cape_rouge","slot":"cape","rarete":"commun","nom":"Cape de laine rouge","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_verte","slot":"cape","rarete":"commun","nom":"Cape du chasseur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_bleue","slot":"cape","rarete":"commun","nom":"Cape du voyageur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"bandeau","slot":"tete","rarete":"commun","nom":"Diadème de bronze","saison":"pre","comment":"Palier 2 de la pré-saison"},{"id":"fleurs","slot":"tete","rarete":"commun","nom":"Couronne de fleurs","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"aura_etincelles","slot":"aura","rarete":"rare","nom":"Aura d'étincelles","saison":"pre","comment":"Palier 7 de la pré-saison"},{"id":"tr_etincelles","slot":"trainee","rarete":"rare","nom":"Traînée d'étincelles","saison":"pre","comment":"Palier 4 de la pré-saison"},{"id":"tr_petales","slot":"trainee","rarete":"rare","nom":"Traînée de pétales","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"tr_flammes","slot":"trainee","rarete":"epique","nom":"Traînée de flammes","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"vi_etoiles","slot":"victoire","rarete":"epique","nom":"Coup de grâce : pluie d'étoiles","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"vi_foudre","slot":"victoire","rarete":"legendaire","nom":"Coup de grâce : foudre","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_dragon","slot":"familier","rarete":"epique","nom":"Dragon de l'Aube","comment":"Une série de 7 jours sur une quête","saison":"pre"},{"id":"fa_loup","slot":"familier","rarete":"epique","nom":"Loup des neiges","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_chouette","slot":"familier","rarete":"epique","nom":"Chouette astrale","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"cape_aube","slot":"cape","rarete":"epique","nom":"Cape de l'Aube","comment":"Palier 9 de la pré-saison","saison":"pre"},{"id":"aura_aube","slot":"aura","rarete":"legendaire","nom":"Aura de l'Aube","saison":"reserve"},{"id":"tete_aube","slot":"tete","rarete":"legendaire","nom":"Couronne de l'Aube","comment":"Palier 15 de la pré-saison","saison":"pre"},{"id":"mo_destrier","slot":"monture","rarete":"epique","nom":"Destrier","comment":"Niveau 25","saison":"pre"},{"id":"mo_griffon","slot":"monture","rarete":"legendaire","nom":"Griffon","comment":"Niveau 50","saison":"pre"},{"id":"re_clairiere","slot":"repaire","rarete":"commun","nom":"La clairière","niveau":1,"saison":"pre","comment":"Niveau 1"},{"id":"re_campement","slot":"repaire","rarete":"rare","nom":"Le campement","niveau":10,"saison":"pre","comment":"Niveau 10"},{"id":"re_taverne","slot":"repaire","rarete":"epique","nom":"La taverne","niveau":20,"saison":"pre","comment":"Niveau 20"},{"id":"re_tour","slot":"repaire","rarete":"epique","nom":"La tour","niveau":35,"saison":"pre","comment":"Niveau 35"},{"id":"re_trone","slot":"repaire","rarete":"legendaire","nom":"La salle du trône","niveau":50,"saison":"pre","comment":"Niveau 50"},{"id":"cape_hiver","slot":"cape","rarete":"commun","nom":"Cape d'hiver","saison":"s1","comment":"Palier 1 de la Saison 1"},{"id":"cape_sable","slot":"cape","rarete":"rare","nom":"Cape des sables","saison":"s1","comment":"Palier 17 de la Saison 1"},{"id":"cape_corsaire","slot":"cape","rarete":"epique","nom":"Cape du corsaire","saison":"reserve"},{"id":"cape_ecarlate","slot":"cape","rarete":"commun","nom":"Cape écarlate","butin":true,"saison":"s1","comment":"Coffres et marchand (Saison 1)"},{"id":"cape_legende","slot":"cape","rarete":"epique","nom":"Cape des Légendes","saison":"s1","comment":"Palier 20 de la Saison 1"},{"id":"houx","slot":"tete","rarete":"commun","nom":"Couronne de houx","butin":true,"saison":"s1","comment":"Coffres et marchand (Saison 1)"},{"id":"lierre","slot":"tete","rarete":"commun","nom":"Couronne de lierre","butin":true,"saison":"s1","comment":"Coffres et marchand (Saison 1)"},{"id":"plumes","slot":"tete","rarete":"rare","nom":"Coiffe de plumes","saison":"reserve"},{"id":"cornes","slot":"tete","rarete":"epique","nom":"Cornes du conquérant","saison":"reserve"},{"id":"tete_legende","slot":"tete","rarete":"legendaire","nom":"Couronne des Légendes","saison":"s1","comment":"Palier 50 de la Saison 1"},{"id":"aura_givre","slot":"aura","rarete":"rare","nom":"Aura de givre","saison":"s1","comment":"Palier 8 de la Saison 1"},{"id":"aura_lune","slot":"aura","rarete":"rare","nom":"Aura lunaire","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"aura_abysses","slot":"aura","rarete":"epique","nom":"Aura des abysses","saison":"reserve"},{"id":"aura_legende","slot":"aura","rarete":"legendaire","nom":"Aura des Légendes","saison":"s1","comment":"Palier 40 de la Saison 1"},{"id":"tr_givre","slot":"trainee","rarete":"rare","nom":"Traînée de givre","saison":"s1","comment":"Palier 5 de la Saison 1"},{"id":"tr_runes","slot":"trainee","rarete":"rare","nom":"Traînée de runes","butin":true,"saison":"s1","comment":"Coffres et marchand (Saison 1)"},{"id":"tr_bulles","slot":"trainee","rarete":"rare","nom":"Traînée de bulles","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"tr_etoiles","slot":"trainee","rarete":"epique","nom":"Traînée d'étoiles filantes","saison":"s1","comment":"Palier 28 de la Saison 1"},{"id":"vi_eclipse","slot":"victoire","rarete":"epique","nom":"Coup de grâce : éclipse","saison":"s1","comment":"Palier 35 de la Saison 1"},{"id":"vi_souffle","slot":"victoire","rarete":"legendaire","nom":"Coup de grâce : souffle du dragon","saison":"s1","comment":"Palier 48 de la Saison 1"},{"id":"fa_phenix","slot":"familier","rarete":"legendaire","nom":"Phénix","saison":"s1","comment":"Palier 30 de la Saison 1"},{"id":"fa_renard","slot":"familier","rarete":"epique","nom":"Renard des braises","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_golem","slot":"familier","rarete":"epique","nom":"Petit golem","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"re_forge","slot":"repaire","rarete":"rare","nom":"La forge des nains","saison":"s1","comment":"Palier 10 de la Saison 1"},{"id":"re_biblio","slot":"repaire","rarete":"epique","nom":"La bibliothèque volante","saison":"s1","comment":"Palier 33 de la Saison 1"},{"id":"re_navire","slot":"repaire","rarete":"legendaire","nom":"Le navire céleste","saison":"s1","comment":"Palier 45 de la Saison 1"},{"id":"mo_loup","slot":"monture","rarete":"epique","nom":"Loup géant","saison":"s1","comment":"Palier 25 de la Saison 1"},{"id":"mo_dragon","slot":"monture","rarete":"legendaire","nom":"Dragon","saison":"s1","comment":"Palier 50 de la Saison 1"},{"id":"cape_procrastination","slot":"cape","rarete":"epique","nom":"Cape du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"tete_procrastination","slot":"tete","rarete":"legendaire","nom":"Couronne du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"aura_procrastination","slot":"aura","rarete":"legendaire","nom":"Aura du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"cape_dissipation","slot":"cape","rarete":"epique","nom":"Cape des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_dissipation","slot":"tete","rarete":"legendaire","nom":"Couronne des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_dissipation","slot":"aura","rarete":"legendaire","nom":"Aura des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"cape_oubli","slot":"cape","rarete":"epique","nom":"Cape du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"tete_oubli","slot":"tete","rarete":"legendaire","nom":"Couronne du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"aura_oubli","slot":"aura","rarete":"legendaire","nom":"Aura du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"cape_fatigue","slot":"cape","rarete":"epique","nom":"Cape des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"tete_fatigue","slot":"tete","rarete":"legendaire","nom":"Couronne des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"aura_fatigue","slot":"aura","rarete":"legendaire","nom":"Aura des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"cape_doute","slot":"cape","rarete":"epique","nom":"Cape des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"tete_doute","slot":"tete","rarete":"legendaire","nom":"Couronne des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"aura_doute","slot":"aura","rarete":"legendaire","nom":"Aura des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"cape_tentation","slot":"cape","rarete":"epique","nom":"Cape de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_tentation","slot":"tete","rarete":"legendaire","nom":"Couronne de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_tentation","slot":"aura","rarete":"legendaire","nom":"Aura de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"cape_leviathan","slot":"cape","rarete":"epique","nom":"Cape du Léviathan","butin":true,"panoplie":"leviathan","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"tete_leviathan","slot":"tete","rarete":"legendaire","nom":"Couronne du Léviathan","butin":true,"panoplie":"leviathan","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"aura_leviathan","slot":"aura","rarete":"legendaire","nom":"Aura du Léviathan","butin":true,"panoplie":"leviathan","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"cape_chimere","slot":"cape","rarete":"epique","nom":"Cape de la Chimère","butin":true,"panoplie":"chimere","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"tete_chimere","slot":"tete","rarete":"legendaire","nom":"Couronne de la Chimère","butin":true,"panoplie":"chimere","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"aura_chimere","slot":"aura","rarete":"legendaire","nom":"Aura de la Chimère","butin":true,"panoplie":"chimere","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"cape_titan","slot":"cape","rarete":"epique","nom":"Cape du Titan","butin":true,"panoplie":"titan","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"tete_titan","slot":"tete","rarete":"legendaire","nom":"Couronne du Titan","butin":true,"panoplie":"titan","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"aura_titan","slot":"aura","rarete":"legendaire","nom":"Aura du Titan","butin":true,"panoplie":"titan","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"cape_banshee","slot":"cape","rarete":"epique","nom":"Cape de la Banshee","butin":true,"panoplie":"banshee","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"tete_banshee","slot":"tete","rarete":"legendaire","nom":"Couronne de la Banshee","butin":true,"panoplie":"banshee","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"aura_banshee","slot":"aura","rarete":"legendaire","nom":"Aura de la Banshee","butin":true,"panoplie":"banshee","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"cape_sphinx","slot":"cape","rarete":"epique","nom":"Cape du Sphinx","butin":true,"panoplie":"sphinx","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"tete_sphinx","slot":"tete","rarete":"legendaire","nom":"Couronne du Sphinx","butin":true,"panoplie":"sphinx","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"aura_sphinx","slot":"aura","rarete":"legendaire","nom":"Aura du Sphinx","butin":true,"panoplie":"sphinx","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"cape_wyrm","slot":"cape","rarete":"epique","nom":"Cape du Wyrm","butin":true,"panoplie":"wyrm","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"tete_wyrm","slot":"tete","rarete":"legendaire","nom":"Couronne du Wyrm","butin":true,"panoplie":"wyrm","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"},{"id":"aura_wyrm","slot":"aura","rarete":"legendaire","nom":"Aura du Wyrm","butin":true,"panoplie":"wyrm","saison":"s1","comment":"Coffres, boss du mois, marchand (Saison 1)"}],"prix":{"commun":40,"rare":100,"epique":250,"legendaire":600},"panoplies":{"procrastination":{"nom":"du Sablier","couleur":"#b48cff","saison":"reserve"},"dissipation":{"nom":"des Tourbillons","couleur":"#5ae6be","saison":"reserve"},"oubli":{"nom":"du Néant","couleur":"#dfe3ff","saison":"reserve"},"fatigue":{"nom":"des Brumes","couleur":"#9fb0e0","saison":"reserve"},"doute":{"nom":"des Mille Yeux","couleur":"#ff5a5a","saison":"reserve"},"tentation":{"nom":"de la Pomme d'Or","couleur":"#ff78aa","saison":"reserve"},"leviathan":{"nom":"du Léviathan","couleur":"#3fa9c9","saison":"s1"},"chimere":{"nom":"de la Chimère","couleur":"#ff8a3c","saison":"s1"},"titan":{"nom":"du Titan","couleur":"#c9b38a","saison":"s1"},"banshee":{"nom":"de la Banshee","couleur":"#a8f0e0","saison":"s1"},"sphinx":{"nom":"du Sphinx","couleur":"#e8c34a","saison":"s1"},"wyrm":{"nom":"du Wyrm","couleur":"#7ad06a","saison":"s1"}},"chemins":{"pre":{"1":{"item":"cape_rouge"},"2":{"item":"bandeau"},"3":{"coffre":"commun"},"4":{"item":"tr_etincelles"},"5":{"coffre":"rare"},"7":{"item":"aura_etincelles"},"8":{"coffre":"rare"},"9":{"item":"cape_aube"},"10":{"coffre":"epique"},"12":{"coffre":"rare"},"14":{"coffre":"epique"},"15":{"item":"tete_aube"}},"s1":{"1":{"item":"cape_hiver"},"3":{"coffre":"commun"},"5":{"item":"tr_givre"},"7":{"coffre":"rare"},"8":{"item":"aura_givre"},"10":{"item":"re_forge"},"12":{"coffre":"rare"},"15":{"coffre":"epique"},"17":{"item":"cape_sable"},"18":{"coffre":"rare"},"20":{"item":"cape_legende"},"22":{"coffre":"epique"},"25":{"item":"mo_loup"},"27":{"coffre":"rare"},"28":{"item":"tr_etoiles"},"30":{"item":"fa_phenix"},"32":{"coffre":"epique"},"33":{"item":"re_biblio"},"35":{"item":"vi_eclipse"},"37":{"coffre":"epique"},"40":{"item":"aura_legende"},"42":{"coffre":"legendaire"},"45":{"item":"re_navire"},"47":{"coffre":"legendaire"},"48":{"item":"vi_souffle"},"50":{"item":"tete_legende","item2":"mo_dragon"}}}};
+  const CAT = {"liste":[{"id":"cape_rouge","slot":"cape","rarete":"commun","nom":"Cape de laine rouge","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_verte","slot":"cape","rarete":"commun","nom":"Cape du chasseur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_bleue","slot":"cape","rarete":"commun","nom":"Cape du voyageur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"bandeau","slot":"tete","rarete":"commun","nom":"Diadème de bronze","saison":"pre","comment":"Palier 2 de la pré-saison"},{"id":"fleurs","slot":"tete","rarete":"commun","nom":"Couronne de fleurs","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"aura_etincelles","slot":"aura","rarete":"rare","nom":"Aura d'étincelles","saison":"pre","comment":"Palier 7 de la pré-saison"},{"id":"tr_etincelles","slot":"trainee","rarete":"rare","nom":"Traînée d'étincelles","saison":"pre","comment":"Palier 4 de la pré-saison"},{"id":"tr_petales","slot":"trainee","rarete":"rare","nom":"Traînée de pétales","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"tr_flammes","slot":"trainee","rarete":"epique","nom":"Traînée de flammes","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"vi_etoiles","slot":"victoire","rarete":"epique","nom":"Coup de grâce : pluie d'étoiles","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"vi_foudre","slot":"victoire","rarete":"legendaire","nom":"Coup de grâce : foudre","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_dragon","slot":"familier","rarete":"epique","nom":"Dragon de l'Aube","comment":"Une série de 7 jours sur une quête","saison":"pre"},{"id":"fa_loup","slot":"familier","rarete":"epique","nom":"Loup des neiges","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_chouette","slot":"familier","rarete":"epique","nom":"Chouette astrale","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"cape_aube","slot":"cape","rarete":"epique","nom":"Cape de l'Aube","comment":"Palier 9 de la pré-saison","saison":"pre"},{"id":"aura_aube","slot":"aura","rarete":"legendaire","nom":"Aura de l'Aube","saison":"reserve"},{"id":"tete_aube","slot":"tete","rarete":"legendaire","nom":"Couronne de l'Aube","comment":"Palier 15 de la pré-saison","saison":"pre"},{"id":"mo_destrier","slot":"monture","rarete":"epique","nom":"Destrier","comment":"Niveau 25","saison":"pre"},{"id":"mo_griffon","slot":"monture","rarete":"legendaire","nom":"Griffon","comment":"Niveau 50","saison":"pre"},{"id":"re_clairiere","slot":"repaire","rarete":"commun","nom":"La clairière","niveau":1,"saison":"pre","comment":"Niveau 1"},{"id":"re_campement","slot":"repaire","rarete":"rare","nom":"Le campement","niveau":10,"saison":"pre","comment":"Niveau 10"},{"id":"re_taverne","slot":"repaire","rarete":"epique","nom":"La taverne","niveau":20,"saison":"pre","comment":"Niveau 20"},{"id":"re_tour","slot":"repaire","rarete":"epique","nom":"La tour","niveau":35,"saison":"pre","comment":"Niveau 35"},{"id":"re_trone","slot":"repaire","rarete":"legendaire","nom":"La salle du trône","niveau":50,"saison":"pre","comment":"Niveau 50"},{"id":"cape_corsaire","slot":"cape","rarete":"epique","nom":"Cape du corsaire","saison":"reserve"},{"id":"plumes","slot":"tete","rarete":"rare","nom":"Coiffe de plumes","saison":"reserve"},{"id":"cornes","slot":"tete","rarete":"epique","nom":"Cornes du conquérant","saison":"reserve"},{"id":"aura_lune","slot":"aura","rarete":"rare","nom":"Aura lunaire","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"aura_abysses","slot":"aura","rarete":"epique","nom":"Aura des abysses","saison":"reserve"},{"id":"tr_bulles","slot":"trainee","rarete":"rare","nom":"Traînée de bulles","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_renard","slot":"familier","rarete":"epique","nom":"Renard des braises","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_golem","slot":"familier","rarete":"epique","nom":"Petit golem","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"cape_procrastination","slot":"cape","rarete":"epique","nom":"Cape du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"tete_procrastination","slot":"tete","rarete":"legendaire","nom":"Couronne du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"aura_procrastination","slot":"aura","rarete":"legendaire","nom":"Aura du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"cape_dissipation","slot":"cape","rarete":"epique","nom":"Cape des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_dissipation","slot":"tete","rarete":"legendaire","nom":"Couronne des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_dissipation","slot":"aura","rarete":"legendaire","nom":"Aura des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"cape_oubli","slot":"cape","rarete":"epique","nom":"Cape du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"tete_oubli","slot":"tete","rarete":"legendaire","nom":"Couronne du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"aura_oubli","slot":"aura","rarete":"legendaire","nom":"Aura du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"cape_fatigue","slot":"cape","rarete":"epique","nom":"Cape des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"tete_fatigue","slot":"tete","rarete":"legendaire","nom":"Couronne des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"aura_fatigue","slot":"aura","rarete":"legendaire","nom":"Aura des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"cape_doute","slot":"cape","rarete":"epique","nom":"Cape des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"tete_doute","slot":"tete","rarete":"legendaire","nom":"Couronne des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"aura_doute","slot":"aura","rarete":"legendaire","nom":"Aura des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"cape_tentation","slot":"cape","rarete":"epique","nom":"Cape de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_tentation","slot":"tete","rarete":"legendaire","nom":"Couronne de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_tentation","slot":"aura","rarete":"legendaire","nom":"Aura de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"}],"prix":{"commun":40,"rare":100,"epique":250,"legendaire":600},"panoplies":{"procrastination":{"nom":"du Sablier","couleur":"#b48cff","saison":"reserve"},"dissipation":{"nom":"des Tourbillons","couleur":"#5ae6be","saison":"reserve"},"oubli":{"nom":"du Néant","couleur":"#dfe3ff","saison":"reserve"},"fatigue":{"nom":"des Brumes","couleur":"#9fb0e0","saison":"reserve"},"doute":{"nom":"des Mille Yeux","couleur":"#ff5a5a","saison":"reserve"},"tentation":{"nom":"de la Pomme d'Or","couleur":"#ff78aa","saison":"reserve"}},"chemins":{"pre":{"1":{"item":"cape_rouge"},"2":{"item":"bandeau"},"3":{"coffre":"commun"},"4":{"item":"tr_etincelles"},"5":{"coffre":"rare"},"7":{"item":"aura_etincelles"},"8":{"coffre":"rare"},"9":{"item":"cape_aube"},"10":{"coffre":"epique"},"12":{"coffre":"rare"},"14":{"coffre":"epique"},"15":{"item":"tete_aube"}}}};
   const arm = { saison: { id: 'pre', nom: 'Pré-saison · le Rodage', paliers: 15, palier: 4, xp: 2580, cout: 600, dansPalier: 180, prochaine: { coffre: 'rare' } },
     possede: ['cape_rouge', 'bandeau', 're_clairiere', 're_campement', 'fa_dragon'], eclats: 120, ouverts: 0, joursActifs: 15,
     coffres: [{ source: 'palier|4', type: 'commun', origine: 'Palier 4' }, { source: 'boss|2026-11-12|La Liche du Scroll', type: 'rare', origine: 'La Liche du Scroll' }] };

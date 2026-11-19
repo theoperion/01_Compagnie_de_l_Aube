@@ -1518,7 +1518,7 @@ function startConv(scen,sujet){
 }
 function convMessages(){
   const C=ses, S=scenOf(C.scen);
-  const regles=`Tu es ${S.role}. Tu as une VRAIE conversation orale en anglais avec Théo, ingénieur de recherche français (plateforme de métabolomique LC-MS à Toulouse), niveau A2 qui vise B1. ${S.cadre}${C.sujet?" Sujet choisi par Théo : "+C.sujet+".":""}
+  const regles=`Tu es ${S.role}. Tu as une VRAIE conversation orale en anglais avec ${(acct&&acct.profil)||"Théo, ingénieur de recherche français"}, niveau A2 qui vise B1. ${S.cadre}${C.sujet?" Sujet choisi par Théo : "+C.sujet+".":""}
 But : le faire parler le plus possible, avec plaisir, comme dans une vraie discussion.
 - Réagis vraiment à ce qu'il dit (intérêt, humour, surprise), rebondis, partage parfois une courte anecdote à toi, puis pose UNE question ouverte pour relancer. Ne pose jamais deux questions d'affilée.
 - 1 à 3 phrases courtes, anglais parlé naturel avec contractions, difficulté ${diffOf(spkLvl())}/10 (1 = très simple et lent ; 10 = natif). Pas de liste, pas d'émoji, pas de markdown.
@@ -1930,7 +1930,7 @@ function renderRun(){
     if(!sample){toast(sampleErr("absent"));return}
     b.disabled=true; b.textContent="La plume court…";
     try{
-      const {text}=await sample(`Écris en français, en 2 ou 3 phrases au présent, la chronique épique et un peu malicieuse d'une étape de course à pied vécue par Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy, la Ville Rose = Toulouse).
+      const {text}=await sample(`Écris en français, en 2 ou 3 phrases au présent, la chronique épique et un peu malicieuse d'une étape de course à pied vécue par Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy, la Ville Rose${acct&&acct.ville?" = "+acct.ville:""}).
 Région du voyage : « ${regionOf(ww)[0]} ». Séance : « ${ss.title} » (${sessLabel(ss,ww)}). Adversaire de la semaine : ${regionOf(ww)[1]}.
 Effort ressenti : ${l.rpe||"?"}/10. Note du coureur : « ${l.note||"aucune"} ».
 Intègre les vrais détails de sa note (temps, météo, sensations) dans le récit. Pas de titre, pas de markdown.`,{modelTier:"quick"});
