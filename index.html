@@ -469,6 +469,12 @@
   .pl-legende { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 4px 8px; font-size: 11.5px; color: var(--muted); } .pl-legende i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
   .pl-pion.moi .pl-saute { animation: plSaute 1.8s ease-in-out infinite; } .pl-halo { animation: plProch 1.4s ease-in-out infinite; }
   @keyframes plSaute { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .pl-pion.moi.marche .pl-saute { animation: plBond .4s ease-out; }
+  @keyframes plBond { 0% { transform: translateY(0) scale(1.08, .9); } 45% { transform: translateY(-12px) scale(.95, 1.06); } 85% { transform: translateY(0) scale(1.1, .88); } 100% { transform: translateY(0) scale(1, 1); } }
+  .pl-pion:not(.moi) .pl-saute { animation: plSaute 2.3s ease-in-out .7s infinite; } /* le pion du compagnon vit aussi */
+  .vit-saut.salut .h-tete, .vit-perso.salut .h-tete { animation: hSalut .9s ease-in-out; } .vit-saut.salut .h-arme, .vit-perso.salut .h-arme { animation: hLeve .9s ease-in-out; }
+  @keyframes hSalut { 0%, 100% { transform: rotate(0); } 35%, 60% { transform: rotate(-7deg) translateY(2px); } }
+  @keyframes hLeve { 0%, 100% { transform: translateY(0) rotate(0); } 35%, 60% { transform: translateY(-10px) rotate(-4deg); } }
   .pl-case { cursor: pointer; } .pl-case:not(.fait):not(.proch) { opacity: .82; }
   .pl-pion { transition: transform .38s cubic-bezier(.3,1.5,.5,1); } .pl-pion.lui { opacity: .9; }
   @keyframes plProch { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .3; } }
@@ -2064,6 +2070,7 @@ function animerPlateau(s) {
   const pas = () => {
     n++; const [x, y] = posCase(Math.min(A.saison.paliers, n));
     el.style.transform = `translate(${x - 36}px,${y - 78}px)`; vib(15);
+    el.classList.remove('marche'); void el.offsetWidth; el.classList.add('marche'); // petit bond à chaque case
     if (n < cible) setTimeout(pas, 420);
     else { try { localStorage.setItem(k, String(cible)); } catch (e) {} plateauDepart = null;
       const r = ((s.catalogueCosm || {}).chemins || {})[A.saison.id] || {}, x2 = r[cible] || { eclats: 20 };
