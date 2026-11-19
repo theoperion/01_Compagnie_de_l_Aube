@@ -2943,7 +2943,7 @@ function lienTag(b, s) {
   return `<span class="tag lien-t"><span class="lien actif" aria-hidden="true">${lienAnneaux(cM, cL, L)}</span>Lien d'armes ×${lienBonus(L)}</span>`;
 }
 document.addEventListener('click', e => {
-  if (!e.target.closest('[data-lien]')) return;
+  if (!e.target.closest('[data-lien]')) return; e.stopImmediatePropagation(); // le Lien d'armes est dans la plaque (data-tab=profil) : ne pas ouvrir le profil (gardien)
   const L = state && state.lienArmes; if (!L) return;
   const x = lienBonus(L), n = Number(L.joursSemaine) || 0, sem = n ? ` (${n} jour${n > 1 ? 's' : ''} de lien cette semaine)` : '', V = L.vacances || {};
   if (V.moi && V.compagnon) return;
@@ -6020,7 +6020,7 @@ document.addEventListener('click', e => {
 });
 function carteSagaMini(s) {
   const m = s.mj; if (!m || !m.pret || m.monVote != null) return '';
-  return `<button class="evt on" data-tab="compagnie" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">📜 Nouveau chapitre : ${esc(m.titre)}</div><div class="evt-e">Le Maître du Jeu attend votre choix pour la semaine ›</div></button>`;
+  return `<button class="evt on" data-tab="compagnie" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">📜 Nouveau chapitre : ${esc(titreChapitre(m))}</div><div class="evt-e">Le Maître du Jeu attend votre choix pour la semaine ›</div></button>`;
 }
 
 /* ---------- Nouvelles : saga, bénédiction, rebondissement, événement, rétrospective, bilan du dimanche ---------- */
@@ -6746,7 +6746,7 @@ function render() {
         const choisi = surnomDe(s), dv = String((s.reglages || {}).devise || '').trim();
         /* devise fixe (jamais de défilement, Théo) : « … » si elle est trop longue, en entier dans la feuille « Ton titre » */
         const devise = dv ? `<span class="hxt-d" data-ttr="1" title="${esc(dv)}"><span>« ${esc(dv)} »</span></span>`
-          : '<span class="hxt-d vide"><span>✎ ta devise</span></span>';
+          : '<span class="hxt-d vide" data-ttr="1"><span>✎ ta devise</span></span>';
         const l1 = `<div class="hxc-l1 ${String(s.heros).length > 18 ? 'long' : ''}" data-ttr="1"><span class="hero-name" style="--nl:${String(s.heros).length}">${esc(s.heros)}</span>JOKER_L1</div>
           <div class="hxt"><span class="hxt-t ${choisi ? 'gagne' : ''}" data-ttr="1" role="button" aria-label="Choisir ton titre et écrire ta devise">${choisi ? esc(choisi) : esc(s.titre)}</span>${devise}</div>`;
         const jxp = `<div class="hxc-j"><span>XP</span><i class="t"><i style="width:${p}%"></i></i><em><b>${s.xpSuivant}</b> XP → niv.&nbsp;${s.niveau + 1}</em></div>`;
@@ -7104,7 +7104,7 @@ function compagnieFusion(s, moi, lui, total, xpComp, mot) {
   const col = (c, cote) => `<div class="cfa-col" style="--c:${cote === 'g' ? K.cM : K.cL}">
       <div class="dl-niche ${cote}" ${c.moi ? 'data-vitrine="1"' : `data-vitrine-nom="${esc(c.nom)}"`} role="button" aria-label="Voir ${c.moi ? 'ton héros' : 'ton compagnon d\'armes'} en grand">${K.dessin(c, 'dl' + cote)}<span class="loupe">⤢</span></div>
       <div class="dl-noms"><b>${K.prenom(c)}</b></div>
-      <small class="cfa-cl"><i class="cfa-ti">${esc(c.moi ? (surnomDe(s) || s.titre || '') : (c.surnom || c.titre || ''))}</i> · niv. ${c.niveau || 1}</small>
+      <small class="cfa-cl">${(t => t ? `<i class="cfa-ti">${esc(t)}</i> · ` : '')(c.moi ? (surnomDe(s) || s.titre || '') : (c.surnom || c.titre || ''))}niv. ${c.niveau || 1}</small>
       <div class="cfu-pv"><i class="t pv"><i style="width:${K.pvPct(c)}%"></i></i><em><b>${c.pv}</b> PV</em></div>
       <div class="cfu-q">${K.pips(c, total)}<em>${K.quetes(c, total)} auj.</em></div>
     </div>`;
@@ -7887,6 +7887,7 @@ window.addEventListener('popstate', () => {
 });
 gardeRetour();
 function fermerMenu() {
+  { const sp = document.getElementById('sheetPal'); if (sp) sp.classList.remove('ttr'); } // gardien : la feuille « Ton titre » ne garde pas sa classe
   document.getElementById('sheet').classList.remove('on');
   document.getElementById('sheetPal').classList.remove('on');
   document.getElementById('sheetBg').classList.remove('on');
