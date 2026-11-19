@@ -164,7 +164,7 @@ Quand un boss revient dans le calendrier, il revient **évolué** :
 - La prédiction instantanée des dégâts dans l'app applique les effets du jour (Carapace, Brèche, Bouclier, sbire), pour rester juste avant la réponse du moteur.
 - Petites animations quand une capacité se déclenche ou est brisée (secousse, éclat violet / doré). Les grosses animations par boss = chantier 2.
 
-### 7 bis Annonce des nouvelles règles (pour Kevin)
+### 7 bis Annonce des nouvelles règles (pour le compagnon d'armes)
 - Une fenêtre unique « ⚔ Les boss changent ! » s'ouvre chez **chaque héros** à sa prochaine ouverture de l'app,
   avec les nouveautés en 5 lignes (PV calés, coups spéciaux mardi/jeudi/samedi et contres, phases, fuite enhardie, évolutions)
   et la date de départ (23 novembre). Elle reste consultable dans les Nouvelles. Un message dans le fil de la Compagnie aussi.

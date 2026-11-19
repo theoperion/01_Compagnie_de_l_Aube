@@ -1,6 +1,6 @@
 # Contexte commun du Conseil de la Compagnie (lu par chaque agent)
 
-- Projet : « La Compagnie de l'Aube », app d'habitudes façon jeu de rôle pour deux héros (Théo, Kevin). Tout en **français**.
+- Projet : « La Compagnie de l'Aube », app d'habitudes façon jeu de rôle pour deux héros (Théo et son compagnon d'armes ; ne jamais écrire le vrai prénom du compagnon dans ce dépôt public). Tout en **français**.
 - Code : app dans `/home/user/01_Compagnie_de_l_Aube` (`index.html` = toute l'app, `carnet.html`, `config.js`, `sw.js`) ;
   moteur dans `/home/user/app_scripts/compagnie-de-l-aube` (`Code.js`, `Boss.js`, `Armurerie.js`, `tests/`).
   Lire d'abord `app_scripts/compagnie-de-l-aube/REPRISE.md` (architecture, règles du jeu, pièges connus).

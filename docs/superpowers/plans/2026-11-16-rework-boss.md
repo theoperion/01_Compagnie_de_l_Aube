@@ -120,7 +120,7 @@
 - [x] `bossSvg(visuel, cle, stade)` : stade II/III → teinte (`teinte` de `BOSS_FICHES_`, filtre de couleur) + attribut dessiné par-dessus (couronne, cornes, aura, yeux brillants).
 - [x] Captures des 18 boss aux 3 stades (planche Playwright) vérifiées à l'œil ; aucune forme illisible. Commit.
 
-### Tâche 7 : Annonce des nouvelles règles (pour Kevin) ✅
+### Tâche 7 : Annonce des nouvelles règles (pour le compagnon d'armes) ✅
 
 **Fichiers :** `index.html` (fenêtre unique), `Code.js` (message dans le fil, une fois).
 
@@ -140,4 +140,4 @@
 
 - [x] `clasp push --force` puis `python3 ../outils/deployer.py "moteur 5.0 : rework des boss"` ; vérifier par l'API que l'adresse est sur la nouvelle version.
 - [x] Publier l'app (main), mettre à jour l'audit `app_scripts/audits/compagnie-2026-11.md`, le mode d'emploi Claude et le README.
-- [x] Checklist pour Théo et Kevin : fenêtre d'annonce vue ; le 23/11, carte du boss avec stade et PV ; le 23/11 au soir, coup du mardi annoncé ; mardi, l'étiquette « brise… » sur la bonne quête et la Brèche après contre.
+- [x] Checklist pour Théo et son compagnon d'armes : fenêtre d'annonce vue ; le 23/11, carte du boss avec stade et PV ; le 23/11 au soir, coup du mardi annoncé ; mardi, l'étiquette « brise… » sur la bonne quête et la Brèche après contre.
