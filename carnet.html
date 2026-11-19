@@ -712,10 +712,12 @@ function addWord(en,fr,ex,lvl){if(!en||!fr||state.en.deck.some(c=>norm(c.en)===n
 /* Tes erreurs deviennent des cartes à redire à voix haute (« Dis-le en anglais ») : la correction revient en révision espacée */
 function ajouterPhrase(correct,faux){
   correct=String(correct||"").trim(); faux=String(faux||"").trim();
-  if(!correct||!faux||norm(correct)===norm(faux)||correct.split(/\s+/).length>16) return;
+  if(!norm(correct)||!norm(faux)||norm(correct)===norm(faux)||correct.split(/\s+/).length>16) return;
   if(state.en.deck.some(c=>norm(c.en)===norm(correct))) return;
   const actives=state.en.deck.filter(c=>c.phrase&&!(c.stab>=21)); if(actives.length>=30) return; // pas d'avalanche
-  state.en.deck.push({id:"p"+Date.now()+Math.random().toString(36).slice(2,6),en:correct,fr:"Corrige : « "+faux.slice(0,140)+" »",ex:"",lvl:"A2",phrase:true,reps:0,stab:null,diff:5,lapses:0,last:null,due:todayISO()});
+  const id="p"+Date.now()+Math.random().toString(36).slice(2,6);
+  state.en.deck.push({id,en:correct,fr:"Corrige : « "+faux.slice(0,140)+" »",ex:"",lvl:"A2",phrase:true,reps:0,stab:null,diff:5,lapses:0,last:null,due:todayISO()});
+  return id;
 }
 /* Claude évalue le niveau CECRL des mots ajoutés sans niveau (ajout manuel, corrections) */
 let evalEnCours=false;
@@ -997,7 +999,7 @@ function renderEn(){
   micStop(true); majFocus();
   if(ses) return ses.kind==="vocab"?renderReview(p):ses.kind==="conv"?renderConv(p):renderMission(p);
   const a=state.en.active, M=MODULES[a], u=modUnit(a), cur=state.en.mods[a].unit;
-  const dueCount=state.en.deck.filter(c=>c.due<=todayISO()).length;
+  const dueCount=srsQueue().length;
   const starsOf=i=>state.en.mods[a].stars?.[i]||0;
   p.innerHTML=`
   ${hasTTS()?"":'<p class="note">Ce navigateur ne sait pas lire l\'audio. Ouvre la page dans Safari ou Chrome pour les exercices d\'écoute.</p>'}
@@ -1126,7 +1128,7 @@ function memoryCard(){const q=srsQueue(),s=deckStats();
   <p class="small story">« Apprends et retiens : chaque leçon gravée le repousse. » Chaque mot retrouvé le blesse, chaque raté le soigne.</p>
   <div class="gap" style="gap:4px;margin:6px 0"><div class="row" style="justify-content:space-between"><b class="small">Lexique avancé (B2+) maîtrisé</b><span class="small mono">${s.avances} / ${prochainPalier(s.avances)}</span></div>
     <div class="gauge"><i class="g-done" style="width:${Math.min(100,s.avances/prochainPalier(s.avances)*100)}%"></i></div>
-    <span class="small muted">Palier suivant : +${prochainPalier(s.avances)===25?150:prochainPalier(s.avances)===50?250:500} XP d'Intelligence dans la Compagnie. Un mot compte quand tu le retiens encore 3 semaines plus tard.</span></div>
+    <span class="small muted">Palier suivant : +${prochainPalier(s.avances)===25?100:prochainPalier(s.avances)===50?150:prochainPalier(s.avances)===100?250:100} XP d'Intelligence dans la Compagnie. Un mot compte quand tu le retiens encore 3 semaines plus tard.</span></div>
   ${coriacesHTML()}
   <div class="row small"><span class="pill ok">${s.mast} maîtrisés</span><span class="pill neutral">${s.learn} en cours</span><span class="pill neutral">${s.fresh} nouveaux</span>${s.leech?`<span class="pill bad">${s.leech} coriaces</span>`:""}</div>
   <details><summary>Comment ça marche</summary><p class="small" style="margin-top:8px">Répétition espacée calée sur la courbe de l'oubli : chaque mot revient juste avant que tu l'oublies, de plus en plus tard quand il est bien su. Les cartes alternent trois façons de le retrouver : à l'oreille, en le disant en anglais à partir du français (le plus efficace) et en le reconnaissant. ${NEW_PER_DAY} nouveaux mots par jour au maximum, pour que les révisions restent légères. Un mot « coriace » a été raté 4 fois : dis-le dans une phrase à toi.</p></details>
@@ -1139,7 +1141,7 @@ function renderReview(p){
     p.innerHTML=`<div class="card game"><span class="kicker">Mémoire des mots</span><h2>Séance terminée</h2><p>${ses.ok} / ${ses.n} cartes retrouvées.</p>${oubliHTML()}<button class="btn primary" id="back">Retour</button></div>`;
     $("#back").onclick=()=>{ses=null;renderAll()};return;
   }
-  const c=state.en.deck.find(x=>x.id===ses.queue[ses.idx]); if(!c){ses.idx++;return renderReview(p)}
+  let c=state.en.deck.find(x=>x.id===ses.queue[ses.idx]); if(!c){ses.idx++;return renderReview(p)}
   const mode=ses.mode||(ses.mode=cardMode(c)), shown=ses.step==="show";
   const lab={new:"Nouveau mot",ecoute:"À l'oreille",prod:"Dis-le en anglais",reco:"Reconnaître"}[mode];
   const exl=c.ex?`<i class="small">${esc(c.ex)}</i>`:"";
@@ -1162,13 +1164,13 @@ function renderReview(p){
   $("#quitR").onclick=()=>{ses=null;renderAll()};
   $("#pl2")?.addEventListener("click",()=>speak(c.en,earRate()));
   $("#rv")?.addEventListener("click",reveal);
-  const chk=()=>{const v=$("#prodIn").value.trim();const r=diffHTML(c.en,v);ses.check={ok:norm(v)===norm(c.en)||r.score>=85,said:v||"(rien)"};reveal()};
+  const chk=()=>{const v=$("#prodIn").value.trim();const r=diffHTML(c.en,v);ses.check={ok:norm(v).replace(/'/g,"")===norm(c.en).replace(/'/g,"")||r.score>=85,said:v||"(rien)"};reveal()};
   $("#chk")?.addEventListener("click",chk);
   $("#prodIn")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();chk()}});
   if($("#prodIn")) bindMic("micP",$("#prodIn"),{attendu:c.en});
   $("#say")?.addEventListener("click",()=>speak(c.en));
   $("#sayex")?.addEventListener("click",()=>speak(c.ex,earRate()));
-  p.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const g=+b.dataset.g;
+  p.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const g=+b.dataset.g; c=state.en.deck.find(x=>x.id===c.id)||c; // une fusion a pu remplacer les objets
     if(isNew(c)){const L=state.en.newLog;if(L.date!==todayISO()){L.date=todayISO();L.n=0}L.n++}
     schedule(c,g);hitOubli(g);ses.n++;
     if(g===0){sfx("bad");if(!ses.failed[c.id]){ses.failed[c.id]=1;ses.queue.push(c.id)}}
@@ -1336,7 +1338,7 @@ function renderBrief(b){
   $("#roll")?.addEventListener("click",()=>{$("#roll").disabled=true;const el=$("#d20");el.classList.remove("idle");let k=0;sfx("ok");
     const iv=setInterval(()=>{el.textContent=1+Math.floor(Math.random()*20);if(++k>=14){clearInterval(iv);const r=1+Math.floor(Math.random()*20);if(!ses)return;ses.d20=r;ses.d20m=D20(r);
       if(r>=18){sfx("perfect");if(r===20)confetti()}else if(r===1)sfx("bad");renderEn()}},60)});
-  $("#nx").onclick=()=>{if(ses.d20)return advance();const C=ses;$("#nx").disabled=true;$("#roll")?.click();setTimeout(()=>{if(ses===C&&ses.d20)advance()},1700)};
+  $("#nx").onclick=()=>{if(ses.d20)return advance();const C=ses;$("#nx").disabled=true;$("#roll")?.click();setTimeout(()=>{if(ses===C&&ses.d20&&ses.round===0&&!ses.i)advance()},1700)};
 }
 function verdictHTML(it){return it.done?`<div class="verdict ${it.cls}">${esc(it.msg)}</div>`:""}
 function renderListen(b){
@@ -1402,7 +1404,7 @@ function renderSpeak(b){
   $("#sp")?.addEventListener("input",e=>it.val=e.target.value);
   if($("#sp")&&!it.done&&!it.wait) bindMic("micS",$("#sp"),x.type==="repete"?{attendu:String(x.audio)}:{});
   const fbHTML=(good,astuce)=>`<div class="transcript"><span class="small muted">Version juste</span><br><b>${esc(good)}</b></div>${astuce?`<p class="small">${esc(astuce)}</p>`:""}<div><button class="btn sm" id="hear">▶ Écouter la version juste</button></div>`;
-  $("#micTrompe")?.addEventListener("click",()=>{annulerRate();if(it.erreurNotee){ses.m.errors.pop();state.en.errors.pop();save()}ses.it={reessai:true,plays:it.plays,textShown:it.textShown};renderEn()});
+  $("#micTrompe")?.addEventListener("click",()=>{annulerRate();if(it.erreurNotee){ses.m.errors.pop();state.en.errors.pop();if(it.phraseId)state.en.deck=state.en.deck.filter(x=>!(x.id===it.phraseId&&!x.reps));save()}ses.it={reessai:true,plays:it.plays,textShown:it.textShown};renderEn()});
   $("#skip")?.addEventListener("click",()=>{miss();it.done=true;it.passe=true;it.cls="bad";it.msg="Passé. Écoute la version juste et répète-la à voix haute.";
     it.good=x.type==="dis"?x.ref:x.type==="repete"?x.audio:"";it.fb=it.good?fbHTML(it.good,""):"";renderEn()});
   $("#val")?.addEventListener("click",async()=>{
@@ -1419,7 +1421,7 @@ function renderSpeak(b){
     try{
       const r=await judge(x,ans); if(!ses||ses.S?.[ses.i]!==x) return;
       it.wait=false; it.done=true; it.good=r.correction||x.ref||"";
-      if(r.erreur&&r.erreur.faux){ses.m.errors.push(r.erreur);state.en.errors.push({...r.erreur,pourquoi:r.astuce||"",date:todayISO()});ajouterPhrase(r.erreur.correct,r.erreur.faux);state.en.errors=state.en.errors.slice(-40);it.erreurNotee=true}
+      if(r.erreur&&r.erreur.faux){ses.m.errors.push(r.erreur);state.en.errors.push({...r.erreur,pourquoi:r.astuce||"",date:todayISO()});it.phraseId=ajouterPhrase(r.erreur.correct,r.erreur.faux);state.en.errors=state.en.errors.slice(-40);it.erreurNotee=true}
       if(r.verdict==="parfait"){G().stats.speakPerfect++;const xp=gain(15,"spk",true);it.cls="perfect";it.msg=`Parfait ! +${xp} XP`}
       else if(r.verdict==="correct"){const xp=gain(8,"spk");it.cls="ok";it.msg=`Compris, avec une petite erreur. +${xp} XP`}
       else{miss();it.cls="bad";it.msg="Pas encore : regarde la version juste et redis-la."}
@@ -1984,7 +1986,7 @@ function renderRun(){
 Région du voyage : « ${regionOf(ww)[0]} ». Séance : « ${ss.title} » (${sessLabel(ss,ww)}). Adversaire de la semaine : ${regionOf(ww)[1]}.
 Effort ressenti : ${l.rpe||"?"}/10. Note du coureur : « ${l.note||"aucune"} ».
 Intègre les vrais détails de sa note (temps, météo, sensations) dans le récit. Pas de titre, pas de markdown.`,{modelTier:"quick"});
-      l.story=text.trim(); save(); renderRun();
+      (state.run.logs[k]||l).story=text.trim(); save(); renderRun();
     }catch(e){b.disabled=false;b.textContent="Raconter la séance en légende";toast(sampleErr(e.code))}
   });
   if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim()};openLog=null;save();sfx("ok");toast("Séance enregistrée · elle sera comptée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
