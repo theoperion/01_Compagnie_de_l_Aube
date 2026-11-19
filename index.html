@@ -304,11 +304,11 @@
   .vit-box { max-width: 460px; margin: 0 auto; padding: 18px 16px 40px; position: relative; }
   .vit-x { position: sticky; top: 0; float: right; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
   .vit-nom { text-align: center; margin: 6px 0 0; } .vit-nom b { display: block; font: 600 22px var(--f-recit); color: var(--gold); } .vit-nom span { font-size: 13px; color: var(--muted); }
-  .vit-scene { position: relative; height: min(70vh, 470px); perspective: 900px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+  .vit-scene { position: relative; height: min(38vh, 300px); perspective: 900px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
   .vit-scene::before { content: ''; position: absolute; left: 50%; top: 52%; width: 300px; height: 300px; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle, rgba(127,214,255,.18), transparent 65%); animation: pulseVit 5s ease-in-out infinite; }
   .vit-scene.voleur::before { background: radial-gradient(circle, rgba(170,110,255,.2), transparent 65%); }
   @keyframes pulseVit { 0%,100% { opacity: .6; transform: translate(-50%,-50%) scale(.95); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.05); } }
-  .vit-rot { position: relative; transform-style: preserve-3d; touch-action: none; cursor: grab; width: min(78vw, 330px); z-index: 1; }
+  .vit-rot { position: relative; transform-style: preserve-3d; touch-action: none; cursor: grab; width: min(78vw, 330px, calc(min(38vh, 300px) * .84)); z-index: 1; } /* scène basse : la garde-robe se voit dès l'ouverture (on ne coupe que le vide au-dessus du chapeau) */
   .vit-perso { animation: respire 4.2s ease-in-out infinite; transform-origin: 50% 95%; }
   .vit-perso svg { width: 100%; height: auto; display: block; }
   .vit-perso.salut { animation: salut .7s ease-out, respire 4.2s ease-in-out .7s infinite; }
@@ -322,6 +322,9 @@
   .vit-scene.calme *, .vit-scene.calme::before { animation: none !important; }
   @media (prefers-reduced-motion: reduce) { .vit-scene *, .vit-scene::before { animation: none !important; } }
   .vit-aide { text-align: center; font-size: 12px; color: var(--muted); margin: 6px 0 18px; }
+  .vit-acts { display: flex; gap: 8px; margin: -8px 0 16px; } .vit-acts .btn { min-height: 46px; white-space: nowrap; }
+  .vit-ancre { flex: none; padding: 0 14px; font-size: 14px; } .vit-acts .vit-ancre:only-child { margin: 0 auto; }
+  .vit-coffre { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0; font-size: 15px; } .vit-coffre b { min-width: 22px; padding: 0 6px; border-radius: 11px; background: rgba(0,0,0,.25); font-size: 13px; }
   .orn-slot h4 { margin: 14px 0 8px; font: 600 14px var(--f-recit); color: var(--gold); } .orn-slot h4 span { font: 400 12px system-ui, sans-serif; color: var(--muted); margin-left: 6px; }
   .orn-liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; }
   .orn-t { position: relative; }
@@ -330,8 +333,9 @@
   .orn-t.eq .orn-b { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(242,165,65,.4) inset; background: rgba(242,165,65,.08); }
   .orn-t.lock .orn-ic { opacity: .22; filter: grayscale(1); }
   .orn-t.lock .orn-b b { color: var(--muted); }
-  .orn-b .cad { position: absolute; left: 5px; top: 4px; font-size: 9px; font-style: normal; }
-  .orn-q { position: absolute; top: 2px; right: 2px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(242,165,65,.45); background: #2a2236; color: var(--gold); font: 700 12px system-ui; line-height: 22px; padding: 0; cursor: pointer; z-index: 2; }
+  .orn-b .cad { position: absolute; left: 6px; top: 6px; font-size: 10px; line-height: 1; font-style: normal; }
+  .orn-q { position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(242,165,65,.45); background: #2a2236; color: var(--gold); font: 700 13px system-ui; line-height: 24px; padding: 0; cursor: pointer; z-index: 2; }
+  .orn-liste .orn-b { padding-top: 16px; } /* le « ? » ne mord plus sur l'image */
   .orn-info { margin: 6px 0 0; padding: 8px 10px; border-radius: 10px; background: rgba(242,165,65,.08); border: 1px solid rgba(242,165,65,.3); font-size: 12.5px; line-height: 1.4; display: none; }
   .orn-info.on { display: block; }
   .orn-ic svg { max-width: 34px; }
@@ -1927,8 +1931,6 @@ html.th-epopee .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 21px); letter-
   :root .jour .jour-sub { margin: 3px 0 4px; } :root .jour .jour-d20 svg { width: 34px; height: 34px; } :root .jour .jbars { margin-top: 4px; }
   :root .sous-onglets { margin: 8px 0 6px; padding: 3px; } :root .sous-onglets button { min-height: 36px; padding: 6px; }
   :root .section { margin: 14px 0 8px; }
-  /* 11. vitrine : la scène laisse voir le début de la garde-robe */
-  .vit-scene { max-height: 52vh; }
 }
 /* 5. sous-titres de section : sur deux lignes plutôt que coupés par « … » */
 :root .section span { white-space: normal; text-align: right; line-height: 1.2; max-width: 45%; overflow: visible; }
@@ -1936,7 +1938,7 @@ html.th-epopee .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 21px); letter-
 .back { min-height: 40px; padding: 10px 0; }
 .toast-annuler { min-height: 40px; }
 .rc-x { min-width: 40px; min-height: 40px; }
-.orn-q::after { content: ''; position: absolute; inset: -8px; }
+.orn-q::after { content: ''; position: absolute; inset: -4px -4px -10px -10px; } /* 40 × 40, sans déborder de la tuile vers le cadenas */
 .reg [data-pr="devise"] { min-height: 40px; padding: 8px 0; }
 .reg input, .reg select, .reg button, .reg .btn { min-height: 40px; }
 .reg input[type=checkbox], .reg input[type=radio] { min-height: 0; }
@@ -2679,6 +2681,19 @@ function lireOpt(k) { try { return localStorage.getItem(k) || ''; } catch (e) { 
 /* Réglages : 3 thèmes affichés (dont celui choisi), les autres derrière « Voir plus » */
 let themesOuverts = false, apparenceOuverte = false; // réglages d'apparence repliés par défaut (app 4.1)
 document.addEventListener('click', e => { if (e.target.closest('[data-apparence]')) { apparenceOuverte = !apparenceOuverte; render(); } });
+/* Réglages rares (vacances, voyage, pauses, décalage, difficulté, sauvegarde) : une ligne qu'on déplie au toucher, comme « Apparence » */
+const regOuverts = new Set();
+/** Bloc de réglage replié : une ligne (icône, titre, état en clair) ; déplié, son h3 sert à replier. */
+function regPlie(cle, ic, titre, resume, html) {
+  if (!regOuverts.has(cle)) return `<button class="reg reg-lien" id="reg-${cle}" data-reg-plie="${cle}" aria-expanded="false"><span>${ic}</span><div><b>${titre}</b><small>${resume}</small></div><i>▾</i></button>`;
+  return html.replace('<div class="reg">', `<div class="reg" id="reg-${cle}">`).replace(/<h3>[^<]*<\/h3>/, `<h3 data-reg-plie="${cle}" aria-expanded="true" style="cursor:pointer">${ic} ${titre} <small class="muted" style="font-weight:400">▴ replier</small></h3>`);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-reg-plie], [data-reg-ouvre]'); if (!b) return;
+  const cle = b.dataset.regPlie || b.dataset.regOuvre;
+  if (b.dataset.regPlie && regOuverts.has(cle)) regOuverts.delete(cle); else regOuverts.add(cle);
+  render(); if (b.dataset.regOuvre) requestAnimationFrame(() => { const el = document.getElementById('reg-' + cle); if (el) el.scrollIntoView({ block: 'start' }); });
+});
 function themesVisibles() {
   if (themesOuverts || THEMES.length <= 4) return THEMES; // 4 thèmes (décision de Théo, 19/11) : tous visibles
   const choisi = THEMES.find(t => t.id === themeChoisi()) || THEMES[0];
@@ -3644,7 +3659,7 @@ function blocArmurerie() {
   const objets = slot => liste.filter(x => x.slot === slot);
   const petits = slot => slot === 'poche' ? ORNEMENTS.filter(o => o.slot === 'familier' && ornementDebloque(s, o)) : slot === 'familier' ? [] : ORNEMENTS.filter(o => o.slot === slot);
   const compte = slot => [objets(slot).filter(x => cosmPossede(x.id)).length + petits(slot).filter(o => ornementDebloque(s, o)).length, objets(slot).length + petits(slot).length];
-  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''}" data-garde="${id}" title="${a} / ${t} gagnés"><span>${ic}</span><b>${nom}</b></button>` : ''; }).join('');
+  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''}" data-garde="${id}" title="${nom} · ${a} / ${t} gagnés" aria-label="${nom} : ${a} sur ${t} gagnés"><span aria-hidden="true">${ic}</span><b>${nom}</b></button>` : ''; }).join('');
   const E = GARDE_ROBE.find(g => g[0] === slotGarde) || GARDE_ROBE[0];
   const tuilesCosm = objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
     return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
@@ -3663,7 +3678,7 @@ function blocArmurerie() {
     ${caches ? `<p class="muted" style="font-size:12px;margin:-4px 2px 10px">✦ + ${caches} objets à découvrir dans les saisons à venir</p>` : ''}
     ${blocSouvenirs(s)}
     <div class="section"><h2>Marchand</h2><span>✦ ${A.eclats} éclats</span></div>
-    <div class="sa-b">${(A.coffres || []).length ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${A.coffres.length})</button>` : ''}<button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} la boutique</button></div>
+    <div class="sa-b"><button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} la boutique</button></div>
     ${marchand}
     ${A.saison.id === 'pre' ? apercuSaison1() : ''}</div>`;
 }
@@ -3826,7 +3841,7 @@ function plateauHTML(s) {
   const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -8, 'moi', 'Toi', '#c8902a');
   return `<div class="plateau"><div class="pl-tete"><b>🗺 ${s1 ? 'Le chemin de la Saison 1' : 'Le chemin du Rodage'}${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(nomCompagnon(comp))} : ${comp.palierSaison}` : ''}</span></div>
     <div class="pl-legende"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>
-    <div class="pl-cadre"><svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Plateau de la saison : palier ${S.palier} sur ${N}">
+    <div class="pl-cadre"><svg viewBox="0 0 ${PL_W} ${H}" class="pl-svg" role="img" aria-label="Chemin de la saison : étape ${S.palier} sur ${N}">
       ${sol}${riviere}${deco.join('')}
       <path d="${d}" stroke="#2a1e12" stroke-width="22" fill="none" stroke-linecap="round" opacity=".5" transform="translate(0 4)"/>
       <path d="${d}" stroke="#b08a5a" stroke-width="18" fill="none" stroke-linecap="round"/>
@@ -4018,29 +4033,29 @@ const REGLES_PAGES = [
       <path d="M152 54 H166" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/><path d="M240 99 V117" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)"/>
       <path d="M166 162 H152" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 159 162)"/><path d="M80 99 V117" stroke="#d4ad3c" stroke-width="2.5" marker-end="url(#rgF)" transform="rotate(180 80 108)"/></svg>`,
     p: ['Tu fais tes quêtes comme d\'habitude : tout le reste en découle.', 'L\'XP te fait avancer sur le <b>chemin</b>. Chaque étape donne une récompense.', 'Les <b>coffres</b> contiennent des objets ; tu les portes dans ta <b>garde-robe</b>.'] },
-  { t: 'Le plateau', s: `<svg viewBox="0 0 320 120" class="rg-schema"><path d="M20 90 C80 20 140 110 200 50 S290 40 300 70" stroke="#b08a5a" stroke-width="14" fill="none" stroke-linecap="round"/>
+  { t: 'Le chemin', s: `<svg viewBox="0 0 320 120" class="rg-schema"><path d="M20 90 C80 20 140 110 200 50 S290 40 300 70" stroke="#b08a5a" stroke-width="14" fill="none" stroke-linecap="round"/>
       ${[[40, 70, '#4a8ae8', '🧥'], [95, 58, '#e84a5a', '🎁'], [150, 82, '#5ac86a', '✦'], [205, 50, '#f2c94c', '👑'], [270, 52, '#4a8ae8', '✨']].map(([x, y, c, i]) => `<g transform="translate(${x} ${y})"><ellipse cy="4" rx="18" ry="10" fill="#000" opacity=".35"/><ellipse rx="18" ry="10" fill="${c}" stroke="#fff" stroke-opacity=".6"/><text y="5" text-anchor="middle" font-size="11" fill="#fff">${i}</text></g>`).join('')}</svg>
       <div class="rg-leg"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>`,
     p: ['Une case = un <b>palier</b>. Un palier ≈ <b>la moitié d\'une semaine parfaite</b> d\'XP : jusqu\'à <b>2 cases par semaine</b>.', 'Ton compagnon d\'armes et toi avancez au <b>même rythme</b> pour une semaine complète, même avec des quêtes différentes.', 'Touche une case pour voir ce qu\'elle donne et combien d\'XP il te manque.'] },
-  { t: 'Les coffres', s: `<div class="rg-ligne"><div class="rg-bloc">🗺<small>case coffre du plateau</small></div><b>+</b><div class="rg-bloc">🐉<small>chaque boss vaincu</small></div><b>=</b><div class="rg-bloc or">🎁<small>coffre à ouvrir</small></div></div>
+  { t: 'Les coffres', s: `<div class="rg-ligne"><div class="rg-bloc">🗺<small>case coffre du chemin</small></div><b>+</b><div class="rg-bloc">🐉<small>chaque boss vaincu</small></div><b>=</b><div class="rg-bloc or">🎁<small>coffre à ouvrir</small></div></div>
       <div class="rg-rar"><span style="border-color:#a99bb6">Commun</span><span style="border-color:#5ab0ff">Rare</span><span style="border-color:#b392ee">Épique</span><span style="border-color:#f2a93c">Légendaire</span></div>`,
     p: ['Un coffre s\'ouvre dans <b>Héros → Aventure</b> (pastille 🎁). Touche-le pour l\'ouvrir tout de suite.', 'Plus le coffre est rare, plus l\'objet a de chances d\'être <b>épique ou légendaire</b>.', 'Un <b>boss du mois</b> laisse la première pièce de <b>sa panoplie</b> qui te manque (cape, puis couronne, puis aura) : c\'est le seul moyen de l\'obtenir.', '⚠ Les <b>coffres non ouverts</b> et les <b>éclats</b> du Rodage disparaissent le 1er janvier : ouvre-les au plus tard le 31 décembre.'] },
   { t: 'Éclats et marchand', s: `<div class="rg-ligne"><div class="rg-bloc">🎁<small>rareté déjà complète</small></div><b>→</b><div class="rg-bloc bleu">✦<small>éclats</small></div><b>→</b><div class="rg-bloc">🏪<small>le marchand</small></div></div>
       <div class="rg-rar"><span>Commun ✦ 40</span><span>Rare ✦ 100</span><span>Épique ✦ 250</span><span>Légendaire ✦ 600</span></div>`,
-    p: ['Les cases vertes du plateau donnent des <b>éclats</b>. Un coffre en donne aussi si tu as déjà <b>tous les objets</b> de la rareté tirée.', 'Avec les éclats, tu achètes <b>l\'objet de ton choix</b> chez le marchand (dans la vitrine, sous la garde-robe).'] },
+    p: ['Les cases vertes du chemin donnent des <b>éclats</b>. Un coffre en donne aussi si tu as déjà <b>tous les objets</b> de la rareté tirée.', 'Avec les éclats, tu achètes <b>l\'objet de ton choix</b> chez le marchand (dans la vitrine, sous la garde-robe).'] },
   { t: 'Ce qui se gagne autrement', s: `<div class="rg-grille"><div>🏰<b>Repaire</b><small>avec ton niveau (10, 20, 35, 50)</small></div><div>🐎<b>Monture</b><small>niveau 25 et 50</small></div><div>🐉<b>Familier</b><small>le Dragon de l'Aube, après 7 jours de suite (une seule fois) ; il grandit avec tes jours de quêtes (7, 30, 90)</small></div><div>🏆<b>Trophée</b><small>chaque boss vaincu, dans la salle des trophées</small></div></div>`,
     p: ['Ces récompenses viennent d\'elles-mêmes en jouant : pas besoin de coffre.'] },
   { t: 'La garde-robe', s: `<div class="rg-ligne"><div class="rg-bloc">👆<small>touche ton personnage</small></div><b>→</b><div class="rg-bloc">🧥<small>choisis un emplacement</small></div><b>→</b><div class="rg-bloc or">✓<small>touche un objet pour le porter</small></div></div>`,
     p: ['12 emplacements : cape, couronne, aura, familier, familier de poche, monture, repaire, traînée (quand tu valides une quête), coup de grâce (quand un boss tombe), emblème, sol, lueur.', 'Un cadenas = pas encore gagné. Le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Les saisons', s: `<div class="rg-ligne"><div class="rg-bloc">🌱<small>Pré-saison<br>jusqu'au 31 déc.</small></div><b>→</b><div class="rg-bloc or">✦<small>Saison 1<br>janv. → juin</small></div><b>→</b><div class="rg-bloc">✦<small>Saison 2<br>juil. → déc.</small></div></div>`,
     get p() { const s1 = (((typeof state !== 'undefined' && state && state.armurerie) || {}).saison || {}).id === 's1'; // pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage
-      return ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau), et les objets du Rodage repartent avec lui. Tes <b>trophées</b> et tes titres restent, souvenirs du Rodage.',
+      return ['Chaque saison a <b>son chemin</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau), et les objets du Rodage repartent avec lui. Tes <b>trophées</b> et tes titres restent, souvenirs du Rodage.',
         s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.']; } }
 ];
 let pageRegles = 0, livretRangeAuRetour = false;
 function livretReduit() { try { return localStorage.getItem('livretReduit') === '1'; } catch (e) { return false; } }
 document.addEventListener('click', e => {
-  if (e.target.closest('[data-livret-reduire]')) { try { localStorage.setItem('livretReduit', '1'); } catch (err) {} render(); toast('Livret réduit : touche « ? Règles » à côté du titre du plateau', 'info'); }
+  if (e.target.closest('[data-livret-reduire]')) { try { localStorage.setItem('livretReduit', '1'); } catch (err) {} render(); toast('Livret réduit : touche « ? Règles » à côté du titre du chemin', 'info'); }
 });
 function ouvrirRegles(page) {
   pageRegles = page || 0;
@@ -4057,7 +4072,7 @@ function ouvrirRegles(page) {
   ov.classList.add('on'); document.body.classList.add('bloque');
 }
 function fermerRegles() { const ov = document.getElementById('reglesOv'); if (ov) ov.classList.remove('on');
-  if (livretRangeAuRetour) { livretRangeAuRetour = false; setTimeout(() => { dernierHtml = ''; render(); toast('Livret rangé : touche « ? » à côté du titre du plateau pour le relire', 'info'); }, 0); } if (!document.getElementById('vitrine') || !document.getElementById('vitrine').classList.contains('on')) document.body.classList.remove('bloque'); }
+  if (livretRangeAuRetour) { livretRangeAuRetour = false; setTimeout(() => { dernierHtml = ''; render(); toast('Livret rangé : touche « ? » à côté du titre du chemin pour le relire', 'info'); }, 0); } if (!document.getElementById('vitrine') || !document.getElementById('vitrine').classList.contains('on')) document.body.classList.remove('bloque'); }
 document.addEventListener('click', e => {
   const r = e.target.closest('[data-regles]'); if (r) { ouvrirRegles(r.dataset.regles === 'garde' ? 5 : 0); return; }
   const pg = e.target.closest('[data-regles-page]'); if (pg) { ouvrirRegles(Math.max(0, Number(pg.dataset.reglesPage))); return; }
@@ -5767,7 +5782,7 @@ function ouvrirAnnonceAventure() {
   let ov = document.getElementById('bossVue');
   if (!ov) { ov = document.createElement('div'); ov.id = 'bossVue'; document.body.appendChild(ov); }
   ov.innerHTML = `<div class="annonce-boss"><div style="font-size:52px;text-align:center">🗺</div><h3>Nouveau : l'Aventure !</h3><p class="muted" style="margin:0 0 10px">Dans l'onglet Héros → Aventure</p>
-    ${[['🗺', 'Un plateau', 'tes quêtes font avancer ton pion, case après case, jusqu\'au château, aux côtés de ton compagnon d\'armes.'], ['🎁', 'Des coffres', 'sur le plateau et après chaque boss vaincu, avec des objets à porter.'],
+    ${[['🗺', 'Un chemin', 'tes quêtes te font avancer, étape après étape, jusqu\'au château, aux côtés de ton compagnon d\'armes.'], ['🎁', 'Des coffres', 'sur le chemin et après chaque boss vaincu, avec des objets à porter.'],
       ['🧥', 'Une garde-robe', 'touche ton personnage pour porter capes, couronnes, familiers, montures et décors.'], ['🏆', 'La salle des trophées', 'chaque boss vaincu y devient une statuette.'],
       ['📖', 'Un livret des règles', 'tout est expliqué en 7 pages illustrées.']].map(l => `<div class="ab-l"><span>${l[0]}</span><div><b>${l[1]}</b> : ${l[2]}</div></div>`).join('')}
     <div style="display:flex;gap:8px;justify-content:center;margin-top:14px"><button class="btn" data-boss-fermer="1">Plus tard</button><button class="btn or" data-aventure-go="1">Voir l'Aventure</button></div></div>`;
@@ -5905,6 +5920,7 @@ function dessinerVitrine() {
       <div class="vit-ombre"></div>
     </div>
     <p class="vit-aide">Incline-le du doigt · touche-le pour le saluer</p>
+    ${moi && state.armurerie ? `<div class="vit-acts">${(state.armurerie.coffres || []).length ? `<button class="btn or vit-coffre" data-coffre="1">🎁 Ouvrir un coffre <b>${state.armurerie.coffres.length}</b></button>` : ''}<button class="btn vit-ancre" data-vit-garde="1">🧥 Garde-robe ↓</button></div>` : ''}
     <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche pour revoir' : ''}</span></div>
     <div class="evo-rang">${evos}</div>
     ${moi ? blocArmurerie() : ''}
@@ -5942,6 +5958,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-vitrine]')) { ouvrirVitrine(); return; }
   if (e.target.closest('[data-vitrine-comp]') && compVue) { ouvrirVitrine(compVue); return; }
   if (e.target.closest('[data-vit-close]') || e.target.id === 'vitrine') { fermerVitrine(); return; }
+  if (e.target.closest('[data-vit-garde]')) { const g = document.getElementById('armurerie'); if (g) g.scrollIntoView({ behavior: confort().animations ? 'smooth' : 'auto', block: 'start' }); return; }
   const qi = e.target.closest('[data-orn-info]');
   if (qi) {
     const o = ORNEMENTS.find(x => x.id === qi.dataset.ornInfo); if (!o) return;
@@ -6116,7 +6133,7 @@ function nouvellesDe(s, dimanche) {
   const E = s.evenement, e = E && (E.actuel || E.prochain);
   if (e) { const sansMJ = Object.assign({}, s, { mj: null }); L.push({ id: 'evt|' + e.cle + (E.actuel ? '|on' : ''), html: carteEvenement(sansMJ, 2) }); }
   ((s.reglages && s.reglages.montre) || []).forEach(m => { const t = texteMontre(m); L.push({ id: 'montre|' + m.id, html: `<div class="evt on"><div class="evt-t">${t.titre}</div><div class="evt-e">${t.detail} · ${t.statut}</div></div>` }); });
-  if (s.armurerie && s.today <= AVENTURE_NOUVELLE_JUSQUA) L.push({ id: 'annonceAventure1', html: `<button class="evt on" data-annonce-aventure="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">🗺 Nouveau : l'Aventure</div><div class="evt-e">Plateau, coffres, garde-robe et salle des trophées, dans Héros → Aventure · relire ›</div></button>` });
+  if (s.armurerie && s.today <= AVENTURE_NOUVELLE_JUSQUA) L.push({ id: 'annonceAventure1', html: `<button class="evt on" data-annonce-aventure="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">🗺 Nouveau : l'Aventure</div><div class="evt-e">Chemin, coffres, garde-robe et salle des trophées, dans Héros → Aventure · relire ›</div></button>` });
   if (s.today <= '2026-12-07') L.push({ id: 'annonceBoss2026', html: `<button class="evt on" data-annonce-boss="1" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">${s.today >= '2026-11-23' ? '⚔ Les boss ont changé' : '⚔ Les boss changent le 23 nov'}embre</div><div class="evt-e">PV à votre mesure, coups spéciaux à contrer, 3 stades d'évolution · relire ›</div></button>` });
   if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, html: `<div class="section" style="margin-top:4px"><h2>Bilan du dimanche</h2><span>semaine du ${dateCourte(s.bilan.semaine.lundi)}</span></div>${carteBilan(s, true)}` });
   return L;
@@ -6868,7 +6885,7 @@ function render() {
     ${aVenirHTML(s)}
     ${epiques.length ? `<div class="section"><h2>Quêtes épiques</h2><span>trait doré = temps écoulé</span></div>
     <div class="list">${epiques.map(carteEpique).join('')}</div>` : ''}
-    ${enPause.length ? `<button class="pause-note" data-tab="profil" data-mode="reglages">⏸ ${enPause.length > 1 ? enPause.length + ' quêtes en pause' : esc(enPause[0].nom) + ' est en pause'} · gérer dans les réglages ⚙️</button>` : ''}`}`;
+    ${enPause.length ? `<button class="pause-note" data-tab="profil" data-mode="reglages" data-reg-ouvre="pause">⏸ ${enPause.length > 1 ? enPause.length + ' quêtes en pause' : esc(enPause[0].nom) + ' est en pause'} · gérer dans les réglages ⚙️</button>` : ''}`}`;
 
   const CL = classeDe(s), pal = palierDe(s.niveau, CL), prochain = CL.paliers[pal + 1];
   const cl = s.classe || { nom: 'Magicien', fav1: 'Intelligence', fav2: 'Sagesse', bonus: 1.1, epiques: 1.2 };
@@ -7164,7 +7181,7 @@ function cfuDonnees(s, moi, lui) {
     return f.habitudes.filter(h => !h.enPause && (h.aFaire || h.jour.fait || h.jour.rate || h.jour.repos)).length; };
   const pips = (c, total) => { total = totalDe(c, total); const f = Number(c.faitsAujourdhui) || 0, n = Math.min(8, Math.max(total || 0, f));
     return n ? `<span class="cfu-pips">${Array.from({ length: n }, (_, i) => `<i class="${i < f ? 'on' : i === f ? 'nx' : ''}" style="--i:${i}"></i>`).join('')}</span>` : ''; };
-  const quetes = (c, total) => { total = totalDe(c, total); const f = Number(c.faitsAujourdhui) || 0; return total ? `<b>${f}</b>/${total} quête${total > 1 ? 's' : ''}` : `<b>${f}</b> quête${f > 1 ? 's' : ''}`; };
+  const quetes = (c, total) => { total = totalDe(c, total); const f = Number(c.faitsAujourdhui) || 0; if (total) total = Math.max(total, f); return total ? `<b>${f}</b>/${total} quête${total > 1 ? 's' : ''}` : `<b>${f}</b> quête${f > 1 ? 's' : ''}`; };
   const couronne = meneur ? `<span class="dl-couronne" aria-label="En tête cette semaine"><svg viewBox="0 0 40 30" aria-hidden="true"><defs><linearGradient id="crg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a8"/><stop offset=".55" stop-color="var(--xp2)"/><stop offset="1" stop-color="var(--gold)"/></linearGradient></defs><path d="M4 24 L2 7 L12 15 L20 3 L28 15 L38 7 L36 24Z" fill="url(#crg)" stroke="#6b4321" stroke-width="1.4" stroke-linejoin="round"/><rect x="4" y="23" width="32" height="5" rx="1.5" fill="url(#crg)" stroke="#6b4321" stroke-width="1.2"/><circle cx="20" cy="12" r="2.2" fill="var(--theron)"/><circle cx="11" cy="17" r="1.6" fill="var(--wax2)"/><circle cx="29" cy="17" r="1.6" fill="var(--allie)"/></svg></span>` : '';
   return { B, bossOk, dg, dessin, a, b, meneur, ecart, prenom, pvPct, pips, quetes, couronne, cM: couleurClasse(moi.classe), cL: couleurClasse(lui.classe) };
 }
@@ -7284,14 +7301,14 @@ function vueProfil(s) {
       <div class="opts">${POLICES_TEXTE.map(x => `<button class="${lireOpt('policeTexte') === x.id ? 'on' : ''}" data-opt-police="${x.id}" style="${x.css ? 'font-family:' + x.css.replace(/"/g, '&quot;') : ''}">${esc(x.nom)}</button>`).join('')}</div></div>`;
   const vac = R.vacances || [];
   const enCours = vac.find(v => v.enCours);
-  const regVac = `<div class="reg"><h3>🏖️ Vacances</h3>
+  const regVac = regPlie('vac', '🏖️', 'Vacances', enCours ? '<b>En cours</b> · toucher pour gérer' : vac.length ? `${vac.length > 1 ? vac.length + ' départs prévus' : 'Départ le ' + dateCourte(vac[0].debut)} · toucher pour gérer` : 'Aucun raté, PV figés · toucher pour planifier', `<div class="reg"><h3>🏖️ Vacances</h3>
       <div class="aide">Aucun raté, PV figés, séries gelées. Planifie-les à l'avance : le départ et le retour se font tout seuls.</div>
       ${vac.map(v => `<div class="ligne"><span>${v.enCours ? '<b>En cours</b> · ' : ''}du ${dateCourte(v.debut)} ${v.fin ? 'au ' + dateCourte(v.fin) : '(sans date de retour)'}</span>
         <button class="btn mini" data-pr="vac-del" data-i="${v.index}">${v.enCours ? 'Je suis rentré' : 'Supprimer'}</button></div>`).join('')}
       <div class="form"><label>Départ<input type="date" id="vacDeb" min="${s.today}"></label><label>Retour (inclus)<input type="date" id="vacFin" min="${s.today}"></label></div>
       <button class="btn or plein" data-pr="vac-add">Planifier ces vacances</button>
       ${enCours ? '' : '<button class="btn plein" data-pr="vac-now">Partir dès aujourd\'hui (sans date de retour)</button>'}
-    </div>`;
+    </div>`);
   const routines = s.habitudes.filter(h => h.type === 'Routine' && !h.enPause);
   if (!routines.some(h => h.nom === decQuete)) decQuete = routines.length ? routines[0].nom : '';
   const hq = routines.find(h => h.nom === decQuete);
@@ -7300,21 +7317,23 @@ function vueProfil(s) {
   const deOpts = hq ? jr.filter(d => prevu(hq, d) && !pris.includes(d) && !(hq.jour.fait && d === s.today)) : [];
   const aOpts = hq ? jr.filter(d => !prevu(hq, d) && !pris.includes(d)) : [];
   const nomJour = d => (d === s.today ? 'aujourd\'hui' : JOURS_LONGS[indexJour(d)]) + ' ' + versDate(d).getDate();
-  const regPause = `<div class="reg"><h3>⏸️ Quêtes en pause</h3>
+  const nbPause = s.habitudes.filter(h => h.enPause).length;
+  const regPause = regPlie('pause', '⏸️', 'Quêtes en pause', nbPause ? `<b>${nbPause} en pause</b> · toucher pour gérer` : 'Aucune · blessure, période chargée…', `<div class="reg"><h3>⏸️ Quêtes en pause</h3>
       <div class="aide">Blessure, période chargée, saison : la quête disparaît de l'app, aucun raté, série gelée. Elle reprend d'un tap.</div>
       ${s.habitudes.map(h => `<div class="ligne"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}${h.enPause ? ` <span class="muted">· en pause depuis le ${dateCourte(((R.pauses || []).find(x => x.nom === h.nom) || {}).depuis || s.today)}</span>` : ''}</span>
         <button class="btn mini ${h.enPause ? 'or' : ''}" data-pr="pause" data-q="${esc(h.nom)}">${h.enPause ? 'Reprendre' : 'Pause'}</button></div>`).join('')}
-    </div>`;
+    </div>`);
   const voy = R.voyages || [];
-  const regVoyage = `<div class="reg"><h3>✈️ Voyage</h3>
+  const regVoyage = regPlie('voy', '✈️', 'Voyage', voy.length ? `<b>${voy.length > 1 ? voy.length + ' voyages prévus' : 'Du ' + dateCourte(voy[0].debut) + ' au ' + dateCourte(voy[0].fin)}</b> · toucher pour gérer` : 'Mettre en pause certaines quêtes seulement', `<div class="reg"><h3>✈️ Voyage</h3>
       <div class="aide">Plutôt que le mode vacances : tu choisis les quêtes à mettre en pause pendant le voyage (sans raté, séries gelées), les autres continuent et tu gardes le combat avec ta Compagnie. Ajoute des quêtes de voyage dans le Sheet (annexes avec « Disponible dès le » et une échéance).</div>
       ${voy.map(v => `<div class="ligne"><span>du ${dateCourte(v.debut)} au ${dateCourte(v.fin)} · en pause : ${v.quetes.map(esc).join(', ')}</span>
         <button class="btn mini" data-pr="voy-del" data-de="${v.debut}" data-a="${v.fin}">Annuler</button></div>`).join('')}
       <div class="form"><label>Départ<input type="date" id="voyDeb" min="${s.today}"></label><label>Retour (inclus)<input type="date" id="voyFin" min="${s.today}"></label></div>
       <div class="voy-q">${s.habitudes.map(h => `<label><input type="checkbox" value="${esc(h.nom)}"> ${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</label>`).join('')}</div>
       <button class="btn or plein" data-pr="voy-add">Mettre ces quêtes en pause pendant le voyage</button>
-    </div>`;
-  const regDec = `<div class="reg"><h3>↔️ Décaler une séance</h3>
+    </div>`);
+  const nbDec = (R.decalages || []).length;
+  const regDec = regPlie('dec', '↔️', 'Décaler une séance', nbDec ? `<b>${nbDec} séance${nbDec > 1 ? 's' : ''} décalée${nbDec > 1 ? 's' : ''}</b> cette semaine` : 'Déplacer une séance de cette semaine, sans raté', `<div class="reg"><h3>↔️ Décaler une séance</h3>
       <div class="aide">Pas de course mercredi, tu la fais jeudi : déplacement pour cette semaine seulement, sans raté et sans toucher au planning habituel.</div>
       ${(R.decalages || []).map(x => `<div class="ligne"><span>${esc(nomVu(s.habitudes.find(h => h.nom === x.nom) || x))} · ${nomJour(x.de)} → ${nomJour(x.a)}</span>
         <button class="btn mini" data-pr="dec-del" data-q="${esc(x.nom)}" data-de="${x.de}" data-a="${x.a}">Annuler</button></div>`).join('')}
@@ -7323,7 +7342,7 @@ function vueProfil(s) {
       <div class="form"><label>Séance prévue le<select id="decDe">${deOpts.map(d => `<option value="${d}">${nomJour(d)}</option>`).join('') || '<option value="">plus rien cette semaine</option>'}</select></label>
         <label>Déplacée au<select id="decA">${aOpts.map(d => `<option value="${d}">${nomJour(d)}</option>`).join('') || '<option value="">aucun jour libre</option>'}</select></label></div>
       <button class="btn or plein" data-pr="dec-add" ${deOpts.length && aOpts.length ? '' : 'disabled'}>Décaler la séance</button>` : '<div class="muted" style="font-size:12px">Aucune routine active.</div>'}
-    </div>`;
+    </div>`);
   const regCle = distant ? `<div class="reg"><h3>🔑 Ma clé de héros</h3>
       <div class="aide">Enregistrée sur ce téléphone : ${cleHeros ? esc(cleHeros.slice(0, 4)) + '••••-••••' : 'aucune'}. Si le Sheet dit « clé inconnue », retape-la ici.</div>
       <button class="btn plein" data-pr="cle-mod">Modifier ma clé</button></div>` : '';
@@ -7342,11 +7361,11 @@ function vueProfil(s) {
     </div>`;
   const df = R.difficulte || { niveau: 'Normal', modes: [] };
   const bloque = !!df.prochainChangement;
-  const regDiff = `<div class="reg"><h3>🎮 Difficulté</h3>
+  const regDiff = regPlie('diff', '🎮', 'Difficulté', `Actuelle : <b>${esc(df.niveau || 'Normal')}</b>${bloque ? ' · prochain changement le ' + dateCourte(df.prochainChangement).replace(/\.$/, '') : ''}`, `<div class="reg"><h3>🎮 Difficulté</h3>
       <div class="aide">${bloque ? `Prochain changement possible le ${dateCourte(df.prochainChangement).replace(/\.$/, '')}.` : 'Un changement par mois au plus. Il s\'applique à partir d\'aujourd\'hui, jamais au passé.'}</div>
       <div class="modes">${(df.modes || []).map(m => `<button class="mode ${m.nom === df.niveau ? 'on' : ''}" data-pr="diff" data-v="${esc(m.nom)}" ${bloque || m.nom === df.niveau ? 'disabled' : ''}>
         <b>${{ 'Détendu': '🌿', 'Normal': '⚔️', 'Héroïque': '🔥' }[m.nom] || ''} ${esc(m.nom)}${m.nom === df.niveau ? ' · actuel' : ''}</b><span>${esc(m.resume)}</span></button>`).join('')}</div>
-    </div>`;
+    </div>`);
   const cf = R.confort || { animations: true, vibrations: true };
   const regConf = `<div class="reg"><h3>✨ Confort</h3>
       <div class="ligne"><span>Animations (niveau, évolution, bonus)</span>${sw('cfAnim', cf.animations)}</div>
@@ -7356,14 +7375,15 @@ function vueProfil(s) {
 
   const sv = R.sauvegarde || {};
   const ilYaJ = sv.derniere ? ecartJours(sv.derniere, s.today) : null;
-  const regSauv = `<div class="reg"><h3>💾 Sauvegarde</h3>
+  const svVieille = ilYaJ !== null && ilYaJ > 8;
+  const regSauv = regPlie('sauv', '💾', 'Sauvegarde', `${svVieille ? '⚠️ ' : ''}Dernière copie : <b>${sv.derniere ? (ilYaJ === 0 ? 'aujourd\'hui' : ilYaJ === 1 ? 'hier' : `il y a ${ilYaJ} j`) : 'aucune'}</b> · exporter, sauvegarder`, `<div class="reg"><h3>💾 Sauvegarde</h3>
       <div class="aide">Chaque dimanche à 3 h, une copie complète du Sheet part dans ton Drive (les ${sv.gardees || 8} dernières sont gardées). L'historique des versions de Google reste là en plus.</div>
       <div class="ligne"><span>Dernière copie</span><b>${sv.derniere ? (ilYaJ === 0 ? 'aujourd\'hui' : ilYaJ === 1 ? 'hier' : `${dateCourte(sv.derniere).replace(/\.$/, '')} (il y a ${ilYaJ} j)`) : 'aucune pour l\'instant'}</b></div>
       ${ilYaJ !== null && ilYaJ > 8 ? '<div class="aide" style="color:var(--pv)">⚠️ Plus d\'une semaine sans copie : la sauvegarde automatique n\'est peut-être pas installée.</div>' : ''}
       <button class="btn plein" data-pr="sauver">💾 Sauvegarder maintenant</button>
       <button class="btn plein" data-pr="exporter" style="margin-top:8px">📥 Exporter mes données (fichier sur ce téléphone)</button>
       ${sv.dossier ? `<a class="lien" href="${esc(sv.dossier)}" target="_blank">📁 Ouvrir le dossier des sauvegardes</a>` : ''}
-    </div>`;
+    </div>`);
 
   if (modeProfil === 'journal') return `
     <button class="back" data-tab="profil" data-mode="reglages">‹ Réglages</button>
@@ -7372,7 +7392,8 @@ function vueProfil(s) {
   if (modeProfil === 'reglages') return `
     <button class="back" data-tab="${ongletPrec}">‹ Retour</button>
     <div class="section"><h2>⚙️ Réglages</h2></div>
-    ${regTheme}<button class="reg reg-lien" data-tab="profil" data-mode="journal"><span>📖</span><div><b>Journal des 7 derniers jours</b><small>Valider ou passer en raté une quête après coup</small></div><i>›</i></button>${regVac}${regVoyage}${regPause}${regDec}${regRap}${regDiff}${regSauv}${regConf}${regCle}
+    ${regTheme}<button class="reg reg-lien" data-tab="profil" data-mode="journal"><span>📖</span><div><b>Journal des 7 derniers jours</b><small>Valider ou passer en raté une quête après coup</small></div><i>›</i></button>${regRap}${regConf}
+    <div class="reg-rares">${regVac}${regVoyage}${regPause}${regDec}${regDiff}${regSauv}</div>${regCle}
     <div class="version"><b>La Compagnie de l'Aube</b>
       <span>App <b>v${NUMERO_APP}</b> · ${VERSION_APP}</span>
       <span>Moteur ${(s.reglages && s.reglages.numeroMoteur) ? `<b>v${esc(s.reglages.numeroMoteur)}</b> · ` : ''}${esc((s.reglages && s.reglages.versionMoteur) || 'ancien')}</span>
@@ -8156,7 +8177,7 @@ const demo = (() => {
     regDemo.vacances.forEach(v => { v.enCours = v.debut <= today && (!v.fin || today <= v.fin); });
     return { today, heros: location.hash === '#duo' ? (herosActif || 'Theron Corvane') : 'Ton nom de héros', titre, niveau: niv, xpTotale: xp, xpSuivant: Math.round(haut - xp),
       progression: Math.max(0, Math.min(1, (xp - bas) / (haut - bas))), pv, pvMax: 100,
-      etat: pv <= 0 ? 'À terre' : pv >= 40 ? 'En forme' : 'Épuisé (XP ×0,75)', xpParPoint: seuil,
+      etat: pv <= 0 ? 'À terre' : pv >= 40 ? 'En forme' : 'Épuisé (XP ×0,85)', xpParPoint: seuil,
       stats: Object.keys(stats).map(n => ({ nom: n, xp: stats[n], score: Math.min(20, 8 + Math.floor(stats[n] / seuil)) })),
       habitudes: JSON.parse(JSON.stringify(habs)),
       annexes: JSON.parse(JSON.stringify(annexes.filter(x => x.repetable || x.fois === 0 || x.jour.fait))),
@@ -8169,9 +8190,9 @@ const demo = (() => {
       look: herosActif === 'Kael' ? '#c99a74,#2b1d14,#3d6e9e' : '',
       compagnie: location.hash === '#duo' ? [{ nom: 'Theron Corvane', classe: 'Magicien' }, { nom: 'Kael', classe: 'Voleur assassin' }] : [{ nom: 'Ton nom de héros', classe: 'Magicien' }],
       compagnons: location.hash !== '#duo' ? [] : [herosActif === 'Kael'
-        ? { nom: 'Theron Corvane', classe: 'Magicien', look: '', niveau: 14, titre: 'le Vagabond', pv: 85, faitsAujourdhui: 2, xpSemaine: 1240 }
-        : { nom: 'Kael', classe: 'Voleur assassin', look: '#c99a74,#2b1d14,#3d6e9e', niveau: 9, titre: "l'Aventurier", pv: 70, faitsAujourdhui: 0, xpSemaine: 860 }],
-      jokersRestants: jokers, jokersParSemaine: 1, nouveauxBonus: nouveaux.splice(0), seuilEpuise: 40, malus: 0.75, arc: null,
+        ? { nom: 'Theron Corvane', classe: 'Magicien', look: '', niveau: 14, titre: 'le Vagabond', pv: 85, faitsAujourdhui: 2, quetesDuJour: 4, xpSemaine: 1240 }
+        : { nom: 'Kael', classe: 'Voleur assassin', look: '#c99a74,#2b1d14,#3d6e9e', niveau: 9, titre: "l'Aventurier", pv: 70, faitsAujourdhui: 0, quetesDuJour: 3, xpSemaine: 860 }],
+      jokersRestants: jokers, jokersParSemaine: 1, nouveauxBonus: nouveaux.splice(0), seuilEpuise: 40, malus: 0.85, arc: null, // ×0,85 : même valeur que le moteur (migration du 19/11/2026)
       d20: d20Demo, capacites: capaDemo(),
       bilan: { semaine: { lundi, dimanche: ilYa((now.getDay() + 6) % 7 - 6), xp: Math.round(xp - 1220), faits: 7 + log.filter(l => l.statut === 'Fait').length,
           rates: rates, jokers: 1 - jokers, bonus: 2, aJour: 2, total: 4 },
@@ -8266,7 +8287,7 @@ const demo = (() => {
 })();
 /* Aperçu : une armurerie de démonstration (le vrai catalogue vient du moteur) */
 (function () {
-  const CAT = {"liste":[{"id":"cape_rouge","slot":"cape","rarete":"commun","nom":"Cape de laine rouge","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_verte","slot":"cape","rarete":"commun","nom":"Cape du chasseur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_bleue","slot":"cape","rarete":"commun","nom":"Cape du voyageur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"bandeau","slot":"tete","rarete":"commun","nom":"Diadème de bronze","saison":"pre","comment":"Palier 2 de la pré-saison"},{"id":"fleurs","slot":"tete","rarete":"commun","nom":"Couronne de fleurs","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"aura_etincelles","slot":"aura","rarete":"rare","nom":"Aura d'étincelles","saison":"pre","comment":"Palier 7 de la pré-saison"},{"id":"tr_etincelles","slot":"trainee","rarete":"rare","nom":"Traînée d'étincelles","saison":"pre","comment":"Palier 4 de la pré-saison"},{"id":"tr_petales","slot":"trainee","rarete":"rare","nom":"Traînée de pétales","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"tr_flammes","slot":"trainee","rarete":"epique","nom":"Traînée de flammes","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"vi_etoiles","slot":"victoire","rarete":"epique","nom":"Coup de grâce : pluie d'étoiles","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"vi_foudre","slot":"victoire","rarete":"legendaire","nom":"Coup de grâce : foudre","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_dragon","slot":"familier","rarete":"epique","nom":"Dragon de l'Aube","comment":"Une série de 7 jours sur une quête","saison":"pre"},{"id":"fa_loup","slot":"familier","rarete":"epique","nom":"Loup des neiges","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_chouette","slot":"familier","rarete":"epique","nom":"Chouette astrale","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"cape_aube","slot":"cape","rarete":"epique","nom":"Cape de l'Aube","comment":"Palier 9 de la pré-saison","saison":"pre"},{"id":"aura_aube","slot":"aura","rarete":"legendaire","nom":"Aura de l'Aube","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"tete_aube","slot":"tete","rarete":"legendaire","nom":"Couronne de l'Aube","comment":"Palier 15 de la pré-saison","saison":"pre"},{"id":"mo_destrier","slot":"monture","rarete":"epique","nom":"Destrier","comment":"Niveau 25","saison":"pre"},{"id":"mo_griffon","slot":"monture","rarete":"legendaire","nom":"Griffon","comment":"Niveau 50","saison":"pre"},{"id":"re_clairiere","slot":"repaire","rarete":"commun","nom":"La clairière","niveau":1,"saison":"pre","comment":"Niveau 1"},{"id":"re_campement","slot":"repaire","rarete":"rare","nom":"Le campement","niveau":10,"saison":"pre","comment":"Niveau 10"},{"id":"re_taverne","slot":"repaire","rarete":"epique","nom":"La taverne","niveau":20,"saison":"pre","comment":"Niveau 20"},{"id":"re_tour","slot":"repaire","rarete":"epique","nom":"La tour","niveau":35,"saison":"pre","comment":"Niveau 35"},{"id":"re_trone","slot":"repaire","rarete":"legendaire","nom":"La salle du trône","niveau":50,"saison":"pre","comment":"Niveau 50"},{"id":"cape_corsaire","slot":"cape","rarete":"epique","nom":"Cape du corsaire","saison":"reserve"},{"id":"plumes","slot":"tete","rarete":"rare","nom":"Coiffe de plumes","saison":"reserve"},{"id":"cornes","slot":"tete","rarete":"epique","nom":"Cornes du conquérant","saison":"reserve"},{"id":"aura_lune","slot":"aura","rarete":"rare","nom":"Aura lunaire","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"aura_abysses","slot":"aura","rarete":"epique","nom":"Aura des abysses","saison":"reserve"},{"id":"tr_bulles","slot":"trainee","rarete":"rare","nom":"Traînée de bulles","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_renard","slot":"familier","rarete":"epique","nom":"Renard des braises","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_golem","slot":"familier","rarete":"epique","nom":"Petit golem","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"cape_procrastination","slot":"cape","rarete":"epique","nom":"Cape du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"tete_procrastination","slot":"tete","rarete":"legendaire","nom":"Couronne du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"aura_procrastination","slot":"aura","rarete":"legendaire","nom":"Aura du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"cape_dissipation","slot":"cape","rarete":"epique","nom":"Cape des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_dissipation","slot":"tete","rarete":"legendaire","nom":"Couronne des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_dissipation","slot":"aura","rarete":"legendaire","nom":"Aura des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"cape_oubli","slot":"cape","rarete":"epique","nom":"Cape du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"tete_oubli","slot":"tete","rarete":"legendaire","nom":"Couronne du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"aura_oubli","slot":"aura","rarete":"legendaire","nom":"Aura du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"cape_fatigue","slot":"cape","rarete":"epique","nom":"Cape des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"tete_fatigue","slot":"tete","rarete":"legendaire","nom":"Couronne des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"aura_fatigue","slot":"aura","rarete":"legendaire","nom":"Aura des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"cape_doute","slot":"cape","rarete":"epique","nom":"Cape des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"tete_doute","slot":"tete","rarete":"legendaire","nom":"Couronne des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"aura_doute","slot":"aura","rarete":"legendaire","nom":"Aura des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"cape_tentation","slot":"cape","rarete":"epique","nom":"Cape de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_tentation","slot":"tete","rarete":"legendaire","nom":"Couronne de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_tentation","slot":"aura","rarete":"legendaire","nom":"Aura de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"}],"prix":{"commun":40,"rare":100,"epique":250,"legendaire":600},"panoplies":{"procrastination":{"nom":"du Sablier","couleur":"#b48cff","saison":"reserve"},"dissipation":{"nom":"des Tourbillons","couleur":"#5ae6be","saison":"reserve"},"oubli":{"nom":"du Néant","couleur":"#dfe3ff","saison":"reserve"},"fatigue":{"nom":"des Brumes","couleur":"#9fb0e0","saison":"reserve"},"doute":{"nom":"des Mille Yeux","couleur":"#ff5a5a","saison":"reserve"},"tentation":{"nom":"de la Pomme d'Or","couleur":"#ff78aa","saison":"reserve"}},"chemins":{"pre":{"1":{"item":"cape_rouge"},"2":{"item":"bandeau"},"3":{"coffre":"commun"},"4":{"item":"tr_etincelles"},"5":{"coffre":"rare"},"7":{"item":"aura_etincelles"},"8":{"coffre":"rare"},"9":{"item":"cape_aube"},"10":{"coffre":"epique"},"12":{"coffre":"rare"},"14":{"coffre":"legendaire"},"15":{"item":"tete_aube"}}}};
+  const CAT = {"liste":[{"id":"cape_rouge","slot":"cape","rarete":"commun","nom":"Cape de laine rouge","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_verte","slot":"cape","rarete":"commun","nom":"Cape du chasseur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"cape_bleue","slot":"cape","rarete":"commun","nom":"Cape du voyageur","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"bandeau","slot":"tete","rarete":"commun","nom":"Diadème de bronze","saison":"pre","comment":"Palier 2 de la pré-saison"},{"id":"fleurs","slot":"tete","rarete":"commun","nom":"Couronne de fleurs","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"aura_etincelles","slot":"aura","rarete":"rare","nom":"Aura d'étincelles","saison":"pre","comment":"Palier 7 de la pré-saison"},{"id":"tr_etincelles","slot":"trainee","rarete":"rare","nom":"Traînée d'étincelles","saison":"pre","comment":"Palier 4 de la pré-saison"},{"id":"tr_petales","slot":"trainee","rarete":"rare","nom":"Traînée de pétales","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"tr_flammes","slot":"trainee","rarete":"epique","nom":"Traînée de flammes","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"vi_etoiles","slot":"victoire","rarete":"epique","nom":"Coup de grâce : pluie d'étoiles","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"vi_foudre","slot":"victoire","rarete":"legendaire","nom":"Coup de grâce : foudre","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_dragon","slot":"familier","rarete":"epique","nom":"Dragon de l'Aube","comment":"Une série de 7 jours sur une quête","saison":"pre"},{"id":"fa_loup","slot":"familier","rarete":"epique","nom":"Loup des neiges","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_chouette","slot":"familier","rarete":"epique","nom":"Chouette astrale","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"cape_aube","slot":"cape","rarete":"epique","nom":"Cape de l'Aube","comment":"Palier 9 de la pré-saison","saison":"pre"},{"id":"aura_aube","slot":"aura","rarete":"legendaire","nom":"Aura de l'Aube","butin":true,"saison":"pre","comment":"Coffres et marchand"},{"id":"tete_aube","slot":"tete","rarete":"legendaire","nom":"Couronne de l'Aube","comment":"Palier 15 de la pré-saison","saison":"pre"},{"id":"mo_destrier","slot":"monture","rarete":"epique","nom":"Destrier","comment":"Niveau 25","saison":"pre"},{"id":"mo_griffon","slot":"monture","rarete":"legendaire","nom":"Griffon","comment":"Niveau 50","saison":"pre"},{"id":"re_clairiere","slot":"repaire","rarete":"commun","nom":"La clairière","niveau":1,"saison":"pre","comment":"Niveau 1"},{"id":"re_campement","slot":"repaire","rarete":"rare","nom":"Le campement","niveau":10,"saison":"pre","comment":"Niveau 10"},{"id":"re_taverne","slot":"repaire","rarete":"epique","nom":"La taverne","niveau":20,"saison":"pre","comment":"Niveau 20"},{"id":"re_tour","slot":"repaire","rarete":"epique","nom":"La tour","niveau":35,"saison":"pre","comment":"Niveau 35"},{"id":"re_trone","slot":"repaire","rarete":"legendaire","nom":"La salle du trône","niveau":50,"saison":"pre","comment":"Niveau 50"},{"id":"cape_corsaire","slot":"cape","rarete":"epique","nom":"Cape du corsaire","saison":"reserve"},{"id":"plumes","slot":"tete","rarete":"rare","nom":"Coiffe de plumes","saison":"reserve"},{"id":"cornes","slot":"tete","rarete":"epique","nom":"Cornes du conquérant","saison":"reserve"},{"id":"aura_lune","slot":"aura","rarete":"rare","nom":"Aura lunaire","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"aura_abysses","slot":"aura","rarete":"epique","nom":"Aura des abysses","saison":"reserve"},{"id":"tr_bulles","slot":"trainee","rarete":"rare","nom":"Traînée de bulles","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_renard","slot":"familier","rarete":"epique","nom":"Renard des braises","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"fa_golem","slot":"familier","rarete":"epique","nom":"Petit golem","butin":true,"saison":"reserve","comment":"Une prochaine saison"},{"id":"cape_procrastination","slot":"cape","rarete":"epique","nom":"Cape du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"tete_procrastination","slot":"tete","rarete":"legendaire","nom":"Couronne du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"aura_procrastination","slot":"aura","rarete":"legendaire","nom":"Aura du Sablier","butin":true,"panoplie":"procrastination","saison":"reserve","comment":"Boss du mois"},{"id":"cape_dissipation","slot":"cape","rarete":"epique","nom":"Cape des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_dissipation","slot":"tete","rarete":"legendaire","nom":"Couronne des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_dissipation","slot":"aura","rarete":"legendaire","nom":"Aura des Tourbillons","butin":true,"panoplie":"dissipation","saison":"reserve","comment":"Boss du mois"},{"id":"cape_oubli","slot":"cape","rarete":"epique","nom":"Cape du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"tete_oubli","slot":"tete","rarete":"legendaire","nom":"Couronne du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"aura_oubli","slot":"aura","rarete":"legendaire","nom":"Aura du Néant","butin":true,"panoplie":"oubli","saison":"reserve","comment":"Boss du mois"},{"id":"cape_fatigue","slot":"cape","rarete":"epique","nom":"Cape des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"tete_fatigue","slot":"tete","rarete":"legendaire","nom":"Couronne des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"aura_fatigue","slot":"aura","rarete":"legendaire","nom":"Aura des Brumes","butin":true,"panoplie":"fatigue","saison":"reserve","comment":"Boss du mois"},{"id":"cape_doute","slot":"cape","rarete":"epique","nom":"Cape des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"tete_doute","slot":"tete","rarete":"legendaire","nom":"Couronne des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"aura_doute","slot":"aura","rarete":"legendaire","nom":"Aura des Mille Yeux","butin":true,"panoplie":"doute","saison":"reserve","comment":"Boss du mois"},{"id":"cape_tentation","slot":"cape","rarete":"epique","nom":"Cape de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"tete_tentation","slot":"tete","rarete":"legendaire","nom":"Couronne de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"},{"id":"aura_tentation","slot":"aura","rarete":"legendaire","nom":"Aura de la Pomme d'Or","butin":true,"panoplie":"tentation","saison":"reserve","comment":"Boss du mois"}],"prix":{"commun":40,"rare":100,"epique":250,"legendaire":600},"panoplies":{"procrastination":{"nom":"du Sablier","couleur":"#b48cff","saison":"reserve"},"dissipation":{"nom":"des Tourbillons","couleur":"#5ae6be","saison":"reserve"},"oubli":{"nom":"du Néant","couleur":"#dfe3ff","saison":"reserve"},"fatigue":{"nom":"des Brumes","couleur":"#9fb0e0","saison":"reserve"},"doute":{"nom":"des Mille Yeux","couleur":"#ff5a5a","saison":"reserve"},"tentation":{"nom":"de la Pomme d'Or","couleur":"#ff78aa","saison":"reserve"}},"chemins":{"pre":{"1":{"item":"cape_rouge"},"2":{"item":"bandeau"},"3":{"coffre":"commun"},"4":{"item":"tr_etincelles"},"5":{"coffre":"rare"},"6":{"eclats":60},"7":{"item":"aura_etincelles"},"8":{"coffre":"rare"},"9":{"item":"cape_aube"},"10":{"coffre":"epique"},"11":{"eclats":60},"12":{"coffre":"rare"},"13":{"eclats":60},"14":{"coffre":"legendaire"},"15":{"item":"tete_aube"}}}};
   const arm = { saison: { id: 'pre', nom: 'Pré-saison · le Rodage', paliers: 15, palier: 4, xp: 2180, cout: 500, dansPalier: 180, prochaine: { coffre: 'rare' } },
     possede: ['cape_rouge', 'bandeau', 're_clairiere', 're_campement', 'fa_dragon'], eclats: 120, ouverts: 0, joursActifs: 15,
     coffres: [{ source: 'palier|4', type: 'commun', origine: 'Palier 4' }, { source: 'boss|2026-11-12|La Liche du Scroll', type: 'rare', origine: 'La Liche du Scroll' }] };
