@@ -154,15 +154,17 @@
   body.calme .card.flash::after { display: none; } @media (prefers-reduced-motion: reduce) { .card.flash::after { display: none; } }
   @keyframes sceauTombe { 0% { transform: translateY(-40px) rotate(-200deg) scale(1.8); opacity: 0; } 60% { opacity: 1; transform: translateY(2px) rotate(-10deg) scale(.92); } 80% { transform: rotate(-16deg) scale(1.06); } 100% { transform: rotate(-14deg) scale(1); } }
   /* Médaillon d'humeur : sous le seuil d'épuisement, le héros respire lentement, cligne longuement et une lueur rouge pulse */
-  .hx-med.fatigue { animation: medFatigue 3.2s ease-in-out infinite; }
-  .hx-med.fatigue svg { filter: saturate(.55) brightness(.85); } .hx-med.fatigue .h-corps { animation-duration: 6.5s; } .hx-med.fatigue .h-paup ellipse { transform: scaleY(.5); animation: hCligneLent 4.2s ease-in-out infinite; }
+  /* perf : la lueur rouge pulse en opacité sur un pseudo-élément (composité), plus de box-shadow animé */
+  .hx-med.fatigue { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--wax2), 0 0 16px rgba(224,88,75,.4); }
+  .hx-med.fatigue::after { content: ''; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 2; box-shadow: inset 0 0 12px 2px rgba(232,96,79,.75); opacity: .25; animation: medFatiguePulse 3.2s ease-in-out infinite; }
+  @keyframes medFatiguePulse { 50% { opacity: 1; } }
+  .hx-med.fatigue svg { filter: saturate(.55) brightness(.85); } .hx-med.fatigue .h-corps { animation-duration: 6.5s; } .hx-med.fatigue .h-paup ellipse { transform: scaleY(.5); animation: none; }
   .hx-med.fatigue .h-tete { animation: hTeteBas 6.3s ease-in-out infinite; }
   @keyframes medFatigue { 0%, 100% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold), 0 0 14px rgba(224,88,75,.25); } 50% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--wax2), 0 0 24px rgba(224,88,75,.6); } }
-  html.ygg .hx-med.fatigue { animation-name: medFatigueYgg; } @keyframes medFatigueYgg { 0%, 100% { box-shadow: 0 0 0 2px #081117, 0 0 0 4px #b97d45, 0 0 0 5px #6b4321, 0 0 12px rgba(232,96,79,.25); } 50% { box-shadow: 0 0 0 2px #081117, 0 0 0 4px #e8604f, 0 0 0 5px #6b4321, 0 0 22px rgba(232,96,79,.55); } }
-  @keyframes hCligneLent { 0%, 70%, 100% { transform: scaleY(.5); } 78%, 90% { transform: scaleY(.95); } }
+  html.ygg .hx-med.fatigue { box-shadow: 0 0 0 2px #081117, 0 0 0 4px #d0704a, 0 0 0 5px #6b4321, 0 0 16px rgba(232,96,79,.4); }
   @keyframes hTeteBas { 0%, 100% { transform: rotate(2deg) translateY(1px); } 50% { transform: rotate(3deg) translateY(2px); } }
-  body.calme .hx-med.fatigue, body.calme .hx-med.fatigue * { animation: none !important; }
-  @media (prefers-reduced-motion: reduce) { .hx-med.fatigue, .hx-med.fatigue * { animation: none !important; } }
+  body.calme .hx-med.fatigue, body.calme .hx-med.fatigue *, body.calme .hx-med.fatigue::after { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) { .hx-med.fatigue, .hx-med.fatigue *, .hx-med.fatigue::after { animation: none !important; } .hx-med.fatigue::after { opacity: .7; } }
   .hx-med.salut .h-tete { animation: hSalut .9s ease-in-out; } .hx-med.salut .h-arme { animation: hLeve .9s ease-in-out; }
   .hx-med.salut { animation: medRebond .7s cubic-bezier(.3,1.6,.5,1); }
   @keyframes medRebond { 0% { transform: scale(1); } 35% { transform: scale(1.1); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff, 0 0 26px var(--xp2); } 100% { transform: scale(1); } }
@@ -384,7 +386,7 @@
   .d20-table { color: var(--muted); font-size: 11.5px; margin-top: 12px; line-height: 1.5; }
   .d20-res .mult.malus, .d20-card.malus b { color: #e07a6f; }
   .d20-res .mult.malus { border-color: #6b2a25; background: #2a1414; }
-  .d20-later { background: none; border: 0; color: var(--muted); font-size: 13px; margin-top: 8px; text-decoration: underline; }
+  .d20-later { background: none; border: 0; color: var(--muted); font-size: 13px; margin-top: 8px; text-decoration: underline; padding: 12px 20px; min-height: 44px; }
   .d20-card { display: flex; align-items: center; gap: 10px; width: 100%; margin: 4px 0 12px; padding: 12px 14px; border-radius: 14px; text-align: left;
     border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--card)); background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 14%, var(--card)), var(--panel)); color: var(--gold); font: 700 15px var(--f-titre); }
   .d20-card svg { width: 40px; height: 40px; flex: none; margin: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
@@ -524,7 +526,7 @@
   .saison .sa-t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; } .saison .sa-t b { color: var(--gold); font-family: var(--f-titre); }
   .saison .sa-t span { font-size: 12.5px; color: var(--muted); } .saison .sa-n { font-size: 12.5px; color: var(--muted); } .saison .sa-n b { color: var(--text); }
   .bar.sa-bar i { background: linear-gradient(90deg, #b8862b, #f2c94c); }
-  .sa-b { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; } .sa-b .eclats { font-size: 13px; color: #9fe4ff; }
+  .sa-b { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; } .sa-b:has(> [data-armurerie]) { flex-wrap: nowrap; } .sa-b .btn { white-space: nowrap; } .sa-b .eclats { font-size: 13px; color: #9fe4ff; }
   .chemin { list-style: none; margin: 8px 0; padding: 4px 0 8px; display: flex; gap: 6px; overflow-x: auto; }
   .chemin li { flex: none; width: 86px; display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: 10px; border: 1px solid var(--line); background: #15111c; text-align: center; font-size: 11px; line-height: 1.2; opacity: .7; }
   .chemin li.ok { opacity: 1; background: #221a12; } .chemin li .n { font-weight: 700; color: var(--muted); } .chemin li.ok .n { color: var(--gold); }
@@ -649,8 +651,7 @@
   .hero-perso > svg { position: relative; z-index: 1; } .hero-perso .loupe { z-index: 2; }
   /* Héros animés en 2D (repos) : respiration, tête qui penche, clignement, bâton. Les paupières restent fermées-invisibles partout ailleurs. */
   svg .h-paup ellipse { transform-box: fill-box; transform-origin: 50% 0%; transform: scaleY(0); }
-  .hero-perso .h-corps { transform-origin: 100px 240px; animation: hResp 4.2s ease-in-out infinite; }
-  .hx-med .h-corps { transform-origin: 100px 240px; animation: hResp 4.2s ease-in-out infinite; }
+  .hero-perso .h-corps, .hx-med .h-corps { transform-origin: 100px 240px; } /* perf : plus de respiration hors vitrine (la vitrine respire déjà avec .vit-perso) */
   .hx-med .h-tete, .hero-perso .h-tete, .vit-perso .h-tete { transform-origin: 100px 96px; animation: hTete 6.3s ease-in-out infinite; }
   .hx-med .h-paup ellipse, .hero-perso .h-paup ellipse, .vit-perso .h-paup ellipse { animation: hCligne 5.4s ease-in-out infinite; }
   .hero-perso .h-arme, .vit-perso .h-arme { transform-origin: 134px 238px; animation: hArme 5s ease-in-out infinite; }
@@ -1940,6 +1941,37 @@ html.th-celeste .orn-fant { color: #5a6aa8; text-shadow: none; } html.th-carte .
 #souvOv.calme *, #souvOv.calme *::before { animation: none !important; } #souvOv.calme .bl-passer, #souvOv.calme .sv-ombre, #souvOv.calme .sv-26 { display: none; }
 #souvOv.calme .sv-n { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { #souvOv *, #souvOv *::before { animation: none !important; } #souvOv .bl-passer, #souvOv .sv-ombre, #souvOv .sv-26 { display: none; } }
+
+/* ===== Ergonomie (rapport de l'Ergonome sur la 8.1) ===== */
+/* 1. Nom du héros entier dans l'en-tête, même à 360 px */
+.hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 20px); }
+html.ygg .hx-txt .hero-name, html.th-olympe .hx-txt .hero-name { font-size: clamp(13px, 4.4vw, 17px); letter-spacing: 0; }
+html.th-epopee .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 21px); letter-spacing: 0; }
+@media (max-width: 380px) { html.ygg .hx-txt .hero-name { font-size: 14px; } html.th-olympe .hx-txt .hero-name { font-size: 13.5px; } html.th-epopee .hx-txt .hero-name { font-size: 17px; } }
+/* 2. Petits écrans (360 × 640) : carte du jour et sous-onglets plus compacts, la première quête remonte */
+@media (max-height: 700px) {
+  :root .jour { padding: 8px 10px 8px 12px; margin-top: 8px; }
+  :root .jour .jour-big { font-size: 32px; } :root .jour .jour-big small { font-size: 20px; } :root .jour .jour-big em { font-size: 15px; }
+  :root .jour .jour-sub { margin: 3px 0 4px; } :root .jour .jour-d20 svg { width: 34px; height: 34px; } :root .jour .jbars { margin-top: 4px; }
+  :root .sous-onglets { margin: 8px 0 6px; padding: 3px; } :root .sous-onglets button { min-height: 36px; padding: 6px; }
+  :root .section { margin: 14px 0 8px; }
+  /* 11. vitrine : la scène laisse voir le début de la garde-robe */
+  .vit-scene { max-height: 52vh; }
+}
+/* 5. sous-titres de section : sur deux lignes plutôt que coupés par « … » */
+:root .section span { white-space: normal; text-align: right; line-height: 1.2; max-width: 45%; overflow: visible; }
+/* 8. cibles tactiles d'au moins 40 px */
+.back { min-height: 40px; padding: 10px 0; }
+.toast-annuler { min-height: 40px; }
+.rc-x { min-width: 40px; min-height: 40px; }
+.orn-q::after { content: ''; position: absolute; inset: -8px; }
+.reg [data-pr="devise"] { min-height: 40px; padding: 8px 0; }
+.reg input, .reg select, .reg button, .reg .btn { min-height: 40px; }
+.reg input[type=checkbox], .reg input[type=radio] { min-height: 0; }
+/* 14. mouvements réduits : le plateau et le d20 se figent aussi */
+@media (prefers-reduced-motion: reduce) { .pl-nuage, .pl-moulin, .pl-halo, .jour-d20 svg { animation: none !important; } }
+/* 11. pastilles « NEW » et « 🎁 » : un rouge franc, lisible sur tous les fonds */
+:root .pastille, :root .nouv .new { background: #c9302c; }
 
 </style>
 </head>
@@ -3450,7 +3482,7 @@ function blocSaison(s, court) {
     <div class="bar sa-bar"><i style="width:${pct}%"></i></div>
     <div class="sa-n">${S.palier >= S.paliers ? 'Chemin terminé, bravo !' : `Encore ${Math.max(0, S.cout - S.dansPalier).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP · prochaine récompense : <b>${esc(recompenseTexte(S.prochaine))}</b>`}</div>
     ${S.id === 'pre' ? '<div class="sa-n">Rodage jusqu\'au 31 décembre. Le 1er janvier, la Saison 1 apporte de nouveaux objets et de nouveaux boss.</div>' : ''}
-    <div class="sa-b">${coffres ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${coffres})</button>` : ''}${court ? '<button class="btn mini" data-vitrine="1" data-armurerie="1">⚔ Ouvrir l\'armurerie</button>' : `<span class="eclats">✦ ${A.eclats} éclats</span>`}</div>
+    <div class="sa-b">${coffres ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${coffres})</button>` : ''}${court ? '<button class="btn mini" data-vitrine="1" data-armurerie="1">⚔ Armurerie</button>' : `<span class="eclats">✦ ${A.eclats} éclats</span>`}</div>
   </div>`;
 }
 let marchandOuvert = false;
@@ -3740,7 +3772,7 @@ const REGLES_PAGES = [
       return ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau), et les objets du Rodage repartent avec lui. Tes <b>trophées</b> et tes titres restent, souvenirs du Rodage.',
         s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.']; } }
 ];
-let pageRegles = 0;
+let pageRegles = 0, livretRangeAuRetour = false;
 function livretReduit() { try { return localStorage.getItem('livretReduit') === '1'; } catch (e) { return false; } }
 document.addEventListener('click', e => {
   if (e.target.closest('[data-livret-reduire]')) { try { localStorage.setItem('livretReduit', '1'); } catch (err) {} render(); toast('Livret réduit : touche « ? Règles » à côté du titre du plateau', 'info'); }
@@ -3750,6 +3782,8 @@ function ouvrirRegles(page) {
   let ov = document.getElementById('reglesOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'reglesOv'; document.body.appendChild(ov); }
   const P = REGLES_PAGES[pageRegles], n = REGLES_PAGES.length;
+  // livret lu jusqu'au bout : il se range tout seul en « ? Règles » à côté du titre du plateau (place gagnée sur petit écran)
+  if (pageRegles === n - 1 && !livretReduit()) { try { localStorage.setItem('livretReduit', '1'); livretRangeAuRetour = true; } catch (e) {} }
   ov.innerHTML = `<div class="rg-livre"><button class="rc-x" data-regles-fin="1" aria-label="Fermer">✕</button>
     <div class="rg-num">Livret de l'Aventure · ${pageRegles + 1} / ${n}</div><h2>${P.t}</h2>${P.s}<ul>${P.p.map(x => `<li>${x}</li>`).join('')}</ul>
     <div class="rg-nav"><button class="btn mini" data-regles-page="${pageRegles - 1}" ${pageRegles ? '' : 'disabled'}>‹ Précédent</button>
@@ -3757,7 +3791,8 @@ function ouvrirRegles(page) {
       ${pageRegles < n - 1 ? `<button class="btn mini or" data-regles-page="${pageRegles + 1}">Suivant ›</button>` : '<button class="btn mini or" data-regles-fin="1">Compris !</button>'}</div></div>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
 }
-function fermerRegles() { const ov = document.getElementById('reglesOv'); if (ov) ov.classList.remove('on'); if (!document.getElementById('vitrine') || !document.getElementById('vitrine').classList.contains('on')) document.body.classList.remove('bloque'); }
+function fermerRegles() { const ov = document.getElementById('reglesOv'); if (ov) ov.classList.remove('on');
+  if (livretRangeAuRetour) { livretRangeAuRetour = false; setTimeout(() => { dernierHtml = ''; render(); toast('Livret rangé : touche « ? » à côté du titre du plateau pour le relire', 'info'); }, 0); } if (!document.getElementById('vitrine') || !document.getElementById('vitrine').classList.contains('on')) document.body.classList.remove('bloque'); }
 document.addEventListener('click', e => {
   const r = e.target.closest('[data-regles]'); if (r) { ouvrirRegles(r.dataset.regles === 'garde' ? 5 : 0); return; }
   const pg = e.target.closest('[data-regles-page]'); if (pg) { ouvrirRegles(Math.max(0, Number(pg.dataset.reglesPage))); return; }
@@ -4283,6 +4318,8 @@ function gains(q, xp) {
   return `<div class="gains">${chip(q.carac, x, true)}${chip(q.carac2, Math.round(x * part), false)}${state ? tagsCoups(state, q) : ''}${pas != null ? `<span class="g montre ${pas >= 10000 ? 'ok' : ''}">⌚ ${Number(pas).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} / 10 000 pas</span>` : ''}</div>`;
 }
 
+/** Nom affiché d'une quête : son sous-titre s'il existe (même nom partout que sur sa carte) */
+const nomVu = h => (h && (h.sous || h.nom)) || '';
 const sortSur = nom => state && state.capacites && state.capacites.sortPrepare === nom ? ' · <span class="sort">✨ sort préparé : XP ×1,5 à la validation</span>' : '';
 
 /* ---------- d20 du jour ---------- */
@@ -6206,7 +6243,7 @@ function render() {
   const statsHtml = statsDe(s);
 
   const series = [...s.habitudes].sort((a, b) => (b.serieNb > 0 ? b.serie : 0) - (a.serieNb > 0 ? a.serie : 0)).map(h => `
-    <div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(h.nom)}</span>
+    <div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span>
       <span>${h.serieNb > 0 && h.serie > 0 ? `<span class="streak">🔥 ${h.serie} j</span>` : '<span class="muted">pas de série</span>'}
       <span class="muted"> · record&nbsp;${h.record || 0}&nbsp;j</span></span></div>`).join('');
 
@@ -6276,7 +6313,7 @@ function render() {
     let actions = '';
     if (ok && st && st.action === 'preparer') {
       const choix = [...s.habitudes.filter(h => !h.enPause), ...s.annexes];
-      actions = `<div class="cact"><select id="sortQ">${choix.map(q => `<option ${q.nom === CAP.sortPrepare ? 'selected' : ''}>${esc(q.nom)}</option>`).join('')}</select>
+      actions = `<div class="cact"><select id="sortQ">${choix.map(q => `<option value="${esc(q.nom)}" ${q.nom === CAP.sortPrepare ? 'selected' : ''}>${esc(nomVu(q))}</option>`).join('')}</select>
         <button class="btn mini or" data-pr="sort">${CAP.sortPrepare ? 'Changer' : '✨ Préparer'}</button></div>`;
     }
     if (ok && st && st.action === 'restaurer') {
@@ -6432,7 +6469,7 @@ function vueCompagnonDetail(c) {
     ${ann.length ? `<div class="section"><h2>Quêtes annexes</h2><span>déjà accomplies</span></div>
     <div class="panel">${ann.map(a => ligne(a, `<span class="wk">${a.jour.fait ? '✓ aujourd\'hui' : a.fois + ' fois'}</span>`)).join('')}</div>` : ''}
     ${c.objectifs.length ? `<div class="section"><h2>Quêtes épiques</h2><span>progression</span></div><div class="list">${c.objectifs.map(carteEpique).join('')}</div>` : ''}
-    ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(h.nom)}</span><span><span class="streak">🔥 ${h.serie} j</span><span class="muted"> · record&nbsp;${h.record || 0}&nbsp;j</span></span></div>`).join('')}</div>` : ''}
+    ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span><span><span class="streak">🔥 ${h.serie} j</span><span class="muted"> · record&nbsp;${h.record || 0}&nbsp;j</span></span></div>`).join('')}</div>` : ''}
     <div class="aide-coop">Lecture seule : chacun valide ses propres quêtes avec sa clé.</div></div>`;
 }
 document.addEventListener('click', e => {
@@ -6640,7 +6677,7 @@ function vueProfil(s) {
   const nomJour = d => (d === s.today ? 'aujourd\'hui' : JOURS_LONGS[indexJour(d)]) + ' ' + versDate(d).getDate();
   const regPause = `<div class="reg"><h3>⏸️ Quêtes en pause</h3>
       <div class="aide">Blessure, période chargée, saison : la quête disparaît de l'app, aucun raté, série gelée. Elle reprend d'un tap.</div>
-      ${s.habitudes.map(h => `<div class="ligne"><span>${ICONES[h.carac] || '⭐'} ${esc(h.nom)}${h.enPause ? ` <span class="muted">· en pause depuis le ${dateCourte(((R.pauses || []).find(x => x.nom === h.nom) || {}).depuis || s.today)}</span>` : ''}</span>
+      ${s.habitudes.map(h => `<div class="ligne"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}${h.enPause ? ` <span class="muted">· en pause depuis le ${dateCourte(((R.pauses || []).find(x => x.nom === h.nom) || {}).depuis || s.today)}</span>` : ''}</span>
         <button class="btn mini ${h.enPause ? 'or' : ''}" data-pr="pause" data-q="${esc(h.nom)}">${h.enPause ? 'Reprendre' : 'Pause'}</button></div>`).join('')}
     </div>`;
   const voy = R.voyages || [];
@@ -6649,15 +6686,15 @@ function vueProfil(s) {
       ${voy.map(v => `<div class="ligne"><span>du ${dateCourte(v.debut)} au ${dateCourte(v.fin)} · en pause : ${v.quetes.map(esc).join(', ')}</span>
         <button class="btn mini" data-pr="voy-del" data-de="${v.debut}" data-a="${v.fin}">Annuler</button></div>`).join('')}
       <div class="form"><label>Départ<input type="date" id="voyDeb" min="${s.today}"></label><label>Retour (inclus)<input type="date" id="voyFin" min="${s.today}"></label></div>
-      <div class="voy-q">${s.habitudes.map(h => `<label><input type="checkbox" value="${esc(h.nom)}"> ${ICONES[h.carac] || '⭐'} ${esc(h.nom)}</label>`).join('')}</div>
+      <div class="voy-q">${s.habitudes.map(h => `<label><input type="checkbox" value="${esc(h.nom)}"> ${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</label>`).join('')}</div>
       <button class="btn or plein" data-pr="voy-add">Mettre ces quêtes en pause pendant le voyage</button>
     </div>`;
   const regDec = `<div class="reg"><h3>↔️ Décaler une séance</h3>
       <div class="aide">Pas de course mercredi, tu la fais jeudi : déplacement pour cette semaine seulement, sans raté et sans toucher au planning habituel.</div>
-      ${(R.decalages || []).map(x => `<div class="ligne"><span>${esc(x.nom)} · ${nomJour(x.de)} → ${nomJour(x.a)}</span>
+      ${(R.decalages || []).map(x => `<div class="ligne"><span>${esc(nomVu(s.habitudes.find(h => h.nom === x.nom) || x))} · ${nomJour(x.de)} → ${nomJour(x.a)}</span>
         <button class="btn mini" data-pr="dec-del" data-q="${esc(x.nom)}" data-de="${x.de}" data-a="${x.a}">Annuler</button></div>`).join('')}
       ${routines.length ? `<div class="form" style="grid-template-columns:1fr">
-        <label>Quête<select id="decQ">${routines.map(h => `<option ${h.nom === decQuete ? 'selected' : ''}>${esc(h.nom)}</option>`).join('')}</select></label></div>
+        <label>Quête<select id="decQ">${routines.map(h => `<option value="${esc(h.nom)}" ${h.nom === decQuete ? 'selected' : ''}>${esc(nomVu(h))}</option>`).join('')}</select></label></div>
       <div class="form"><label>Séance prévue le<select id="decDe">${deOpts.map(d => `<option value="${d}">${nomJour(d)}</option>`).join('') || '<option value="">plus rien cette semaine</option>'}</select></label>
         <label>Déplacée au<select id="decA">${aOpts.map(d => `<option value="${d}">${nomJour(d)}</option>`).join('') || '<option value="">aucun jour libre</option>'}</select></label></div>
       <button class="btn or plein" data-pr="dec-add" ${deOpts.length && aOpts.length ? '' : 'disabled'}>Décaler la séance</button>` : '<div class="muted" style="font-size:12px">Aucune routine active.</div>'}
@@ -7539,10 +7576,10 @@ const demo = (() => {
     renommerQuete(a, n) { if (habs.concat(annexes).some(q => q.nom === n)) throw new Error('Une quête porte déjà ce nom'); const q = habs.concat(annexes).find(x => x.nom === a); q.nom = n; return etat(); },
     sauvegarderMaintenant() { regDemo.sauvegarde.derniere = today; regDemo.sauvegarde.dossier = 'https://drive.google.com/'; return etat(); },
     reglerDevise(t) { regDemo.devise = String(t || '').trim(); return etat(); },
-    lancerD20() {
+    lancerD20(o) {
       if (!d20Demo) {
-        const forcer = /d20=(\d+)/.exec(location.hash);
-        const de = forcer ? Number(forcer[1]) : 1 + Math.floor(Math.random() * 20), mod = 0, total = de + mod;
+        const forcer = /d20=(\d+)/.exec(location.hash), recu = o && Number(o.d1) ? d20Local(state, Number(o.d1), Number(o.d2) || Number(o.d1)).de : 0; // le dé tiré sur le téléphone : pas de faux « autre appareil »
+        const de = forcer ? Number(forcer[1]) : recu >= 1 && recu <= 20 ? recu : 1 + Math.floor(Math.random() * 20), mod = 0, total = de + mod;
         const r = de === 20 ? [1.5, 'COUP CRITIQUE !', 'Les dieux sont avec toi : XP ×1,5 sur toutes tes quêtes du jour.']
           : de === 1 ? [0.8, 'Échec critique…', 'Ton grimoire t\'est tombé sur le pied. XP ×0,8 aujourd\'hui : le destin rit, à toi de lui prouver qu\'il a tort.']
           : total >= 18 ? [1.25, 'Inspiration héroïque', 'XP ×1,25 sur toutes tes quêtes du jour.']

@@ -61,7 +61,7 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
   .tabs{width:100%!important;justify-content:stretch} .tabs .tab{flex:1}
   .quest .kx{display:none} .quest .k i{font-style:normal} .quest .row .pill+.pill{display:none} .quest .big{font-size:.8rem;line-height:1.2;overflow-wrap:normal;word-break:normal;hyphens:none}
   .quest .pill{white-space:nowrap}
-  .top h1{font-size:1.12rem;letter-spacing:.1em;padding:0 50px;line-height:1.25} .top .sync{font-size:.7rem}}
+  .top h1{font-size:1.12rem;letter-spacing:.1em;padding:0 50px;line-height:1.25} .top .sync{padding:0 50px;font-size:.7rem}}
 .pierre{background:linear-gradient(160deg,rgba(207,232,245,.08),transparent 50%),#12222c;border-color:#2a4556}
 .menhir{width:min(64%,230px);height:auto;justify-self:center;display:block}
 .menhir text{font:17px "Noto Sans Runic",serif;text-anchor:middle} .menhir .rv{fill:rgba(16,26,32,.28)} .menhir .rg{fill:#e8b06a;stroke:#3d2309;stroke-width:1.6;paint-order:stroke}
@@ -287,6 +287,11 @@ body.focus .hud{position:sticky;top:0;z-index:6;background:linear-gradient(160de
 .scen button{text-align:left;border:1px solid var(--line2);background:var(--sunk);color:var(--fg);border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer;display:grid;gap:2px}
 .scen button[aria-pressed="true"]{border-color:var(--en);background:var(--en-soft)}
 .scen b{font-family:var(--display);font-size:.85rem}
+/* Ergonomie (rapport de l'Ergonome) : cibles tactiles d'au moins 40 px ; à 360 px, « Fondations » ne touche plus le bord de sa tuile */
+.tab{min-height:40px}
+details.parcours>summary{min-height:40px;padding:8px 0;box-sizing:border-box}
+#dcOk,#dcNo,#recOk,#nwAdd{min-height:40px}
+@media (max-width:380px){.quests .quest{padding:10px 8px}.quests .quest .big{font-size:.9rem!important;letter-spacing:0}}
 </style>
 <style>html,body{margin:0}body{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
