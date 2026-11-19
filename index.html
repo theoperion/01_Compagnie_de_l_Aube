@@ -1672,7 +1672,7 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
 #recoOv { position: fixed; inset: 0; z-index: 86; display: none; overflow: hidden; overscroll-behavior: contain; color: #fff3d6; cursor: pointer;
   background: radial-gradient(circle at 50% 40%, #1c1838, #06050d 72%); }
 #recoOv.on { display: grid; place-items: center; animation: vitIn .6s ease-out; }
-#recoOv .rc-aube { position: absolute; inset: 0; pointer-events: none; opacity: 0; animation: rcAube 2.4s ease-in-out 3s forwards;
+#recoOv .rc-aube { position: absolute; inset: 0; pointer-events: none; opacity: 0; animation: rcAube 2.4s ease-in-out 3.8s forwards;
   background: radial-gradient(ellipse 90% 55% at 50% 52%, rgba(255,186,110,.55), rgba(196,84,120,.28) 45%, transparent 75%), linear-gradient(180deg, transparent 30%, rgba(122,42,90,.35)); }
 #recoOv .ouv-ciel i { background: #ffe7b0; box-shadow: 0 0 6px #f2c94c; }
 .rc-box { position: relative; display: grid; gap: 10px; justify-items: center; text-align: center; padding: 16px 18px calc(16px + env(safe-area-inset-bottom)); width: min(94vw, 400px); }
@@ -1684,27 +1684,30 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
 .rc-gl { margin-bottom: -4px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #d8c9a8; animation: rcIn .5s 1s ease-out both; }
 .rc-g { position: relative; padding: 8px 4px 7px; border-radius: 12px; border: 1px solid rgba(242,201,76,.45); background: rgba(40,28,10,.55); animation: rcIn .5s calc(1.15s + var(--i) * .22s) ease-out both; }
 .rc-g i { font-style: normal; font-size: 18px; display: block; } .rc-g b { display: block; font: 800 18px var(--f-titre); color: #f2c94c; line-height: 1.1; }
+.rc-g:last-child b { font-size: 15px; white-space: nowrap; letter-spacing: -.01em; }
 .rc-g small { display: block; font-size: 10.5px; color: #d8c9a8; line-height: 1.25; }
 .rc-g::after { content: '✓'; position: absolute; top: -7px; right: -5px; width: 18px; height: 18px; border-radius: 50%; background: #f2c94c; color: #2a1a06; font: 800 11px/18px system-ui;
   animation: rcSceau .45s calc(1.5s + var(--i) * .22s) cubic-bezier(.2,1.6,.4,1) both; }
 /* La scène : le soleil se lève derrière le héros, le niveau redescend à 1 */
 .rc-scene { position: relative; width: 190px; height: 196px; }
 .rc-soleil { position: absolute; left: 50%; bottom: 18px; width: 150px; height: 150px; margin-left: -75px; border-radius: 50%;
-  background: radial-gradient(circle, #fff3c4 0, #ffc46b 34%, rgba(242,120,90,.45) 58%, transparent 70%); animation: rcLeve 2.2s 3s cubic-bezier(.3,.7,.3,1) both; }
-.rc-heros { position: absolute; left: 50%; bottom: 0; width: 132px; margin-left: -66px; animation: rcIn .9s 2.3s ease-out both; }
+  background: radial-gradient(circle, #fff3c4 0, #ffc46b 34%, rgba(242,120,90,.45) 58%, transparent 70%); animation: rcLeve 2.2s 3.8s cubic-bezier(.3,.7,.3,1) both; }
+.rc-heros { position: absolute; left: 50%; bottom: 0; width: 132px; margin-left: -66px; animation: rcIn .9s 1.8s ease-out both; }
 .rc-heros svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 14px rgba(242,201,76,.45)); }
-.rc-heros .orn-derriere { transform-box: fill-box; transform-origin: 50% 0; animation: rcCape .9s 5s cubic-bezier(.2,1.3,.4,1) both; }
+.rc-heros .orn-derriere { transform-box: fill-box; transform-origin: 50% 0; animation: rcCape .9s 5.2s cubic-bezier(.2,1.3,.4,1) both; }
 .rc-niv { position: absolute; right: -6px; bottom: 4px; width: 62px; height: 62px; border-radius: 50%; display: grid; place-content: center; text-align: center;
-  background: radial-gradient(circle at 50% 35%, #3a2a10, #120d1a); border: 2px solid #f2c94c; box-shadow: 0 0 16px rgba(242,201,76,.5); animation: rcIn .5s 2.4s ease-out both; }
+  background: radial-gradient(circle at 50% 35%, #3a2a10, #120d1a); border: 2px solid #f2c94c; box-shadow: 0 0 16px rgba(242,201,76,.5); animation: rcIn .5s 1.8s ease-out both; }
 .rc-niv small { font-size: 8.5px; letter-spacing: .2em; color: #d8c9a8; } .rc-niv b { font: 800 26px/1 var(--f-titre); color: #f2c94c; }
 .rc-niv b.pop { animation: lvlPop .6s cubic-bezier(.2,1.6,.4,1); }
-.rc-niv .lvl-eclats { left: 50%; top: 50%; } .rc-niv .lvl-eclats i { animation-delay: calc(3s + var(--d)); }
-.rc-txt { margin: 0; font-size: 14.5px; line-height: 1.45; color: #f3e6c8; animation: rcIn .7s 3.6s ease-out both; } .rc-txt b { color: #ffd27a; }
+.rc-niv .lvl-eclats { left: 50%; top: 50%; } .rc-niv .lvl-eclats i { animation-delay: calc(4s + var(--d)); }
+.rc-txt { margin: 0; font-size: 14.5px; line-height: 1.45; color: #f3e6c8; animation: rcIn .7s 4.4s ease-out both; } .rc-txt b { color: #ffd27a; }
 /* La cape offerte */
-.rc-lot { display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 14px; border: 1px solid #f2a93c; background: rgba(60,40,10,.6); text-align: left; animation: rcIn .7s 5.4s ease-out both; }
+.rc-lot { display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 14px; border: 1px solid #f2a93c; background: rgba(60,40,10,.6); text-align: left; animation: rcIn .7s 5.6s ease-out both; }
 .rc-lot span svg { width: 40px; height: 48px; display: block; filter: drop-shadow(0 0 8px rgba(255,196,107,.55)); }
 .rc-lot small { display: block; font-size: 10.5px; color: #ffc46b; letter-spacing: .06em; text-transform: uppercase; } .rc-lot b { font-size: 15px; color: #fff3d6; } .rc-lot em { display: block; font-style: normal; font-size: 12px; color: #d8c9a8; }
-.rc-box .btn { animation: rcIn .4s 6.4s ease-out both; min-width: 200px; }
+.rc-box .btn { animation: rcIn .4s 6.6s ease-out both; min-width: 200px; }
+#recoOv .rc-box { margin-block: auto; }
+#recoOv .rr-go { background: linear-gradient(180deg, #ffd27a, #f2a93c); color: #2a1606; border: 0; font-weight: 800; box-shadow: 0 0 22px rgba(255,196,107,.45), 0 3px 0 #9a5a14; }
 .rc-passer { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 14px; font-size: 11.5px; color: rgba(255,243,214,.55); animation: vitIn .4s 1s both; }
 @keyframes rcAube { to { opacity: 1; } }
 @keyframes rcLeve { from { transform: translateY(70px) scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -1718,10 +1721,10 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
 
 /* ===== 2. Souvenirs du Rodage (armurerie) : ombres dorées, non portables ===== */
 .souv-rang { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; margin-bottom: 4px; scrollbar-width: none; overscroll-behavior-x: contain; }
-.souv-t { flex: 0 0 48px; height: 48px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); padding: 0; cursor: pointer; display: grid; place-items: center;
+.souv-t { flex: 0 0 52px; height: 52px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); padding: 0; cursor: pointer; display: grid; place-items: center;
   background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--panel) 75%); box-shadow: inset 0 0 8px rgba(0,0,0,.45); }
-.souv-t .orn-ic { height: 30px; filter: grayscale(1) sepia(1) saturate(1.7) hue-rotate(-6deg) brightness(.95) drop-shadow(0 0 3px rgba(242,201,76,.35)); opacity: .82; }
-.souv-t .orn-ic svg { max-width: 30px; max-height: 30px; } .souv-t .ap-rep { display: block; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; }
+.souv-t .orn-ic { height: 30px; filter: grayscale(1) sepia(1) saturate(1.7) hue-rotate(-6deg) brightness(1.2) drop-shadow(0 0 3px rgba(242,201,76,.35)); opacity: 1; height: 34px; }
+.souv-t .orn-ic svg { max-width: 34px; max-height: 34px; } .souv-t .ap-rep { display: block; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; }
 .souv-t.l { border-color: color-mix(in srgb, #f2a93c 70%, transparent); }
 .souv-t.on { border-color: var(--gold); box-shadow: inset 0 0 8px rgba(0,0,0,.45), 0 0 0 1px var(--gold); }
 
@@ -1730,7 +1733,11 @@ html.th-carte .empty, html.th-carte .panel { background:#fffaf0; border:3px soli
   border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--card)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--panel)); color: var(--text); font: 600 13px var(--f-texte, system-ui); }
 .rappel-cof span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rappel-cof b { color: var(--gold); }
 .rappel-cof em { font-style: normal; flex: none; font-size: 11px; font-weight: 800; color: #2a1a06; background: var(--gold); border-radius: 8px; padding: 1px 6px; }
-.rappel-cof.dernier { border-color: color-mix(in srgb, var(--pv) 60%, var(--card)); } .rappel-cof.dernier b { color: var(--pv); }
+.rappel-cof.dernier { border-color: #ff9f43; animation: cofPulse 2.4s ease-in-out infinite; } .rappel-cof.dernier b { color: #ffb366; }
+@keyframes cofPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,159,67,0); } 50% { box-shadow: 0 0 14px 1px rgba(255,159,67,.45); } }
+body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-motion: reduce) { .rappel-cof.dernier { animation: none; } }
+html.th-carte .rappel-cof { border: 3px solid #3a2a20; box-shadow: 0 4px 0 #3a2a20; }
+html.th-carte .rappel-cof b, html.th-celeste .rappel-cof b { color: #b0500a; }
 
 </style>
 </head>
@@ -2411,6 +2418,7 @@ function capeSvg(id, p) {
  * c) coller capeVeteranSvg juste après capeSvg.
  * Nuit indigo ; l'aube monte de l'ourlet ; liseré d'or ; frise de runes sur les pans (visibles derrière le héros) ;
  * au centre (visible sur la tuile), Dagaz ᛞ, la rune du jour qui se lève, sur un soleil levant. */
+const NOM_COURT = { cape_veteran: 'Cape du Vétéran' }; // nom court sur les petites tuiles (nom complet dans la fiche)
 function capeVeteranSvg(p) {
   // point sur l'ourlet (deux arcs : 36,232 → 100,228 → 164,232), 12 px au-dessus du bord
   const q = t => { const a = t < .5 ? [36, 232, 66, 222, 100, 228] : [100, 228, 134, 222, 164, 232], u = t < .5 ? t * 2 : t * 2 - 1, v = 1 - u;
@@ -2463,7 +2471,7 @@ function ouvrirRecommencement() {
   const T = (s.trophees || []).length, Ti = (((s.titres || {}).liste) || []).filter(t => t.obtenu).length, J = Number(A.joursActifs) || 0;
   const st = (s.stats || []).slice().sort((a, b) => b.score - a.score), top = st[0];
   const garde = [T && ['🏆', nb(T), T > 1 ? 'trophées' : 'trophée'], Ti && ['👑', nb(Ti), Ti > 1 ? 'titres' : 'titre'], J && ['📜', nb(J), 'jours de quêtes'],
-    ['🧬', top ? `${COURT[top.nom] || top.nom} ${top.score}` : (st.length || 7), st.length > 1 ? `+ ${st.length - 1} caractéristiques` : 'caractéristiques']].filter(Boolean);
+    ['⚔️', top ? `${top.nom} ${top.score}` : (st.length || 7), st.length > 1 ? `+ ${st.length - 1} autres` : 'caractéristiques']].filter(Boolean);
   garde.splice(2, garde.length - 3); // toujours 3 cases, la caractéristique en dernier
   const cape = cosmItem('cape_veteran') || { id: 'cape_veteran', slot: 'cape', nom: 'Cape du Vétéran du Rodage' };
   // le héros tel qu'il est maintenant (niveau 1), déjà drapé de sa cape : elle se déploie à 5 s
@@ -2482,12 +2490,12 @@ function ouvrirRecommencement() {
         <div class="rc-niv"><small>NIV</small><b>${anim && avant > 1 ? avant : 1}</b><div class="lvl-eclats">${anim && avant > 1 ? eclats : ''}</div></div></div>
       <p class="rc-txt">Le Rodage est accompli. Tu repars du <b>niveau 1</b>, plus fort que jamais : tout ce que tu as forgé reste en toi.</p>
       <div class="rc-lot"><span><svg viewBox="40 90 120 160">${capeSvg('cape_veteran', 'rclot')}</svg></span><div><small>Légendaire · offerte</small><b>${esc(cape.nom)}</b><em>pour toi et ton compagnon d'armes</em></div></div>
-      <button class="btn or" data-reco-go="1">Vers la Saison 1</button>
+      <button class="btn rr-go" data-reco-go="1">Vers la Saison 1</button>
     </div>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
   recoMinuteurs.forEach(clearTimeout); recoMinuteurs = [];
-  if (anim && avant > 1) recoMinuteurs.push(setTimeout(() => { const b = ov.querySelector('.rc-niv b'); if (b) { b.textContent = '1'; b.classList.add('pop'); } vib([40, 60, 120]); }, 3050));
-  recoMinuteurs.push(setTimeout(() => vib([20, 30, 20]), 5050));
+  if (anim && avant > 1) recoMinuteurs.push(setTimeout(() => { const b = ov.querySelector('.rc-niv b'); if (b) { b.textContent = '1'; b.classList.add('pop'); } vib([40, 60, 120]); }, 4000));
+  recoMinuteurs.push(setTimeout(() => vib([20, 30, 20]), 5250));
 }
 function passerRecommencement(ov) { ov.classList.add('vite'); recoMinuteurs.forEach(clearTimeout); recoMinuteurs = []; const b = ov.querySelector('.rc-niv b'); if (b) b.textContent = '1'; }
 document.addEventListener('click', e => {
@@ -2518,7 +2526,7 @@ document.addEventListener('click', e => {
   document.querySelectorAll('.souv-t.on').forEach(t => t.classList.remove('on'));
   if (deja) { box.classList.remove('on'); return; }
   b.classList.add('on');
-  box.innerHTML = `<b>${esc(x.nom)}</b> · ${RARETE_NOM[x.rarete] || ''}<br><span class="muted">Gagné pendant le Rodage. Il ne se porte plus : il reste ici, en souvenir.</span>`;
+  box.innerHTML = `<b>${esc(x.nom)}</b> · ${RARETE_NOM[x.rarete] || ''}<br><span class="muted">Trophée du Rodage · gardé pour toujours dans ta Vitrine.</span>`;
   box.classList.add('on');
 });
 
@@ -2529,7 +2537,7 @@ function bandeauCoffresRodage(s) {
   const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24' || s.today > '2026-12-31') return '';
   const n = (A.coffres || []).filter(c => c.saison === 'pre').length; if (!n) return '';
   const j = 31 - Number(s.today.slice(8, 10)), dernier = j === 0;
-  return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? ': dernier soir pour ouvrir' : 'à ouvrir avant l\'aube'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
+  return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? ': dernier soir' : 'à ouvrir'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
 }
 
 function auraSvg(id, p) {
@@ -2719,7 +2727,8 @@ function blocArmurerie() {
   const s = state, A = s.armurerie; if (!A) return '';
   const orn = ornementsDe(s) || {};
   // on ne montre que ce que tu possèdes et ce qui se gagne cette saison ; le reste est résumé en une ligne
-  const visible = x => cosmPossede(x.id) || (x.saison !== 'reserve' && (x.saison || 'pre') === A.saison.id);
+  const souv = new Set(A.souvenirsRodage || []); // objets du Rodage : montrés dans « Souvenirs », pas cadenassés dans la Garde-robe
+  const visible = x => cosmPossede(x.id) || (!souv.has(x.id) && x.saison !== 'reserve' && (x.saison || 'pre') === A.saison.id);
   const tout = cosmListe(s), liste = tout.filter(visible), caches = tout.length - liste.length;
   const objets = slot => liste.filter(x => x.slot === slot);
   const petits = slot => slot === 'poche' ? ORNEMENTS.filter(o => o.slot === 'familier' && ornementDebloque(s, o)) : slot === 'familier' ? [] : ORNEMENTS.filter(o => o.slot === slot);
@@ -2728,7 +2737,7 @@ function blocArmurerie() {
   const E = GARDE_ROBE.find(g => g[0] === slotGarde) || GARDE_ROBE[0];
   const tuilesCosm = objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
     return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
-      <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button><button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button></div>`; }).join('');
+      <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(NOM_COURT[x.id] || x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button><button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button></div>`; }).join('');
   const pocheActuel = orn.poche || (/^fa_/.test(orn.familier || '') ? '' : orn.familier);
   const tuilesOrn = petits(E[0]).map(o => { const ok = ornementDebloque(s, o), eq = E[0] === 'poche' ? pocheActuel === o.id : orn[E[0]] === o.id;
     return `<div class="orn-t ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : o.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(o.nom)}"><span class="orn-ic">${miniOrnement(o)}</span><b>${esc(o.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>
