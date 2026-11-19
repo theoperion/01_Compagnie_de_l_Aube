@@ -848,7 +848,7 @@
   .orn-orbite { animation: ornOrbite 7s linear infinite; }
   @keyframes ornOrbite { 0% { transform: translate(180px, 142px) scale(.8); } 8.3% { transform: translate(169.3px, 155.1px) scale(.95); } 16.7% { transform: translate(140px, 169.1px) scale(1.06); } 25% { transform: translate(100px, 180px) scale(1.1); } 33.3% { transform: translate(60px, 185.1px) scale(1.06); } 41.7% { transform: translate(30.7px, 182.9px) scale(.95); } 50% { transform: translate(20px, 174px) scale(.8); } 58.3% { transform: translate(30.7px, 160.9px) scale(.65); } 66.7% { transform: translate(60px, 146.9px) scale(.54); } 75% { transform: translate(100px, 136px) scale(.5); } 83.3% { transform: translate(140px, 130.9px) scale(.54); } 91.7% { transform: translate(169.3px, 133.1px) scale(.65); } 100% { transform: translate(180px, 142px) scale(.8); } }
   @keyframes aile { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.9); } }
-  #coffreOv { position: fixed; inset: 0; z-index: 70; background: rgba(8,6,12,.92); display: none; place-items: center; padding: 20px; text-align: center; }
+  #coffreOv { position: fixed; inset: 0; z-index: 70; background: rgba(8,6,12,.97); display: none; place-items: center; padding: 20px; text-align: center; }
   #coffreOv.on { display: grid; }
   .cof-box { display: grid; gap: 10px; justify-items: center; max-width: 340px; position: relative; }
   .cof { font-size: 84px; border: 0 !important; padding: 6px 10px; animation: cofTremble .35s ease-in-out infinite; cursor: pointer; line-height: 0; }
@@ -868,6 +868,33 @@
   .cof-rayons.r-epique { background: radial-gradient(circle, rgba(190,150,255,.5), transparent 65%); } .cof-rayons.r-legendaire { background: radial-gradient(circle, rgba(255,180,80,.6), transparent 65%); }
   .cof-rayons.r-rare { background: radial-gradient(circle, rgba(110,180,255,.45), transparent 65%); }
   @keyframes cofTremble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg) scale(1.03); } 75% { transform: rotate(6deg) scale(1.03); } }
+  /* Ouverture en 3 temps (v9.9) : secousses croissantes (--ts), couvercle sur sa charnière + faisceau à la couleur de la rareté (--tl, --rc), l'objet s'élève (--tr) */
+  .cof { position: relative; }
+  .cof > svg { position: relative; overflow: visible; } /* le couvercle ouvert dépasse du cadre du dessin */
+  .cof-faisceau { position: absolute; left: 50%; bottom: 60px; width: 120px; height: 190px; margin-left: -60px; pointer-events: none; opacity: 0; transform: scaleY(0); transform-origin: 50% 100%;
+    background: linear-gradient(to top, var(--rc, #ffd27a), color-mix(in srgb, var(--rc, #ffd27a) 35%, transparent) 55%, transparent); clip-path: polygon(40% 100%, 60% 100%, 100% 0, 0 0); }
+  .cof-box.cof-anim .cof { animation: cofSecoue var(--ts) cubic-bezier(.4,0,.7,1) forwards; }
+  .cof-box.cof-anim .cof-couv { transform-box: view-box; transform-origin: 106px 45px; animation: cofCouv var(--tl) cubic-bezier(.3,1.5,.5,1) var(--ts) forwards; }
+  .cof-box.cof-anim .cof-lum { animation: cofLum var(--tl) ease-out var(--ts) forwards; }
+  .cof-box.cof-anim .cof-faisceau { animation: cofFaisc calc(var(--tl) + 120ms) ease-out var(--ts) forwards; }
+  .cof-box.ouvert .cof-faisceau.fin { bottom: -14px; width: 110px; height: 150px; margin-left: -55px; z-index: -1; transform: none; animation: cofFaiscFin calc(var(--tr) + 450ms) ease-out forwards; }
+  .cof-box.leve .cof-obj { animation: cofLeve var(--tr) cubic-bezier(.2,.9,.3,1.15) both; }
+  .cof-box.leve .cof-cr { animation: cofTombe .42s cubic-bezier(.5,0,.7,1.5) calc(var(--k) * 65ms) both; }
+  .cof-etinc { position: absolute; left: 50%; top: 45%; width: 0; height: 0; pointer-events: none; }
+  .cof-etinc i { position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; background: #fff8e0; border-radius: 1px; box-shadow: 0 0 6px 1px var(--rc, #ffd27a); opacity: 0;
+    animation: cofEtinc .75s ease-out calc(var(--tr) * .55 + var(--d)) forwards; }
+  @keyframes cofSecoue { 0% { transform: rotate(0); } 10% { transform: rotate(-1.5deg); } 20% { transform: rotate(1.5deg); } 32% { transform: rotate(-3deg); } 44% { transform: rotate(3.5deg); }
+    56% { transform: translateY(-1px) rotate(-5deg); } 66% { transform: translateY(-1px) rotate(5.5deg); } 76% { transform: translateY(-2px) rotate(-7deg) scale(1.03); } 88% { transform: translateY(-3px) rotate(7.5deg) scale(1.05); } 100% { transform: translateY(-4px) rotate(0) scale(1.06); } }
+  @keyframes cofCouv { 0% { transform: rotate(0); } 70% { transform: rotate(38deg); } 100% { transform: rotate(32deg); } }
+  .cof-box.cof-anim > p:first-child { margin-bottom: 14px; } /* le couvercle ouvert ne touche pas l'origine du coffre */
+  @keyframes cofLum { from { opacity: 0; } to { opacity: .95; } }
+  @keyframes cofFaisc { 0% { opacity: 0; transform: scaleY(0); } 100% { opacity: .85; transform: scaleY(1); } }
+  @keyframes cofFaiscFin { 0% { opacity: .7; } 100% { opacity: 0; } }
+  @keyframes cofLeve { 0% { opacity: 0; transform: translateY(48px) scale(.4); } 45% { opacity: 1; } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes cofTombe { 0% { opacity: 0; transform: translateY(-58px); } 30% { opacity: 1; } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes cofEtinc { 0% { opacity: 0; transform: rotate(var(--a)) translateX(10px) rotate(45deg) scale(.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateX(70px) rotate(45deg) scale(.3); } }
+  body.calme #coffreOv *, body.calme #coffreOv *::before { animation: none !important; } body.calme .cof-etinc, body.calme .cof-faisceau { display: none; }
+  @media (prefers-reduced-motion: reduce) { #coffreOv *, #coffreOv *::before { animation: none !important; } .cof-etinc, .cof-faisceau { display: none; } }
   .trainee { position: fixed; z-index: 80; pointer-events: none; font-style: normal; font-size: 16px; color: #ffe27a; text-shadow: 0 0 6px rgba(255,210,110,.8); animation: trainee 1s ease-out forwards; }
   .trainee.tr_petales { color: #f7b6c8; } .trainee.tr_flammes { color: #ff9a3c; }
   @keyframes trainee { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.4); opacity: 0; } }
@@ -1939,6 +1966,7 @@ html.th-epopee .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 21px); letter-
 .toast-annuler { min-height: 40px; }
 .rc-x { min-width: 40px; min-height: 40px; }
 .orn-q::after { content: ''; position: absolute; inset: -4px -4px -10px -10px; } /* 40 × 40, sans déborder de la tuile vers le cadenas */
+.orn-q.info { width: 20px; height: 20px; top: 5px; right: 5px; line-height: 18px; font-size: 12px; font-style: italic; opacity: .75; } /* objet possédé : petite « i » d'information, plus de « ? » */
 .reg [data-pr="devise"] { min-height: 40px; padding: 8px 0; }
 .reg input, .reg select, .reg button, .reg .btn { min-height: 40px; }
 .reg input[type=checkbox], .reg input[type=radio] { min-height: 0; }
@@ -2097,6 +2125,31 @@ body.calme .cfu *, body.calme .cfu *::after { animation: none !important; transi
 @keyframes hxsFlamme { 0%, 100% { transform: scale(1) rotate(-3deg); } 35% { transform: scale(1.12, .94) rotate(2deg); } 70% { transform: scale(.95, 1.08) rotate(-1deg); } }
 body.calme .hxq i, body.calme .hxs i, body.calme .hxd svg, body.calme .hxr::before { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .hxq i, .hxs i, .hxd svg, .hxr::before { animation: none !important; } }
+/* « Journée accomplie » : la jauge devient une ligne d'or, la rune (dagaz, « le jour ») remplace l'épée ; animation unique .frappe ≈ 1,5 s */
+.hxq { position: relative; }
+.hxq-or { position: absolute; inset: 0; border-radius: 3px; pointer-events: none; transform-origin: 0 50%;
+  background: linear-gradient(90deg, #b8861c, var(--gold) 25%, #fff0b8 50%, var(--gold) 75%, #b8861c); box-shadow: 0 0 6px color-mix(in srgb, var(--gold) 55%, transparent); }
+.hxq-trait, .hxq-mot { position: absolute; pointer-events: none; opacity: 0; }
+.hxq-trait { inset: -4px 0; background: linear-gradient(90deg, transparent 42%, rgba(255,250,225,.95) 50%, transparent 58%); filter: blur(1px); }
+.hxq-mot { left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 1px 6px; border-radius: 7px; white-space: nowrap; background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--gold) 70%, transparent); color: var(--gold); font: 700 9px/12px var(--f-texte); letter-spacing: .03em; font-style: italic; }
+.hxq-rune { width: 13px; height: 13px; display: block; overflow: visible; }
+.hxq-rune circle { fill: var(--gold); stroke: #fff0b8; stroke-width: .8; } .hxq-rune path { fill: none; stroke: #3a2a08; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.hxc-j.q.plein .hxq-rune { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--gold) 60%, transparent)); }
+.hxc-j.q.frappe .hxq-or { animation: hxjLigne .5s cubic-bezier(.5,0,.3,1) calc(var(--dj, 0ms) + .05s) both; }
+.hxc-j.q.frappe .hxq-trait { animation: hxjTrait .6s ease-in-out var(--dj, 0ms) both; }
+.hxc-j.q.frappe .hxq-rune { animation: hxjRune .32s cubic-bezier(.2,1.6,.4,1) calc(var(--dj, 0ms) + .5s) both; }
+.hxc-j.q.frappe .hxq-mot { animation: hxjMot .95s ease-out calc(var(--dj, 0ms) + .55s) both; }
+.hxc-j.q.frappe > span:first-child { position: relative; }
+.hxc-j.q.frappe > span:first-child::after { content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
+  border: 1.5px solid var(--gold); opacity: 0; animation: hxjOnde .5s ease-out calc(var(--dj, 0ms) + .58s) forwards; }
+@keyframes hxjLigne { from { transform: scaleX(0); opacity: .6; } to { transform: scaleX(1); opacity: 1; } }
+@keyframes hxjTrait { 0% { transform: translateX(-55%); opacity: 0; } 20% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateX(55%); opacity: 0; } }
+@keyframes hxjRune { from { transform: scale(2.4) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes hxjMot { 0% { opacity: 0; transform: translate(-50%, -50%) scale(calc(var(--km, 1) * 1.25)); } 18%, 72% { opacity: 1; transform: translate(-50%, -50%) scale(var(--km, 1)); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(var(--km, 1)); } }
+@keyframes hxjOnde { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.2); opacity: 0; } }
+body.calme .hxc-j.q.frappe *, body.calme .hxc-j.q.frappe *::after, body.calme .hxc-j.q.frappe > span::after { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .hxc-j.q.frappe *, .hxc-j.q.frappe > span::after { animation: none !important; } }
 
 /* titre + devise sur la plaque */
 .hxc-l1[data-ttr], .hxt [data-ttr] { cursor: pointer; }
@@ -2662,12 +2715,9 @@ const PICTO = {
   reglages: PICT_ + '<circle cx="12" cy="12" r="3"/><path d="M10.3 3.6a1.7 1.7 0 0 1 3.4 0 1.7 1.7 0 0 0 2.5 1.1 1.7 1.7 0 0 1 2.4 2.4 1.7 1.7 0 0 0 1.1 2.5 1.7 1.7 0 0 1 0 3.4 1.7 1.7 0 0 0-1.1 2.5 1.7 1.7 0 0 1-2.4 2.4 1.7 1.7 0 0 0-2.5 1.1 1.7 1.7 0 0 1-3.4 0 1.7 1.7 0 0 0-2.5-1.1 1.7 1.7 0 0 1-2.4-2.4 1.7 1.7 0 0 0-1.1-2.5 1.7 1.7 0 0 1 0-3.4 1.7 1.7 0 0 0 1.1-2.5 1.7 1.7 0 0 1 2.4-2.4 1.7 1.7 0 0 0 2.5-1.1z"/></svg>',
   heros: PICT_ + '<path d="M12 3c4.4 0 7 3.2 7 7.5V19h-4.5v-5.5h-5V19H5v-8.5C5 6.2 7.6 3 12 3z"/><path d="M12 3v6M9.5 13.5h5"/></svg>'
 };
-const THEMES = [
+const THEMES = [ // Théo (19/11) : Yggdrasil et Olympe seulement ; un téléphone réglé sur un autre thème retombe sur Yggdrasil
   { id: 'aube', nom: 'Yggdrasil', aide: 'fjord, givre, aurores et bronze', v: {} },
-  { id: 'taverne', nom: 'Taverne de nuit', aide: 'bois sombre, ambre et cire', police: 'Grenze:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Figtree:wght@400;500;600;700;800',
-    v: { bg: '#100c09', panel: '#17110d', card: '#1f1712', 'card-done': '#1a2316', line: '#3a2c22', text: '#f6ecdf', muted: '#a8978a', gold: '#f2a541', xp: '#f2a541', xp2: '#ffcf7d', pv: '#e0584b', ok: '#9cc78a', haut: '#2a1c12', wax: '#b3302a', wax2: '#e0584b', 'f-titre': 'Grenze, Georgia, serif', 'f-recit': 'Grenze, Georgia, serif', 'f-texte': 'Figtree, system-ui, sans-serif' } },
   { id: 'olympe', nom: "Olympe", aide: "marbre de nuit, or, constellations", police: "Cinzel:wght@500;600;700;800;900&family=Manrope:wght@500;600;700;800", v: { 'bg': "#0e1220", 'panel': "#151a2b", 'card': "#181e31", 'card-done': "#17241f", 'line': "#2c3450", 'text': "#f4eee2", 'muted': "#9aa1b8", 'gold': "#e0b866", 'xp': "#e0b866", 'xp2': "#f6dc9c", 'pv': "#e2715a", 'ok': "#9fd39a", 'haut': "#1b2238", 'wax': "#c0563f", 'wax2': "#e2715a", 'theron': "#7aa2ff", 'allie': "#5fd0c4", 'rest': "#7aa2ff", 'epic': "#b79cff", 'f-titre': "Cinzel, Georgia, serif", 'f-recit': "Cinzel, Georgia, serif", 'f-texte': "Manrope, system-ui, sans-serif" } },
-  { id: 'epopee', nom: "\u00c9pop\u00e9e arcanique", aide: "grimoire de cuir, or et runes", police: "Alegreya+SC:wght@500;700;800;900&family=Source+Sans+3:wght@500;600;700;800", v: { 'bg': "#0d0a0b", 'panel': "#161112", 'card': "#1b1415", 'card-done': "#1d1626", 'line': "#3b2e25", 'text': "#f3e9d8", 'muted': "#a8998a", 'gold': "#d4ac5e", 'xp': "#d4ac5e", 'xp2': "#f1d48e", 'pv': "#d0483b", 'ok': "#a98bff", 'haut': "#221418", 'wax': "#8f1f22", 'wax2': "#d0483b", 'theron': "#7c8dff", 'allie': "#3fc9a1", 'rest': "#7c8dff", 'epic': "#a98bff", 'arc': "#a274ff", 'f-titre': "'Alegreya SC', Georgia, serif", 'f-recit': "'Alegreya SC', Georgia, serif", 'f-texte': "'Source Sans 3', system-ui, sans-serif" } },
 ];
 /* Police des textes et taille : réglables à part, par-dessus le thème (gardées sur ce téléphone) */
 const POLICES_TEXTE = [
@@ -3584,9 +3634,10 @@ function repaireSvg(id, p) {
   const torche = x => `<g transform="translate(${x} 120)"><rect x="-3" y="-10" width="6" height="12" fill="#3a2a1c"/><path class="flam" d="M0 -10 q-6 -6 0 -16 q6 8 0 16 z" fill="#ff9a3c"/><g class="rep-halo" style="animation-duration:2.1s"><circle cy="-16" r="16" fill="#ffcf7a" opacity=".2"/></g></g>`;
   let sc = '';
   if (id === 're_campement') sc = `<rect width="200" height="260" fill="url(#${p}n)"/>${etoiles}${arbres('#101a1a')}
+    <g transform="translate(100 236) scale(.94 .74) translate(-100 -236)"><!-- tente abaissée : le fanion reste dans le cadre de la vitrine (recadrage par le bas) -->
     <path d="M20 236 L100 82 L180 236 Z" fill="#7a5a3a" stroke="#2a1a10" stroke-width="2"/><path d="M100 82 L60 236 L140 236 Z" fill="#8f6c46"/><path d="M76 236 L100 150 L124 236 Z" fill="#24160c"/>
     <path class="rep-fanion" d="M100 82 L100 58 L124 66 L100 74" fill="#a33a3a" stroke="#2a1a10"/><path d="M20 120 Q100 96 180 120" stroke="#3a2a1c" fill="none"/>
-    ${[[36, 114, '#d4ad3c'], [62, 107, '#a33a3a'], [88, 103, '#5ab0ff'], [112, 103, '#d4ad3c'], [138, 107, '#a33a3a'], [162, 114, '#5ab0ff']].map(([x, y, c]) => `<path d="M${x} ${y} l6 0 l-3 9 z" fill="${c}"/>`).join('')}
+    ${[[36, 114, '#d4ad3c'], [62, 107, '#a33a3a'], [88, 103, '#5ab0ff'], [112, 103, '#d4ad3c'], [138, 107, '#a33a3a'], [162, 114, '#5ab0ff']].map(([x, y, c]) => `<path d="M${x} ${y} l6 0 l-3 9 z" fill="${c}"/>`).join('')}</g>
     <rect width="200" height="260" fill="url(#${p}l)"/><path d="M0 236 L200 236 L200 260 L0 260 Z" fill="#1d1a14"/>${lanterne(30, 150)}${lanterne(170, 150)}${feu(166, 248)}`;
   else if (id === 're_taverne') sc = `<rect width="200" height="260" fill="#2a1c14"/>${Array.from({ length: 10 }, (_, i) => `<rect x="${i * 22}" y="0" width="22" height="236" fill="${i % 2 ? '#3a2818' : '#33231a'}"/>`).join('')}
     <rect x="0" y="22" width="200" height="10" fill="#1c120a"/><rect x="0" y="60" width="200" height="6" fill="#1c120a"/>
@@ -3667,11 +3718,11 @@ function blocArmurerie() {
   const E = GARDE_ROBE.find(g => g[0] === slotGarde) || GARDE_ROBE[0];
   const tuilesCosm = objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
     return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
-      <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(NOM_COURT[x.id] || x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button><button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button></div>`; }).join('');
+      <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(NOM_COURT[x.id] || x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>${ok ? `<button class="orn-q info" data-cosm-info="${x.id}" aria-label="À propos de cet objet">i</button>` : `<button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button>`}</div>`; }).join('');
   const pocheActuel = orn.poche || (/^fa_/.test(orn.familier || '') ? '' : orn.familier);
   const tuilesOrn = petits(E[0]).map(o => { const ok = ornementDebloque(s, o), eq = E[0] === 'poche' ? pocheActuel === o.id : orn[E[0]] === o.id;
     return `<div class="orn-t ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : o.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(o.nom)}"><span class="orn-ic">${miniOrnement(o)}</span><b>${esc(o.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>
-      <button class="orn-q" data-orn-info="${o.id}" aria-label="Comment le gagner">?</button></div>`; }).join('');
+      ${ok ? `<button class="orn-q info" data-orn-info="${o.id}" aria-label="À propos de cet objet">i</button>` : `<button class="orn-q" data-orn-info="${o.id}" aria-label="Comment le gagner">?</button>`}</div>`; }).join('');
   const prix = ((s.catalogueCosm || {}).prix) || {};
   const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id).sort((a, b) => (prix[a.rarete] || 0) - (prix[b.rarete] || 0)).map(x =>
     `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
@@ -4137,14 +4188,27 @@ function appliquerCoffre(n, source, o) {
 const COFFRE_COUL = { commun: ['#8fc47a', '#4f7a3e'], rare: ['#5ab0ff', '#2a5a9a'], epique: ['#b392ee', '#5a3a9a'], legendaire: ['#f2c94c', '#9a6a12'] };
 function coffreSvg(type) {
   const [c, cs] = COFFRE_COUL[type] || COFFRE_COUL.commun;
+  /* deux calques : le couvercle (.cof-couv, pivote sur sa charnière à l'ouverture) et la caisse ; .cof-lum = la lueur qui sort de la caisse ouverte */
+  const fer = (d) => `<path d="${d}" stroke="${c}" stroke-width="7" fill="none"/><path d="${d}" stroke="${cs}" stroke-width="1.4" fill="none" opacity=".8" transform="translate(3 0)"/>`;
   return `<svg viewBox="0 0 120 100" width="128" height="107" aria-hidden="true"><ellipse cx="60" cy="92" rx="46" ry="6" fill="#000" opacity=".35"/>
-    <path d="M14 46 Q14 14 60 14 Q106 14 106 46 Z" fill="#8a5a32" stroke="#3a2212" stroke-width="2"/><path d="M20 42 Q22 22 60 21 Q98 22 100 42" stroke="#b07a48" stroke-width="2" fill="none" opacity=".7"/>
+    <g class="cof-couv"><path d="M14 46 Q14 14 60 14 Q106 14 106 46 Z" fill="#8a5a32" stroke="#3a2212" stroke-width="2"/><path d="M20 42 Q22 22 60 21 Q98 22 100 42" stroke="#b07a48" stroke-width="2" fill="none" opacity=".7"/>
+    ${fer('M30 14.6 Q28 30 28 46 M90 14.6 Q92 30 92 46')}<circle cx="30" cy="30" r="1.8" fill="#fff" opacity=".7"/><circle cx="90" cy="30" r="1.8" fill="#fff" opacity=".7"/>
+    ${type === 'legendaire' || type === 'epique' ? `<path d="M60 2 l2.4 6 l6 2.4 l-6 2.4 l-2.4 6 l-2.4 -6 l-6 -2.4 l6 -2.4 z" fill="#fff6c8"/>` : ''}</g>
+    <ellipse class="cof-lum" cx="60" cy="44" rx="42" ry="8" fill="#fff6d8" opacity="0"/>
     <rect x="14" y="46" width="92" height="42" rx="4" fill="#7a4a28" stroke="#3a2212" stroke-width="2"/><path d="M18 60 h84 M18 74 h84" stroke="#5a3418" stroke-width="1.4" opacity=".7"/>
-    <path d="M30 14.6 Q28 30 28 46 V88 M90 14.6 Q92 30 92 46 V88" stroke="${c}" stroke-width="7" fill="none"/><path d="M30 14.6 Q28 30 28 46 V88 M90 14.6 Q92 30 92 46 V88" stroke="${cs}" stroke-width="1.4" fill="none" opacity=".8" transform="translate(3 0)"/>
+    ${fer('M28 46 V88 M92 46 V88')}
     <rect x="12" y="42" width="96" height="8" rx="2" fill="${c}" stroke="${cs}" stroke-width="1.4"/>
     <rect x="49" y="44" width="22" height="24" rx="4" fill="${c}" stroke="${cs}" stroke-width="1.6"/><circle cx="60" cy="54" r="5" fill="#fff" opacity=".9"/><circle cx="60" cy="54" r="3.4" fill="${cs}"/><path d="M58.6 57 h2.8 l1 7 h-4.8 z" fill="${cs}"/>
-    ${[[30, 92], [90, 92]].map(([x]) => `<circle cx="${x}" cy="30" r="1.8" fill="#fff" opacity=".7"/><circle cx="${x}" cy="66" r="1.8" fill="#fff" opacity=".7"/>`).join('')}
-    ${type === 'legendaire' || type === 'epique' ? `<path d="M60 2 l2.4 6 l6 2.4 l-6 2.4 l-2.4 6 l-2.4 -6 l-6 -2.4 l6 -2.4 z" fill="#fff6c8"/>` : ''}</svg>`;
+    <circle cx="30" cy="66" r="1.8" fill="#fff" opacity=".7"/><circle cx="90" cy="66" r="1.8" fill="#fff" opacity=".7"/></svg>`;
+}
+/* Ouverture en 3 temps (secousses croissantes → couvercle qui bascule + faisceau → l'objet s'élève) : durées par coffre, en ms */
+const COF_TEMPS = { commun: [380, 220, 300], rare: [520, 260, 380], epique: [700, 300, 450], legendaire: [940, 360, 500] };
+const COF_LUEUR = { commun: '#a8d88f', rare: '#8ccaff', epique: '#d0b8ff', legendaire: '#ffc46b' };
+/** Petit tas de cristaux (éclats) qui tombent un à un */
+function tasEclats() {
+  const pos = [[-30, 6, .8, -14], [30, 6, .8, 16], [-14, 2, 1, -6], [14, 2, 1, 8], [0, -10, 1.2, 0], [-24, -4, .7, -24], [24, -4, .7, 22]];
+  return `<svg class="cof-tas" viewBox="-48 -40 96 64" width="120" height="80" aria-hidden="true"><ellipse cx="0" cy="20" rx="40" ry="5" fill="#000" opacity=".35"/>
+    ${pos.map(([x, y, k, r], i) => `<g transform="translate(${x} ${y}) rotate(${r}) scale(${k})"><g class="cof-cr" style="--k:${i}"><path d="M0 -14 L8 -4 L0 14 L-8 -4 Z" fill="#9fe4ff" stroke="#3a86ad" stroke-width=".8"/><path d="M0 -14 L8 -4 H-8 Z" fill="#dff7ff"/><path d="M0 -4 V14" stroke="#4aa8d0" stroke-width=".9"/></g></g>`).join('')}</svg>`;
 }
 /* Le héros qui porte l'objet tiré (cape, couronne, aura, familier, emblème, sol) */
 function herosPortant(x) {
@@ -4157,9 +4221,13 @@ function ouvrirUnCoffre() {
   if (navigator.onLine === false) { toast('📴 Il faut du réseau pour ouvrir un coffre', 'info'); return; }
   let ov = document.getElementById('coffreOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'coffreOv'; document.body.appendChild(ov); }
-  ov.innerHTML = `<div class="cof-box" data-cof-vite="1"><p class="muted">${esc(c.origine || '')}</p><div class="cof r-${c.type}">${coffreSvg(c.type)}</div><p>Coffre ${esc((RARETE_NOM[c.type] || '').toLowerCase())}</p><p class="muted" style="font-size:12px">Ouverture…</p></div>`;
-  ov.classList.add('on'); document.body.classList.add('bloque');
   const o = tirerCoffreLocal(c, state);
+  const xo = o.item ? cosmItem(o.item) : null, rar = (xo && xo.rarete) || o.rarete || c.type; // le faisceau prend la couleur de ce qui sort
+  const [tS, tL, tR] = COF_TEMPS[c.type] || COF_TEMPS.rare;
+  const anime = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  ov.innerHTML = `<div class="cof-box ${anime ? 'cof-anim' : ''}" data-cof-vite="1" style="--ts:${tS}ms;--tl:${tL}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><p class="muted">${esc(c.origine || '')}</p><div class="cof r-${c.type}"><i class="cof-faisceau"></i>${coffreSvg(c.type)}</div><p>Coffre ${esc((RARETE_NOM[c.type] || '').toLowerCase())}</p><p class="muted" style="font-size:12px">Ouverture…</p></div>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+  if (anime) { setTimeout(() => vib(12), tS * .5); setTimeout(() => vib(20), tS * .85); setTimeout(() => vib(35), tS); } // les secousses se sentent aussi
   // l'état local avance tout de suite (coffre retiré, objet ou éclats ajoutés)
   state = appliquerCoffre(copie(state), c.source, o);
   coffresEnVol[c.source] = o;
@@ -4177,18 +4245,24 @@ function ouvrirUnCoffre() {
     state = n; if (!document.getElementById('coffreOv').classList.contains('on')) render();
     toast(estHorsLigne(e) ? '📴 Coffre non ouvert : il t\'attend, réessaie avec du réseau' : 'Coffre non ouvert : ' + (e.message || String(e)), 'info');
   });
-  coffreRevele = () => {
+  coffreRevele = (direct) => {
     coffreRevele = null;
-    const x = o.item ? cosmItem(o.item) : null;
-    ov.innerHTML = `<div class="cof-box ouvert"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
-      ${x ? `<div class="cof-duo"><div class="cof-obj">${apercuCosm(x)}</div>${herosPortant(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p><b class="cof-rar r-${x.rarete}">${RARETE_NOM[x.rarete]}</b> · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>
-        <button class="btn or plein" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">✦</div><h3>${o.eclats || 0} éclats</h3><p>${texteEclatsCoffre(o)} : voici des éclats pour le marchand.</p>`}
+    const x = o.item ? cosmItem(o.item) : null, leve = anime && !direct; // un toucher : le résultat tout de suite, sans montée
+    const etinc0 = leve ? `<span class="cof-etinc">${Array.from({ length: 7 }, (_, i) => `<i style="--a:${-150 + i * 20}deg;--d:${(i % 3) * 60}ms"></i>`).join('')}</span>` : '';
+    const etinc = (leve ? '<i class="cof-faisceau fin"></i>' : '') + etinc0; // le faisceau reste sous l'objet, qui s'élève dedans
+    ov.innerHTML = `<div class="cof-box ouvert ${leve ? 'leve' : ''}" style="--tr:${tR}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
+      ${x ? `<div class="cof-duo"><div class="cof-obj">${apercuCosm(x)}${etinc}</div>${herosPortant(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p><b class="cof-rar r-${x.rarete}">${RARETE_NOM[x.rarete]}</b> · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>
+        <button class="btn or plein" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">${tasEclats()}${etinc}</div><h3><span class="cof-n">${leve ? 0 : o.eclats || 0}</span> éclats</h3><p>${texteEclatsCoffre(o)} : voici des éclats pour le marchand.</p>`}
       ${(state.armurerie.coffres || []).length ? `<div class="cof-liens">${x ? `<button class="cof-lien" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>` : `<button class="btn or plein" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>`}<button class="cof-lien" data-cof-plus-tard="1">Plus tard</button></div>` : `<button class="${x ? 'cof-lien' : 'btn or plein'}" data-cof-fermer="1">Fermer</button>`}</div>`;
     vib([30, 60, 30]);
+    const nEl = ov.querySelector('.cof-n'), tot = o.eclats || 0; // le compteur d'éclats monte pendant que les cristaux tombent
+    if (nEl && leve && tot) { const t0 = performance.now(), du = 650 + tR * .4;
+      const pas = t => { if (!nEl.isConnected) return; const k = Math.min(1, (t - t0) / du); nEl.textContent = Math.round(tot * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(pas); };
+      requestAnimationFrame(pas); }
   };
-  setTimeout(() => { if (coffreRevele) coffreRevele(); }, confort().animations ? 1100 : 0);
+  setTimeout(() => { if (coffreRevele) coffreRevele(); }, anime ? tS + tL : 0);
 }
-document.addEventListener('click', e => { if (e.target.closest('[data-cof-vite]') && coffreRevele) coffreRevele(); });
+document.addEventListener('click', e => { if (e.target.closest('[data-cof-vite]') && coffreRevele) coffreRevele(true); });
 document.addEventListener('click', e => {
   if (e.target.closest('[data-coffre]')) { ouvrirUnCoffre(); return; }
   const pt = e.target.closest('[data-cof-porter]');
@@ -6832,7 +6906,11 @@ function render() {
       ${onglet !== 'quetes' ? '' : (() => {
         const serie = (s.habitudes || []).reduce((m, h) => Math.max(m, h.serieNb > 0 ? Number(h.serie) || 0 : 0), 0), L = lienArmesHTML(s);
         const bas = s.pv < s.seuilEpuise, n = duJour.length, d = s.d20, malus = String(s.malus).replace('.', ',');
-        const segs = n ? Array.from({ length: n }, (_, i) => `<i class="${i < faits ? 'on' : i === faits ? 'nx' : ''}" style="--i:${i}"></i>`).join('') : '<i class="repos"></i>';
+        const plein = !!(n && faits >= n), fj = plein && journeeAnim && journeeAnim.cle === cleJournee(s) ? journeeAnim : null; // « Journée accomplie »
+        const segs = (n ? Array.from({ length: n }, (_, i) => `<i class="${i < faits ? 'on' : i === faits ? 'nx' : ''}" style="--i:${i}"></i>`).join('') : '<i class="repos"></i>')
+          + (plein ? '<b class="hxq-or"></b><b class="hxq-trait"></b><b class="hxq-mot">Journée accomplie</b>' : '');
+        const icoQ = plein ? '<svg class="hxq-rune" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6.3"/><path d="M4.4 3.8 V10.2 M9.6 3.8 V10.2 M4.4 3.8 L9.6 10.2 M9.6 3.8 L4.4 10.2"/></svg>'
+          : '<svg class="hxq-ep" viewBox="0 0 12 12" aria-hidden="true"><path d="M10.6 1.4 L4.4 7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M2.6 6 L6 9.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3.4 8.6 L1.5 10.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
         const de = `<button class="jour-d20 hxd ${d ? 'fait' : ''} ${d && d.mult < 1 ? 'malus' : ''}" data-d20="1" aria-label="${d ? 'd20 du jour : ' + d.de : 'Lancer le d20 du jour'}">${d20Svg(d ? d.de : '?')}<small>${d ? (d.mult !== 1 ? '×' + String(d.mult).replace('.', ',') : '=') : 'Lance'}</small></button>`;
         const medaille = `<div class="hxc-m"><button class="hx-med ${bas ? 'fatigue' : ''}" data-tab="profil" data-mode="profil" aria-label="Ouvrir le profil du héros">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'hxm', s)}</button>
           <span class="hxc-niv" data-tab="profil" data-mode="profil" aria-label="Niveau ${s.niveau}"><small>niv.</small>${s.niveau}${marqueSouvenir(s)}</span></div>`;
@@ -6853,7 +6931,7 @@ function render() {
           ${l1A}
           ${jxp}
           <div class="hxc-j pv ${bas ? 'bas' : ''}"><span>PV</span><i class="t pv"><i style="width:${pvPct}%"></i></i><em>${bas ? `<small class="epu-p">Épuisé ×${malus}</small>` : ''}<b>${s.pv}</b>/${s.pvMax}</em></div>
-          <div class="hxc-j q ${n && faits >= n ? 'plein' : ''}" aria-label="${faits} quête${faits > 1 ? 's' : ''} faite${faits > 1 ? 's' : ''} sur ${n} aujourd'hui"><span><svg class="hxq-ep" viewBox="0 0 12 12" aria-hidden="true"><path d="M10.6 1.4 L4.4 7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M2.6 6 L6 9.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3.4 8.6 L1.5 10.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="hxq">${segs}</span><em><b>${faits}</b>/${n}${flamme}${L}</em></div>
+          <div class="hxc-j q ${plein ? 'plein' : ''} ${fj ? 'frappe' : ''}"${fj ? ` style="--dj:${-Math.min(1600, Date.now() - fj.t0)}ms"` : ''}${plein ? ' title="Journée accomplie"' : ''} aria-label="${plein ? 'Journée accomplie : ' : ''}${faits} quête${faits > 1 ? 's' : ''} faite${faits > 1 ? 's' : ''} sur ${n} aujourd'hui"><span>${icoQ}</span><span class="hxq">${segs}</span><em><b>${faits}</b>/${n}${flamme}${L}</em></div>
         </div>
         <div class="hxc-d">${reglages}${de}</div>
       </div>`; })()}
@@ -6980,6 +7058,35 @@ function render() {
   document.getElementById('btnRepos').textContent = s.jokersRestants > 0
     ? `💤 Repos (utilise le joker, ${s.jokersRestants} restant)` : '💤 Repos (plus de joker cette semaine)';
   try { glisserXp(); } catch (e) {}
+  try { journeeAccomplieAFaire(); } catch (e) {}
+}
+/* « Journée accomplie » (Enlumineur, v9.9) : toutes les quêtes du jour faites → un trait de lumière parcourt la jauge,
+ * qui devient une ligne d'or, et une rune d'or se frappe sur la plaque (≈ 1,5 s). Une fois par jour et par héros ;
+ * après l'écran de niveau (ou un boss vaincu, un coffre…) ; mode calme / mouvement réduit : état doré direct. */
+var journeeAnim = null, journeeAttente = '';
+const cleJournee = s => 'journeeAccomplie|' + (s && s.heros) + '|' + (s && s.today);
+function journeeAccomplieAFaire() {
+  if (!state || !document.querySelector('.hxc-j.q.plein')) return;
+  const cle = cleJournee(state);
+  if (journeeAttente === cle || (journeeAnim && journeeAnim.cle === cle)) return;
+  try { if (localStorage.getItem(cle)) return; } catch (e) { return; }
+  let anim = true; try { anim = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  if (!anim) { try { localStorage.setItem(cle, '1'); } catch (e) {} return; } // état doré seul, sans mise en scène
+  journeeAttente = cle;
+  const essayer = () => {
+    const row = document.querySelector('.hxc-j.q.plein');
+    if (!state || cleJournee(state) !== cle || !row) { journeeAttente = ''; return; } // quête annulée, autre onglet : on réessaiera au prochain affichage
+    const occupe = document.body.classList.contains('bloque') || document.querySelector('.lvl-ov, .cine, .boss-win, #bossVue.on, #coffreOv.on, #d20ov.on, .am-ov');
+    if (occupe) { setTimeout(essayer, 600); return; } // la montée de niveau (ou un boss vaincu) passe d'abord
+    journeeAttente = ''; journeeAnim = { cle, t0: Date.now() };
+    try { localStorage.setItem(cle, '1'); } catch (e) {}
+    row.classList.add('frappe'); row.style.setProperty('--dj', '0ms');
+    const g = row.querySelector('.hxq'), m = row.querySelector('.hxq-mot'); // téléphone étroit : la légende se resserre pour tenir sur la jauge (+ les deux marges)
+    if (g && m && m.offsetWidth) document.documentElement.style.setProperty('--km', Math.min(1, (g.offsetWidth + 10) / m.offsetWidth).toFixed(3));
+    setTimeout(() => vib(18), 520);
+    setTimeout(() => { journeeAnim = null; const r = document.querySelector('.hxc-j.q.frappe'); if (r) r.classList.remove('frappe'); }, 1700);
+  };
+  setTimeout(essayer, 650); // la montée de niveau part à 350 ms : elle a le temps de s'afficher avant
 }
 
 
