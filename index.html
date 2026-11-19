@@ -867,6 +867,21 @@
   .tabs button.carn { color: var(--xp2); } .tabs button.carn svg { filter: drop-shadow(0 0 6px rgba(242,165,65,.45)); } .tabs button.carn.on { color: var(--text); }
   .comp { display: flex; gap: 12px; align-items: center; background: var(--panel, #17110d); border: 1px solid #3a2c22; border-radius: 16px; padding: 10px 12px; }
   .comp.moi { border-color: rgba(242,165,65,.45); }
+  .duel { margin-top: 14px; padding: 16px 12px 12px; border-radius: 20px; border: 1px solid var(--line); position: relative; overflow: hidden;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--theron) 14%, transparent), transparent 42%, transparent 58%, color-mix(in srgb, var(--allie) 14%, transparent)), var(--card); }
+  .dl-face { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 6px; position: relative; padding-top: 22px; }
+  .dl-niche { height: 150px; border-radius: 70px 70px 16px 16px; position: relative; overflow: hidden; cursor: pointer;
+    background: radial-gradient(80% 70% at 50% 40%, color-mix(in srgb, var(--c) 22%, transparent), transparent 70%), var(--panel); box-shadow: inset 0 0 0 2px var(--c), 0 0 22px color-mix(in srgb, var(--c) 30%, transparent); }
+  .dl-niche svg { position: absolute; left: 50%; bottom: -6px; width: 128px; height: auto; transform: translateX(-50%); }
+  .dl-vs { font: italic 900 30px var(--f-titre); color: var(--gold); padding-bottom: 54px; text-shadow: 0 0 14px rgba(242,165,65,.5); }
+  .dl-couronne { position: absolute; top: -4px; font-size: 30px; transform: translateX(-50%) rotate(-10deg); transition: left .6s cubic-bezier(.4,1.4,.5,1); filter: drop-shadow(0 0 8px rgba(255,190,90,.8)); }
+  .dl-couronne.g { left: 22%; } .dl-couronne.d { left: 78%; }
+  .dl-noms { display: grid; grid-template-columns: 1fr 1fr; text-align: center; margin: 8px 0 6px; } .dl-noms b { display: block; font: italic 900 22px var(--f-titre); text-transform: uppercase; }
+  .dl-noms small { color: var(--muted); font-size: 11.5px; }
+  .dl-bar { margin-top: 10px; } .dl-t { text-align: center; font: 800 10.5px var(--f-texte); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .dl-v { display: flex; align-items: baseline; gap: 4px; font-size: 11.5px; color: var(--muted); } .dl-v span { flex: 1; } .dl-v b { font: italic 900 20px var(--f-titre); color: var(--text); }
+  .dl-l { display: flex; gap: 4px; height: 9px; } .dl-l i { display: block; height: 100%; border-radius: 3px; transform: skewX(-14deg); min-width: 4px; }
+  body.calme .dl-couronne { transition: none; } .dl-l i.vide { flex: 1; background: rgba(255,214,170,.09); }
   .comp-av { width: 74px; flex: none; } .comp-av svg { width: 74px; height: auto; display: block; }
   .comp-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
   .comp-txt b { color: var(--text); font-size: 15px; font-family: var(--f-titre); } .comp-txt .tt { color: var(--gold); font-style: italic; }
@@ -4683,6 +4698,7 @@ function render() {
   if (onglet === 'profil' && change) dessinerGrille();
   afficherCarnet(onglet === 'carnet');
   if (onglet === 'compagnie' && !compVue) prechargerFiches(s);
+  if (onglet === 'compagnie') placerCouronne();
   demandesClaude(s);
   demanderMJ(s);
   if (change) requestAnimationFrame(boutonsPlies);
@@ -4787,6 +4803,35 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-retour]')) { compVue = null; render(); return; }
   if (e.target.closest('[data-tab]')) compVue = null;
 }, true);
+/* Duel de la semaine (charte 2026) : les deux héros face à face, chacun sa couleur fixe (mage azur, voleur jade), couronne au meneur */
+const couleurClasse = c => /voleur|assassin|roublard/i.test(String(c || '')) ? 'var(--allie)' : 'var(--theron)';
+function duelHTML(s, moi, lui) {
+  const B = (s.boss || {}).semaine, dg = n => Math.round(Number(((B || {}).degats || {})[n]) || 0);
+  const dessin = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
+  const a = Number(moi.xpSemaine) || 0, b = Number(lui.xpSemaine) || 0, meneur = a === b ? '' : a > b ? 'g' : 'd';
+  const barre = (titre, va, vb, unite) => { const t = Math.max(1, va + vb);
+    return `<div class="dl-bar"><div class="dl-t">${titre}</div><div class="dl-v"><b>${va.toLocaleString('fr-FR')}</b>${unite}<span></span><b>${vb.toLocaleString('fr-FR')}</b>${unite}</div>
+      <div class="dl-l">${va + vb ? `<i style="width:${va / t * 100}%;background:${couleurClasse(moi.classe)}"></i><i style="width:${vb / t * 100}%;background:${couleurClasse(lui.classe)}"></i>` : '<i class="vide"></i>'}</div></div>`; };
+  return `<div class="duel" data-meneur="${meneur}">
+    <div class="dl-face">
+      <div class="dl-niche" style="--c:${couleurClasse(moi.classe)}" data-vitrine="1" role="button" aria-label="Voir ton héros">${dessin(moi, 'dlg')}</div>
+      <div class="dl-vs">VS</div>
+      <div class="dl-niche" style="--c:${couleurClasse(lui.classe)}" data-vitrine-nom="${esc(lui.nom)}" role="button" aria-label="Voir ton compagnon d'armes">${dessin(lui, 'dld')}</div>
+      ${meneur ? `<span class="dl-couronne" aria-label="En tête cette semaine">👑</span>` : ''}
+    </div>
+    <div class="dl-noms"><div style="color:${couleurClasse(moi.classe)}"><b>Toi</b><small>${esc(moi.classe || '')} · niv. ${moi.niveau}</small></div><div style="color:${couleurClasse(lui.classe)}"><b>Ton allié</b><small>${esc(lui.classe || '')} · niv. ${lui.niveau}</small></div></div>
+    ${barre('XP de la semaine', a, b, ' XP')}
+    ${B && B.statut !== 'À venir' ? barre('Dégâts au ' + esc(String(B.nomStade || B.nom).replace(/^(Le|La|L')\s*/, '')), dg(moi.nom), dg(lui.nom), '') : ''}
+    ${barre('Quêtes aujourd\'hui', Number(moi.faitsAujourdhui) || 0, Number(lui.faitsAujourdhui) || 0, '')}
+  </div>`;
+}
+/** Couronne vivante : elle glisse d'un héros à l'autre quand l'avance change */
+function placerCouronne() {
+  const d = document.querySelector('.duel'), c = d && d.querySelector('.dl-couronne'); if (!c) return;
+  const cote = d.dataset.meneur; let avant = ''; try { avant = sessionStorage.getItem('couronne') || ''; } catch (e) {}
+  c.classList.add(avant || cote); if (avant && avant !== cote) requestAnimationFrame(() => requestAnimationFrame(() => { c.classList.remove(avant); c.classList.add(cote); }));
+  try { sessionStorage.setItem('couronne', cote); } catch (e) {}
+}
 function vueCompagnie(s, faits, total) {
   const moi = { nom: s.heros, classe: (s.classe || {}).nom, look: s.look, niveau: s.niveau, titre: s.titre, surnom: surnomDe(s), pv: s.pv,
     faitsAujourdhui: faits, xpSemaine: s.bilan.semaine.xp, moi: true };
@@ -4812,6 +4857,7 @@ function vueCompagnie(s, faits, total) {
     : actifs === 0 ? 'Personne n\'a encore agi aujourd\'hui : montre l\'exemple.'
     : (moi.faitsAujourdhui > 0 ? 'Tu as fait ta part. Un mot d\'encouragement à ton compagnon ?' : 'Ton compagnon est déjà en route. À toi de jouer !');
   return `
+    ${autres[0] ? duelHTML(s, moi, autres[0]) : ''}
     <div class="section"><h2>La Compagnie</h2><span>touche un héros pour le voir en grand</span></div>
     <div class="list">${tous.map(carte).join('')}</div>
     <div class="panel comp-bilan"><b>${xpComp.toLocaleString('fr-FR')} XP</b> gagnés ensemble cette semaine<br><span>${mot}</span></div>
