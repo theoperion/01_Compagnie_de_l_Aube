@@ -1837,7 +1837,7 @@ function blocSaison(s, court) {
     <div class="sa-t"><b>⚜ ${esc(S.nom)}</b><span>Palier ${S.palier} / ${S.paliers}</span></div>
     <div class="bar sa-bar"><i style="width:${pct}%"></i></div>
     <div class="sa-n">${S.palier >= S.paliers ? 'Chemin terminé, bravo !' : `Encore ${Math.max(0, S.cout - S.dansPalier).toLocaleString('fr-FR')} XP · prochaine récompense : <b>${esc(recompenseTexte(S.prochaine))}</b>`}</div>
-    ${S.id === 'pre' ? '<div class="sa-n">Rodage jusqu\'au 31 décembre. Le 1er janvier, la Saison 1 apporte de nouveaux objets et de nouveaux boss ; ce que tu as gagné reste à toi.</div>' : ''}
+    ${S.id === 'pre' ? '<div class="sa-n">Rodage jusqu\'au 31 décembre. Le 1er janvier, la Saison 1 apporte de nouveaux objets et de nouveaux boss.</div>' : ''}
     <div class="sa-b">${coffres ? `<button class="btn mini or" data-coffre="1">🎁 Ouvrir un coffre (${coffres})</button>` : ''}${court ? '<button class="btn mini" data-vitrine="1" data-armurerie="1">⚔ Ouvrir l\'armurerie</button>' : `<span class="eclats">✦ ${A.eclats} éclats</span>`}</div>
   </div>`;
 }
@@ -2085,8 +2085,8 @@ const REGLES_PAGES = [
     p: ['Une case = un <b>palier</b>. Un palier ≈ <b>60 % d\'une semaine parfaite</b> d\'XP en pré-saison (la moitié d\'une semaine ensuite) : environ <b>1 à 2 cases par semaine</b>.', 'Ton compagnon d\'armes et toi avancez au <b>même rythme</b> pour une semaine complète, même avec des quêtes différentes.', 'Touche une case pour voir ce qu\'elle donne et combien d\'XP il te manque.'] },
   { t: 'Les coffres', s: `<div class="rg-ligne"><div class="rg-bloc">🗺<small>case coffre du plateau</small></div><b>+</b><div class="rg-bloc">🐉<small>chaque boss vaincu</small></div><b>=</b><div class="rg-bloc or">🎁<small>coffre à ouvrir</small></div></div>
       <div class="rg-rar"><span style="border-color:#a99bb6">Commun</span><span style="border-color:#5ab0ff">Rare</span><span style="border-color:#b392ee">Épique</span><span style="border-color:#f2a93c">Légendaire</span></div>`,
-    p: ['Un coffre s\'ouvre dans <b>Héros → Aventure</b> (pastille 🎁). Touche-le pour l\'ouvrir tout de suite.', 'Plus le coffre est rare, plus l\'objet a de chances d\'être <b>épique ou légendaire</b>.', 'Un <b>boss du mois</b> laisse toujours une pièce de <b>sa panoplie</b> (cape, puis couronne, puis aura).'] },
-  { t: 'Éclats et marchand', s: `<div class="rg-ligne"><div class="rg-bloc">🎁<small>objet déjà possédé</small></div><b>→</b><div class="rg-bloc bleu">✦<small>éclats</small></div><b>→</b><div class="rg-bloc">🏪<small>le marchand</small></div></div>
+    p: ['Un coffre s\'ouvre dans <b>Héros → Aventure</b> (pastille 🎁). Touche-le pour l\'ouvrir tout de suite.', 'Plus le coffre est rare, plus l\'objet a de chances d\'être <b>épique ou légendaire</b>.', 'Un <b>boss du mois</b> laisse une pièce de <b>sa panoplie</b> (cape, puis couronne, puis aura), puis un coffre épique une fois la panoplie complète.'] },
+  { t: 'Éclats et marchand', s: `<div class="rg-ligne"><div class="rg-bloc">🎁<small>rareté déjà complète</small></div><b>→</b><div class="rg-bloc bleu">✦<small>éclats</small></div><b>→</b><div class="rg-bloc">🏪<small>le marchand</small></div></div>
       <div class="rg-rar"><span>Commun ✦ 40</span><span>Rare ✦ 100</span><span>Épique ✦ 250</span><span>Légendaire ✦ 600</span></div>`,
     p: ['Les cases vertes du plateau donnent des <b>éclats</b>. Un coffre en donne aussi si tu as déjà <b>tous les objets</b> de la rareté tirée.', 'Avec les éclats, tu achètes <b>l\'objet de ton choix</b> chez le marchand (dans la vitrine, sous la garde-robe).'] },
   { t: 'Ce qui se gagne autrement', s: `<div class="rg-grille"><div>🏰<b>Repaire</b><small>avec ton niveau (10, 20, 35, 50)</small></div><div>🐎<b>Monture</b><small>niveau 25 et 50</small></div><div>🐉<b>Familier</b><small>un nouveau par saison, après 7 jours de suite ; il grandit avec tes jours de quêtes (7, 30, 90)</small></div><div>🏆<b>Trophée</b><small>chaque boss vaincu, dans la salle des trophées</small></div></div>`,
@@ -2124,7 +2124,7 @@ document.addEventListener('click', e => {
 /* --- Aperçu de la Saison 1 (pendant la pré-saison) --- */
 function apercuSaison1() {
   return `<details class="apercu-s1"><summary>✦ La Saison 1 arrive le 1er janvier</summary>
-    <p class="muted" style="font-size:12.5px">Un nouveau bestiaire à affronter, un chemin de 50 paliers, de nouveaux repaires, de nouvelles montures, un nouveau familier et des panoplies à arracher aux boss du mois. Tout reste secret jusqu'au jour J… Ce que tu gagnes d'ici là reste à toi.</p>
+    <p class="muted" style="font-size:12.5px">Un nouveau bestiaire à affronter, un chemin de 50 paliers, de nouveaux repaires, de nouvelles montures, un nouveau familier et des panoplies à arracher aux boss du mois. Tout reste secret jusqu'au jour J…</p>
     <div class="s1-boss">${Array.from({ length: 6 }, () => '<div><div class="s1-myst">?</div></div>').join('')}</div></details>`;
 }
 /* --- Ouverture d'un coffre : il tremble, s'ouvre, l'objet apparaît --- */
@@ -2184,7 +2184,7 @@ function ouvrirUnCoffre() {
     const x = o.item ? cosmItem(o.item) : null;
     ov.innerHTML = `<div class="cof-box ouvert"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
       ${x ? `<div class="cof-obj">${apercuCosm(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p>${RARETE_NOM[x.rarete]} · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>
-        <button class="btn or" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">✦</div><h3>${o.eclats || 0} éclats</h3><p>Tu avais déjà tout ce qu'il contenait : de quoi acheter chez le marchand.</p>`}
+        <button class="btn or" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">✦</div><h3>${o.eclats || 0} éclats</h3><p>Tu as déjà tous les objets de cette rareté : voici des éclats pour le marchand.</p>`}
       <button class="btn" data-cof-fermer="1">${(state.armurerie.coffres || []).length ? 'Coffre suivant' : 'Fermer'}</button></div>`;
     vib([30, 60, 30]);
   };
@@ -3555,7 +3555,7 @@ const ANNONCE_BOSS = [
   ['🎯', 'Des PV à votre mesure', 'les PV du boss sont calés sur votre vrai rythme des dernières semaines : la victoire se mérite, elle n\'est plus garantie.'],
   ['⚔', 'Des coups spéciaux', 'le mardi et le jeudi (le samedi pour le boss du mois), annoncés la veille. Chacun se contre : la quête qui le brise est marquée « 🗡 brise… » et ouvre une Brèche (+25 % de dégâts).'],
   ['🔥', 'Enragé puis Aux abois', 'sous 30 % de PV il riposte plus fort ; sous 20 % il tente un dernier recours.'],
-  ['😈', 'S\'il s\'enfuit', 'le boss suivant arrive blessé par la poursuite (−5 % de PV) ; s\'il s\'est enfui de loin, il maudit la Compagnie deux jours. Une quête saisie en retard compte encore pour le boss terminé.'],
+  ['😈', 'S\'il s\'enfuit', 'le boss suivant arrive blessé par la poursuite (−5 % de PV) ; si le fuyard gardait plus de 10 % de ses PV, il maudit la Compagnie les deux premiers jours. Une quête oubliée, saisie dans les 7 jours, frappe encore le boss enfui.'],
   ['🐉', 'Ils évoluent', 'chaque boss a 3 stades : nouveau nom, nouvelles couleurs, une capacité de plus.']
 ];
 function ouvrirAnnonceBoss() {
