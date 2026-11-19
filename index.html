@@ -3003,8 +3003,8 @@ const lumC = a => { const v = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16)
 /** Rareté d'un objet (catalogue du moteur, sinon déduite de son id) */
 function rareteCosm(id) {
   const x = cosmItem(id); if (x && x.rarete) return x.rarete;
-  if (id === 'cape_veteran' || /^tete_/.test(id)) return 'legendaire';
-  return /^(cape_aube|cape_corsaire|cape_legende)$/.test(id) || couleurPano(id) ? 'epique' : 'commun';
+  if (/^tete_/.test(id)) return 'legendaire';
+  return /^(cape_aube|cape_corsaire)$/.test(id) || couleurPano(id) ? 'epique' : 'commun';
 }
 /* Motifs brodés au bas des capes des boss (visibles sur les pans, de part et d'autre du héros) */
 const MOTIF_CAPE = {
