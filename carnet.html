@@ -676,7 +676,7 @@ function chargerServeur(){
       charge=true;
       if(!brut||nonSync()) save();
       setTimeout(initMontre,1500);
-    }catch(e){setSync(navigator.onLine===false?"📴 Hors connexion : tu travailles sur la copie du téléphone":"Sheet injoignable : copie du téléphone (nouvel essai dans 1 min)")}
+    }catch(e){setSync(navigator.onLine===false?"📴 Hors connexion : tu travailles sur la copie du téléphone":"Compagnie injoignable : tu travailles sur la copie du téléphone (nouvel essai dans 1 min)")}
     finally{chargement=null}
   })();
   return chargement;
@@ -696,7 +696,7 @@ let sample=null;
         await chargerServeur();
       }
     }
-  }catch(e){setSync(navigator.onLine===false?"📴 Hors connexion : copie du téléphone":"Sauvegarde locale")}
+  }catch(e){setSync(navigator.onLine===false?"📴 Hors connexion : copie du téléphone":"Sauvegardé sur le téléphone seulement")}
 })();
 
 /* ======================================================================
@@ -707,6 +707,14 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const norm=s=>String(s||"").toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g," ").replace(/\s+/g," ").trim();
 const sampleErr=c=>({not_granted:"Accès à Claude refusé pour cette page. Recharge la page pour qu'on te le redemande.",rate_limited:"Trop de demandes d'un coup. Réessaie dans une minute.",prompt_too_large:"Texte trop long.",absent:"IA indisponible.",no_key:"Aucune clé API Claude : ajoute-la dans les réglages (roue dentée en haut à gauche).",bad_key:"Clé API Claude refusée : vérifie-la dans les réglages.",timeout:"Claude a mis trop de temps. Réessaie (ou passe la création des missions en « Rapide » dans les réglages).",invalid_json:"Réponse de l'IA illisible. Réessaie."}[c]||"Claude n'a pas pu répondre. Réessaie.");
 function addWord(en,fr,ex,lvl){if(!en||!fr||state.en.deck.some(c=>norm(c.en)===norm(en)))return false;state.en.deck.push({id:"w"+Date.now()+Math.random().toString(36).slice(2,6),en,fr,ex:ex||"",lvl:NIV_RANG[lvl]?lvl:undefined,reps:0,stab:null,diff:5,lapses:0,last:null,due:todayISO()});save();setTimeout(evaluerNiveaux,1500);return true}
+/* Tes erreurs deviennent des cartes à redire à voix haute (« Dis-le en anglais ») : la correction revient en révision espacée */
+function ajouterPhrase(correct,faux){
+  correct=String(correct||"").trim(); faux=String(faux||"").trim();
+  if(!correct||!faux||norm(correct)===norm(faux)||correct.split(/\s+/).length>16) return;
+  if(state.en.deck.some(c=>norm(c.en)===norm(correct))) return;
+  const actives=state.en.deck.filter(c=>c.phrase&&!(c.stab>=21)); if(actives.length>=30) return; // pas d'avalanche
+  state.en.deck.push({id:"p"+Date.now()+Math.random().toString(36).slice(2,6),en:correct,fr:"Corrige : « "+faux.slice(0,140)+" »",ex:"",lvl:"A2",phrase:true,reps:0,stab:null,diff:5,lapses:0,last:null,due:todayISO()});
+}
 /* Claude évalue le niveau CECRL des mots ajoutés sans niveau (ajout manuel, corrections) */
 let evalEnCours=false;
 async function evaluerNiveaux(){
@@ -782,7 +790,7 @@ async function micPrecis(moi,st,opts){
       const m=String((e&&e.message)||e), definitif=/GEMINI_REFUSE|OPENAI_REFUSE|NO_GEMINI/.test(m);
       // Google surchargé (503) : passager, on garde le micro précis ; clé refusée ou 2 échecs de suite : micro classique
       if(definitif||micPrecisEchecs>=2){micPrecisPanne=true;if(st)st.textContent="Transcription impossible ("+errTxt(e).slice(0,90)+") : touche le micro, le micro classique prend le relais."}
-      else if(st) st.textContent=(/503|surcharg|demand/i.test(m)?"Google est surchargé en ce moment":"Transcription impossible ("+errTxt(e).slice(0,70)+")")+" : touche le micro pour redire ta phrase.";
+      else if(st) st.textContent=(/503|surcharg|demand/i.test(m)?"Le service de transcription est surchargé en ce moment":"Transcription impossible ("+errTxt(e).slice(0,70)+")")+" : touche le micro pour redire ta phrase.";
     }
   };
   let flux,ac;
@@ -899,7 +907,10 @@ const rankOf=l=>RANKS.filter(r=>l>=r[0]).pop()[1];
 const G=()=>state.en.game;
 const diffOf=l=>Math.min(10,1+Math.floor((l-1)/2));            // difficulté 1 à 10
 const earLvl=()=>levelOf(G().ear,SKILL_BASE), spkLvl=()=>levelOf(G().spk,SKILL_BASE);
-const earRate=()=>Math.min(1.15,0.82+0.035*(diffOf(earLvl())-1)); // la voix accélère avec ton niveau d'oreille
+// Difficulté réelle = niveau acquis ± ajustement selon tes réussites (missions réussies à 80 % : +1 ; sous 55 % ou deux boss perdus : −1)
+const diffAj=l=>Math.max(1,Math.min(10,diffOf(l)+(Number(G().ajust)||0)));
+const diffEar=()=>diffAj(earLvl()), diffSpk=()=>diffAj(spkLvl());
+const earRate=()=>Math.min(1.15,0.82+0.035*(diffEar()-1)); // la voix accélère avec ton niveau d'oreille
 const mult=c=>Math.min(3,1+Math.floor(c/3)*0.5);                 // combo : x1.5 dès 3, x2 dès 6… max x3
 const MIC='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
 const BADGES=[
@@ -915,8 +926,8 @@ const BADGES=[
  ["nojoker","Sans filet","Une mission sans joker",s=>s.noJoker>=1],
  ["stars3","Trois étoiles","Une mission à 3 étoiles",s=>s.threeStars>=1],
  ["globe","Globe-trotter","Une mission dans chaque monde",s=>Object.keys(s.worlds||{}).length>=3],
- ["streak5","Régulier","Série de 5 quêtes",s=>enStatus().streak>=5],
- ["lvl5","Explorer","Atteins le niveau 5",s=>levelOf(G().xp,XP_BASE)>=5],
+ ["streak5","Régulier","5 séances d'anglais sans dépasser 3 jours d'écart",s=>enStatus().streak>=5],
+ ["lvl5","Explorateur","Atteins le niveau 5",s=>levelOf(G().xp,XP_BASE)>=5],
  ["lvl10","Niveau 10","Atteins le niveau 10",s=>levelOf(G().xp,XP_BASE)>=10]
 ];
 
@@ -970,12 +981,12 @@ function renderQuestEn(){
 function playerCard(){
   const g=G(), L=levelOf(g.xp,XP_BASE), a=lvlStart(L,XP_BASE), b=lvlStart(L+1,XP_BASE);
   const sk=(lab,xp,hint)=>{const l=levelOf(xp,SKILL_BASE),s=lvlStart(l,SKILL_BASE),e=lvlStart(l+1,SKILL_BASE);
-    return `<div class="gap" style="gap:4px"><div class="row" style="justify-content:space-between"><b>${lab}</b><span class="small mono">niv. ${l} · difficulté ${diffOf(l)}/10</span></div><div class="bar"><i style="width:${Math.round((xp-s)/(e-s)*100)}%"></i></div><span class="small muted">${hint}</span></div>`};
+    return `<div class="gap" style="gap:4px"><div class="row" style="justify-content:space-between"><b>${lab}</b><span class="small mono">niv. ${l} · difficulté ${diffAj(l)}/10</span></div><div class="bar"><i style="width:${Math.round((xp-s)/(e-s)*100)}%"></i></div><span class="small muted">${hint}</span></div>`};
   return `<div class="card hero">
     <div class="row" style="justify-content:space-between"><div><span class="small muted">Rang : ${rankOf(L)}</span><h2>Niveau ${L}</h2></div><span class="xp">${g.xp} XP</span></div>
     <div class="bar gold"><i style="width:${Math.round((g.xp-a)/(b-a)*100)}%"></i></div>
     <span class="small muted">${b-g.xp} XP avant le niveau ${L+1}</span>
-    <div class="grid2">${sk("Écoute",g.ear,`Vitesse de la voix : ${earRate().toFixed(2)}`)}${sk("Parole",g.spk,"Plus tu montes, plus le boss est exigeant")}</div>
+    <div class="grid2">${sk("Écoute",g.ear,`Voix ×${earRate().toFixed(2).replace(".",",")}`)}${sk("Parole",g.spk,"Plus tu montes, plus le boss est exigeant")}</div>
     <div class="row small muted"><span>Badges ${Object.keys(g.badges).length}/${BADGES.length}</span><span>·</span><span>Meilleur combo ${g.stats.maxCombo}</span><span>·</span><span>Boss vaincus ${g.stats.bossWins}</span></div>
   </div>`;
 }
@@ -997,7 +1008,7 @@ function renderEn(){
     <h2>${esc(u[0])}</h2><span class="muted">À placer à l'oral : ${esc(u[1])}</span>
     <div class="row"><span class="pill neutral">1 · Écoute ×6</span><span class="pill neutral">2 · Parole ×6</span><span class="pill bad">3 · Boss</span></div>
     <div class="row"><button class="btn primary" id="go">Lancer la mission</button><button class="btn" id="snd">Tester le son</button></div>
-    <p class="small muted">Jokers payants : une réécoute gratuite puis −2 XP, ralentir −5, voir le texte −8. Le chapitre suivant se débloque quand tu bats le boss.</p>
+    <p class="small muted">Réécouter est gratuit ; jokers payants : ralentir −3, voir le texte −8. Le chapitre suivant se débloque quand tu bats le boss.</p>
     ${sample?"":'<p class="note">Les missions sont créées par Claude : ajoute ta clé API dans les réglages. La révision express marche sans.</p>'}
   </div>
   ${memoryCard()}
@@ -1095,7 +1106,7 @@ const ivlLabel=d=>d<30?`${d} j`:d<365?`${Math.round(d/30)} mois`:`${(d/365).toFi
 function newToday(){const L=state.en.newLog;return L.date===todayISO()?L.n:0}
 function srsQueue(){const t=todayISO();
   const due=state.en.deck.filter(c=>!isNew(c)&&c.due<=t).sort((a,b)=>retention(a)-retention(b));
-  const fresh=state.en.deck.filter(isNew).sort((a,b)=>(NIV_RANG[b.lvl]||0)-(NIV_RANG[a.lvl]||0)).slice(0,Math.max(0,NEW_PER_DAY-newToday()));
+  const fresh=state.en.deck.filter(isNew).sort((a,b)=>(NIV_RANG[a.lvl]||9)-(NIV_RANG[b.lvl]||9)).slice(0,Math.max(0,NEW_PER_DAY-newToday()));
   return [...due.slice(0,30),...fresh]}
 const maitriseAvance=c=>motAvance(c)&&!isNew(c)&&c.stab>=21;
 const PALIERS_LEXIQUE=[25,50,100];
@@ -1117,7 +1128,7 @@ function memoryCard(){const q=srsQueue(),s=deckStats();
   <details><summary>Ajouter un mot</summary><div class="gap" style="margin-top:8px"><input id="nwEn" placeholder="anglais"><input id="nwFr" placeholder="français"><input id="nwEx" placeholder="phrase d'exemple (facultatif)"><button class="btn sm" id="nwAdd">Ajouter</button></div></details></div>`}
 
 function startReview(){const q=srsQueue();if(!q.length)return;ses={kind:"vocab",queue:q.map(c=>c.id),idx:0,step:"ask",ok:0,n:0,failed:{},startedAt:Date.now()};renderEn()}
-function cardMode(c){return isNew(c)?"new":["ecoute","prod","reco"][(c.reps||0)%3]}
+function cardMode(c){return c.phrase?"prod":isNew(c)?"new":["ecoute","prod","reco"][(c.reps||0)%3]}
 function renderReview(p){
   if(ses.idx>=ses.queue.length){
     p.innerHTML=`<div class="card game"><span class="kicker">Mémoire des mots</span><h2>Séance terminée</h2><p>${ses.ok} / ${ses.n} cartes retrouvées.</p>${oubliHTML()}<button class="btn primary" id="back">Retour</button></div>`;
@@ -1132,7 +1143,7 @@ function renderReview(p){
   else if(mode==="ecoute") face=shown?`<span class="w">${esc(c.en)}</span><span class="fr">${esc(c.fr)}</span>${exl}`:`<button class="play" id="pl2" aria-label="Écouter">▶</button><span class="small muted">Écoute, trouve le sens dans ta tête, puis révèle.</span>`;
   else if(mode==="prod") face=`<span class="fr">${esc(c.fr)}</span>${shown?`<span class="w">${esc(c.en)}</span>${ses.check?`<span class="small ${ses.check.ok?"okc":"badc2"}">${ses.check.ok?"Juste !":"Tu as dit : "+esc(ses.check.said)}</span>`:""}${exl}`:`${micHTML("micP","Touche le micro et dis-le en anglais")}<input id="prodIn" ${EN_IN} placeholder="En anglais…">`}`;
   else face=`<span class="w">${esc(c.en)}</span>${shown?`<span class="fr">${esc(c.fr)}</span>${exl}`:'<span class="small muted">Que veut dire ce mot ?</span>'}`;
-  const grades=GRADES.map(([g,cls],k)=>`<button class="grade ${cls}" data-g="${k}"><b>${g}</b><span class="small muted">${ivlLabel(nextState(c,k).ivl)}</span></button>`).join("");
+  const grades=GRADES.map(([g,cls],k)=>mode==="prod"&&ses.check&&!ses.check.ok&&k>1?"":`<button class="grade ${cls}" data-g="${k}"><b>${g}</b><span class="small muted">${ivlLabel(nextState(c,k).ivl)}</span></button>`).join("");
   p.innerHTML=`<div class="card game">
     <div class="row" style="justify-content:space-between"><span class="kicker">Mémoire · ${ses.idx+1}/${ses.queue.length} · ${lab}</span>${(c.lapses||0)>=4&&!c.vaincu?`<span class="pill bad">mot coriace · ${c.suite||0}/3</span>`:""}${c.lvl&&motAvance(c)?`<span class="pill neutral">${c.lvl}</span>`:""}</div>
     ${oubliHTML()}
@@ -1171,7 +1182,7 @@ function packContexte(mod){
   return `Tu crées une mission de jeu pour faire aimer l'anglais ORAL à un ingénieur de recherche français, niveau A2 qui vise B1. Ses priorités : parler (faire des phrases) et comprendre à l'oral.
 Monde : ${WORLD[mod]}.
 Chapitre ${M.unit+1} : « ${u[0]} ». Structure à placer à l'oral : « ${u[1]} ».
-Difficulté écoute ${diffOf(earLvl())}/10 et difficulté expression ${diffOf(spkLvl())}/10 (1 = A2 simple et lent ; 10 = B1+ rapide, idiomatique). Vise un niveau un peu au-dessus de son confort : il doit réussir environ 70 % des défis.
+Difficulté écoute ${diffEar()}/10 et difficulté expression ${diffSpk()}/10 (1 = A2 simple et lent ; 10 = B1+ rapide, idiomatique). Vise un niveau un peu au-dessus de son confort : il doit réussir environ 70 % des défis.
 Ses erreurs récentes, à faire retravailler discrètement : ${errs}.
 Mots qu'il apprend, à réutiliser si possible : ${words}.
 Ton : vivant, situations concrètes, un peu d'humour. Il joue Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy) : le titre et le briefing en français peuvent y faire un clin d'œil, mais les situations, le boss et l'anglais restent modernes, réalistes et utiles.
@@ -1196,7 +1207,7 @@ Modèle exact à suivre (remplace les valeurs) :
 ],
 "boss":{"role":"Character in English","situation":"Situation en français, dramatisée et fun","objectif":"Ce qu'il doit obtenir, précis et vérifiable","opening":"The character's first line, in English."},
 "vocab":[{"en":"useful word or expression","fr":"traduction","ex":"Short English example sentence.","lvl":"B2"}]}
-Règles : "speak" contient exactement 6 éléments : 3 "dis", 2 "repond", 1 "repete". "vocab" contient 5 mots du thème de niveau B2 ou C1 (jamais de mot transparent ou de base comme sample, data, to increase), "lvl" vaut "B2" ou "C1".`}
+Règles : "speak" contient exactement 6 éléments : 3 "dis", 2 "repond", 1 "repete". "vocab" contient 5 mots ou expressions utiles du thème : 3 de niveau B1 et 2 de niveau B2 (jamais de mot transparent ou de base comme sample, data, to increase), "lvl" vaut "B1" ou "B2".`}
 const txt=v=>typeof v==="string"?v.trim():"";
 function nettoyerA(o){
   if(!o||typeof o!=="object") return null;
@@ -1269,7 +1280,7 @@ function loadPack(){
 }
 function playAudio(x,slow){
   const it=ses.it; it.plays=(it.plays||0)+1;
-  if(slow) spend(5,"ralentir"); else if(it.plays>2) spend(2,"réécoute");
+  if(slow) spend(3,"ralentir"); // réécouter est gratuit : c'est l'effort qu'on veut encourager
   const rate=slow?Math.max(.6,earRate()-.25):earRate();
   const ok=Array.isArray(x.audio)?speakDialogue(x.audio,rate):speak(String(x.audio),rate);
   if(!ok) toast("Audio indisponible dans ce navigateur");
@@ -1313,7 +1324,7 @@ function renderBrief(b){
     <p class="small muted">Utilise-la dans tes phrases pendant la partie Parole et face au boss.</p></div>
   <div class="card d20card"><div class="d20 ${ses.d20?"":"idle"}" id="d20">${ses.d20||"20"}</div>
     <div class="gap" style="gap:4px;min-width:0"><h3>Bonus du d20</h3>
-      <p class="small muted">${ses.d20?`${ses.d20===20?"Coup critique ! ":ses.d20===1?"Échec critique… ":""}Les XP de cette mission sont multipliés par ${String(ses.d20m).replace(".",",")}.`:"1 : ×0,8 · 2-9 : ×1 · 10-17 : ×1,1 · 18-19 : ×1,25 · 20 : ×1,5"}</p>
+      <p class="small muted">${ses.d20?`${ses.d20===20?"Coup critique ! ":ses.d20===1?"Échec critique… ":""}Les XP des défis sont multipliés par ${String(ses.d20m).replace(".",",")}.`:"1 : ×0,8 · 2-9 : ×1 · 10-17 : ×1,1 · 18-19 : ×1,25 · 20 : ×1,5"}</p>
       ${ses.d20?"":'<div><button class="btn" id="roll">Lancer le d20</button></div>'}</div></div>
   <button class="btn primary" id="nx">${ses.d20?"Commencer":"Lancer le d20 et commencer"}</button>`;
   $("#ex")?.addEventListener("click",()=>speak(T.exemple,earRate()));
@@ -1329,8 +1340,8 @@ function renderListen(b){
   b.innerHTML=`<div class="card game">
     <span class="kicker">Écoute · ${ses.i+1}/${ses.L.length} · ${isQ?"Qu'as-tu compris ?":"Dictée flash"}</span>
     <div class="playrow"><button class="play" id="pl" aria-label="Écouter">▶</button>
-      <div class="gap" style="gap:6px"><span class="small muted">${it.plays?`Écoutes : ${it.plays}${it.plays>=2?" · la suivante coûte 2 XP":" · 1 réécoute gratuite"}`:"Appuie pour écouter"}</span>
-      ${it.done?"":`<div class="row"><button class="btn sm" id="slow">Ralentir −5</button>${isQ&&!it.textShown?'<button class="btn sm" id="txt">Voir le texte −8</button>':""}</div>`}</div></div>
+      <div class="gap" style="gap:6px"><span class="small muted">${it.plays?`Écoutes : ${it.plays} · réécoute gratuite`:"Touche pour écouter"}</span>
+      ${it.done?"":`<div class="row"><button class="btn sm" id="slow">Ralentir −3</button>${isQ&&!it.textShown?'<button class="btn sm" id="txt">Voir le texte −8</button>':""}</div>`}</div></div>
     ${it.textShown||it.done?`<div class="transcript">${tr}</div>`:""}
     ${isQ?`<b>${esc(x.question)}</b><div class="choices">${(x.choices||[]).map((c,k)=>`<button class="choice ${it.done?(k===x.answer?"good":k===it.pick?"badc":""):""}" data-c="${k}" ${it.done?"disabled":""}>${esc(c)}</button>`).join("")}</div>`
       :`${it.done?"":micHTML("micD","Touche le micro et répète ce que tu as entendu (ou écris-le)")}<textarea id="dic" rows="2" ${EN_IN} placeholder="Écris (ou dis) exactement ce que tu entends…" ${it.done?"disabled":""}>${esc(it.val||"")}</textarea>${it.done?`<div class="small">${it.res}</div>`:`<button class="btn primary" id="val">Valider</button>`}`}
@@ -1355,17 +1366,13 @@ function renderListen(b){
   $("#nx")?.addEventListener("click",advance);
 }
 async function judge(x,ans){
-  const base=`Jeu d'expression orale en anglais pour un francophone (niveau A2 qui vise B1). Sa réponse vient de la dictée vocale du téléphone, qui se trompe souvent : ignore ponctuation et majuscules ; un mot qui sonne comme le bon (homophone, nombre écrit en chiffres, mot coupé ou collé) est une erreur de la dictée, pas de lui : devine ce qu'il a voulu dire et juge cette intention. Ne parle de prononciation que si le mot reconnu est vraiment éloigné du bon.`;
   const q=x.type==="dis"?`Phrase française à dire en anglais : « ${x.fr} ». Exemple de bonne réponse : "${x.ref}". Toute traduction naturelle et correcte est acceptée.`
-    :`Question qu'on lui a posée à l'oral : "${x.audio}". Il doit montrer qu'il a compris la question et répondre par une phrase complète et correcte.`;
-  return sample.json(`${base}
+    :`Question qu'on lui a posée à l'oral : "${x.audio}". Il doit montrer qu'il a compris et répondre en anglais correct.`;
+  return sample.json(`Jeu d'oral en anglais, apprenant francophone A2 → B1. Sa réponse vient de la dictée vocale : ignore ponctuation et majuscules ; un mot qui sonne comme le bon (homophone, chiffre, mot coupé) est une faute de la dictée, pas de lui. Juge ce qu'il a voulu dire. Ne parle de prononciation que si le mot reconnu est très éloigné.
 ${q}
 Sa réponse : "${ans}"
-Sois exigeant mais juste. Réponds UNIQUEMENT en JSON :
-{"verdict":"parfait" (correct et naturel) ou "correct" (compréhensible, petites erreurs) ou "faux" (contresens, incompréhensible, hors sujet ou phrase incomplète),
- "correction":"la version correcte la plus proche de sa phrase",
- "astuce":"1 phrase en français sur l'erreur principale, chaîne vide si parfait",
- "erreur":{"faux":"extrait fautif","correct":"version correcte"} ou null}`,{modelTier:"quick",cache:false});
+Barème : "parfait" = correct et naturel ; "correct" = compréhensible avec petites fautes ; "faux" = contresens, hors sujet ou incompréhensible. Une réponse orale courte mais naturelle (ex. "Twice a week, mostly.") est acceptée.
+JSON seul : {"verdict":"parfait|correct|faux","correction":"version correcte la plus proche de sa phrase","astuce":"1 phrase en français sur l'erreur principale, vide si parfait","erreur":{"faux":"extrait fautif","correct":"…"} ou null}`,{modelTier:"quick"});
 }
 function renderSpeak(b){
   const x=ses.S[ses.i], it=ses.it;
@@ -1373,7 +1380,7 @@ function renderSpeak(b){
   const audioBlock=x.type==="dis"?`<p class="big-fr">« ${esc(x.fr)} »</p>`:`
     <div class="playrow"><button class="play" id="pl" aria-label="Écouter">▶</button>
       <div class="gap" style="gap:6px"><span class="small muted">${x.type==="repond"?"Écoute la question, puis réponds par une phrase complète.":"Écoute, puis répète mot pour mot avec le micro."}</span>
-      ${it.done?"":`<div class="row"><button class="btn sm" id="slow">Ralentir −5</button>${x.type==="repond"&&!it.textShown?'<button class="btn sm" id="txt">Voir la question −5</button>':""}</div>`}</div></div>
+      ${it.done?"":`<div class="row"><button class="btn sm" id="slow">Ralentir −3</button>${x.type==="repond"&&!it.textShown?'<button class="btn sm" id="txt">Voir la question −5</button>':""}</div>`}</div></div>
     ${it.textShown||it.done?`<div class="transcript">${esc(x.audio)}</div>`:""}`;
   b.innerHTML=`<div class="card game">
     <span class="kicker">Parole · ${ses.i+1}/${ses.S.length} · ${head}</span>
@@ -1407,7 +1414,7 @@ function renderSpeak(b){
     try{
       const r=await judge(x,ans); if(!ses||ses.S?.[ses.i]!==x) return;
       it.wait=false; it.done=true; it.good=r.correction||x.ref||"";
-      if(r.erreur&&r.erreur.faux){ses.m.errors.push(r.erreur);state.en.errors.push({...r.erreur,pourquoi:r.astuce||"",date:todayISO()});state.en.errors=state.en.errors.slice(-40);it.erreurNotee=true}
+      if(r.erreur&&r.erreur.faux){ses.m.errors.push(r.erreur);state.en.errors.push({...r.erreur,pourquoi:r.astuce||"",date:todayISO()});ajouterPhrase(r.erreur.correct,r.erreur.faux);state.en.errors=state.en.errors.slice(-40);it.erreurNotee=true}
       if(r.verdict==="parfait"){G().stats.speakPerfect++;const xp=gain(15,"spk",true);it.cls="perfect";it.msg=`Parfait ! +${xp} XP`}
       else if(r.verdict==="correct"){const xp=gain(8,"spk");it.cls="ok";it.msg=`Compris, avec une petite erreur. +${xp} XP`}
       else{miss();it.cls="bad";it.msg="Pas encore : regarde la version juste et redis-la."}
@@ -1423,7 +1430,7 @@ function renderBoss(b){
   const dernierU=B.turns.map(t=>t.role).lastIndexOf("user"), annulable=i=>i===dernierU&&B.notes[i]&&B.notes[i].lost&&!B.wait&&(B.micUndo||0)<2&&B.over!=="win";
   b.innerHTML=`<div class="card game boss"><span class="kicker">Boss · ${nUser}/8 répliques</span><h2>${esc(R.role)}</h2>
     <p>${esc(R.situation)}</p><p><b>Mission :</b> ${esc(R.objectif)}</p>
-    <p class="small muted">Tout se passe à l'oral : écoute, puis réponds avec le micro. S'il ne te comprend pas, tu perds un cœur.</p>
+    <p class="small muted">Tout se passe à l'oral : écoute, puis réponds avec le micro. Si ton interlocuteur ne te comprend pas, tu perds un cœur.</p>
     <div class="chat">${B.turns.map((t,i)=>t.role==="assistant"
       ?`<div class="bub a"><button class="btn sm" data-bt="${i}" aria-label="Écouter">▶</button> ${B.show||B.over?esc(t.content):'<span class="muted">réplique audio</span>'}</div>`
       :`<div class="bub u">${esc(t.content)}</div>${B.notes[i]?`<div class="bnote small ${B.notes[i].lost?"bad":""}">${esc(B.notes[i].txt)}${annulable(i)?`<div style="margin-top:6px">${BTN_MICRO}</div>`:""}</div>`:""}`).join("")}
@@ -1443,16 +1450,17 @@ function renderBoss(b){
     const ans=($("#bsIn")?.value||"").trim(); if(!ans||B.wait) return;
     if(!sample){B.err=sampleErr("absent");return renderEn()}
     B.turns.push({role:"user",content:ans}); const ui=B.turns.length-1; B.draft=""; B.wait=true; B.err=null; renderEn();
-    const rules=`Jeu de rôle vocal pour apprendre l'anglais. Tu joues : ${R.role}. Situation : ${R.situation}. L'apprenant (francophone, niveau A2 qui vise B1) doit : ${R.objectif}.
-Ses messages viennent de la dictée vocale, qui se trompe souvent : ignore ponctuation et majuscules ; un mot étrange est sans doute mal reconnu : devine le sens. Mets "compris" à false seulement si, même en devinant, un anglophone ne comprendrait vraiment pas ce qu'il veut dire.
-Reste dans ton rôle, en anglais naturel, 1 ou 2 phrases courtes, difficulté ${diffOf(spkLvl())}/10. Sois un peu exigeant : ne lui accorde pas l'objectif trop vite, pose des questions, ajoute un petit obstacle, mais reste juste.
-Réponds UNIQUEMENT en JSON : {"reply":"ta réplique dans le rôle","compris":true si un anglophone comprendrait son message, false s'il est incompréhensible ou hors sujet,"erreur":"sa phrase corrigée s'il y a une faute, sinon chaîne vide","objectif_atteint":true seulement si l'objectif est vraiment atteint}`;
+    const n=B.turns.filter(t=>t.role==="user").length;
+    const rules=`Jeu de rôle oral pour apprendre l'anglais. Tu joues : ${R.role}. Situation : ${R.situation}. L'apprenant (francophone A2 → B1) doit : ${R.objectif}. Il en est à sa réplique ${n}/8.
+Ses messages sont dictés à la voix : ignore ponctuation et majuscules, devine les mots mal reconnus.
+Reste dans ton rôle, anglais naturel, 1 ou 2 phrases courtes, difficulté ${diffSpk()}/10. Résiste un peu (une question, un petit obstacle) mais reste juste : dès la 5e réplique, s'il a obtenu l'essentiel, accorde l'objectif.
+JSON seul : {"reply":"ta réplique","compris":true ou false (false seulement si un anglophone ne comprendrait vraiment pas, même en devinant),"erreur":"sa phrase corrigée, vide si elle est correcte","objectif_atteint":true ou false}`;
     try{
-      const r=await sample.json([{role:"user",content:rules},...B.turns.map(t=>t.role==="assistant"?{role:"assistant",content:JSON.stringify({reply:t.content})}:t)],{modelTier:"quick",cache:false});
+      const r=await sample.json([{role:"user",content:rules},...B.turns.map(t=>t.role==="assistant"?{role:"assistant",content:JSON.stringify({reply:t.content,compris:true,erreur:"",objectif_atteint:false})}:t)],{modelTier:"quick"});
       if(!ses||ses.boss!==B) return;
       B.wait=false; B.turns.push({role:"assistant",content:String(r.reply||"…")});
-      if(r.compris===false){B.hearts--;miss();B.notes[ui]={lost:true,txt:`Il ne t'a pas compris (−1 ♥)${r.erreur?" · Plus juste : "+r.erreur:""}`}}
-      else if(r.erreur){gain(6,"spk");B.notes[ui]={txt:"Plus juste : "+r.erreur};ses.m.errors.push({faux:ans,correct:r.erreur})}
+      if(r.compris===false){B.hearts--;miss();B.notes[ui]={lost:true,txt:`Pas compris (−1 ♥)${r.erreur?" · Plus juste : "+r.erreur:""}`}}
+      else if(r.erreur&&norm(r.erreur)!==norm(ans)){gain(6,"spk");B.notes[ui]={txt:"Plus juste : "+r.erreur};ses.m.errors.push({faux:ans,correct:r.erreur});ajouterPhrase(r.erreur,ans)}
       else gain(12,"spk",true);
       const nU=B.turns.filter(t=>t.role==="user").length;
       if(r.objectif_atteint&&B.hearts>0){B.over="win";B.bonus=40+15*B.hearts;addXP(B.bonus,"spk");G().stats.bossWins++;sfx("level");confetti();checkBadges()}
@@ -1476,8 +1484,12 @@ function renderEnd(b){
     if(won) M.unit=Math.min(MODULES[ses.mod].units.length-1,unit+1);
     M.pack=null; g.missions++; g.worlds=g.worlds||{}; g.worlds[ses.mod]=1;
     if(stars===3) g.threeStars++; if(m.jokers===0) g.noJoker++;
+    { const Gm=G(), aj=Number(Gm.ajust)||0; // la difficulté suit la réussite, pas seulement le temps passé
+      if(won&&acc>=.8) Gm.ajust=Math.min(2,aj+1);
+      else if(acc<.55||(!won&&Gm.bossPerdu)) Gm.ajust=Math.max(-2,aj-1);
+      Gm.bossPerdu=!won; }
     checkBadges(); save(); clearInterval(tick); if(stars>=2) confetti();
-    getPack(ses.mod).catch(()=>{});   // prépare déjà la prochaine mission
+    if(!acct||acct.mission!=="quality") getPack(ses.mod).catch(()=>{});   // prépare déjà la prochaine mission (pas en mode Sonnet : elle coûterait même si elle ne sert pas)
   }
   const P=ses.pack;
   b.innerHTML=`<div class="card game" style="text-align:center;justify-items:center">
@@ -1547,19 +1559,21 @@ function startConv(scen,sujet){
   convOublier(); clearInterval(tick); tick=setInterval(updTimer,1000); renderEn(); hautExercice(); convTour();
 }
 function convMessages(){
-  const C=ses, S=scenOf(C.scen);
-  const regles=`Tu es ${S.role}. Tu as une VRAIE conversation orale en anglais avec ${(acct&&acct.profil)||"Théo, ingénieur de recherche français"}, niveau A2 qui vise B1. ${S.cadre}${C.sujet?" Sujet choisi par Théo : "+C.sujet+".":""}
-But : le faire parler le plus possible, avec plaisir, comme dans une vraie discussion.
-- Réagis vraiment à ce qu'il dit (intérêt, humour, surprise), rebondis, partage parfois une courte anecdote à toi, puis pose UNE question ouverte pour relancer. Ne pose jamais deux questions d'affilée.
-- 1 à 3 phrases courtes, anglais parlé naturel avec contractions, difficulté ${diffOf(spkLvl())}/10 (1 = très simple et lent ; 10 = natif). Pas de liste, pas d'émoji, pas de markdown.
-- Ses messages viennent de la dictée vocale : ignore ponctuation et majuscules ; un mot étrange est sans doute un mot mal prononcé ou mal reconnu : devine le sens.
-- S'il écrit en français ou bloque, aide-le en anglais très simple et propose-lui un début de phrase.
-- Ne corrige JAMAIS dans "reply" : les corrections vont dans "correction".
-Réponds UNIQUEMENT avec cet objet JSON, sans retour à la ligne dans les textes et sans guillemets doubles à l'intérieur des textes :
-{"reply":"ta réplique en anglais","fr":"traduction française de ta réplique","correction":"son DERNIER message réécrit en anglais correct et naturel, au plus près de ce qu'il voulait dire ; chaîne vide s'il était déjà correct ou s'il n'a encore rien dit","astuce":"1 phrase courte en français sur son erreur principale ; chaîne vide sinon","pistes":["réponse possible 1 en anglais simple (15 mots max)","réponse possible 2"],"mot":{"en":"un mot ou une expression utile (niveau B1-B2) pour continuer cette conversation","fr":"traduction"}}`;
+  const C=ses, S=scenOf(C.scen), profil=(acct&&acct.profil)||"Théo, ingénieur de recherche français", prenom=profil.split(/[ ,]/)[0];
+  const regles=`Tu es ${S.role}. Conversation orale en anglais avec ${profil} (niveau A2, vise B1). ${S.cadre}${C.sujet?" Sujet choisi : "+C.sujet+".":""}
+But : qu'il parle le plus possible, avec plaisir.
+- Réagis à ce qu'il dit (intérêt, humour, surprise), parfois une courte anecdote, puis UNE seule question ouverte par réplique.
+- 1 à 3 phrases courtes, anglais parlé avec contractions, difficulté ${diffSpk()}/10 (1 = très simple et lent, 10 = natif). Ni liste, ni émoji, ni markdown.
+- Ses messages sont dictés à la voix : ignore ponctuation et majuscules, devine les mots mal reconnus.
+- S'il écrit en français ou bloque : aide-le en anglais très simple et propose un début de phrase.
+- Jamais de correction dans "reply".
+Réponds uniquement par ce JSON, sur une ligne, sans guillemets doubles dans les textes :
+{"reply":"…","fr":"traduction de reply","correction":"son dernier message réécrit correct et naturel, au plus près de son idée ; vide si correct ou s'il n'a rien dit","erreur":{"faux":"extrait fautif court","correct":"…"} ou null,"astuce":"1 phrase en français sur cette erreur ; vide sinon","pistes":["réponse possible en anglais simple, 15 mots max","autre réponse"],"mot":{"en":"mot B1-B2 utile pour continuer","fr":"…"}}
+S'il n'y a encore aucun message de sa part, ouvre la conversation : une réplique qui le met à l'aise et finit par une question simple.`;
   let T=C.turns.slice(-CONV_MEMOIRE); while(T.length&&T[0].role!=="assistant") T=T.slice(1);
-  const msgs=[{role:"user",content:regles+"\n\nCommence la conversation : une première réplique naturelle, qui le met à l'aise et finit par une question simple."}];
-  T.forEach(t=>msgs.push(t.role==="assistant"?{role:"assistant",content:JSON.stringify({reply:t.content})}:{role:"user",content:"Message de Théo (dictée vocale) : "+t.content}));
+  const msgs=[{role:"user",content:regles}];
+  // l'historique garde la forme complète du JSON, sinon le modèle imite des réponses incomplètes (et il faut redemander)
+  T.forEach(t=>msgs.push(t.role==="assistant"?{role:"assistant",content:JSON.stringify({reply:t.content,fr:t.fr||"",correction:"",erreur:null,astuce:"",pistes:[],mot:null})}:{role:"user",content:prenom+" : "+t.content}));
   return msgs;
 }
 const finConvScroll=()=>requestAnimationFrame(()=>{($("#cvWait")||$("#micC")||$("#cvIn"))?.scrollIntoView({block:"end",behavior:"smooth"})});
@@ -1576,13 +1590,14 @@ async function convTour(){
       const corr=txt(r.correction);
       C.m.total++;
       if(corr&&norm(corr)!==norm(last.content)){
-        last.corr=corr; last.astuce=txt(r.astuce); C.m.errors.push({faux:last.content,correct:corr});
-        state.en.errors.push({faux:last.content,correct:corr,pourquoi:last.astuce,date:todayISO()}); state.en.errors=state.en.errors.slice(-40);
+        last.corr=corr; last.astuce=txt(r.astuce);
+        const er=r.erreur&&txt(r.erreur.faux)&&txt(r.erreur.correct)?{faux:txt(r.erreur.faux),correct:txt(r.erreur.correct)}:{faux:last.content,correct:corr}; // l'extrait fautif, pas tout le message
+        C.m.errors.push(er); state.en.errors.push({...er,pourquoi:last.astuce,date:todayISO()}); ajouterPhrase(er.correct,er.faux); state.en.errors=state.en.errors.slice(-40);
         addXP(Math.round(4*(C.d20m||1)),"spk");
       } else {C.m.ok++;addXP(8,"spk")}
     }
     C.turns.push({role:"assistant",content:reply,fr:txt(r.fr)});
-    C.pistes=(Array.isArray(r.pistes)?r.pistes:[]).map(txt).filter(Boolean).slice(0,3); C.pistesVues=false;
+    C.pistes=(Array.isArray(r.pistes)?r.pistes:[]).map(txt).filter(Boolean).slice(0,2); C.pistesVues=false;
     if(r.mot&&txt(r.mot.en)&&txt(r.mot.fr)&&!C.mots.some(w=>norm(w.en)===norm(r.mot.en))) C.mots.push({en:txt(r.mot.en),fr:txt(r.mot.fr)});
     C.wait=false; save(); convSauver();
     if(C.voix) speak(reply,earRate());
@@ -1649,7 +1664,7 @@ async function finConv(){
   if(!C.recorded){
     C.recorded=true; clearInterval(tick);
     C.compte=convValide(C);
-    if(C.compte){state.en.sessions.push({date:todayISO(),mod:"conv",scen:C.scen,unit:0,min,xp:C.m.xp,tours:nU});addXP(20,"spk");G().stats.convs=(G().stats.convs||0)+1;checkBadges();confetti()}
+    if(C.compte){state.en.sessions.push({date:todayISO(),mod:"conv",scen:C.scen,unit:0,min,xp:C.m.xp,tours:nU});addXP(40,"spk");G().stats.convs=(G().stats.convs||0)+1;checkBadges();confetti()}
     save();
   }
   renderEn(); hautExercice();
@@ -1868,7 +1883,7 @@ function runWeekStatus(){
 /* ---------- Les marches telluriques : le plan de 12 semaines devient un voyage vers la Cité de l'Aube ---------- */
 const REGIONS=[
  ["Porte de la Ville Rose","Le Golem de la Flemme","Theron quitte la Ville Rose à l'aube. Le Golem de la Flemme garde la porte : chaque foulée l'effrite."],
- ["Berges de Garonne","La Harpie du Bruit","Le long du fleuve, la Harpie du Bruit hurle pour briser ta cadence. Garde ton rythme, n'écoute qu'elle… ta montre."],
+ ["Berges de Garonne","La Harpie du Bruit","Le long du fleuve, la Harpie du Bruit hurle pour briser ta cadence. Garde ton rythme et n'écoute que ta montre."],
  ["Forêt des Murmures","Le Spectre du « Demain »","Entre les arbres, le Spectre du « Demain » te souffle de rentrer. Regarde-le en face : il se dissipe."],
  ["Refuge du Lauragais","Les brigands du col","Semaine de répit. Au refuge, le mage reprend son souffle et recharge ses emplacements de sorts."],
  ["Collines Ventées","Le Troll des Nuits Blanches","Les premières vraies côtes. Le Troll des Nuits Blanches rôde : couche-toi tôt la veille de l'épreuve."],
@@ -1925,7 +1940,7 @@ function renderRun(){
     <p class="story">${esc(R[2])}</p>
     <details class="parcours"><summary>🗺️ Voir le parcours · ${nDone} / ${nAll} étapes</summary>
     <div class="mapwrap">${mapSVG(W)}</div>
-    <div class="row small muted"><span>cercle rouge : séance de qualité</span><span>·</span><span>grand cercle : sortie longue</span><span>·</span><span>losange : course</span></div></details>
+    <div class="row small muted"><span>cercle rouge : séance de qualité</span><span>·</span><span>grand cercle : sortie longue</span><span>·</span><span>losange : le 10 km</span></div></details>
     ${pauseVacances()}
     ${wi>=0&&wi<W.length?'<button class="btn sm" id="goWeek" style="margin:6px 0">↓ Aller à la semaine en cours</button>':""}
     ${decalerHTML()}
@@ -1945,11 +1960,11 @@ function renderRun(){
       const l=state.run.logs[s.key];return `<div class="sess ${s.date===todayISO()?"today":""}">
       <button class="check ${l?"on":""}" data-log="${s.key}" aria-label="Marquer comme faite">${l?"✓":""}</button>
       <div class="detail"><span class="tag">${DAYS[s.dow]} · ${esc(sessLabel(s,w))}</span><div><b>${esc(s.title)}</b></div>${foeLine(s,w)}<div class="small muted">${esc(s.detail)} <span class="mono">${valid?"· "+mmss(P[s.zone])+"/km":""}</span></div>
-        ${l?`<div class="small">Fait le ${frDate(l.date)}${l.auto?` · ⌚ ${l.km?l.km.toFixed(1).replace(".",",")+" km":""}${l.allure?" à "+mmss(l.allure)+"/km":""}${l.fc?" · "+l.fc+" bpm":""}`:""}${l.rpe?` · effort ${l.rpe}/10`:""}${l.note?` · ${esc(l.note)}`:""}</div>${l.auto&&!l.rpe?`<div class="row"><span class="small muted">Effort ressenti :</span>${[4,6,8,9].map(v=>`<button class="btn sm" data-rpe="${s.key}" data-v="${v}">${v}</button>`).join("")}</div>`:""}${l.story?`<p class="small story">${esc(l.story)}</p>`:`<div><button class="btn sm" data-story="${s.key}">Raconter la séance (lore)</button></div>`}`:""}
+        ${l?`<div class="small">Fait le ${frDate(l.date)}${l.auto?` · ⌚ ${l.km?l.km.toFixed(1).replace(".",",")+" km":""}${l.allure?" à "+mmss(l.allure)+"/km":""}${l.fc?" · "+l.fc+" bpm":""}`:""}${l.rpe?` · effort ${l.rpe}/10`:""}${l.note?` · ${esc(l.note)}`:""}</div>${l.auto&&!l.rpe?`<div class="row"><span class="small muted">Effort ressenti :</span>${[4,6,8,9].map(v=>`<button class="btn sm" data-rpe="${s.key}" data-v="${v}">${v}</button>`).join("")}</div>`:""}${l.story?`<p class="small story">${esc(l.story)}</p>`:`<div><button class="btn sm" data-story="${s.key}">Raconter la séance en légende</button></div>`}`:""}
         ${openLog===s.key?`<div class="grid2" style="margin-top:8px"><label>Date<input type="date" id="ld" value="${todayISO()}"></label><label>Effort ressenti (1–10)<input type="number" id="lr" min="1" max="10" value="6"></label><label style="grid-column:1/-1">Note<input id="ln" placeholder="ex. 5 × 1000 en 4:08 de moyenne, vent de face"></label><div class="row"><button class="btn primary run sm" id="lok">Enregistrer</button><button class="btn sm" id="lno">Annuler</button></div></div>`:""}
       </div></div>`}).join("")}
   </details>`}).join("")}`;
-  p.querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>{const k=b.dataset.log;if(state.run.logs[k]){delete state.run.logs[k];save();renderAll()}else{openLog=k;renderRun()}});
+  p.querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>{const k=b.dataset.log;if(state.run.logs[k]){if(!confirm(DECOCHER))return;delete state.run.logs[k];save();renderAll()}else{openLog=k;renderRun()}});
   p.querySelectorAll("[data-gostr]").forEach(b=>b.onclick=()=>setTab("str"));
   bindDecaler(); bindHisto();
   $("#goWeek")&&($("#goWeek").onclick=()=>document.getElementById("curweek")?.scrollIntoView({block:"start",behavior:"smooth"}));
@@ -1960,14 +1975,14 @@ function renderRun(){
     if(!sample){toast(sampleErr("absent"));return}
     b.disabled=true; b.textContent="La plume court…";
     try{
-      const {text}=await sample(`Écris en français, en 2 ou 3 phrases au présent, la chronique épique et un peu malicieuse d'une étape de course à pied vécue par Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy, la Ville Rose${acct&&acct.ville?" = "+acct.ville:""}).
+      const {text}=await sample(`Écris en français, en 2 ou 3 phrases au présent, la chronique épique et un peu malicieuse d'une étape de course à pied vécue par Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy).${acct&&acct.ville?" Le voyage part de la Ville Rose ("+acct.ville+").":""}
 Région du voyage : « ${regionOf(ww)[0]} ». Séance : « ${ss.title} » (${sessLabel(ss,ww)}). Adversaire de la semaine : ${regionOf(ww)[1]}.
 Effort ressenti : ${l.rpe||"?"}/10. Note du coureur : « ${l.note||"aucune"} ».
 Intègre les vrais détails de sa note (temps, météo, sensations) dans le récit. Pas de titre, pas de markdown.`,{modelTier:"quick"});
       l.story=text.trim(); save(); renderRun();
-    }catch(e){b.disabled=false;b.textContent="Raconter la séance (lore)";toast(sampleErr(e.code))}
+    }catch(e){b.disabled=false;b.textContent="Raconter la séance en légende";toast(sampleErr(e.code))}
   });
-  if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim()};openLog=null;save();sfx("ok");toast("Séance enregistrée · « Course à pied » validée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
+  if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim()};openLog=null;save();sfx("ok");toast("Séance enregistrée · elle sera comptée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
 }
 
 /* ======================================================================
@@ -2136,6 +2151,7 @@ function strProgram(abs,i){
   });
   return {phase,seance:lettre,blocs,light:!!adj.light,list:blocs.flatMap(b=>b.exos.map(x=>x.id)).filter((v,j,a)=>a.indexOf(v)===j)};
 }
+const DECOCHER="Décocher cette séance ? Elle reste comptée dans la Compagnie (quête validée, XP gagnée) : si c'était une erreur, demande à Claude de l'effacer du Journal.";
 const doseTxt=x=>x.s?`${x.s} s`:`${x.r} rép.${EX[x.id]&&EX[x.id].sides?" par jambe":""}`;
 /* ---------- Quêtes épiques (reprises de La Compagnie de l'Aube) ---------- */
 const EPICS={
@@ -2226,7 +2242,7 @@ function releasePlayer(){clearInterval(plTick);try{wake?.release()}catch(e){}wak
 function renderPlayer(p){
   if(pl.done){
     const min=Math.max(1,Math.round((Date.now()-pl.startedAt)/60000));
-    p.innerHTML=`<div class="player"><h2>Séance terminée</h2><p>${min} min · séance ${esc(pl.W.seance)} · ${esc(pl.W.phase)}. La Gargouille encaisse un coup.</p><p class="small muted">« Renforcement musculaire » est validé automatiquement dans la Compagnie.</p>
+    p.innerHTML=`<div class="player"><h2>Séance terminée</h2><p>${min} min · séance ${esc(pl.W.seance)} · ${esc(pl.W.phase)}. La Gargouille encaisse un coup.</p><p class="small muted">Enregistre la séance : ta quête de renfo sera validée dans la Compagnie.</p>
       <label>Effort ressenti (1–10)<input type="number" id="srpe" min="1" max="10" value="6"></label>
       <div class="row"><button class="btn primary str" id="ssave">Enregistrer</button><button class="btn" id="sdrop">Ne pas enregistrer</button></div></div>`;
     $("#ssave").onclick=()=>{state.str.logs[pl.W.key]={date:todayISO(),rpe:+$("#srpe").value||null,min};pl=null;save();renderAll()};
@@ -2278,7 +2294,7 @@ function renderStr(){
   </div>
   <details class="card"><summary>Tous les exercices</summary><div class="exgrid" style="margin-top:10px">${Object.keys(EX).map(id=>`<div class="ex"><div class="figbox">${figSVG(id)}</div><b>${esc(EX[id].name)}</b><ul class="small muted">${EX[id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></details>`;
   $("#sgo").onclick=()=>startPlayer(cur);
-  $("#smark").onclick=()=>{if(log)delete state.str.logs[cur.key];else state.str.logs[cur.key]={date:todayISO(),rpe:null,min:tlMinutes(cur)};save();renderAll()};
+  $("#smark").onclick=()=>{if(log){if(!confirm(DECOCHER))return;delete state.str.logs[cur.key]}else state.str.logs[cur.key]={date:todayISO(),rpe:null,min:tlMinutes(cur)};save();renderAll()};
 }
 
 /* ======================================================================
@@ -2395,7 +2411,7 @@ function renderSet(){
   <div class="card" id="montre">${montreHTML()}</div>
   <div class="card"><h2>Course</h2>
     <div class="grid2">
-      <label>Objectif 10 km (min:s)<input id="sg" value="${esc(state.run.goal)}"></label>
+      <label>Objectif 10 km (minutes:secondes, ex. 42:00)<input id="sg" value="${esc(state.run.goal)}"></label>
       <label>Dernier 10 km couru<input id="sr" value="${esc(state.run.ref)}"></label>
       <label>Début du plan (un lundi)<input type="date" id="ss" value="${esc(state.run.start)}"></label>
       <label>Durée du plan<select id="sw">${[8,10,12].map(n=>`<option ${+state.run.weeks===n?"selected":""}>${n}</option>`).join("")}</select></label>
@@ -2408,7 +2424,7 @@ function renderSet(){
   <div class="card"><h2>Anglais</h2>
     <div class="grid2">
       ${Object.entries(MODULES).map(([k,m])=>`<label>Unité ${m.name}<select id="su-${k}">${m.units.map((u,i)=>`<option value="${i}" ${i===state.en.mods[k].unit?"selected":""}>${i+1}. ${esc(u[0])}</option>`).join("")}</select></label>`).join("")}
-      <label>Vitesse de lecture audio<select id="st">${[0.75,0.85,1].map(r=>`<option ${Number(state.ttsRate)===r?"selected":""}>${r}</option>`).join("")}</select></label>
+      <label>Vitesse des mots en révision<select id="st">${[0.75,0.85,1].map(r=>`<option ${Number(state.ttsRate)===r?"selected":""}>${r}</option>`).join("")}</select></label>
       <label>Micro intégré : anglais reconnu<select id="sml">${[["en-GB","Britannique (en-GB)"],["en-US","Américain (en-US)"]].map(([v,t])=>`<option value="${v}" ${state.micLang===v?"selected":""}>${t}</option>`).join("")}</select></label>
     </div>
     <p class="small muted">${hasSR()?"Ton navigateur reconnaît la voix : le gros bouton micro violet écrit directement en anglais, sans toucher au clavier. Si ta phrase est mal reconnue, essaie l'autre accent.":"Ce navigateur n'a pas de reconnaissance vocale intégrée : utilise le micro de ton clavier, réglé en anglais (voir ci-dessous)."}</p>
@@ -2440,7 +2456,10 @@ const ERRS={OPENAI_REFUSE:"Clé OpenAI refusée : vérifie-la (platform.openai.c
 const errTxt=e=>{const m=String((e&&e.message)||e);const k=Object.keys(ERRS).find(x=>m.includes(x));return k?ERRS[k]:"Erreur : "+m.replace(/^Error:\s*/,"").slice(0,160)};
 function acctHTML(){
   if(!acct) return '<h2>Compte et IA</h2><p class="muted">Chargement…</p>';
+  const co=acct.cout||{};
   return `<h2>Compte et IA</h2>
+  <div class="gap"><b>Ce mois-ci</b><span class="small">${co.appels?`${co.appels} demande${co.appels>1?"s":""} à Claude · environ ${(co.usd||0).toLocaleString("fr-FR",{maximumFractionDigits:2,minimumFractionDigits:2})} $`:"Aucune demande à Claude pour l'instant"}${co.transcriptions?` · ${co.transcriptions} phrase${co.transcriptions>1?"s":""} transcrite${co.transcriptions>1?"s":""} par OpenAI`:""}</span>
+    <span class="small muted">Estimation d'après les prix publics (Haiku 0,10 $ / Sonnet 2 $ par million de mots-jetons lus). Le montant exact est sur ta console Anthropic.</span></div>
   <div class="gap"><b>Clé API Claude</b>
     <span class="small ${acct.hasKey?"okc2":"badc2"}">${acct.hasKey?"Enregistrée (se termine par …"+esc(acct.keyEnd)+")":"Aucune clé : les missions ne peuvent pas être créées."}</span>
     <input id="akey" type="password" autocomplete="off" placeholder="${acct.hasKey?"Remplacer par une nouvelle clé":"Colle ta clé (sk-ant-…)"}">
