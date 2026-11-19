@@ -2721,12 +2721,13 @@ function blocBilanGarde(s) {
  * Visible du début à la fin du défi ; réussi, encore 2 jours après (la récompense reste lisible). Toucher = l'objectif en clair. */
 function carteDefi(s) {
   const D = s.defi; if (!D || !D.debut || !D.fin || s.today < D.debut) return '';
-  if (s.today > D.fin && !(D.reussi && s.today <= isoPlus(D.fin, 2))) return '';
+  // réussi : encore 2 jours ; pas réussi : visible jusqu'au 17/01 (les oublis se rattrapent jusqu'au 16)
+  if (s.today > isoPlus(D.fin, 7) || (s.today > isoPlus(D.fin, 2) && D.reussi)) return '';
   const P = D.parHeros || {}, a = Math.max(0, Number(P.moi) || 0), b = Math.max(0, Number(P.compagnon) || 0);
   const obj = Math.max(1, Number(D.objectif) || 1), fait = Math.max(Number(D.fait) || 0, a + b);
   const wa = Math.min(100, a / obj * 100), wb = Math.min(100 - wa, b / obj * 100);
   const lui = (s.compagnons || [])[0], cM = couleurClasse((s.classe || {}).nom), cL = couleurClasse(lui && (lui.classe && lui.classe.nom ? lui.classe.nom : lui.classe));
-  const j = joursRestants(D.fin), ok = !!D.reussi, dernier = !ok && j === 0;
+  const j = joursRestants(D.fin), ok = !!D.reussi, retard = !ok && s.today > D.fin, dernier = !ok && !retard && j === 0;
   const pas = (x, y, r, c, cls) => `<g class="${cls}" transform="translate(${x} ${y}) rotate(${r})" fill="${c}"><ellipse cx="0" cy="0" rx="3.3" ry="5.2"/><ellipse cx=".3" cy="8" rx="2.5" ry="2.9"/>
     <circle cx="-2.6" cy="-6.6" r="1.1"/><circle cx="-.6" cy="-7.6" r="1.2"/><circle cx="1.6" cy="-7.2" r="1.1"/><circle cx="3.2" cy="-5.6" r=".9"/></g>`;
   const pieds = `<svg viewBox="0 0 32 32" aria-hidden="true">${pas(11, 19, -14, cM, 'dp-p1')}${lui ? pas(21, 11, 12, cL, 'dp-p2') : ''}${ok ? '<path class="dp-et" d="M26 23l1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4z" fill="#ffd27a" stroke="#7a4a12" stroke-width=".6"/>' : ''}</svg>`;
@@ -2735,9 +2736,10 @@ function carteDefi(s) {
     <span class="dp-pas">${pieds}</span>
     <span class="dp-txt">
       <span class="dp-l1"><b>${esc(D.nom || 'Les Premiers Pas')}</b><span class="dp-n">${Math.min(fait, obj)}<small>/${obj}</small></span>
-        <em class="dp-j">${ok ? '✓ Réussi' : dernier ? 'dernier jour' : 'J-' + j}</em></span>
+        ${retard ? '' : `<em class="dp-j">${ok ? '✓ Réussi' : dernier ? 'dernier jour' : 'J-' + j}</em>`}</span>
       <span class="dp-bar"><i style="width:${wa}%;background:${cM}"></i>${lui ? `<i style="width:${wb}%;background:${cL}"></i>` : ''}</span>
       <span class="dp-l3">${ok ? `🎁 <b>Coffre de Saison 1 + 150 XP chacun</b>${D.dateReussite ? `<span class="dp-date"> · le ${dateCourte(D.dateReussite)}</span>` : ''}`
+        : retard ? `<b class="dp-retard">⏳ Saisies en retard jusqu'au ${dateCourte(isoPlus(D.fin, 6))}</b>`
         : `<i style="background:${cM}"></i>Toi ${a}${lui ? ` · <i style="background:${cL}"></i>Ton compagnon ${b}` : ''} · 🎁 +150 XP`}</span>
     </span></button>`;
 }
@@ -2745,7 +2747,8 @@ document.addEventListener('click', e => {
   if (!e.target.closest('[data-defi]')) return;
   const D = state && state.defi; if (!D) return;
   toast(D.reussi ? '👣 Défi réussi : un coffre de Saison 1 chacun et +150 XP sont à vous.'
-    : `👣 Ensemble, ${D.objectif} ${D.unite || 'quêtes'} avant le ${dateCourte(D.fin)} : un coffre de Saison 1 chacun et +150 XP.`);
+    : state.today > D.fin ? `👣 Défi terminé le ${dateCourte(D.fin)} : une quête oubliée de cette période compte encore si tu la saisis d'ici le ${dateCourte(isoPlus(D.fin, 6))}`
+    : `👣 Ensemble, ${D.objectif} ${D.unite || 'quêtes'} d'ici le ${dateCourte(D.fin)} inclus : un coffre de Saison 1 chacun et +150 XP.`);
 });
 /** Petite fête, une fois par téléphone, la première fois que la carte apparaît réussie (sur Quêtes, sans écran par-dessus) */
 let defiFetePrevue = false;
@@ -3113,9 +3116,10 @@ document.addEventListener('click', e => {
 
 /* Rappel des coffres du Rodage (du 24 au 31/12, tant qu'il en reste) : toucher ouvre un coffre. */
 function bandeauCoffresRodage(s) {
-  const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24' || s.today > '2026-12-31') return '';
+  // la saison, pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage et ses coffres
+  const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24') return '';
   const n = (A.coffres || []).filter(c => c.saison === 'pre').length; if (!n) return '';
-  const j = 31 - Number(s.today.slice(8, 10)), dernier = j === 0;
+  const j = s.today > '2026-12-31' ? 0 : 31 - Number(s.today.slice(8, 10)), dernier = j === 0;
   return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? ': dernier soir' : 'à ouvrir'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
 }
 
@@ -3723,17 +3727,17 @@ const REGLES_PAGES = [
     p: ['Une case = un <b>palier</b>. Un palier ≈ <b>60 % d\'une semaine parfaite</b> d\'XP en pré-saison (la moitié d\'une semaine ensuite) : environ <b>1 à 2 cases par semaine</b>.', 'Ton compagnon d\'armes et toi avancez au <b>même rythme</b> pour une semaine complète, même avec des quêtes différentes.', 'Touche une case pour voir ce qu\'elle donne et combien d\'XP il te manque.'] },
   { t: 'Les coffres', s: `<div class="rg-ligne"><div class="rg-bloc">🗺<small>case coffre du plateau</small></div><b>+</b><div class="rg-bloc">🐉<small>chaque boss vaincu</small></div><b>=</b><div class="rg-bloc or">🎁<small>coffre à ouvrir</small></div></div>
       <div class="rg-rar"><span style="border-color:#a99bb6">Commun</span><span style="border-color:#5ab0ff">Rare</span><span style="border-color:#b392ee">Épique</span><span style="border-color:#f2a93c">Légendaire</span></div>`,
-    p: ['Un coffre s\'ouvre dans <b>Héros → Aventure</b> (pastille 🎁). Touche-le pour l\'ouvrir tout de suite.', 'Plus le coffre est rare, plus l\'objet a de chances d\'être <b>épique ou légendaire</b>.', 'Un <b>boss du mois</b> laisse une pièce de <b>sa panoplie</b> ; les autres pièces se trouvent dans les coffres épiques et légendaires, ou chez le marchand.', '⚠ Les <b>coffres non ouverts</b> et les <b>éclats</b> du Rodage disparaissent le 1er janvier : ouvre-les avant le 31 décembre.'] },
+    p: ['Un coffre s\'ouvre dans <b>Héros → Aventure</b> (pastille 🎁). Touche-le pour l\'ouvrir tout de suite.', 'Plus le coffre est rare, plus l\'objet a de chances d\'être <b>épique ou légendaire</b>.', 'Un <b>boss du mois</b> laisse la première pièce de <b>sa panoplie</b> qui te manque (cape, puis couronne, puis aura) : c\'est le seul moyen de l\'obtenir.', '⚠ Les <b>coffres non ouverts</b> et les <b>éclats</b> du Rodage disparaissent le 1er janvier : ouvre-les au plus tard le 31 décembre.'] },
   { t: 'Éclats et marchand', s: `<div class="rg-ligne"><div class="rg-bloc">🎁<small>rareté déjà complète</small></div><b>→</b><div class="rg-bloc bleu">✦<small>éclats</small></div><b>→</b><div class="rg-bloc">🏪<small>le marchand</small></div></div>
       <div class="rg-rar"><span>Commun ✦ 40</span><span>Rare ✦ 100</span><span>Épique ✦ 250</span><span>Légendaire ✦ 600</span></div>`,
     p: ['Les cases vertes du plateau donnent des <b>éclats</b>. Un coffre en donne aussi si tu as déjà <b>tous les objets</b> de la rareté tirée.', 'Avec les éclats, tu achètes <b>l\'objet de ton choix</b> chez le marchand (dans la vitrine, sous la garde-robe).'] },
   { t: 'Ce qui se gagne autrement', s: `<div class="rg-grille"><div>🏰<b>Repaire</b><small>avec ton niveau (10, 20, 35, 50)</small></div><div>🐎<b>Monture</b><small>niveau 25 et 50</small></div><div>🐉<b>Familier</b><small>le Dragon de l'Aube, après 7 jours de suite (une seule fois) ; il grandit avec tes jours de quêtes (7, 30, 90)</small></div><div>🏆<b>Trophée</b><small>chaque boss vaincu, dans la salle des trophées</small></div></div>`,
     p: ['Ces récompenses viennent d\'elles-mêmes en jouant : pas besoin de coffre.'] },
   { t: 'La garde-robe', s: `<div class="rg-ligne"><div class="rg-bloc">👆<small>touche ton personnage</small></div><b>→</b><div class="rg-bloc">🧥<small>choisis un emplacement</small></div><b>→</b><div class="rg-bloc or">✓<small>touche un objet pour le porter</small></div></div>`,
-    p: ['12 emplacements : cape, couronne, aura, familier, familier de poche, monture, repaire, traînée (quand tu valides une quête), coup de grâce (quand un boss tombe), emblème, sol, lueur.', 'Un cadenas = pas encore gagné. Le « ? » dit comment l\'obtenir.', 'Ton compagnon voit ce que tu portes.'] },
+    p: ['12 emplacements : cape, couronne, aura, familier, familier de poche, monture, repaire, traînée (quand tu valides une quête), coup de grâce (quand un boss tombe), emblème, sol, lueur.', 'Un cadenas = pas encore gagné. Le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Les saisons', s: `<div class="rg-ligne"><div class="rg-bloc">🌱<small>Pré-saison<br>jusqu'au 31 déc.</small></div><b>→</b><div class="rg-bloc or">✦<small>Saison 1<br>janv. → juin</small></div><b>→</b><div class="rg-bloc">✦<small>Saison 2<br>juil. → déc.</small></div></div>`,
     get p() { const s1 = (((typeof state !== 'undefined' && state && state.armurerie) || {}).saison || {}).id === 's1'; // pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage
-      return ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1, et les objets du Rodage repartent avec lui. Tes <b>trophées</b> et tes titres restent, souvenirs du Rodage.',
+      return ['Chaque saison a <b>son plateau</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau), et les objets du Rodage repartent avec lui. Tes <b>trophées</b> et tes titres restent, souvenirs du Rodage.',
         s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 est une surprise : elle se dévoile le 1er janvier.']; } }
 ];
 let pageRegles = 0;
@@ -4040,7 +4044,7 @@ async function appelDistant(fn, args) {
         r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, cle: cleHeros }), signal: ctrl ? ctrl.signal : undefined });
         brut = await r.text();
       } catch (e) {
-        if (e && e.name === 'AbortError') { const x = new Error('Pas de connexion au Sheet (aucune réponse après ' + Math.round(delaiAppel(fn) / 1000) + ' s)'); x.delai = true; throw x; }
+        if (e && e.name === 'AbortError') { const x = new Error('Pas de connexion au registre de la Compagnie (aucune réponse après ' + Math.round(delaiAppel(fn) / 1000) + ' s)'); x.delai = true; throw x; }
         throw e;
       } finally { if (minuteur) clearTimeout(minuteur); }
       try { j = JSON.parse(brut); }
@@ -4051,7 +4055,7 @@ async function appelDistant(fn, args) {
     } catch (e) {
       if (essai < 2 && LECTURES.has(fn) && !(e && e.delai)) { await pause(1200 * (essai + 1)); continue; }
       if (fn !== 'signalerErreurs' && navigator.onLine !== false) signaler({ ou: 'réseau', fn, msg: String((e && e.message) || e) });
-      throw /Failed to fetch|NetworkError|Load failed/i.test(String(e && e.message)) ? new Error('Pas de connexion au Sheet (réseau)') : e;
+      throw /Failed to fetch|NetworkError|Load failed/i.test(String(e && e.message)) ? new Error('Pas de connexion au registre de la Compagnie (réseau)') : e;
     }
     // Sheet occupé par une autre action : rien n'a été fait, on réessaie tout seul
     // ou panne passagère de Google (« Une erreur est survenue sur le serveur… ») sur une simple lecture
@@ -4132,7 +4136,7 @@ function envoyerAttente(silencieux) {
     const refus = res.filter(r => !r.ok);
     const ok = res.filter(r => r.ok && !r.deja).length;
     if (refus.length) toast(`${refus.length} saisie(s) hors connexion refusée(s) : ${refus[0].message}`);
-    else if (ok && !silencieux) toast(`📶 De retour en ligne : ${ok} saisie${ok > 1 ? 's' : ''} envoyée${ok > 1 ? 's' : ''} au Sheet`);
+    else if (ok && !silencieux) toast(`📶 De retour en ligne : ${ok} saisie${ok > 1 ? 's' : ''} envoyée${ok > 1 ? 's' : ''} au registre de la Compagnie`);
     if (envoisEnCours === 0) { state = avecAttente(etat); confirme = null; render(); } else confirme = etat;
     if (lireAttente().length && traites.size) setTimeout(() => envoyerAttente(true), 500); // il en reste (plus de 60) ; sans réponse exploitable, on attend le prochain essai (30 s)
     return etat;
@@ -6002,7 +6006,7 @@ async function lancerDe() {
   // le Sheet enregistre le jet pendant que le dé roule (ou plus tard, s'il n'y a pas de réseau)
   const jet = { id: nouvelId(), type: 'd20', d1, d2, date: isoLocal() };
   const horsLigne = lireAttente().length || navigator.onLine === false;
-  const envoi = horsLigne ? Promise.reject(new Error('Pas de connexion au Sheet (réseau)')) : api('lancerD20', { d1, d2 });
+  const envoi = horsLigne ? Promise.reject(new Error('Pas de connexion au registre de la Compagnie (réseau)')) : api('lancerD20', { d1, d2 });
   envoi.catch(() => {});
   await (anim ? anim.finished : pause(200));
   clearInterval(tic);
@@ -6026,7 +6030,7 @@ async function lancerDe() {
     }
     state.d20 = null; render();
     if (document.getElementById('d20ov').classList.contains('on')) { btn.textContent = 'Lancer le dé'; zone.innerHTML = d20Svg('?', ''); document.getElementById('d20res').innerHTML = ''; }
-    toast('Le dé s\'est perdu (pas de réponse du Sheet) : relance-le dans un instant');
+    toast('Le dé s\'est perdu (pas de réponse du registre de la Compagnie) : relance-le dans un instant');
   });
 }
 document.addEventListener('click', e => {
@@ -7639,7 +7643,7 @@ function lancer() {
     // Dernière version déjà affichée : on la garde et on prévient, au lieu d'effacer l'écran
     premierEtatRecu = true;
     if (memo && state && estHorsLigne(e)) { state = passerAuJour(state); render(); toast('📴 Hors connexion : tu peux quand même valider tes quêtes, elles partiront au retour du réseau'); }
-    else if (memo && state) toast('Le Sheet ne répond pas (' + (e && e.message ? e.message : e) + ') : affichage de la dernière version connue.');
+    else if (memo && state) toast('Le registre de la Compagnie ne répond pas (' + (e && e.message ? e.message : e) + ') : affichage de la dernière version connue.');
     else erreurChargement(e);
   });
 }
@@ -7705,7 +7709,7 @@ function ecranCle(msg) {
       cleHeros = ancienne;
       const m = String((e && e.message) || e);
       document.getElementById('cleMsg').textContent = /inconnue/i.test(m) ? 'Clé inconnue : vérifie-la (format THE-XXXX-XXXX) et réessaie.'
-        : 'Le Sheet ne répond pas (' + m + '). Vérifie le déploiement Apps Script, puis réessaie.';
+        : 'Le registre de la Compagnie ne répond pas (' + m + '). Réessaie dans un instant.';
     }
   };
   document.getElementById('cleGo').onclick = go;
