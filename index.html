@@ -140,6 +140,12 @@
   .sceau { position: absolute; right: 44px; top: 50%; width: 38px; height: 38px; margin-top: -19px; transform: rotate(-14deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,.55)); pointer-events: none; }
   .sceau svg { width: 100%; height: 100%; display: block; }
   .sceau.tombe { animation: sceauTombe .7s cubic-bezier(.3,1.4,.5,1) both; }
+  .card.flash::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 2px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--xp2), #fff, var(--xp2), transparent) -60% 0 / 50% 100% no-repeat;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: lisere .9s ease-out forwards; }
+  @keyframes lisere { 0% { background-position: -60% 0; opacity: 1; } 85% { opacity: 1; } 100% { background-position: 160% 0; opacity: 0; } }
+  body.calme .card.flash::after { display: none; } @media (prefers-reduced-motion: reduce) { .card.flash::after { display: none; } }
   @keyframes sceauTombe { 0% { transform: translateY(-40px) rotate(-200deg) scale(1.8); opacity: 0; } 60% { opacity: 1; transform: translateY(2px) rotate(-10deg) scale(.92); } 80% { transform: rotate(-16deg) scale(1.06); } 100% { transform: rotate(-14deg) scale(1); } }
   /* Médaillon d'humeur : sous le seuil d'épuisement, le héros respire lentement, cligne longuement et une lueur rouge pulse */
   .hx-med.fatigue { animation: medFatigue 3.2s ease-in-out infinite; }
@@ -881,7 +887,19 @@
   .dl-bar { margin-top: 6px; } .dl-t { text-align: center; font: 800 10.5px var(--f-texte); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
   .dl-v { display: flex; align-items: baseline; gap: 4px; font-size: 11.5px; color: var(--muted); } .dl-v span { flex: 1; } .dl-v b { font: italic 900 16px var(--f-titre); color: var(--text); }
   .dl-l { display: flex; gap: 4px; height: 6px; } .dl-l i { display: block; height: 100%; border-radius: 3px; transform: skewX(-14deg); min-width: 4px; }
-  body.calme .dl-couronne { transition: none; } .dl-l i.vide { flex: 1; background: rgba(255,214,170,.09); }
+  body.calme .dl-couronne { transition: none; }
+  .am-ov { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; gap: 14px; background: radial-gradient(circle at 50% 40%, rgba(16,12,9,.93), rgba(0,0,0,.97)); cursor: pointer; animation: amFond .3s ease-out; }
+  .am-scene { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; width: min(94vw, 440px); }
+  .am-h { display: grid; justify-items: center; gap: 4px; } .am-h svg { width: 150px; height: auto; filter: drop-shadow(0 0 18px var(--c)); }
+  .am-h b { font: italic 900 24px var(--f-titre); color: var(--c); text-transform: uppercase; }
+  .am-h.g { animation: amG .7s cubic-bezier(.2,1.3,.4,1) both; } .am-h.d { animation: amD .7s cubic-bezier(.2,1.3,.4,1) .1s both; }
+  .am-vs { font: italic 900 64px var(--f-titre); color: #fff; text-shadow: 0 0 24px var(--gold), 3px 3px 0 var(--wax2); padding-bottom: 80px; animation: amVs .5s cubic-bezier(.3,1.8,.5,1) .7s both; }
+  .am-txt { text-align: center; animation: amFond .4s ease-out 1s both; } .am-txt span { display: block; font: 800 11px var(--f-texte); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+  .am-txt b { display: block; font: italic 900 30px var(--f-titre); color: var(--text); text-transform: uppercase; } .am-txt small { color: var(--muted); }
+  @keyframes amG { from { transform: translateX(-120%); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes amD { from { transform: translateX(120%); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes amVs { from { transform: scale(3) rotate(-12deg); opacity: 0; } 70% { transform: scale(.9) rotate(4deg); opacity: 1; } to { transform: scale(1) rotate(-4deg); } }
+  @keyframes amFond { from { opacity: 0; } to { opacity: 1; } } .dl-l i.vide { flex: 1; background: rgba(255,214,170,.09); }
   .comp-av { width: 74px; flex: none; } .comp-av svg { width: 74px; height: auto; display: block; }
   .comp-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
   .comp-txt b { color: var(--text); font-size: 15px; font-family: var(--f-titre); } .comp-txt .tt { color: var(--gold); font-style: italic; }
@@ -4406,7 +4424,8 @@ function carteHabitude(h, petite) {
   const droite = petite && libre ? `<span class="chip n">${prochaine(h)}</span>`
     : !petite && libre && h.type === 'Rythme' && h.marge === 0 ? '<span class="chip r">⚠️ dernier jour</span>'
     : h.jour.fait ? '' : chipJour(h.jour); // une quête faite porte le sceau de cire
-  return `<div class="card ${petite ? 'small' : ''} ${classeJour(h.jour)} ${busy.has(h.nom) ? 'busy' : ''}" data-q="${esc(h.nom)}">
+  const frais = h.jour.fait && sceauxFrais[h.nom] && Date.now() - sceauxFrais[h.nom] < 2500;
+  return `<div class="card ${petite ? 'small' : ''} ${classeJour(h.jour)} ${busy.has(h.nom) ? 'busy' : ''} ${frais ? 'flash' : ''}" data-q="${esc(h.nom)}">
     <div class="icon">${ICONES[h.carac] || '⭐'}</div>
     <div class="body">
       <div class="name">${esc(h.sous || h.nom)}</div>
@@ -4699,6 +4718,7 @@ function render() {
   afficherCarnet(onglet === 'carnet');
   if (onglet === 'compagnie' && !compVue) prechargerFiches(s);
   if (onglet === 'compagnie') placerCouronne();
+  try { avantMatchAFaire(s); } catch (e) {}
   demandesClaude(s);
   demanderMJ(s);
   if (change) requestAnimationFrame(boutonsPlies);
@@ -4823,6 +4843,29 @@ function duelHTML(s, moi, lui) {
     ${barre('XP de la semaine', a, b, ' XP')}
     ${B && B.statut !== 'À venir' ? barre('Dégâts au ' + esc(String(B.nomStade || B.nom).replace(/^(Le|La|L')\s*/, '')), dg(moi.nom), dg(lui.nom), '') : ''}
   </div>`;
+}
+/** Avant-match : le lundi, une fois par semaine, les deux héros entrent en scène et le « VS » claque */
+let avantMatchPrevu = false;
+function avantMatchAFaire(s) {
+  const lui = (s.compagnons || [])[0]; if (!lui || avantMatchPrevu || !confort().animations) return;
+  const lundi = isoPlus(s.today, -((new Date(s.today + 'T12:00:00').getDay() + 6) % 7)); if (s.today !== lundi) return;
+  const k = 'avantMatch|' + lundi; let vu = false; try { vu = !!localStorage.getItem(k); } catch (e) {} if (vu) return;
+  avantMatchPrevu = true;
+  const essayer = () => {
+    if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #coffreOv, .rc-ov')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
+    try { localStorage.setItem(k, '1'); } catch (e) {}
+    const moi = { nom: s.heros, classe: (s.classe || {}).nom, look: s.look, niveau: s.niveau, moi: true };
+    const dess = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
+    const B = (s.boss || {}).semaine;
+    const ov = document.createElement('div'); ov.className = 'am-ov on'; ov.setAttribute('role', 'dialog');
+    ov.innerHTML = `<div class="am-scene"><div class="am-h g" style="--c:${couleurClasse(moi.classe)}">${dess(moi, 'amg')}<b>Toi</b></div>
+      <div class="am-vs">VS</div><div class="am-h d" style="--c:${couleurClasse(lui.classe)}">${dess(lui, 'amd')}<b>Ton allié</b></div></div>
+      <div class="am-txt"><span>Nouvelle semaine</span><b>Que le meilleur gagne !</b>${B ? `<small>Et ensemble, abattez ${esc(B.nomStade || B.nom)}.</small>` : ''}</div>`;
+    document.body.appendChild(ov); document.body.classList.add('bloque'); vib([30, 60, 30]);
+    const fermer = () => { ov.remove(); document.body.classList.remove('bloque'); };
+    ov.onclick = fermer; setTimeout(fermer, 4200);
+  };
+  setTimeout(essayer, 1500);
 }
 /** Couronne vivante : elle glisse d'un héros à l'autre quand l'avance change */
 function placerCouronne() {
