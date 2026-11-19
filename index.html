@@ -361,6 +361,70 @@
   .jl.jk .ji { background: rgba(242,165,65,.15); } .jl.bo .ji { background: rgba(201,162,255,.16); color: #c9a2ff; }
   .jl .jt { flex: 1; min-width: 0; display: grid; } .jl .jt b { font-size: 14px; font-weight: 600; } .jl .jt small { color: var(--muted); font-size: 12px; }
   .joubli { display: flex; gap: 8px; margin-top: 8px; } .joubli select { flex: 1; min-width: 0; padding: 7px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: 13px var(--f-texte); }
+  /* ---------- Journal en stèles : un jour = une dalle gravée, les quêtes faites = sceaux runiques, les ratés = fissures ---------- */
+  .st-cle { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 10px; font-size: 11.5px; color: var(--muted); }
+  .st-cle span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; } .st-cle .sc { width: 16px; height: 16px; }
+  .st-journal { --st-pierre: var(--card); --st-bord: var(--line); --st-grav: var(--gold); --st-creux: color-mix(in srgb, var(--bg) 70%, transparent); --st-fis: color-mix(in srgb, var(--text) 45%, transparent);
+    --sc1: color-mix(in srgb, var(--gold) 35%, #fff); --sc2: var(--gold); --sc3: color-mix(in srgb, var(--gold) 65%, #000); --sc4: color-mix(in srgb, var(--gold) 40%, #000);
+    --sc-ombre: color-mix(in srgb, var(--gold) 25%, #000); --sc-lum: color-mix(in srgb, var(--gold) 20%, #fff); --gem1: var(--xp2, #c08cff); --gem2: var(--xp, #9b5de5);
+  }
+  .stele { margin: 0 0 7px; }
+  .st-dalle { position: relative; display: grid; grid-template-columns: 46px 1fr auto 8px; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 7px 12px 7px 10px;
+    border: 1px solid var(--st-bord); border-radius: 12px; background: var(--st-pierre); color: var(--text); font: inherit; text-align: left; cursor: pointer; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+  .st-dalle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .st-date { display: grid; justify-items: center; line-height: 1; padding-right: 8px; border-right: 1px solid var(--st-bord); }
+  .st-date small { font: 700 9.5px var(--f-texte); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .st-date b { font: 700 21px var(--f-titre); color: var(--st-grav); margin-top: 2px; }
+  .st-sceaux { display: flex; flex-wrap: nowrap; align-items: center; gap: 3px; min-width: 0; }
+  .st-sceaux .sc { width: 25px; height: 25px; flex: none; } .st-sceaux .sc.bo { width: 17px; height: 17px; margin: 0 1px; }
+  .st-sceaux.serre .sc + .sc { margin-left: -6px; } /* jours chargés : sceaux qui se chevauchent comme des pièces, sans retour à la ligne */
+  .st-plus { margin-left: 4px; font: 700 12px var(--f-texte); color: var(--st-grav); }
+  .st-sceaux em { font-size: 12px; color: var(--muted); }
+  .st-droite { display: grid; justify-items: end; gap: 2px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .st-droite b { font-weight: 700; color: var(--st-grav); } .st-chev { font-style: normal; font-size: 17px; color: var(--muted); transition: transform .2s; justify-self: end; }
+  .stele.ouverte .st-chev { transform: rotate(90deg); }
+  .st-meilleur { font: 700 9px var(--f-texte); letter-spacing: .08em; text-transform: uppercase; color: var(--ok, #7fcf8a); }
+  .stele.meilleur .st-dalle { border-color: color-mix(in srgb, var(--gold) 55%, var(--st-bord)); }
+  .stele.meilleur .st-dalle::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold); }
+  .sc .r1 { fill: none; stroke: var(--sc-ombre); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+  .sc .r2 { fill: none; stroke: var(--sc-lum); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .sc .creux { fill: var(--st-creux); stroke: var(--st-bord); stroke-width: 1.2; }
+  .sc .rv { fill: none; stroke: color-mix(in srgb, var(--muted) 55%, transparent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .sc .anneau { fill: none; stroke: color-mix(in srgb, var(--gold) 45%, transparent); stroke-width: 1.6; stroke-dasharray: 2.2 2.6; }
+  .sc .fis { fill: none; stroke: var(--st-fis); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .stele.ouverte .st-dalle { border-radius: 12px 12px 0 0; }
+  .st-socle { margin: 0; padding: 10px 12px 10px; border: 1px solid var(--st-bord); border-top: 0; border-radius: 0 0 12px 12px; background: var(--panel); }
+  .st-socle .jl:first-child { border-top: 0; }
+  .st-socle .jl .ji { width: 26px; height: 26px; background: none !important; } .st-socle .jl .ji .sc { width: 26px; height: 26px; }
+  .stele.ouverte .st-socle { animation: stOuvre .22s ease-out both; }
+  @keyframes stOuvre { from { opacity: 0; transform: translateY(-6px); } }
+  .sc.frais { animation: stFrappe .6s cubic-bezier(.3,1.5,.5,1) both; }
+  @keyframes stFrappe { 0% { transform: translateY(-14px) scale(1.7) rotate(-90deg); opacity: 0; } 60% { opacity: 1; transform: scale(.9) rotate(4deg); } 100% { transform: none; } }
+  .stele.lueur .st-dalle::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 35%, color-mix(in srgb, var(--gold) 28%, transparent) 50%, transparent 65%) -100% 0 / 60% 100% no-repeat; animation: stLueur 1.6s .35s ease-in-out both; }
+  @keyframes stLueur { to { background-position: 220% 0; } }
+  body.calme .stele *, body.calme .stele *::before, body.calme .stele *::after { animation: none !important; transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { .stele *, .stele *::before, .stele *::after { animation: none !important; transition: none !important; } }
+  /* Yggdrasil : dalle de granite du fjord (famille de la pierre runique du Carnet), sceaux de bronze, éclat d'aurore pour le meilleur jour */
+  html.ygg .st-journal { --st-pierre: linear-gradient(170deg, rgba(159,182,194,.10), transparent 40%), linear-gradient(180deg, #1c2d37, #132129);
+    --st-bord: #2a4352; --st-grav: #e8b06a; --st-creux: #0b161c; --st-fis: rgba(159,182,194,.55);
+    --sc1: #ffe2b0; --sc2: #e0a463; --sc3: #9c6630; --sc4: #4a2c10; --sc-ombre: #3d2309; --sc-lum: #ffe7c2; --gem1: #9ff5d4; --gem2: #2fae8a; }
+  html.ygg .st-dalle { box-shadow: inset 0 1px 0 rgba(207,232,245,.10), inset 0 -2px 0 rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.35); border-radius: 6px 6px 10px 10px; }
+  html.ygg .st-date small { font-family: 'Josefin Sans'; color: #88a2b0; }
+  html.ygg .st-date b { font-family: 'Josefin Sans'; text-shadow: 0 -1px 0 #3d2309, 0 1px 0 rgba(255,231,194,.12); }
+  html.ygg .st-sceaux .sc:not(.bo):not(.vide) { filter: drop-shadow(0 1.5px 1.5px rgba(0,0,0,.55)); }
+  html.ygg .stele.meilleur .st-dalle { border-color: rgba(99,230,173,.45); box-shadow: inset 0 1px 0 rgba(207,232,245,.10), 0 0 14px rgba(99,230,173,.14); }
+  html.ygg .stele.meilleur .st-dalle::before { background: linear-gradient(180deg, #63e6ad, #55e3c2, #a98bff); box-shadow: 0 0 8px rgba(99,230,173,.6); }
+  html.ygg .st-meilleur { color: #9fe9cf; font-family: 'Josefin Sans'; }
+  html.ygg .stele.lueur .st-dalle::after { background-image: linear-gradient(105deg, transparent 35%, rgba(99,230,173,.22) 47%, rgba(169,139,255,.18) 53%, transparent 65%); }
+  html.ygg .stele.ouverte .st-dalle { border-radius: 6px 6px 0 0; }
+  html.ygg .st-socle { background: #0e1a22; border-color: #2a4352; border-radius: 0 0 10px 10px; }
+  /* thèmes clairs : creux et fissures en encre, pas en noir */
+  html.th-celeste .st-journal { --st-creux: rgba(80,60,130,.20); --st-fis: #4a3070; --st-bord: rgba(120,100,190,.28); --st-pierre: rgba(255,255,255,.82); }
+  html.th-celeste .st-dalle { box-shadow: 0 4px 12px rgba(120,100,190,.12); }
+  html.th-carte .st-journal { --st-creux: rgba(58,42,32,.22); --st-fis: #3a2a20; --st-bord: #3a2a20; --st-pierre: #fffaf0; }
+  html.th-carte .st-dalle { border-width: 2px; border-radius: 16px; box-shadow: 0 3px 0 #3a2a20; }
+  html.th-carte .st-socle { border-width: 2px; border-top: 0; border-radius: 0 0 16px 16px; box-shadow: 0 3px 0 #3a2a20; }
+  html.th-carte .stele.ouverte .st-dalle { border-radius: 16px 16px 0 0; box-shadow: none; }
   .horsligne { margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; border: 1px dashed color-mix(in srgb, var(--gold) 45%, var(--card)); background: rgba(242,165,65,.07); font-size: 13px; line-height: 1.45; }
   .horsligne span { color: var(--muted); font-size: 12px; } .horsligne .btn { margin-top: 8px; }
   .d20.roule { animation: rouler .35s linear infinite; }
@@ -5713,34 +5777,106 @@ function chargerJournal(force) {
   apiFond('journalRecent', 7).then(j => { garderJournal(j); }).catch(e => { journalErreur = String((e && e.message) || e); })
     .finally(() => { journalEnCours = false; if (onglet === 'profil' && modeProfil === 'journal') render(); });
 }
+/** Nom affiché d'une quête du Journal : son sous-titre (nomVu) si elle est encore au carnet */
+const nomJournal = q => { const h = state && [...(state.habitudes || []), ...(state.annexes || [])].find(x => x.nom === q); return h ? nomVu(h) : q; };
+/* ---------- Journal en stèles : chaque jour est une dalle gravée ; chaque quête a sa rune (toujours la même), frappée en sceau quand elle est faite ---------- */
+const RUNES_ST = [ // 13 runes nettement distinctes (une seule par famille de formes proches) : ᚠ ᚢ ᛉ ᛟ ᚷ ᛞ ᛊ ᛏ ᛒ ᛗ ᚲ ᛁ ᚺ
+  'M15 10V26M15 14L22 10M15 19L22 15', 'M13 26V10L22 14V26', 'M18 10V26M18 18L12 11M18 18L24 11', 'M18 10L23 16L13 26M18 10L13 16L23 26', 'M12 10L24 26M24 10L12 26', 'M12 10V26L24 10V26Z',
+  'M21 10L14 16L22 20L15 26', 'M18 10V26M12 16L18 10L24 16', 'M14 10V26M14 10L21 14L14 18L21 22L14 26', 'M13 26V10L23 18M23 26V10L13 18', 'M21 10L14 18L21 26', 'M18 10V26', 'M13 10V26M23 10V26M13 15L23 21'];
+const RUNE_ANNEXE = 'M16 11L12 16L16 21M20 15L24 20L20 25'; // ᛃ jera : une seule marque commune à toutes les annexes (hors du jeu des quotidiennes, et sans ressembler à la gemme bonus)
+let steleOuverte, journalFrais = null, steleLueurVue = false;
+/** Rune FIXE d'une quotidienne : hachage du nom vers le Futhark ; collisions résolues par sondage, dans l'ordre (hachage, nom),
+ *  donc ajouter ou retirer une quête ne change pas les runes des autres (sauf collision sur la même case). */
+function hacheNom(q) { let h = 2166136261; for (const c of String(q).trim().toLowerCase()) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; } return h; }
+function runesDuJournal(J) {
+  const pool = RUNES_ST.filter(r => r !== RUNE_ANNEXE), N = pool.length, pris = new Set(), m = {};
+  J.quotidiennes.filter((q, i, a) => a.indexOf(q) === i).map(q => [hacheNom(q) % N, q]).sort((a, b) => a[0] - b[0] || (a[1] < b[1] ? -1 : 1))
+    .forEach(([h, q]) => { let i = h; while (pris.has(i) && pris.size < N) i = (i + 1) % N; pris.add(i); m[q] = pool[i]; });
+  const annexes = new Set(J.annexes);
+  return q => m[q] || (annexes.has(q) ? RUNE_ANNEXE : pool[hacheNom(q) % N]); // quête sortie des listes : rune dérivée de son nom
+}
+/** Un sceau (Fait), une gemme d'aurore (Bonus), une rune éteinte (Repos) ou une alvéole fendue (Raté) */
+function sceauJour(runeDe, x, frais, deco) {
+  const lab = esc(nomJournal(x.quete)) + ' : ' + ({ Fait: 'faite', 'Raté': 'ratée', Repos: 'joker', Bonus: 'bonus' }[x.statut] || x.statut);
+  const r = runeDe(x.quete), a = deco ? 'aria-hidden="true"' : `role="img" aria-label="${lab}"`;
+  if (x.statut === 'Fait') return `<svg class="sc${frais ? ' frais' : ''}" viewBox="0 0 36 36" ${a}><use href="#st-sceau"/><path class="r1" d="${r}" transform="translate(.6 .8)"/><path class="r2" d="${r}"/></svg>`;
+  if (x.statut === 'Bonus') return `<svg class="sc bo" viewBox="0 0 36 36" ${a}><use href="#st-gemme"/></svg>`;
+  if (x.statut === 'Repos') return `<svg class="sc vide jk" viewBox="0 0 36 36" ${a}><circle class="anneau" cx="18" cy="18" r="14"/><path class="rv" d="${r}"/></svg>`;
+  return `<svg class="sc vide" viewBox="0 0 36 36" ${a}><circle class="creux" cx="18" cy="18" r="14"/><path class="fis" d="M9 7L15 15L12 19L19 24L17 28L22 33M15 15L20 13"/></svg>`;
+}
+const DEFS_STELE = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="st-brz" cx="38%" cy="30%" r="75%"><stop offset="0" style="stop-color:var(--sc1)"/><stop offset=".35" style="stop-color:var(--sc2)"/><stop offset=".75" style="stop-color:var(--sc3)"/><stop offset="1" style="stop-color:var(--sc4)"/></radialGradient>
+  <linearGradient id="st-gem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--gem1)"/><stop offset="1" style="stop-color:var(--gem2)"/></linearGradient>
+  <symbol id="st-sceau" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="url(#st-brz)" style="stroke:var(--sc4)" stroke-width="1.2"/><circle cx="18" cy="18" r="12.5" fill="none" style="stroke:var(--sc3)" stroke-width="1" opacity=".8"/>
+    ${Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI * 2; return `<circle cx="${(18 + Math.cos(a) * 14.2).toFixed(1)}" cy="${(18 + Math.sin(a) * 14.2).toFixed(1)}" r=".8" style="fill:var(--sc1)" opacity=".7"/>`; }).join('')}
+    <path d="M8 11A12 12 0 0 1 20 5" stroke="#fff6e0" stroke-width="1.6" fill="none" opacity=".5" stroke-linecap="round"/></symbol>
+  <symbol id="st-gemme" viewBox="0 0 36 36"><path d="M18 3L31 18L18 33L5 18Z" fill="url(#st-gem)" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><path d="M18 3L24 18L18 33M5 18H31" stroke="#fff" stroke-opacity=".35" fill="none"/></symbol>
+</defs></svg>`;
 function vueJournal(s) {
   if (!journalQ) return `<div class="empty">${journalErreur && !journalEnCours ? 'Journal indisponible : ' + esc(journalErreur) + '<br><button class="btn mini or" data-tab="profil" data-mode="journal" style="margin-top:8px">Réessayer</button>' : 'Ouverture du journal…'}</div>`;
-  const J = journalQ, aujourd = s.today, hier = isoPlusLocal(aujourd, -1);
-  const icone = { 'Fait': ['✓', 'ok'], 'Raté': ['✗', 'ko'], 'Repos': ['🃏', 'jk'], 'Bonus': ['★', 'bo'] };
+  const J = journalQ, aujourd = s.today, hier = isoPlusLocal(aujourd, -1), runeDe = runesDuJournal(J);
   const occ = journalOccupe ? 'disabled' : '';
-  const jours = J.jours.slice(0, 7).map(j => {
+  const ouverte = steleOuverte === undefined ? hier : steleOuverte;
+  const sept = J.jours.slice(0, 7);
+  // meilleur jour : le plus de quêtes faites (à égalité, le plus d'XP) ; au moins 2 quêtes faites, et seulement s'il se détache d'au moins un autre jour
+  const score = j => j.saisies.filter(x => x.statut === 'Fait').length * 1000 + j.saisies.reduce((t, x) => t + (Number(x.xp) || 0), 0);
+  const tri = sept.map(score).sort((a, b) => b - a), meilleur = tri[0] >= 2000 && tri[0] > tri[tri.length - 1] ? sept.find(j => score(j) === tri[0]).date : '';
+  const frais = journalFrais && Date.now() - journalFrais.t < 2500 ? journalFrais.cle : '';
+  // ordre FIXE des quêtes (quotidiennes, puis annexes, puis le reste) : les sceaux se lisent en colonnes d'un jour à l'autre
+  const rang = q => { const i = J.quotidiennes.indexOf(q), k = J.annexes.indexOf(q); return i >= 0 ? i : k >= 0 ? 100 + k : 1000; };
+  const ordre = { Fait: 0, Repos: 1, 'Raté': 2, Bonus: 3 };
+  const icone = { 'Fait': ['✓', 'ok'], 'Raté': ['✗', 'ko'], 'Repos': ['🃏', 'jk'], 'Bonus': ['★', 'bo'] };
+  const jours = sept.map(j => {
     const age = Math.round((versDate(aujourd) - versDate(j.date)) / 864e5), modifiable = age >= 0 && age <= 6;
     const vues = new Set(j.saisies.filter(x => x.statut !== 'Bonus').map(x => x.quete));
     const fait = j.saisies.filter(x => x.statut === 'Fait').length, rate = j.saisies.filter(x => x.statut === 'Raté').length;
-    const lignes = j.saisies.map(x => {
-      const ic = icone[x.statut] || ['·', ''], ici = journalOccupe === j.date + '|' + x.quete;
-      const q = esc(x.quete), d = j.date;
-      const action = !modifiable || x.statut === 'Bonus' ? ''
-        : ici ? '<span class="muted">…</span>'
-        : x.statut === 'Fait' ? `<button class="btn mini" data-jstat="Raté" data-jq="${q}" data-jdate="${d}" ${occ}>✗ Ratée</button>`
-        : `<button class="btn mini or" data-jstat="Fait" data-jq="${q}" data-jdate="${d}" ${occ}>✓ Faite</button>`;
-      const detail = x.statut === 'Repos' ? 'Joker' + (x.auto ? ' automatique' : '') : x.statut === 'Raté' && x.auto ? 'Raté automatique' : x.statut === 'Bonus' ? (x.note || 'Bonus') : (x.note || x.statut);
-      return `<div class="jl ${ic[1]}"><span class="ji">${ic[0]}</span><div class="jt"><b>${q}</b><small>${esc(detail)}${x.xp ? ' · +' + x.xp + ' XP' : ''}</small></div>${action}</div>`;
-    }).join('');
-    const restantes = modifiable ? J.quotidiennes.concat(J.annexes).filter((q, i, a) => a.indexOf(q) === i && !vues.has(q)) : [];
-    const ajout = restantes.length ? `<div class="joubli"><select id="jsel-${j.date}" aria-label="Quête à corriger"><option value="">Autre quête…</option>${restantes.map(q => `<option>${esc(q)}</option>`).join('')}</select>
-      <button class="btn mini or" data-jajout="Fait" data-jdate="${j.date}" ${occ}>✓</button><button class="btn mini" data-jajout="Raté" data-jdate="${j.date}" ${occ}>✗</button></div>` : '';
-    return `<div class="jjour"><div class="jtete"><b>${j.date === aujourd ? 'Aujourd\'hui' : j.date === hier ? 'Hier' : esc(dateLongue(j.date))}</b>
-      <span>${fait} faite${fait > 1 ? 's' : ''}${rate ? ` · ${rate} ratée${rate > 1 ? 's' : ''}` : ''}</span></div>
-      ${lignes || '<div class="muted" style="font-size:13px;padding:4px 0">Rien de saisi.</div>'}${ajout}</div>`;
+    const xp = j.saisies.reduce((t, x) => t + (Number(x.xp) || 0), 0);
+    // au-delà de 5 marques : les 4 premières + « +n » (le détail complet est dans la stèle ouverte et dans l'aria-label)
+    const marques = j.saisies.slice().sort((a, b) => rang(a.quete) - rang(b.quete) || (ordre[a.statut] ?? 9) - (ordre[b.statut] ?? 9)).map(x => sceauJour(runeDe, x, frais === j.date + '|' + x.quete));
+    const sceaux = marques.length > 5 ? marques.slice(0, 4).join('') + `<b class="st-plus">+${marques.length - 4}</b>` : marques.join('');
+    const nom = j.date === aujourd ? 'Auj.' : j.date === hier ? 'Hier' : versDate(j.date).toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '');
+    const titre = j.date === aujourd ? 'Aujourd\'hui' : j.date === hier ? 'Hier' : dateLongue(j.date);
+    const resume = `${fait} faite${fait > 1 ? 's' : ''}${rate ? `, ${rate} ratée${rate > 1 ? 's' : ''}` : ''}${xp ? `, ${xp} XP` : ''}`;
+    const estOuverte = ouverte === j.date, estMeilleur = meilleur === j.date;
+    let socle = '';
+    if (estOuverte) {
+      const lignes = j.saisies.slice().sort((a, b) => rang(a.quete) - rang(b.quete) || (ordre[a.statut] ?? 9) - (ordre[b.statut] ?? 9)).map(x => { // même ordre fixe que les sceaux
+        const ic = icone[x.statut] || ['·', ''], ici = journalOccupe === j.date + '|' + x.quete;
+        const q = esc(x.quete), d = j.date;
+        const action = !modifiable || x.statut === 'Bonus' ? ''
+          : ici ? '<span class="muted">…</span>'
+          : x.statut === 'Fait' ? `<button class="btn mini" data-jstat="Raté" data-jq="${q}" data-jdate="${d}" ${occ}>✗ Ratée</button>`
+          : `<button class="btn mini or" data-jstat="Fait" data-jq="${q}" data-jdate="${d}" ${occ}>✓ Faite</button>`;
+        const detail = x.statut === 'Repos' ? 'Joker' + (x.auto ? ' automatique' : '') : x.statut === 'Raté' && x.auto ? 'Raté automatique' : x.statut === 'Bonus' ? (x.note || 'Bonus') : (x.note || x.statut);
+        return `<div class="jl ${ic[1]}"><span class="ji">${sceauJour(runeDe, x, false, true)}</span><div class="jt"><b>${esc(nomJournal(x.quete))}</b><small>${esc(detail)}${x.xp ? ' · +' + x.xp + ' XP' : ''}</small></div>${action}</div>`;
+      }).join('');
+      const restantes = modifiable ? J.quotidiennes.concat(J.annexes).filter((q, i, a) => a.indexOf(q) === i && !vues.has(q)) : [];
+      const ajout = restantes.length ? `<div class="joubli"><select id="jsel-${j.date}" aria-label="Quête à corriger"><option value="">Autre quête…</option>${restantes.map(q => `<option value="${esc(q)}">${esc(nomJournal(q))}</option>`).join('')}</select>
+        <button class="btn mini or" data-jajout="Fait" data-jdate="${j.date}" ${occ}>✓</button><button class="btn mini" data-jajout="Raté" data-jdate="${j.date}" ${occ}>✗</button></div>` : '';
+      socle = `<div class="st-socle" id="socle-${j.date}">${lignes || '<div class="muted" style="font-size:13px;padding:2px 0 4px">Rien de saisi.</div>'}${ajout}</div>`;
+    }
+    const lueur = estMeilleur && !steleLueurVue ? ' lueur' : '';
+    return `<div class="stele${estOuverte ? ' ouverte' : ''}${estMeilleur ? ' meilleur' + lueur : ''}">
+      <button class="st-dalle" data-stele="${j.date}" aria-expanded="${estOuverte}" aria-controls="socle-${j.date}" aria-label="${esc(titre)} : ${resume}${estMeilleur ? ', meilleur jour de la semaine' : ''}. ${estOuverte ? 'Refermer' : 'Ouvrir pour corriger'}">
+        <span class="st-date"><small>${esc(nom)}</small><b>${versDate(j.date).getDate()}</b></span>
+        <span class="st-sceaux${j.saisies.length >= 4 ? ' serre' : ''}" aria-hidden="true">${sceaux || `<em>${j.date === aujourd ? 'à graver' : 'rien de gravé'}</em>`}</span>
+        <span class="st-droite" aria-hidden="true">${estMeilleur ? '<span class="st-meilleur">✦ meilleur jour</span>' : ''}<span>${xp ? `<b>+${xp}</b> XP` : rate ? `${rate} ratée${rate > 1 ? 's' : ''}` : '&nbsp;'}</span></span><i class="st-chev" aria-hidden="true">›</i>
+      </button>${socle}</div>`;
   }).join('');
-  return `<p class="muted" style="font-size:12.5px;margin:0 0 10px">7 derniers jours. Passe une quête en faite ou en ratée après coup : séries, PV et XP sont recalculés.${journalEnCours ? ' <i>Mise à jour…</i>' : ''}</p>${jours}`;
+  if (meilleur) steleLueurVue = true;
+  // clé des runes : seulement les quêtes présentes sur les 7 jours affichés ; toutes les annexes partagent une seule marque
+  const presentes = new Set(), annexes = new Set(J.annexes); let avecAnnexe = false;
+  sept.forEach(j => j.saisies.forEach(x => { if (x.statut === 'Bonus') return; if (annexes.has(x.quete) && !J.quotidiennes.includes(x.quete)) avecAnnexe = true; else presentes.add(x.quete); }));
+  const cle = [...presentes].sort((a, b) => rang(a) - rang(b)).map(q => `<span>${sceauJour(runeDe, { quete: q, statut: 'Fait' }, false, true)}${esc(nomJournal(q))}</span>`).join('')
+    + (avecAnnexe ? `<span>${sceauJour(() => RUNE_ANNEXE, { quete: '', statut: 'Fait' }, false, true)}Annexes</span>` : '');
+  return `<div class="st-journal">${DEFS_STELE}<p class="muted" style="font-size:12.5px;margin:0 0 8px">Touche une stèle pour passer une quête en faite ou en ratée après coup : séries, PV et XP sont recalculés.${journalEnCours ? ' <i>Mise à jour…</i>' : ''}</p>
+    ${cle ? `<div class="st-cle" aria-label="Rune de chaque quête">${cle}</div>` : ''}${jours}</div>`;
 }
+document.addEventListener('click', e => {
+  const d = e.target.closest('[data-stele]'); if (!d) return;
+  const ouverte = steleOuverte === undefined ? isoPlusLocal(isoLocal(), -1) : steleOuverte;
+  steleOuverte = ouverte === d.dataset.stele ? '' : d.dataset.stele; render();
+});
 async function actionJournal(fn, args, cle, message) {
   if (journalOccupe) return;
   if (navigator.onLine === false) { toast('📴 Pas de réseau : la correction du journal demande une connexion'); return; }
@@ -5761,6 +5897,7 @@ document.addEventListener('click', e => {
   const date = (b || c).dataset.jdate, statut = (b || c).dataset.jstat || (c && c.dataset.jajout);
   let q = b ? b.dataset.jq : (document.getElementById('jsel-' + date) || {}).value;
   if (!q) { toast('Choisis d\'abord la quête'); return; }
+  if (statut === 'Fait') journalFrais = { cle: date + '|' + q, t: Date.now() };
   actionJournal('corrigerJour', [q, statut, date], date + '|' + q, (statut === 'Fait' ? '✓ « ' : '✗ « ') + q + ' » ' + (statut === 'Fait' ? 'faite' : 'ratée') + ' le ' + dateCourte(date));
 });
 
