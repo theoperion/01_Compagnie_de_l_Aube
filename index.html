@@ -888,6 +888,11 @@
   .dl-v { display: flex; align-items: baseline; gap: 4px; font-size: 11.5px; color: var(--muted); } .dl-v span { flex: 1; } .dl-v b { font: italic 900 16px var(--f-titre); color: var(--text); }
   .dl-l { display: flex; gap: 4px; height: 6px; } .dl-l i { display: block; height: 100%; border-radius: 3px; transform: skewX(-14deg); min-width: 4px; }
   body.calme .dl-couronne { transition: none; }
+  .cornes { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; margin-top: 8px; }
+  .corne { width: 64px; height: 48px; justify-self: center; } .cornes.grand { width: min(90vw, 380px); } .cornes.grand .corne { width: 130px; height: 98px; } .corne .hydromel { transition: y .8s ease-out; }
+  .corne.pleine { filter: drop-shadow(0 0 8px rgba(255,210,122,.7)); }
+  .cornes-t { text-align: center; font: 800 10.5px var(--f-texte); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); } .cornes-t small { display: block; font: 700 13px var(--f-texte); letter-spacing: 0; color: var(--text); text-transform: none; margin-top: 2px; }
+  html.ygg body.aurore-forte::before { opacity: 1 !important; filter: blur(6px) saturate(1.7); animation-duration: 9s; }
   .am-ov { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; gap: 14px; background: radial-gradient(circle at 50% 40%, rgba(16,12,9,.93), rgba(0,0,0,.97)); cursor: pointer; animation: amFond .3s ease-out; }
   .am-scene { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; width: min(94vw, 440px); }
   .am-h { display: grid; justify-items: center; gap: 4px; } .am-h svg { width: 150px; height: auto; filter: drop-shadow(0 0 18px var(--c)); }
@@ -5199,7 +5204,8 @@ function render() {
   afficherCarnet(onglet === 'carnet');
   if (onglet === 'compagnie' && !compVue) prechargerFiches(s);
   if (onglet === 'compagnie') placerCouronne();
-  try { avantMatchAFaire(s); } catch (e) {}
+  { const comps = s.compagnons || []; document.body.classList.toggle('aurore-forte', comps.length > 0 && faits > 0 && comps.every(c => Number(c.faitsAujourdhui) > 0)); }
+  try { avantMatchAFaire(s); finSemaineAFaire(s); } catch (e) {}
   demandesClaude(s);
   demanderMJ(s);
   if (change) requestAnimationFrame(boutonsPlies);
@@ -5304,6 +5310,17 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-retour]')) { compVue = null; render(); return; }
   if (e.target.closest('[data-tab]')) compVue = null;
 }, true);
+/* Corne à boire : elle se remplit d'hydromel au fil de la semaine (XP / une semaine parfaite de quêtes du quotidien) */
+const SEMAINE_PARFAITE = 1500;
+function corneSvg(xp, classe, miroir) {
+  const r = Math.max(0, Math.min(1, (Number(xp) || 0) / SEMAINE_PARFAITE)), h = Math.round(r * 34), id = 'cr' + (miroir ? 'd' : 'g');
+  return `<svg class="corne ${r >= 1 ? 'pleine' : ''}" viewBox="0 0 64 48" aria-hidden="true" style="--c:${couleurClasse(classe)}${miroir ? ';transform:scaleX(-1)' : ''}">
+    <defs><clipPath id="${id}"><path d="M6 8 Q30 2 52 6 Q58 22 50 40 Q44 46 38 40 Q30 26 6 14Z"/></clipPath>
+      <linearGradient id="${id}h" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#c77a1e"/><stop offset="1" stop-color="#ffd27a"/></linearGradient></defs>
+    <g clip-path="url(#${id})"><rect x="0" y="0" width="64" height="48" fill="rgba(160,210,235,.08)"/><rect class="hydromel" x="0" y="${44 - h}" width="64" height="${h + 4}" fill="url(#${id}h)"/></g>
+    <path d="M6 8 Q30 2 52 6 Q58 22 50 40 Q44 46 38 40 Q30 26 6 14Z" fill="none" stroke="#d39a5c" stroke-width="2"/>
+    <path d="M10 9 Q30 4 50 7" stroke="var(--c)" stroke-width="2" fill="none" opacity=".8"/><path d="M50 40 Q46 46 40 41" stroke="#8a5a2a" stroke-width="3" fill="none"/></svg>`;
+}
 /* Duel de la semaine (charte 2026) : les deux héros face à face, chacun sa couleur fixe (mage azur, voleur jade), couronne au meneur */
 const couleurClasse = c => /voleur|assassin|roublard/i.test(String(c || '')) ? 'var(--allie)' : 'var(--theron)';
 function duelHTML(s, moi, lui) {
@@ -5322,6 +5339,7 @@ function duelHTML(s, moi, lui) {
     </div>
     <div class="dl-noms"><div style="color:${couleurClasse(moi.classe)}"><b>Toi</b><small>${esc(moi.classe || '')} · niv. ${moi.niveau}</small></div><div style="color:${couleurClasse(lui.classe)}"><b>Ton allié</b><small>${esc(lui.classe || '')} · niv. ${lui.niveau}</small></div></div>
     ${barre('XP de la semaine', a, b, ' XP')}
+    <div class="cornes">${corneSvg(a, moi.classe)}<div class="cornes-t">Corne de la semaine<small>${Math.min(100, Math.round(a / SEMAINE_PARFAITE * 100))} % · ${Math.min(100, Math.round(b / SEMAINE_PARFAITE * 100))} %</small></div>${corneSvg(b, lui.classe, true)}</div>
     ${B && B.statut !== 'À venir' ? barre('Dégâts au ' + esc(String(B.nomStade || B.nom).replace(/^(Le|La|L')\s*/, '')), dg(moi.nom), dg(lui.nom), '') : ''}
   </div>`;
 }
@@ -5347,6 +5365,29 @@ function avantMatchAFaire(s) {
     ov.onclick = fermer; setTimeout(fermer, 4200);
   };
   setTimeout(essayer, 1500);
+}
+/** Dimanche soir : les deux cornes se remplissent devant toi, une fois par semaine */
+let finSemainePrevue = false;
+function finSemaineAFaire(s) {
+  const lui = (s.compagnons || [])[0]; if (!lui || finSemainePrevue || !confort().animations) return;
+  const d = new Date(s.today + 'T12:00:00'); if (d.getDay() !== 0 || new Date().getHours() < 18) return;
+  const k = 'corne|' + s.today; let vu = false; try { vu = !!localStorage.getItem(k); } catch (e) {} if (vu) return;
+  finSemainePrevue = true;
+  const essayer = () => {
+    if (document.body.classList.contains('bloque')) { setTimeout(essayer, 2000); return; }
+    try { localStorage.setItem(k, '1'); } catch (e) {}
+    const a = Number(s.bilan.semaine.xp) || 0, b = Number(lui.xpSemaine) || 0, cl = (s.classe || {}).nom;
+    const ov = document.createElement('div'); ov.className = 'am-ov on'; ov.setAttribute('role', 'dialog');
+    ov.innerHTML = `<div class="am-txt"><span>Fin de semaine</span><b>À vos cornes !</b></div>
+      <div class="cornes grand">${corneSvg(0, cl)}<div class="am-vs" style="font-size:40px;padding:0">⚔</div>${corneSvg(0, lui.classe, true)}</div>
+      <div class="am-txt"><small>Toi : ${a.toLocaleString('fr-FR')} XP · Ton allié : ${b.toLocaleString('fr-FR')} XP</small><b style="font-size:20px">${a >= SEMAINE_PARFAITE && b >= SEMAINE_PARFAITE ? 'Deux cornes pleines : skål !' : a >= b ? 'Ta corne est la plus pleine. Skål !' : 'Ton allié boit plus que toi cette semaine…'}</b></div>`;
+    document.body.appendChild(ov); document.body.classList.add('bloque');
+    const cs = ov.querySelectorAll('.corne .hydromel'), vals = [a, b];
+    setTimeout(() => cs.forEach((r, i) => { const h = Math.round(Math.max(0, Math.min(1, vals[i] / SEMAINE_PARFAITE)) * 34); r.setAttribute('y', 44 - h); r.setAttribute('height', h + 4); }), 400);
+    const fermer = () => { ov.remove(); document.body.classList.remove('bloque'); };
+    ov.onclick = fermer; setTimeout(fermer, 6000);
+  };
+  setTimeout(essayer, 2500);
 }
 /** Couronne vivante : elle glisse d'un héros à l'autre quand l'avance change */
 function placerCouronne() {

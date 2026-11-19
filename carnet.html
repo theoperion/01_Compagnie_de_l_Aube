@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Runic&display=swap">
 <style>
 /* Layout : une colonne d'application (max 760px). Univers de La Compagnie de l'Aube : nuit violette, or et parchemin.
    Thème sombre assumé (comme le Grimoire), donc pas de variante claire. */
@@ -60,6 +60,12 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
   .quest .row{gap:4px} .quest .pill{font-size:.7rem;padding:1px 6px} .quest .dots{display:none}
   .tabs{width:100%!important;justify-content:stretch} .tabs .tab{flex:1}
   .quest .kx{display:none} .quest .k i{font-style:normal} .quest .row .pill+.pill{display:none} .quest .big{font-size:.98rem}}
+.pierre{background:linear-gradient(160deg,rgba(207,232,245,.08),transparent 50%),#12222c;border-color:#2a4556}
+.runes{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;font:1.35rem/1.3 "Noto Sans Runic",serif;text-align:center}
+.runes span{color:rgba(160,210,235,.18)} .runes span.gr{color:#d39a5c;text-shadow:0 1px 0 #000}
+.runes span.neuve{color:#9fe9cf;text-shadow:0 0 10px rgba(99,230,173,.9);animation:runeNeuve 2.6s ease-in-out infinite}
+@keyframes runeNeuve{50%{text-shadow:0 0 18px rgba(99,230,173,1),0 0 4px #fff}}
+@media (prefers-reduced-motion:reduce){.runes span.neuve{animation:none}}
 .cs-big{font:700 3.2rem/.85 var(--display);color:var(--fg)} .cs-big small{font:600 1.2rem var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-left:6px}
 .cs-sub{font-size:.85rem;color:var(--muted);margin-top:-4px}
 .quest{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:6px;cursor:pointer;text-align:left;font:inherit;color:inherit;min-width:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
@@ -1004,6 +1010,14 @@ function playerCard(){
     <div class="row small muted"><span>Badges ${Object.keys(g.badges).length}/${BADGES.length}</span><span>·</span><span>Meilleur combo ${g.stats.maxCombo}</span><span>·</span><span>Boss vaincus ${g.stats.bossWins}</span></div>
   </div>`;
 }
+/* Pierre runique : chaque séance d'anglais (mission ou conversation comptée) grave une rune ; la dernière luit */
+const FUTHARK="ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ";
+function pierreRunique(){
+  const n=(state.en.sessions||[]).length, tour=Math.floor(n/24), sur=n%24||(n?24:0);
+  const runes=[...FUTHARK].map((r,i)=>`<span class="${i<sur?"gr":""} ${n&&i===sur-1?"neuve":""}">${r}</span>`).join("");
+  return `<div class="card pierre"><div class="row" style="justify-content:space-between"><span class="kicker">Pierre runique</span><span class="small muted">${n} rune${n>1?"s":""} gravée${n>1?"s":""}${tour?` · ${tour} pierre${tour>1?"s":""} complète${tour>1?"s":""}`:""}</span></div>
+    <div class="runes">${runes}</div><span class="small muted">Chaque séance d'anglais grave une rune. 24 runes : la pierre est complète, une nouvelle commence.</span></div>`;
+}
 function renderEn(){
   const p=$("#p-en");
   micStop(true); majFocus();
@@ -1019,6 +1033,7 @@ function renderEn(){
     <button class="btn ${dueCount?"":"primary big"}" data-next="go">Lancer la mission · ${esc(M.name)}</button></div>
   ${playerCard()}
   ${convCard()}
+  ${pierreRunique()}
   <div class="card">${epicHTML(EPICS.en,epicDone("en"))}</div>
   <div class="mods">${Object.entries(MODULES).map(([k,m])=>`<button class="mod" data-mod="${k}" aria-pressed="${k===a}"><b>${m.name}</b><span class="small muted">${m.sub}</span><span class="small mono">chapitre ${state.en.mods[k].unit+1} / ${m.units.length}</span></button>`).join("")}</div>
   <div class="card mission">
