@@ -50,6 +50,8 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
 .orn{color:var(--gold);opacity:.55;letter-spacing:.15em;font-size:.8rem;white-space:nowrap;overflow:hidden;max-width:100%}
 .sync{font-size:.78rem;color:var(--muted)}
 .quests{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.prochaine{display:grid;gap:10px;border-color:var(--en)}.btn.big{min-height:52px;font-size:1.02rem}
+@media (max-width:520px){.top .motto,.top .orn,.top .sub{display:none}}
 .quest{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:6px;cursor:pointer;text-align:left;font:inherit;color:inherit;min-width:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
 .quest:hover{border-color:var(--gold)}
 .quest:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.flash:focus-visible,summary:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
@@ -999,6 +1001,9 @@ function renderEn(){
   const starsOf=i=>state.en.mods[a].stars?.[i]||0;
   p.innerHTML=`
   ${hasTTS()?"":'<p class="note">Ce navigateur ne sait pas lire l\'audio. Ouvre la page dans Safari ou Chrome pour les exercices d\'écoute.</p>'}
+  <div class="card prochaine"><span class="kicker">Ce soir, Theron…</span>
+    ${dueCount?`<button class="btn primary big" data-next="rev">Réviser ${dueCount} carte${dueCount>1?"s":""} · ~${Math.max(2,Math.round(dueCount/3))} min</button>`:""}
+    <button class="btn ${dueCount?"":"primary big"}" data-next="go">Lancer la mission · ${esc(M.name)}</button></div>
   ${playerCard()}
   ${convCard()}
   <div class="card">${epicHTML(EPICS.en,epicDone("en"))}</div>
@@ -2507,7 +2512,8 @@ let tab="en", lastTab="en";
 document.getElementById("maison").onclick=()=>{try{if(window.parent!==window){window.parent.postMessage({t:"compagnie-retour"},"*");return}}catch(e){}location.href="./"};
 function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);majFocus();try{localStorage.setItem("quetes-tab",t)}catch(e){}}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
-document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setTab(b.dataset.go));
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{setTab(b.dataset.go);requestAnimationFrame(()=>{const c=document.querySelector("#p-"+b.dataset.go+" .prochaine, #p-"+b.dataset.go+" .card");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})})});
+document.addEventListener("click",e=>{const n=e.target.closest("[data-next]");if(!n)return;const t=document.getElementById(n.dataset.next);if(t){t.scrollIntoView({block:"center"});t.click()}});
 $("#gear").onclick=()=>setTab(tab==="set"?lastTab:"set");
 function renderAll(){renderQuestEn();renderQuestRun();renderQuestStr();if(!ses)renderEn();renderRun();if(!pl)renderStr();if(!document.querySelector("#p-set :focus"))renderSet()} // réglages : pas redessinés pendant qu'on tape (sinon la saisie s'effaçait)
 renderAll();
