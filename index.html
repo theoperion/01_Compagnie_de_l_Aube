@@ -3829,7 +3829,7 @@ function plateauHTML(s) {
 /* ===== Parcours de saison (refonte) : données communes =====
  * Replié par défaut à chaque lancement ; l'état ouvert/fermé vit le temps de la session (parcoursOuvert).
  * Remplace blocSaison(s, true) + plateauHTML(s) dans Héros → Aventure. */
-let parcoursOuvert = false;
+let parcoursOuvert = true; // Théo (19/11) : déplié par défaut, sinon l'onglet Aventure paraît vide ; un toucher le replie
 const xpFr = v => Math.max(0, Math.round(v)).toLocaleString('fr-FR').replace(/ /g, ' ');
 const ECLAT_SVG = (w = 22) => `<svg viewBox="0 0 24 24" width="${w}" height="${w}" aria-hidden="true"><path d="M12 2 L19 9 L12 22 L5 9 Z" fill="#9fe4ff"/><path d="M12 2 L19 9 H5 Z" fill="#dff7ff"/><path d="M12 9 V22" stroke="#4aa8d0" stroke-width="1"/></svg>`;
 function etapesParcours(s) {
