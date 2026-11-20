@@ -15,11 +15,11 @@
 
 **Mouvement**
 - [ ] **Animé** (mouvement de base + au moins une partie vivante), en transform/opacity seulement.
-- [ ] Discret et élégant : pas de tremblote, pas de défilement de texte en boucle (Théo : jamais).
+- [ ] Discret et élégant : pas de tremblote, pas de défilement de texte en boucle (le joueur : jamais).
 - [ ] Coupé à 100 % par `body.calme` et `prefers-reduced-motion` (y compris les enfants).
 
 **Texte et données**
-- [ ] Hiérarchie : ce que Théo veut voir passe en premier (ex. titre avant devise) ; chiffres sans ambiguïté (« 35/100 », pas « ×0,75 35 »).
+- [ ] Hiérarchie : ce que le joueur veut voir passe en premier (ex. titre avant devise) ; chiffres sans ambiguïté (« 35/100 », pas « ×0,75 35 »).
 - [ ] Même traitement pour les deux héros (aucune impression d'injustice).
 - [ ] Aucun identifiant ni nom de la Saison 1 / Saison 2 dans le dépôt public.
 - [ ] Captures prises **après** la fin des animations d'apparition.
