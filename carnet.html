@@ -3270,6 +3270,8 @@ const ANCIEN=typeof figSVG==="function"?figSVG:null;
 function figSVG2(id,cls=""){
   const F=FIGS[id],nomEx=(typeof EX!=="undefined"&&EX[id]&&EX[id].name)||(id==="coup"?"le héros frappe":id);
   if(!F)return ANCIEN?ANCIEN(id,cls):`<svg class="rfig" viewBox="0 0 200 160" role="img" aria-label="${esc2(nomEx)}"></svg>`;  // exercice ajouté plus tard : ancien bonhomme
+  // gardien (20/11) : les animations ne se préparent qu'à la première ouverture de l'onglet Renfo (le Carnet s'ouvre plus vite)
+  if(id!=="coup"&&typeof tab!=="undefined"&&tab!=="str")return `<svg class="rfig ${cls}" data-fx-attente="${id}" viewBox="${F.vb||"0 0 200 160"}" role="img" aria-label="Animation : ${esc2(nomEx)}"></svg>`;
   const fx=preparer(id);
   return `<svg class="rfig fx-${id}${F.once?" fx-une":""} ${cls}" data-fx="${id}" viewBox="${F.vb||"0 0 200 160"}" role="img" aria-label="Animation : ${esc2(nomEx)}" style="--fxT:${F.T}s">
   <line class="fx-sol" x1="4" y1="${SOL+.5}" x2="196" y2="${SOL+.5}"/>${decor(F,fx)}${rigSVG(F,fx)}${dessus(F,fx)}</svg>`}
@@ -3308,6 +3310,7 @@ if(typeof renderPlayer==="function"){const _rp=renderPlayer;
 if(typeof plStep==="function"){const _ps=plStep;
   plStep=function(){const avant=pl&&pl.lastSec;_ps.apply(this,arguments);
     if(!pl||pl.done||pl.paused)return;const c=document.getElementById("plCount");if(c&&pl.lastSec!==avant&&pl.lastSec<=3&&pl.lastSec>=1){c.classList.add("fx-fin3");pouls(c,true)}}}/* redessine l'onglet avec les nouveaux personnages (le Carnet a déjà rendu une fois) */
+if(typeof setTab==="function"){const _st=setTab;setTab=function(t){_st.apply(this,arguments);if(t==="str"&&document.querySelector("[data-fx-attente]"))try{renderAll()}catch(e){}}}
 if(typeof renderAll==="function")try{renderAll()}catch(e){}
 })();
 
