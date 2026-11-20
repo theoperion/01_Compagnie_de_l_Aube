@@ -715,7 +715,7 @@
   .ph-tout { display: flex; align-items: center; gap: 8px; width: 100%; margin: 4px 0 6px; padding: 9px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--gold) 45%, var(--line)); background: none; color: var(--gold); font: inherit; cursor: pointer; text-align: left; }
   .ph-tout span { font: 700 14px var(--f-titre); } .ph-tout small { flex: 1; font-size: 11.5px; color: var(--muted); } .ph-tout i { font-style: normal; font: 700 18px/1 var(--f-texte); }
   .ph-liste { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px; }
-  .ph-liste button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 6px; border-radius: 10px; border: 0; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+  .ph-liste li > button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 6px; border-radius: 10px; border: 0; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
   .ph-liste li:nth-child(odd) > button { background: color-mix(in srgb, var(--card) 70%, transparent); } .ph-liste li.choisi > button { background: color-mix(in srgb, var(--gold) 14%, var(--card)); }
   .pt-n { flex: none; width: 22px; text-align: right; font-size: 11.5px; font-weight: 800; color: var(--muted); } .ph-liste li.proch .pt-n, .ph-liste li.gros .pt-n { color: var(--gold); }
   .ph-v.pt-v { width: 30px; height: 30px; border-width: 1px; } .pt-v svg, .pt-v .ap-rep svg { max-width: 22px; max-height: 20px; } .pt-v .ap-rep { width: 22px; }
@@ -2350,6 +2350,20 @@ html[class] .hxc .joker { font-size: 11.5px; line-height: 18px; }
 .btn.contour-or { background: transparent; border-color: color-mix(in srgb, var(--gold) 70%, transparent); color: var(--gold); } /* action secondaire : contour or (critique) */
 .reg-bloc > .reg-tete { margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .reg-bloc > .reg-tete + .reg { margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-top: 0; }
+
+/* Espacements : les textes respirent dans leurs cadres avec la nouvelle police (ergonome, 20/11) */
+.ph-liste .ph-detail button { width: auto; } .ph-liste .pd-x { width: 32px; padding: 0; display: grid; place-items: center; }
+.cfa .dl-face { grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); } .cfa-col { min-width: 0; }
+html[class] .cfu .dl-noms b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(13px, 4vw, 16px); letter-spacing: .04em; max-width: 100%; display: inline-block; }
+.rg-carte { padding: 8px 6px 7px !important; } .rg-carte small { font-size: 11px; line-height: 1.25; }
+html[class] .jour-d20 small { padding: 0 6px; letter-spacing: .02em; }
+html[class] small.epu-p, html[class] .hxc .joker { padding: 0 7px !important; } html[class] .hxc-niv { padding: 1px 8px; }
+@media (max-width: 430px) { .section { flex-wrap: wrap; row-gap: 2px; } .section > span { max-width: none !important; flex-basis: 100%; text-align: left; } }
+.orn-t.cosm .orn-b { padding: 16px 6px 6px; } .orn-t.cosm .orn-b b { font-size: 10px; line-height: 1.15; }
+.tr-niche { padding: 8px 6px 6px; }
+.bf-plaques button.x { padding: 3px 9px; }
+.ph-c { padding: 8px 6px 7px; } @media (max-width: 380px) { .ph-c small { font-size: 9.5px; } .pt-nom small { display: none; } }
+.capa .lv, .evo .lv, .lv { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -4281,9 +4295,9 @@ function rgSchema(k) {
     const coffre = `<svg viewBox="0 0 34 30" width="34" height="30" aria-hidden="true">${rgCoffre('rare', 30).replace('<svg', '<svg x="2" y="4"')}${rgEtinc(28, 5, 3.6, '#fff6c8', .8)}</svg>`;
     const boucle = `<svg viewBox="0 0 30 30" width="28" height="28" aria-hidden="true"><path d="M23 11 A9 9 0 1 0 24 17" stroke="var(--gold)" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M19.5 10.5 L23.5 11 L24 7" stroke="var(--gold)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     return `<div class="rg-sch"><div class="rg-cycle">
-      ${carte(quete, 'Quêtes', 'chaque jour')}${rgFleche('d')}${carte(xp, 'XP', 'à chaque quête faite')}${rgFleche('d')}${carte(rgMiniRoute(32), 'Chemin', '15 paliers')}
+      ${carte(quete, 'Quêtes', 'chaque jour')}${rgFleche('d')}${carte(xp, 'XP', 'à chaque quête')}${rgFleche('d')}${carte(rgMiniRoute(32), 'Chemin', '15 paliers')}
       ${rgFleche('h')}<span></span><span></span><span></span>${rgFleche('b')}
-      ${carte(boucle, 'Et on repart', 'chaque jour', 'tiret')}${rgFleche('g')}${carte(rgCosm('cape_aube', 'cape'), 'Garde-robe', 'tu portes tes trésors')}${rgFleche('g')}${carte(coffre, 'Coffres', 'chemin, boss et défi', 'or')}
+      ${carte(boucle, 'Et on repart', 'chaque jour', 'tiret')}${rgFleche('g')}${carte(rgCosm('cape_aube', 'cape'), 'Garde-robe', 'tu portes tes trésors')}${rgFleche('g')}${carte(coffre, 'Coffres', 'chemin, boss, défi', 'or')}
     </div></div>`;
   }
   /* ---------- 2. Le chemin : le panorama « L'Horizon » recadré, avec la mesure d'un palier ---------- */
@@ -4324,7 +4338,7 @@ function rgSchema(k) {
     const conv = `<svg class="rg-conv" viewBox="0 0 288 22" preserveAspectRatio="none" aria-hidden="true" style="height:14px"><path d="M48 0 Q48 12 140 18 M144 0 V18 M240 0 Q240 12 148 18" stroke="currentColor" stroke-width="1.6" fill="none" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg>`;
     const bouton = `<div class="rg-but"><span class="btn mini or rg-faux"><span class="ph-bi">${rgCoffre('rare', 20)}</span>Coffre (2)</span><small>sous le chemin :<br>touche pour ouvrir</small></div>`;
     const rar = ['commun', 'rare', 'epique', 'legendaire'].map(r => `<div>${rgCoffre(r, 40)}<small style="color:${RG_RAR[r]}">${RARETE_NOM[r]}</small>${r === 'legendaire' ? '<small class="rg-p">palier 14 : Aura de l\'Aube</small>' : ''}</div>`).join('');
-    return `<div class="rg-sch"><div class="rg-3">${src(rgMiniRoute(30), 'case coffre du chemin')}${src(rgEpees(24), 'boss vaincu<br><span class="rg-p">+ sa panoplie</span>')}${src(rgDrapeau(28), 'Défi de l\'Avent')}</div>
+    return `<div class="rg-sch"><div class="rg-3">${src(rgMiniRoute(30), 'case du chemin')}${src(rgEpees(24), 'boss vaincu<br><span class="rg-p">+ sa panoplie</span>')}${src(rgDrapeau(28), 'Défi de l\'Avent')}</div>
       ${conv}${bouton}<div class="rg-rar4">${rar}</div></div>`;
   }
   /* ---------- 4. Éclats et marchand : d'où viennent les éclats, où ils vont ---------- */
