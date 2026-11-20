@@ -2352,9 +2352,9 @@ html[class] .hxc .joker { font-size: 11.5px; line-height: 18px; }
 .reg-bloc > .reg-tete + .reg { margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-top: 0; }
 
 /* Espacements : les textes respirent dans leurs cadres avec la nouvelle police (ergonome, 20/11) */
-.ph-liste .ph-detail button { width: auto; } .ph-liste .pd-x { width: 32px; padding: 0; display: grid; place-items: center; }
+.ph-liste .ph-detail button:not(.pd-x) { width: auto; } .ph-liste .pd-x { width: 32px; padding: 0; display: grid; place-items: center; }
 .cfa .dl-face { grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); } .cfa-col { min-width: 0; }
-html[class] .cfu .dl-noms b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(13px, 4vw, 16px); letter-spacing: .04em; max-width: 100%; display: inline-block; }
+html[class] .cfu .dl-noms b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(13px, 4vw, 16px); letter-spacing: .04em; max-width: 100%; display: inline-block; line-height: 1.25; }
 .rg-carte { padding: 8px 6px 7px !important; } .rg-carte small { font-size: 11px; line-height: 1.25; }
 html[class] .jour-d20 small { padding: 0 6px; letter-spacing: .02em; }
 html[class] small.epu-p, html[class] .hxc .joker { padding: 0 7px !important; } html[class] .hxc-niv { padding: 1px 8px; }
