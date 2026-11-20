@@ -7759,6 +7759,7 @@ function render() {
   if (champActif()) { renduEnAttente = true; return; } // tu es en train d'écrire : on attend que tu aies fini
   const s = state;
   document.body.classList.toggle('calme', !confort().animations);
+  try { localStorage.setItem('calme', !confort().animations ? '1' : '0'); } catch (e) {}
   const p = Math.round((s.progression || 0) * 100);
   const pvPct = Math.max(0, Math.min(100, s.pv / s.pvMax * 100));
 

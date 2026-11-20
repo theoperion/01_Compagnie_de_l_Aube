@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carnet de quêtes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Runic&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Noto+Sans+Runic&display=swap">
 <style>
 /* Layout : une colonne d'application (max 760px). Univers de La Compagnie de l'Aube : nuit violette, or et parchemin.
    Thème sombre assumé (comme le Grimoire), donc pas de variante claire. */
@@ -20,8 +20,7 @@
   --run:#6bbe79; --run-soft:rgba(107,190,121,.13);
   --str:#e0844f; --str-soft:rgba(224,132,79,.14);
   --ok:#6bbe79; --ok-soft:rgba(107,190,121,.16); --warn:#e8b04b; --warn-soft:rgba(232,176,75,.15); --bad:#e5737a; --bad-soft:rgba(229,115,122,.16);
-  --display:"Josefin Sans", system-ui, sans-serif;
-  --body:"Inter", system-ui, sans-serif;
+  /* polices : voir « ENLUMINEUR » plus bas (Grimoire chaleureux en Yggdrasil, Cinzel + Manrope en Olympe) */
   --r:14px; color-scheme:dark;
 }
 body{background-color:var(--bg);color:var(--fg);font:16px/1.5 var(--body);
@@ -54,13 +53,11 @@ p{margin:0} ul{margin:0;padding-left:1.2em}
 .prochaine{display:grid;gap:10px;border-color:var(--en)}.btn.big{min-height:52px;font-size:1.02rem}
 @media (max-width:520px){.top .motto,.top .orn,.top .sub,.top .sigil{display:none}
   /* charte 2026 : en-tête d'une ligne, les 3 suivis en tuiles, onglets pleine largeur */
-  .top{padding-top:4px;min-height:46px;align-content:center} .top h1{font-size:1.45rem}
+  /* tailles des tuiles : bloc « Gardien » en fin de feuille (ici, elles étaient écrasées par les règles de base) */
+  .top{min-height:46px;align-content:center}
   .quests{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .quest{padding:10px 10px;gap:3px;border-radius:14px} .quest .k{font-size:.62rem;letter-spacing:.08em} .quest .big{font-size:1.1rem;line-height:1.05}
-  .quest .row{gap:4px} .quest .pill{font-size:.7rem;padding:1px 6px} .quest .dots{display:none}
+  .quest .row{gap:4px} .quest .dots{display:none} .quest .kx{display:none} .quest .k i{font-style:normal} .quest .row .pill+.pill{display:none}
   .tabs{width:100%!important;justify-content:stretch} .tabs .tab{flex:1}
-  .quest .kx{display:none} .quest .k i{font-style:normal} .quest .row .pill+.pill{display:none} .quest .big{font-size:.8rem;line-height:1.2;overflow-wrap:normal;word-break:normal;hyphens:none}
-  .quest .pill{white-space:nowrap}
   .top h1{font-size:1.12rem;letter-spacing:.1em;padding:0 50px;line-height:1.25} .top .sync{padding:0 50px;font-size:.7rem}}
 .pierre{background:linear-gradient(160deg,rgba(207,232,245,.08),transparent 50%),#12222c;border-color:#2a4556}
 .menhir{width:min(64%,230px);height:auto;justify-self:center;display:block}
@@ -291,7 +288,245 @@ body.focus .hud{position:sticky;top:0;z-index:6;background:linear-gradient(160de
 .tab{min-height:40px}
 details.parcours>summary{min-height:40px;padding:8px 0;box-sizing:border-box}
 #dcOk,#dcNo,#recOk,#nwAdd{min-height:40px}
-@media (max-width:380px){.quests .quest{padding:10px 8px}.quests .quest .big{font-size:.9rem!important;letter-spacing:0}}
+/* =====================================================================
+   ENLUMINEUR · Carnet de quêtes (proposition du 19/11/2026)
+   À coller À LA FIN du premier <style> de carnet.html (après la ligne 294),
+   suivi du contenu de boss-anim.css (animations des boss, copiées de l'app).
+   Classes posées par le JS : html.ygg / html.th-aube / html.th-olympe / html.calme
+   ===================================================================== */
+
+/* ---------- 1. Polices et couleurs selon le thème (mêmes que l'app) ---------- */
+/* IM Fell English SC n'a PAS de chiffres alignés (lnum sans effet : « Niveau I », « I2 ») :
+   ses chiffres sont pris dans Vollkorn (même fichier Google Fonts que le texte), lettres inchangées. */
+@font-face{font-family:"Fell chiffres";font-style:normal;font-weight:400 900;font-display:swap;
+  src:url(https://fonts.gstatic.com/s/vollkorn/v30/0yb9GDoxxrvAnPhYGxkpaE0.woff2) format("woff2");unicode-range:U+0030-0039}
+:root{
+  --display:"Fell chiffres","IM Fell English SC", Georgia, serif;           /* titres  (Yggdrasil : Grimoire chaleureux) */
+  --body:Vollkorn, Georgia, serif;                            /* texte   */
+  --label:Vollkorn, Georgia, serif;                           /* petites capitales des étiquettes */
+  --metal:#d39a5c; --metal2:#f3c88c; --metal-dark:#3d2309; --metal-soft:rgba(211,154,92,.18);
+  --card-bg:linear-gradient(160deg,rgba(207,232,245,.06),transparent 45%),#102029; --card-line:#1f3442; --card-r:12px;
+  --boss-pv1:#a3382f; --boss-pv2:#ff8a70; --boss-vide:rgba(160,210,235,.10);
+}
+html.th-olympe{
+  --display:Cinzel, Georgia, serif; --body:Manrope, system-ui, sans-serif; --label:Manrope, system-ui, sans-serif;
+  --metal:#e0b866; --metal2:#f6dc9c; --metal-dark:#4a3510; --metal-soft:rgba(224,184,102,.18);
+  --card-bg:linear-gradient(180deg,#1b2136,#171c2e); --card-line:#2a3250; --card-r:14px;
+  --boss-pv1:#a8452f; --boss-pv2:#e8846a; --boss-vide:rgba(200,210,255,.09);
+  font-synthesis:none;
+}
+html.ygg, html.ygg *{font-feature-settings:"lnum" 1}              /* gardien : « 12 » et pas « I2 » */
+body{font-family:var(--body)}
+html.ygg h1, html.ygg h2, html.ygg h3, html.ygg .quest .big, html.ygg .cs-big, html.ygg .flash .w{font-weight:400;font-synthesis:none}
+html.ygg h2{font-size:1.4rem;letter-spacing:.04em} html.ygg h3{font-size:1.05rem}
+html.th-olympe h1, html.th-olympe h2, html.th-olympe h3{font-weight:700}
+/* étiquettes (kicker, onglets, .k) : le texte du thème en petites capitales espacées, comme les sous-onglets de l'app */
+.kicker,.tab,.quest .k,.sess .tag,.tbl th,.player .phase,.sub{font-family:var(--label)}
+summary{font-family:var(--display)}
+.mono{font-variant-numeric:lining-nums tabular-nums}
+
+/* ---------- 2. Cartes au style de l'app ---------- */
+.card,.player,.week{background:var(--card-bg);border-color:var(--card-line);border-radius:var(--card-r)}
+html.th-olympe .card{box-shadow:0 10px 26px rgba(0,0,0,.35)}
+html.ygg .card>.kicker:first-child,html.ygg .card>.row:first-child>.kicker{display:inline-flex;align-items:center;gap:8px}
+html.ygg .card>.kicker:first-child::before,html.ygg .card>.row:first-child>.kicker::before{content:"";width:10px;height:15px;flex:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20'%3E%3Cpath d='M3 1 V19 M3 3 L11 7 M3 9 L11 13' stroke='%23d39a5c' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+html.th-olympe .card>.kicker:first-child{padding-bottom:4px;width:max-content;max-width:100%;background:linear-gradient(90deg,rgba(224,184,102,.6),transparent) 0 100%/100% 1px no-repeat}
+/* petites erreurs d'alignement relevées à 390 px */
+.card.hero>.row.small{column-gap:14px;row-gap:2px} .card.hero>.row.small>span:nth-child(even){display:none}   /* plus de « · » orphelin en fin de ligne */
+.card details>summary h2{display:inline;font-size:1.05rem;vertical-align:baseline}
+html.th-olympe summary{font-size:.8rem;letter-spacing:.03em} html.th-olympe details.parcours summary{font-size:.86rem}
+
+/* ---------- 3. Les trois tuiles du haut ---------- */
+.quests{align-items:stretch}
+.quest{position:relative;overflow:hidden;isolation:isolate;grid-template-rows:auto 1fr auto auto;align-content:start;
+  background:var(--card-bg);border-color:var(--card-line);border-radius:var(--card-r);--qc:var(--en)}
+.quest.run{--qc:var(--run)} .quest.str{--qc:var(--str)}
+.quest::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,transparent,var(--qc),transparent);opacity:.85}
+.quest .q-embl{position:absolute;right:0;top:-4px;width:46px;height:46px;opacity:.13;color:var(--qc);z-index:-1;pointer-events:none}
+.quest .k{color:var(--qc)}
+.quest .big{white-space:nowrap;font-size:clamp(.92rem,4.1vw,1.15rem);line-height:1.1;align-self:center}
+.quest .big .sur{font-size:.68em;color:var(--muted);margin-left:1px;letter-spacing:0}
+.quest .row{align-self:end}
+.quest .pill{max-width:100%;white-space:normal;text-align:center;justify-content:center;line-height:1.15;border-radius:8px;padding:2px 7px}
+.q-bar{height:4px;border-radius:4px;background:var(--boss-vide);overflow:hidden;margin-top:2px}
+.q-bar>i{display:block;height:100%;width:var(--p,0%);background:linear-gradient(90deg,color-mix(in srgb,var(--qc) 60%,#000),var(--qc));border-radius:inherit;transform-origin:left}
+.quest.q-auj{border-color:color-mix(in srgb,var(--warn) 55%,var(--card-line))}
+.quest.q-auj::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,230,170,.10) 50%,transparent 65%);transform:translateX(-100%);animation:qLueur 7s ease-in-out 1.2s infinite}
+@keyframes qLueur{0%,70%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.quest.q-fait{border-color:color-mix(in srgb,var(--ok) 45%,var(--card-line));background:radial-gradient(90% 120% at 100% 0,var(--ok-soft),transparent 60%),var(--card-bg)}
+.quest.q-retard{border-color:color-mix(in srgb,var(--bad) 50%,var(--card-line))}
+
+/* ---------- 4. Scène de boss (Gargouille, Oubli, boss de la région) ---------- */
+.enlu-boss{display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:center;padding:10px 12px 10px 6px;border-radius:12px;
+  background:radial-gradient(70% 90% at 18% 60%,rgba(var(--aura,255,120,90),.16),transparent 70%),var(--sunk);border:1px solid var(--line2);position:relative;overflow:hidden}
+.eb-av{position:relative;width:104px;aspect-ratio:120/130;align-self:end}
+.eb-av>svg.boss-svg{position:relative;width:100%;height:auto;display:block;filter:drop-shadow(0 6px 8px rgba(0,0,0,.55))}
+.eb-sol{position:absolute;left:14%;right:14%;bottom:1%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6),transparent);animation:ebSol 3.6s ease-in-out infinite}
+.eb-aura{position:absolute;inset:-6% -8% 4%;border-radius:50%;background:radial-gradient(circle at 50% 58%,rgba(var(--aura,255,120,90),.30),transparent 62%);animation:ebAura 4s ease-in-out infinite}
+@keyframes ebSol{50%{transform:scaleX(.9);opacity:.8}} @keyframes ebAura{0%,100%{opacity:.55}50%{opacity:1}}
+.eb-fis{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.eb-fis path{fill:none;stroke:#1a0d06;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.eb-fis path.l{stroke:rgba(255,190,110,.75);stroke-width:.7;filter:drop-shadow(0 0 2px rgba(255,150,60,.9))}
+.eb-info{display:grid;gap:5px;min-width:0}
+.eb-k{font:700 .66rem var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.eb-nom{font-family:var(--display);font-weight:400;font-size:1.08rem;line-height:1.15;color:var(--fg);text-wrap:balance}
+html.th-olympe .eb-nom{font-weight:700;font-size:1rem}
+.eb-pv{display:flex;gap:2px;height:10px}
+.eb-pv>i{flex:1;border-radius:2px;background:linear-gradient(180deg,var(--boss-pv2),var(--boss-pv1));box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.eb-pv>i.vide{background:var(--boss-vide);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.eb-pv.continu{display:block;border-radius:6px;background:var(--boss-vide);overflow:hidden}
+.eb-pv.continu>i{display:block;height:100%;width:var(--p);border-radius:inherit}
+.eb-bas{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.eb-chiffre{font-size:.82rem;color:var(--fg)} .eb-sous{font-size:.8rem;color:var(--muted)}
+/* touché (le nombre de PV a baissé depuis la dernière visite) : secousse, éclair, « −1 » qui s'envole, une seule fois */
+.enlu-boss.touche .eb-av>svg.boss-svg{animation:ebTouche .5s ease-out .35s both}
+.enlu-boss.touche .eb-pv>i.perdu{animation:ebPerdu .9s ease-out .35s both}
+.eb-degat{position:absolute;left:50%;top:18%;font:700 1.15rem var(--display);color:#ffb08a;text-shadow:0 0 8px rgba(255,90,40,.8),0 1px 0 #000;
+  transform:translateX(-50%);opacity:0;animation:ebDegat 1.4s ease-out .4s both;pointer-events:none}
+@keyframes ebTouche{0%{transform:translateX(0)}20%{transform:translateX(-4px) rotate(-2deg);filter:drop-shadow(0 0 8px rgba(255,60,60,.9)) brightness(1.35)}45%{transform:translateX(3px) rotate(1deg)}70%{transform:translateX(-1px)}100%{transform:none}}
+@keyframes ebPerdu{0%{background:linear-gradient(180deg,#fff2c0,#ff8a70);opacity:1}100%{opacity:1}}
+@keyframes ebDegat{0%{opacity:0;transform:translate(-50%,6px) scale(.8)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-22px) scale(1)}}
+/* vaincu : il se fige en pierre, un sceau le dit en toutes lettres */
+.enlu-boss.vaincu .eb-av>svg.boss-svg{filter:grayscale(1) brightness(.62) contrast(.9) drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+.enlu-boss.vaincu .eb-av>svg *{animation:none!important}
+.enlu-boss.vaincu .eb-aura{display:none}
+.eb-sceau{justify-self:start;font:700 .7rem var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:linear-gradient(180deg,var(--metal2),var(--metal));border-radius:6px;padding:2px 8px}
+/* repos (semaine de répit dans le plan de course) */
+.enlu-repos{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--sunk);border:1px dashed var(--line2);color:var(--muted);font-size:.9rem}
+.enlu-repos svg{width:34px;height:34px;flex:none}
+
+/* ---------- 5. L'armurerie (12 pièces) ---------- */
+.arm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0;position:relative}
+@media (max-width:440px){.arm{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pc{position:relative;display:grid;justify-items:center;align-content:start;gap:4px;padding:9px 4px 8px;border-radius:10px;background:var(--sunk);border:1px solid var(--line2);text-align:center;min-width:0}
+.pc svg{width:36px;height:36px;overflow:visible}
+.pc svg .f{fill:rgba(160,210,235,.05);stroke:rgba(160,210,235,.30);stroke-width:1.2;stroke-linejoin:round;stroke-linecap:round}
+.pc svg .d{fill:none;stroke:rgba(160,210,235,.22);stroke-width:1;stroke-linecap:round}
+.pc span{font-size:.7rem;line-height:1.15;color:var(--muted);text-wrap:balance;overflow-wrap:break-word;hyphens:manual}
+.pc .pc-n{position:absolute;left:5px;top:3px;font:normal 600 .62rem var(--body);color:var(--muted);opacity:.75}
+.pc.on{border-color:color-mix(in srgb,var(--metal) 50%,transparent);background:radial-gradient(70% 60% at 50% 32%,var(--metal-soft),transparent 75%),var(--sunk)}
+.pc.on svg .f{fill:url(#enluMetal);stroke:var(--metal-dark);stroke-width:1.3}
+.pc.on svg .d{stroke:var(--metal-dark);opacity:.7}
+.pc.on svg{filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.pc.on span{color:var(--metal2)}
+.pc.next{border:1px dashed color-mix(in srgb,var(--str) 70%,transparent)}
+.pc.next svg .f{stroke:var(--str);fill:var(--str-soft)} .pc.next span{color:var(--fg)}
+.pc.next::after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 14px 1px color-mix(in srgb,var(--str) 55%,transparent);opacity:0;animation:pcAppel 2.8s ease-in-out infinite;pointer-events:none}
+@keyframes pcAppel{50%{opacity:1}}
+.pc.neuve svg{animation:pcForge .9s cubic-bezier(.2,1.6,.4,1) .2s both}
+.pc.neuve::before{content:"";position:absolute;left:50%;top:26px;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,220,150,.75),rgba(255,160,60,.25) 40%,transparent 68%);opacity:0;animation:pcEclat 1.3s ease-out .2s both}
+@keyframes pcForge{0%{transform:scale(.4) rotate(-12deg);opacity:0}60%{transform:scale(1.18) rotate(3deg);opacity:1}100%{transform:none}}
+@keyframes pcEclat{0%{opacity:0;transform:scale(.3)}30%{opacity:1}100%{opacity:0;transform:scale(1.5)}}
+.forge-tete{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.forge-tete b{font-family:var(--display);font-weight:400;color:var(--metal2);font-size:1rem}
+html.th-olympe .forge-tete b{font-weight:700}
+
+/* ---------- 6. Mode calme de l'app + mouvement réduit : tout est figé, rien n'est masqué ---------- */
+html.calme .boss-svg,html.calme .boss-svg *,html.calme .eb-sol,html.calme .eb-aura,html.calme .eb-av>svg,html.calme .eb-pv>i,
+html.calme .quest::after,html.calme .pc::after,html.calme .pc::before,html.calme .pc svg,html.calme .runes span.neuve{animation:none!important}
+html.calme .eb-degat{display:none} html.calme .pc.neuve::before{display:none} html.calme .pc.next::after{opacity:.7}
+@media (prefers-reduced-motion:reduce){.eb-degat,.pc.neuve::before{display:none}.pc.next::after{opacity:.7}}
+
+/* boss-anim.css : extrait d'index.html l.486-566 (seulement .boss-svg) */
+  .boss-svg { overflow: visible; }
+  .boss-svg .b-corps { transform-box: fill-box; transform-origin: 50% 100%; }
+  .boss-svg.mv-lourd .b-corps { animation: bLourd 3.6s ease-in-out infinite; }
+  .boss-svg.mv-respire .b-corps { animation: bRespire 3.2s ease-in-out infinite; }
+  .boss-svg.mv-flotte .b-corps { animation: bFlotte 3.4s ease-in-out infinite; }
+  .boss-svg.mv-ondule .b-corps { animation: bOndule 2.8s ease-in-out infinite; }
+  .boss-svg.mv-balance .b-corps { animation: bBalance 4s ease-in-out infinite; }
+  .boss-svg.mv-vole .b-corps { animation: bVole 1.6s ease-in-out infinite; }
+  .boss-svg.mv-claque .b-corps { animation: bClaque 2.4s ease-in-out infinite; }
+  @keyframes bLourd { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.025,.975); } }
+  @keyframes bRespire { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.01,1.03); } }
+  @keyframes bFlotte { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  @keyframes bOndule { 0%,100% { transform: skewX(0) scaleY(1); } 50% { transform: skewX(-3deg) scaleY(1.03); } }
+  @keyframes bBalance { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  @keyframes bVole { 0%,100% { transform: translateY(0) scaleX(1); } 50% { transform: translateY(-6px) scaleX(.97); } }
+  @keyframes bClaque { 0%,80%,100% { transform: scaleY(1); } 88% { transform: scaleY(1.06) translateY(-2px); } }
+  .boss-svg .b-oeil, .boss-svg .b-lueur, .boss-svg .b-ecran, .boss-svg .b-bras-g, .boss-svg .b-bras-d, .boss-svg .b-zz, .boss-svg .b-queue, .boss-svg .b-langue, .boss-svg .b-volute { transform-box: fill-box; }
+  .boss-svg .b-oeil { transform-origin: center; animation: bCligne 5s infinite; }
+  .boss-svg .b-lueur { animation: bLueur 2.2s ease-in-out infinite; }
+  .boss-svg .b-ecran { animation: bEcran 1.4s steps(2) infinite; }
+  .boss-svg .b-bras-g { transform-origin: 90% 10%; animation: bBrasG 3.6s ease-in-out infinite; }
+  .boss-svg .b-bras-d { transform-origin: 10% 10%; animation: bBrasD 3.6s ease-in-out infinite; }
+  .boss-svg .b-zz { animation: bZz 3s ease-in-out infinite; }
+  .boss-svg .b-queue { transform-origin: 100% 50%; animation: bQueue 1.8s ease-in-out infinite; }
+  .boss-svg .b-langue { transform-origin: 100% 50%; animation: bLangue 2.6s ease-in-out infinite; }
+  .boss-svg .b-volute { animation: bVolute 4s ease-in-out infinite; }
+  @keyframes bCligne { 0%,92%,100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+  @keyframes bLueur { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
+  @keyframes bEcran { 0% { opacity: 1; } 100% { opacity: .82; } }
+  @keyframes bBrasG { 0%,100% { transform: rotate(0); } 50% { transform: rotate(4deg); } }
+  @keyframes bBrasD { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+  @keyframes bZz { 0% { transform: translate(0,0); opacity: 0; } 30% { opacity: 1; } 100% { transform: translate(4px,-8px); opacity: 0; } }
+  @keyframes bQueue { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-10deg); } }
+  @keyframes bLangue { 0%,70%,100% { transform: scaleX(0); } 78%,90% { transform: scaleX(1); } }
+  @keyframes bVolute { 0%,100% { transform: translateY(0); opacity: .35; } 50% { transform: translateY(-4px); opacity: .8; } }
+  .boss-svg .b-aile-g, .boss-svg .b-aile-d, .boss-svg .b-onde, .boss-svg .b-badge, .boss-svg .b-tete, .boss-svg .b-couvercle, .boss-svg .b-sable, .boss-svg .b-orbite { transform-box: fill-box; }
+  .boss-svg .b-aile-g { transform-origin: 100% 40%; animation: bAileG 1.6s ease-in-out infinite; }
+  .boss-svg .b-aile-d { transform-origin: 0% 40%; animation: bAileD 1.6s ease-in-out infinite; }
+  .boss-svg .b-onde { animation: bOnde 1.2s ease-out infinite; transform-origin: center; }
+  .boss-svg .b-badge { transform-origin: center; animation: bBadge 2.4s ease-in-out infinite; }
+  .boss-svg .b-tete { transform-origin: 50% 100%; animation: bTete 3.2s ease-in-out infinite; }
+  .boss-svg .b-tete-a { animation-delay: -.8s; } .boss-svg .b-tete-c { animation-delay: -1.9s; }
+  .boss-svg .b-couvercle { transform-origin: 50% 100%; animation: bCouvercle 3s ease-in-out infinite; }
+  .boss-svg .b-sable { animation: bSable 1s linear infinite; }
+  .boss-svg .b-orbite { transform-origin: center; animation: bOrbite 6s ease-in-out infinite; }
+  .boss-svg .b-cligne, .boss-svg .b-regard, .boss-svg .b-chute, .boss-svg .b-pend, .boss-svg .b-baille, .boss-svg .b-flamme, .boss-svg .b-vent, .boss-svg .b-piece, .boss-svg .b-aiguille { transform-box: fill-box; }
+  .boss-svg .b-cligne { transform-origin: center; animation: bCligne 5s infinite; }
+  .boss-svg .b-regard { animation: bRegard 5.2s ease-in-out infinite; }
+  .boss-svg .b-chute { animation: bChute 3.4s ease-in infinite; }
+  .boss-svg .b-pend { transform-origin: 50% 0; animation: bPend 3.4s ease-in-out infinite; }
+  .boss-svg .b-baille { transform-origin: 50% 0; animation: bBaille 8s ease-in-out infinite; }
+  .boss-svg .b-flamme { transform-origin: 50% 100%; animation: bFlamme 1.4s ease-in-out infinite; }
+  .boss-svg .b-vent { animation: bVent 2.6s ease-in-out infinite; }
+  .boss-svg .b-piece { transform-origin: center; animation: bPiece 2.2s ease-in-out infinite; }
+  .boss-svg .b-aiguille { transform-origin: 50% 100%; animation: bTour 9s linear infinite; }
+  .boss-svg .b-offre { transform-box: fill-box; transform-origin: center; animation: bOffre 3.6s ease-in-out infinite; }
+  @keyframes bRegard { 0%,16%,100% { transform: translate(0,0); } 22%,40% { transform: translate(-1.3px,.3px); } 46%,64% { transform: translate(1.3px,-.3px); } 70%,88% { transform: translate(.3px,.9px); } }
+  @keyframes bChute { 0% { transform: translate(0,-3px); opacity: 0; } 20% { opacity: .9; } 100% { transform: translate(3px,13px); opacity: 0; } }
+  @keyframes bPend { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+  @keyframes bBaille { 0%,58%,100% { transform: scaleY(.18); } 68%,80% { transform: scaleY(1); } 90% { transform: scaleY(.18); } }
+  @keyframes bFlamme { 0%,100% { transform: scale(1,1); opacity: .95; } 35% { transform: scale(.88,1.12); opacity: 1; } 70% { transform: scale(1.06,.9); opacity: .78; } }
+  @keyframes bVent { 0%,100% { transform: translateX(-2.5px); opacity: .45; } 50% { transform: translateX(2.5px); opacity: .95; } }
+  @keyframes bPiece { 0%,100% { transform: scaleX(1); } 50% { transform: scaleX(.18); } }
+  @keyframes bTour { to { transform: rotate(360deg); } }
+  @keyframes bOffre { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-1.6px) scale(1.04); } }
+  .boss-svg.stade2 .b-fixe, .boss-svg.stade3 .b-fixe { filter: hue-rotate(var(--tinv, 0deg)) saturate(.8); }
+  .boss-svg.stade3 .b-fixe3 { filter: hue-rotate(calc(var(--tinv, 0deg) - 150deg)) saturate(.9); } /* Dissipation III : corail */
+  @keyframes bAileG { 0%,100% { transform: rotate(0) scaleX(1); } 50% { transform: rotate(-8deg) scaleX(.94); } }
+  @keyframes bAileD { 0%,100% { transform: rotate(0) scaleX(1); } 50% { transform: rotate(8deg) scaleX(.94); } }
+  @keyframes bOnde { 0% { transform: scale(.8); opacity: 1; } 100% { transform: scale(1.25); opacity: 0; } }
+  @keyframes bBadge { 0%,80%,100% { transform: scale(1); } 88% { transform: scale(1.35); } }
+  @keyframes bTete { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes bCouvercle { 0%,60%,100% { transform: rotate(0) translateY(0); } 72% { transform: rotate(-6deg) translateY(-6px); } 84% { transform: rotate(0) translateY(0); } }
+  @keyframes bSable { to { stroke-dashoffset: -6; } }
+  @keyframes bOrbite { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+  @keyframes bRiposte { 40% { transform: scale(1.12) translateY(-4px); } }
+
+/* ---------- Gardien : tuiles en mobile, placé APRÈS les règles de base (avant, il était écrasé) ---------- */
+@media (max-width:520px){ .quests .quest{padding:10px;gap:4px;align-content:start;grid-template-columns:minmax(0,1fr)} .quests .quest .k{font-size:.62rem;letter-spacing:.08em} .quests .quest .big{font-size:.95rem;line-height:1.15;overflow-wrap:anywhere} .quests .quest .pill{white-space:normal;max-width:100%;line-height:1.25;padding:2px 7px;font-size:.68rem}}
+@media (max-width:380px){.quests .quest{padding:10px 8px}.quests .quest .big{font-size:.9rem;letter-spacing:0}}
+/* Olympe : « Fondations » en Cinzel (capitales larges) tient dans la tuile jusqu'à 360 px */
+@media (max-width:520px){html.th-olympe .quests .quest .big{font-size:min(.95rem,3.6vw);letter-spacing:0}}
+/* « Semaine 5/12 » devient « Sem. 5/12 » sur téléphone */
+.sem-c{display:none} @media (max-width:520px){.sem-l{display:none}.sem-c{display:inline}}
+/* ---------- Ergonome ---------- */
+.tabs{box-sizing:border-box}
+.scen button,.badge{align-content:start}
+.btn{min-height:44px} .btn.sm{min-height:40px} summary{padding-block:10px}
+.card>details:first-child{border-top:0;padding-top:0}
+.badge{opacity:1} .badge:not(.on) .medal{opacity:.45}
+/* À rattraper, dans les onglets aussi (pas seulement sur la tuile) */
+.sess.manque{border-left:3px solid var(--bad);padding-left:11px}
+.sess .rattr{color:var(--bad)}
+/* Programme des jeudis : plus coupé à droite sur téléphone */
+@media (max-width:520px){.tbl td,.tbl th{white-space:normal;padding:7px 5px}}
+
 </style>
 <style>html,body{margin:0}body{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -453,11 +688,11 @@ const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"]
    MODULES D'ANGLAIS
    ====================================================================== */
 const MODULES = {
-  travail:{name:"Travail", sub:"Labo, LC-MS, congrès", steps:["Vocabulaire","Lecture","Grammaire","Écriture"],
+  travail:{name:"Travail", sub:"Labo, réunions, congrès", steps:["Vocabulaire","Lecture","Grammaire","Écriture"],
     desc:"Révision du vocabulaire, texte lu et écouté, point de grammaire, quelques phrases corrigées.",
     units:[
  ["Se présenter au labo","Présent simple (I work, she runs…)"],
- ["Décrire l'instrument LC-MS","There is / there are, prépositions de lieu"],
+ ["Décrire un instrument du labo","There is / there are, prépositions de lieu"],
  ["Préparer un échantillon","Impératif et enchaînements (first, then, finally)"],
  ["Raconter une manip d'hier","Prétérit régulier et irrégulier"],
  ["Ce qui tourne en ce moment","Présent continu vs présent simple"],
@@ -465,11 +700,11 @@ const MODULES = {
  ["Chiffres, unités et tendances","Décrire une évolution (increase, drop, slightly…)"],
  ["Écrire à un collègue","Formules polies : could, would, I'd like"],
  ["Faire le bilan d'un projet","Present perfect vs prétérit"],
- ["Planifier une série d'injections","Futur : will vs going to"],
+ ["Planifier une série d'analyses","Futur : will vs going to"],
  ["Décrire une figure","Passif au présent"],
  ["Lire une section Méthodes","Passif au passé"],
  ["Émettre des hypothèses","may, might, could"],
- ["Si le QC dérive…","Premier conditionnel (if + présent, will)"],
+ ["Si la mesure dérive…","Premier conditionnel (if + présent, will)"],
  ["Dépanner un instrument","Phrasal verbs du labo (set up, run out, carry out)"],
  ["Lire un abstract","Connecteurs : however, therefore, whereas"],
  ["Écrire un abstract","Structure IMRaD et phrases courtes"],
@@ -522,33 +757,33 @@ const MODULES = {
 const NIVEAUX_DEPART={"throughput":"B2","yield":"B2","to assess":"B2","whereas":"B2","to tackle":"B2","consistent":"B1","therefore":"B1","to rely on":"B1","to point out":"B1","to struggle with":"B1","significantly":"B1","to carry out":"B1","outcome":"B1","accuracy":"B1","reliable":"B1","drift":"B1","finding":"B1"};
 const AVANCES=[
  ["to corroborate","corroborer, confirmer","These results corroborate our earlier findings.","C1"],
- ["to ascertain","établir, s'assurer de","We need to ascertain whether the drift comes from the column.","C1"],
+ ["to ascertain","établir, s'assurer de","We need to ascertain whether the drift comes from the instrument.","C1"],
  ["a caveat","une réserve, une mise en garde","One caveat: the sample size is still small.","C1"],
  ["to mitigate","atténuer, limiter","Randomising the run order mitigates batch effects.","C1"],
  ["robustness","robustesse","We tested the robustness of the method across three batches.","B2"],
- ["to elucidate","élucider","This pathway is still poorly elucidated.","C1"],
- ["spurious","fallacieux, parasite","That peak is probably a spurious feature.","C1"],
- ["carryover","contamination (d'une injection à l'autre)","We ran two blanks to check for carryover.","B2"],
- ["to troubleshoot","dépanner, diagnostiquer","I spent the morning troubleshooting the ion source.","B2"],
+ ["to elucidate","élucider","This mechanism is still poorly elucidated.","C1"],
+ ["spurious","fallacieux, parasite","That signal is probably a spurious result.","C1"],
+ ["carryover","contamination (d'un échantillon à l'autre)","We ran two blanks to check for carryover.","B2"],
+ ["to troubleshoot","dépanner, diagnostiquer","I spent the morning troubleshooting the instrument.","B2"],
  ["a bottleneck","un goulot d'étranglement","Data processing is now our main bottleneck.","B2"],
  ["to streamline","simplifier, rationaliser","This script streamlines the whole workflow.","C1"],
  ["turnaround time","délai de traitement","Our turnaround time is about two weeks.","B2"],
- ["in hindsight","avec le recul","In hindsight, we should have added more QCs.","B2"],
+ ["in hindsight","avec le recul","In hindsight, we should have added more controls.","B2"],
  ["to shed light on","éclairer, faire la lumière sur","These data shed light on the mechanism.","B2"],
  ["to be on a par with","être au niveau de","Our sensitivity is on a par with the reference lab.","C1"],
  ["to fall short of","ne pas atteindre","The yield fell short of our expectations.","C1"],
- ["albeit","quoique, bien que","It worked, albeit with a lower recovery.","C1"],
+ ["albeit","quoique, bien que","It worked, albeit with a lower yield.","C1"],
  ["nonetheless","néanmoins","The method is slow; nonetheless, it is very reliable.","B2"],
  ["to warrant","justifier, mériter","These results warrant further investigation.","C1"],
  ["to outline","exposer dans les grandes lignes","Let me outline the main steps.","B2"],
  ["a trade-off","un compromis","There is a trade-off between speed and resolution.","B2"],
  ["to leverage","tirer parti de","We can leverage the existing dataset.","C1"],
- ["to overlook","négliger, ne pas voir","It's easy to overlook matrix effects.","B2"],
- ["to hinder","entraver, gêner","High salt content hinders ionisation.","C1"],
+ ["to overlook","négliger, ne pas voir","It's easy to overlook small biases.","B2"],
+ ["to hinder","entraver, gêner","Background noise hinders the measurements.","C1"],
  ["a breakthrough","une avancée majeure","This could be a real breakthrough for the project.","B2"],
  ["to scrutinise","examiner de près","Reviewers will scrutinise the statistics.","C1"],
  ["a pitfall","un écueil, un piège","A common pitfall is skipping the blanks.","C1"],
- ["to tweak","ajuster légèrement","I tweaked the gradient to separate the isomers.","B2"],
+ ["to tweak","ajuster légèrement","I tweaked the settings to get a cleaner signal.","B2"],
  ["to be up to speed","être à jour, au courant","Can you get me up to speed on the project?","B2"],
  ["to follow up on","donner suite à, faire le suivi de","I'll follow up on this with the supplier.","B2"],
  ["cumbersome","lourd, peu pratique","The old export process was cumbersome.","C1"],
@@ -558,15 +793,15 @@ const AVANCES=[
  ["thorough","minutieux, approfondi","She did a thorough check of the raw data.","B2"],
  ["to cope with","faire face à","Our server can't cope with this amount of data.","B2"],
  ["to put forward","avancer, proposer","He put forward an interesting hypothesis.","B2"],
- ["to fine-tune","peaufiner","We are fine-tuning the extraction protocol.","B2"],
+ ["to fine-tune","peaufiner","We are fine-tuning the protocol.","B2"],
  ["to be swamped with","être débordé de","I'm swamped with samples this week.","C1"],
  ["to rule out","écarter, exclure","We can rule out a pipetting error.","B2"]
 ];
 const NIV_RANG={A1:1,A2:2,B1:3,B2:4,C1:5,C2:6};
 const motAvance=c=>(NIV_RANG[c.lvl]||0)>=4;
 const STARTER = [
- ["sample","échantillon"],["peak","pic"],["retention time","temps de rétention"],["batch","série (d'échantillons)"],
- ["blank","blanc"],["pooled QC","QC poolé"],["drift","dérive"],["to run a sample","passer un échantillon"],
+ ["sample","échantillon"],["signal","signal"],["measurement","mesure"],["batch","série (d'échantillons)"],
+ ["blank","blanc"],["quality control","contrôle qualité"],["drift","dérive"],["to run a sample","passer un échantillon"],
  ["to carry out","réaliser, effectuer"],["to set up","mettre en place, installer"],["reliable","fiable"],["consistent","cohérent, constant"],
  ["accuracy","justesse"],["throughput","débit (d'analyse)"],["yield","rendement"],["finding","résultat, découverte"],
  ["outcome","issue, résultat final"],["to assess","évaluer"],["trend","tendance"],["to increase","augmenter"],
@@ -607,6 +842,7 @@ function migrate(s){
   if(!s.en.avances){AVANCES.forEach(([en,fr,ex,lvl],i)=>{if(!s.en.deck.some(c=>norm(c.en)===norm(en)))s.en.deck.push(cardInit({id:"a"+i,en,fr,ex,lvl,due:todayISO()}))});s.en.avances=1}
   s.en.game=Object.assign({},d.en.game,en.game||{}); s.en.game.stats=Object.assign({},d.en.game.stats,(en.game||{}).stats||{});
   s.run=Object.assign({},d.run,s.run||{}); s.run.days=Object.assign({},d.run.days,s.run.days||{});
+  if(typeof s.run.start==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(s.run.start)) s.run.start=mondayOf(s.run.start);
   s.str=Object.assign({},d.str,s.str||{});
   if(s.ttsRate==null) s.ttsRate=0.85; if(!s.micLang) s.micLang="en-GB"; s.v=2; return s;
 }
@@ -618,6 +854,12 @@ let dbDoc=null, saveTimer=null, charge=false, conflits=0;
    - rien ne part vers la Sheet tant que la version de la Sheet n'a pas été lue (plus d'écrasement au démarrage) ;
    - chaque envoi dit sur quelle version il se base (_base) ; si la Sheet a reçu entre-temps une version plus récente
      (autre appareil), le moteur refuse et renvoie la sienne : on FUSIONNE les deux, puis on renvoie. */
+/* Décocher une séance laisse une trace datée : la fusion ne la fait plus revenir. Une séance notée après le décochage (champ at) reste. */
+function unionSupprimes(a,b){const o=Object.assign({},a||{});Object.keys(b||{}).forEach(k=>{o[k]=Math.max(Number(o[k])||0,Number(b[k])||0)});return o}
+function appliquerSupprimes(o){if(!o||!o.supprimes)return;const lim=Date.now()-120*864e5;
+  Object.keys(o.supprimes).forEach(k=>{const t=Number(o.supprimes[k])||0,l=o.logs&&o.logs[k];
+    if(l&&(Number(l.at)||0)<=t)delete o.logs[k];else if(!l&&t<lim)delete o.supprimes[k]})}
+function decocher(o,k){(o.supprimes=o.supprimes||{})[k]=Date.now();delete o.logs[k]}
 function idSeance(x){return x.id||[x.date,x.mod,x.unit,x.min,x.xp,x.tours].join("|")}
 function fusionCarnet(srvS,loc){
   const f=migrate(JSON.parse(JSON.stringify(loc)));
@@ -628,17 +870,22 @@ function fusionCarnet(srvS,loc){
   // mots : union ; pour un même mot, la version la plus révisée
   const parId={};(f.en.deck||[]).forEach(c=>parId[c.id]=c);
   (srvS.en.deck||[]).forEach(c=>{const l=parId[c.id];if(!l){f.en.deck.push(c);parId[c.id]=c}else if((c.reps||0)>(l.reps||0)||((c.reps||0)===(l.reps||0)&&String(c.last||"")>String(l.last||""))){Object.assign(l,c)}});
-  // course et renfo : toutes les séances notées des deux côtés
-  ["run","str"].forEach(k=>{f[k].logs=Object.assign({},(srvS[k]||{}).logs||{},f[k].logs||{})});
+  // course et renfo : toutes les séances notées des deux côtés, et tous les décochages (« supprimes » : clé → heure du décochage)
+  ["run","str"].forEach(k=>{const o=srvS[k]||{};f[k].logs=Object.assign({},o.logs||{},f[k].logs||{});f[k].supprimes=unionSupprimes(o.supprimes,f[k].supprimes)});
   f.run.bilans=Object.assign({},srvS.run.bilans||{},f.run.bilans||{});
-  // Plan recommencé (ou date de début changée) sur un des deux appareils : le plan qui commence le plus tard l'emporte entier,
+  // Plan recommencé (ou début / durée changés) sur un des deux appareils : le plan le plus récent l'emporte entier (course ET renfo),
   // l'autre n'apporte que ses séances notées depuis ce début (les anciennes séances et anciens bilans ne reviennent pas)
   const sR=srvS.run||{}, lR=loc.run||{};
-  if(sR.start&&lR.start&&sR.start!==lR.start){
-    const recent=sR.start>lR.start?sR:lR, autre=recent===sR?lR:sR;
+  if(sR.start&&lR.start&&(sR.start!==lR.start||(sR.planT||0)!==(lR.planT||0))){
+    const srvRecent=(sR.planT||lR.planT)?(sR.planT||0)>(lR.planT||0):sR.start>lR.start;
+    const recent=srvRecent?sR:lR, autre=srvRecent?lR:sR, rS=(srvRecent?srvS.str:loc.str)||{}, aS=(srvRecent?loc.str:srvS.str)||{};
     f.run=JSON.parse(JSON.stringify(recent)); f.run.logs=f.run.logs||{};
     Object.keys(autre.logs||{}).forEach(k=>{const l=autre.logs[k];if(String(l.date||"")>=recent.start&&!f.run.logs[k])f.run.logs[k]=l});
+    f.str=JSON.parse(JSON.stringify(rS)); f.str.logs=f.str.logs||{};
+    Object.keys(aS.logs||{}).forEach(k=>{const l=aS.logs[k];if(String(l.date||"")>=recent.start&&!f.str.logs[k])f.str.logs[k]=l});
   }
+  // un décochage fait APRÈS la séance notée l'emporte (avant, la séance décochée revenait avec l'écriture de l'autre appareil)
+  appliquerSupprimes(f.run); appliquerSupprimes(f.str);
   // jeu : on garde le meilleur des deux
   const g=f.en.game,gs=srvS.en.game||{};g.xp=Math.max(g.xp||0,gs.xp||0);g.badges=Object.assign({},gs.badges||{},g.badges||{});
   Object.keys(gs.stats||{}).forEach(k=>{if(typeof gs.stats[k]==="number")g.stats[k]=Math.max(g.stats[k]||0,gs.stats[k])});
@@ -928,7 +1175,7 @@ function hautExercice(){requestAnimationFrame(()=>window.scrollTo({top:0,behavio
    Une mission = Briefing → Écoute (6 défis) → Parole (6 défis) → Boss vocal
    ====================================================================== */
 const WORLD={
- travail:"la vie professionnelle d'un ingénieur sur une plateforme de métabolomique LC-MS : labo, collègues, réunions, congrès, présentations",
+ travail:"la vie professionnelle d'un scientifique dans un laboratoire : labo, collègues, réunions, congrès, présentations",
  voyage:"les voyages en Europe où l'anglais sert de langue commune : transports, hôtels, restaurants, rencontres, imprévus",
  series:"des scènes de séries anglophones : anglais parlé natif, contractions et formes réduites écrites comme dans des sous-titres familiers (gonna, wanna, y'know, 'cause), argot courant"};
 const RANKS=[[1,"Étranger"],[3,"Apprenti d'Albion"],[5,"Voyageur"],[8,"Interprète"],[12,"Conteur"],[16,"Orateur"],[20,"Barde d'Albion"]];
@@ -991,7 +1238,9 @@ function checkBadges(){const s=G().stats;BADGES.forEach(([id,name,,f])=>{if(!G()
 function enStatus(){
   const s=state.en.sessions; const last=s.length?s[s.length-1].date:null;
   const due=last?addDays(last,EN_EVERY_DAYS):todayISO();
-  const left=daysBetween(todayISO(),due);
+  // jours de vacances de la Compagnie entre l'échéance et aujourd'hui : pas comptés en retard
+  let left=daysBetween(todayISO(),due);
+  if(left<0){let L=[];try{L=VACANCES}catch(e){}let v=0;for(let i=1;i<=Math.min(-left,400);i++){const x=addDays(due,i);if(L.some(p=>p.debut&&x>=p.debut&&(!p.fin||x<=p.fin)))v++}left=Math.min(0,left+v)}
   let streak=0; const j=[...new Set(s.map(x=>x.date))].sort(); // deux séances le même jour comptent pour un seul jour de série
   if(last&&daysBetween(last,todayISO())<=EN_EVERY_DAYS){streak=1;for(let i=j.length-1;i>0;i--){if(daysBetween(j[i-1],j[i])<=EN_EVERY_DAYS)streak++;else break}}
   return {last,due,left,streak,doneToday:last===todayISO()};
@@ -1001,7 +1250,7 @@ function renderQuestEn(){
   const st=enStatus(); const L=levelOf(G().xp,XP_BASE);
   let pill;
   if(st.doneToday) pill='<span class="pill ok">Faite aujourd\'hui</span>';
-  else if(st.left<0) pill=`<span class="pill bad">En retard de ${-st.left} j</span>`;
+  else if(st.left<0) pill=`<span class="pill bad">Retard : ${-st.left} j</span>`;
   else if(st.left===0) pill='<span class="pill warn">Aujourd\'hui</span>';
   else pill=`<span class="pill neutral">Prochaine : ${frDate(st.due)}</span>`;
   $("#qEn").innerHTML=`<span class="k">Anglais<i class="kx"> · tous les ${EN_EVERY_DAYS} jours</i></span>
@@ -1070,12 +1319,12 @@ function renderEn(){
   </div>
   ${memoryCard()}
   ${a==="series"?seriesExtras():""}
-  <div class="card"><h3>Badges</h3><div class="badges">${BADGES.map(b=>`<div class="badge ${G().badges[b[0]]?"on":""}"><span class="medal">${b[1].replace(/[^A-Za-zÀ-ÿ0-9 ]/g,"").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()}</span><b class="small">${esc(b[1])}</b><span class="small muted">${esc(b[2])}</span></div>`).join("")}</div></div>
+  <div class="card"><h3>Badges</h3><div class="badges">${BADGES.map(b=>`<div class="badge ${G().badges[b[0]]?"on":""}"><span class="medal">${b[1].replace(/[^A-Za-zÀ-ÿ ]/g,"").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()}</span><b class="small">${esc(b[1])}</b><span class="small muted">${esc(b[2])}</span></div>`).join("")}</div></div>
   <div class="card"><h3>Carte ${M.name}</h3><div class="hist small">${M.units.map((x,i)=>`<div><span class="mono">${String(i+1).padStart(2,"0")}</span><span style="flex:1">${esc(x[0])}</span><span class="starline">${i<cur||starsOf(i)?"★".repeat(starsOf(i))+"☆".repeat(3-starsOf(i)):i===cur?'<span class="pill warn">en cours</span>':'<span class="muted">verrouillé</span>'}</span></div>`).join("")}</div></div>
   <div class="card"><h3>Dernières missions</h3><div class="hist small">${state.en.sessions.slice(-6).reverse().map(s=>`<div><span>${frDate(s.date)}</span><span class="muted" style="flex:1">${esc(nomMonde(s))}</span><span class="starline">${s.stars!=null?"★".repeat(s.stars)+"☆".repeat(3-s.stars):""}</span><span class="mono">${s.xp!=null?"+"+s.xp+" XP":s.min+" min"}</span></div>`).join("")||'<p class="muted">Aucune mission pour l\'instant.</p>'}</div></div>`;
   p.querySelectorAll("[data-mod]").forEach(b=>b.onclick=()=>{state.en.active=b.dataset.mod;save();renderEn();renderQuestEn()});
   $("#go").onclick=startMission;
-  $("#snd").onclick=()=>{if(!speak("Hello Théo! If you can hear me, you're ready to play.",earRate()))toast("Audio indisponible dans ce navigateur")};
+  $("#snd").onclick=()=>{if(!speak("Hello Theron! If you can hear me, you're ready to play.",earRate()))toast("Audio indisponible dans ce navigateur")};
   $("#rev").onclick=startReview;
   $("#nwAdd").onclick=()=>{const en=$("#nwEn").value.trim(),fr=$("#nwFr").value.trim();if(!en||!fr)return;addWord(en,fr,($("#nwEx").value||"").trim());renderEn()};
   if(a==="series") bindSeriesExtras();
@@ -1236,7 +1485,7 @@ function packContexte(mod){
   const M=state.en.mods[mod], u=modUnit(mod);
   const errs=state.en.errors.slice(-8).map(e=>`"${e.faux}" → "${e.correct}"`).join("; ")||"aucune pour l'instant";
   const words=state.en.deck.filter(c=>(c.stab||0)<3).slice(0,10).map(c=>c.en).join(", ")||"aucun";
-  return `Tu crées une mission de jeu pour faire aimer l'anglais ORAL à un ingénieur de recherche français, niveau A2 qui vise B1. Ses priorités : parler (faire des phrases) et comprendre à l'oral.
+  return `Tu crées une mission de jeu pour faire aimer l'anglais ORAL à un scientifique français, niveau A2 qui vise B1. Ses priorités : parler (faire des phrases) et comprendre à l'oral.
 Monde : ${WORLD[mod]}.
 Chapitre ${M.unit+1} : « ${u[0]} ». Structure à placer à l'oral : « ${u[1]} ».
 Difficulté écoute ${diffEar()}/10 et difficulté expression ${diffSpk()}/10 (1 = A2 simple et lent ; 10 = B1+ rapide, idiomatique). Vise un niveau un peu au-dessus de son confort : il doit réussir environ 70 % des défis.
@@ -1580,8 +1829,8 @@ const convValide=C=>C.turns.filter(t=>t.role==="user").length>=CONV_QUETE&&motsC
 const CONV_MEMOIRE=18;         // nombre de répliques renvoyées à Claude à chaque tour (les plus récentes)
 const SCENARIOS=[
  {id:"libre",nom:"Discussion libre",sub:"Ta journée, tes projets, ce que tu veux",role:"Emma, une amie anglaise de Manchester, chaleureuse et curieuse",cadre:"Vous discutez comme deux amis qui se retrouvent : sa journée, son travail, ses loisirs, ses projets, l'actualité légère."},
- {id:"labo",nom:"Nouvelle collègue au labo",sub:"Elle découvre la plateforme LC-MS",role:"Sarah, une post-doctorante britannique qui vient d'arriver sur la plateforme de métabolomique",cadre:"Elle lui pose des questions sur son travail, l'instrument LC-MS, la préparation des échantillons, les QC, le traitement des données, l'organisation de l'équipe."},
- {id:"congres",nom:"Questions après ton talk",sub:"Congrès international, on t'interroge",role:"le Dr James Miller, chercheur en spectrométrie de masse, dans le public d'un congrès international",cadre:"Théo vient de présenter ses travaux en métabolomique non ciblée. Tu poses des questions précises mais bienveillantes sur sa méthode, ses résultats, ses limites et ses perspectives, une à la fois."},
+ {id:"labo",nom:"Nouvelle collègue au labo",sub:"Elle découvre le laboratoire",role:"Sarah, une post-doctorante britannique qui vient d'arriver au laboratoire",cadre:"Elle lui pose des questions sur son travail, les instruments, la préparation des échantillons, les contrôles qualité, le traitement des données, l'organisation de l'équipe."},
+ {id:"congres",nom:"Questions après ton talk",sub:"Congrès international, on t'interroge",role:"le Dr James Miller, chercheur du même domaine, dans le public d'un congrès international",cadre:"L'apprenant vient de présenter ses travaux de recherche. Tu poses des questions précises mais bienveillantes sur sa méthode, ses résultats, ses limites et ses perspectives, une à la fois."},
  {id:"cafe",nom:"Pause café en congrès",sub:"Small talk et réseautage",role:"Priya, une chercheuse qui travaille à Londres, rencontrée à la machine à café d'un congrès",cadre:"Small talk : d'où il vient, son labo, la ville du congrès, les présentations du jour, une éventuelle collaboration."},
  {id:"visio",nom:"Visio avec un partenaire",sub:"Organiser une collaboration",role:"Mark, chef de projet dans un labo partenaire aux Pays-Bas",cadre:"Visio de travail : organiser une collaboration (envoi d'échantillons, nombre d'échantillons, planning, délais, format des données, prochaines étapes)."},
  {id:"voyage",nom:"En voyage",sub:"Hôtel, resto, imprévus",role:"plusieurs interlocuteurs successifs pendant un voyage à Édimbourg (réceptionniste, serveur, chauffeur de taxi…)",cadre:"Fais vivre de petites situations de voyage réalistes, avec parfois un petit imprévu à régler. Annonce en une demi-phrase quand tu changes de personnage."},
@@ -1616,7 +1865,7 @@ function startConv(scen,sujet){
   convOublier(); clearInterval(tick); tick=setInterval(updTimer,1000); renderEn(); hautExercice(); convTour();
 }
 function convMessages(){
-  const C=ses, S=scenOf(C.scen), profil=(acct&&acct.profil)||"Théo, ingénieur de recherche français", prenom=profil.split(/[ ,]/)[0];
+  const C=ses, S=scenOf(C.scen), profil=(acct&&acct.profil)||"Theron, scientifique français", prenom=profil.split(/[ ,]/)[0];
   const regles=`Tu es ${S.role}. Conversation orale en anglais avec ${profil} (niveau A2, vise B1). ${S.cadre}${C.sujet?" Sujet choisi : "+C.sujet+".":""}
 But : qu'il parle le plus possible, avec plaisir.
 - Réagis à ce qu'il dit (intérêt, humour, surprise), parfois une courte anecdote, puis UNE seule question ouverte par réplique.
@@ -1726,11 +1975,11 @@ async function finConv(){
   }
   renderEn(); hautExercice();
   try{
-    const r=await sample.json(`Voici une conversation orale en anglais entre Théo, apprenant francophone (niveau A2 qui vise B1, messages issus de la dictée vocale : ignore ponctuation et majuscules), et son interlocuteur. Fais-lui un bilan bienveillant mais honnête, en français.
+    const r=await sample.json(`Voici une conversation orale en anglais entre l'apprenant francophone (niveau A2 qui vise B1, messages issus de la dictée vocale : ignore ponctuation et majuscules), et son interlocuteur. Fais-lui un bilan bienveillant mais honnête, en français.
 Conversation :
-${C.turns.map(t=>(t.role==="user"?"THÉO : ":"INTERLOCUTEUR : ")+t.content).join("\n")}
+${C.turns.map(t=>(t.role==="user"?"APPRENANT : ":"INTERLOCUTEUR : ")+t.content).join("\n")}
 Réponds UNIQUEMENT avec cet objet JSON (pas de retour à la ligne dans les textes) :
-{"bilan":"2 ou 3 phrases en français : ce qui marche, ce qui progresse","points_forts":["point fort concret 1","point fort concret 2"],"a_travailler":[{"faux":"extrait fautif exact de Théo","correct":"version correcte","pourquoi":"explication courte en français"}],"mots":[{"en":"mot ou expression utile qu'il aurait pu employer","fr":"traduction","ex":"exemple court en anglais","lvl":"B1, B2 ou C1"}],"defi":"un défi en français pour sa prochaine conversation"}
+{"bilan":"2 ou 3 phrases en français : ce qui marche, ce qui progresse","points_forts":["point fort concret 1","point fort concret 2"],"a_travailler":[{"faux":"extrait fautif exact de l'apprenant","correct":"version correcte","pourquoi":"explication courte en français"}],"mots":[{"en":"mot ou expression utile qu'il aurait pu employer","fr":"traduction","ex":"exemple court en anglais","lvl":"B1, B2 ou C1"}],"defi":"un défi en français pour sa prochaine conversation"}
 "a_travailler" : les 3 à 5 erreurs les plus utiles (les récurrentes d'abord ; liste vide s'il n'y en a pas). "mots" : 5 éléments.`,{modelTier:"default",maxTokens:2500});
     if(ses!==C) return;
     C.recap={bilan:txt(r.bilan),forts:(r.points_forts||[]).map(txt).filter(Boolean).slice(0,3),
@@ -1887,11 +2136,16 @@ function decalerHTML(){const pp=pausePlanActive(), W=weeksPlan();
     <p class="small muted">Le plan repart à la semaine 1 ce lundi (${frDate(mondayOf(todayISO()))}), avec les allures de départ. L'ancien plan est rangé dans les archives (rien n'est effacé). Les séances de l'ancien plan encore à venir sont retirées de ta montre et les nouvelles y sont envoyées.</p>
     <div class="row"><button class="btn sm primary run" id="recOk">Recommencer cette semaine</button></div></details>`}
 /* Recommencer le plan à la semaine 1 ce lundi : l'ancien plan est archivé (séances, bilans), l'adaptation repart de zéro */
-function recommencerPlan(){
-  const r=state.run, lun=mondayOf(todayISO());
-  if(Object.keys(r.logs||{}).length||r.start!==lun) r.archives=(r.archives||[]).concat([{debut:r.start,fin:addDays(lun,-1),logs:r.logs||{},bilans:r.bilans||{},facteur:r.facteur||1}]).slice(-5);
-  r.start=lun; r.logs={}; r.bilans={}; r.allege={}; r.facteur=1; r.pauses=[];
+/* Les jeudis de renfo suivent les semaines du plan (clé = n° de semaine) : ils partent aussi dans l'archive (strLogs), sinon
+   le jeudi 1 de l'ancien plan cochait le jeudi 1 du nouveau. planT : heure du changement, pour que la fusion garde le plan le plus récent. */
+const seancesPlan=()=>Object.keys(state.run.logs||{}).length+Object.keys(state.str.logs||{}).length+Object.keys(state.run.bilans||{}).length;
+function archiverPlan(debut,weeks){
+  const r=state.run, st=state.str, lun=mondayOf(todayISO());
+  if(seancesPlan()||r.start!==debut) r.archives=(r.archives||[]).concat([{debut:r.start,fin:addDays(lun,-1),logs:r.logs||{},bilans:r.bilans||{},facteur:r.facteur||1,strLogs:st.logs||{}}]).slice(-5);
+  r.start=debut; if(weeks) r.weeks=weeks; r.logs={}; r.bilans={}; r.allege={}; r.facteur=1; r.pauses=[]; r.supprimes={}; r.planT=Date.now();
+  st.logs={}; st.supprimes={};
 }
+function recommencerPlan(){archiverPlan(mondayOf(todayISO()))}
 function bindDecaler(){
   $("#recOk")&&($("#recOk").onclick=async()=>{
     if(!confirm("Recommencer le plan de course à la semaine 1, à partir de ce lundi ? L'ancien plan sera archivé."))return;
@@ -1939,10 +2193,10 @@ function runWeekStatus(){
 }
 /* ---------- Les marches telluriques : le plan de 12 semaines devient un voyage vers la Cité de l'Aube ---------- */
 const REGIONS=[
- ["Porte de la Ville Rose","Le Golem de la Flemme","Theron quitte la Ville Rose à l'aube. Le Golem de la Flemme garde la porte : chaque foulée l'effrite."],
- ["Berges de Garonne","La Harpie du Bruit","Le long du fleuve, la Harpie du Bruit hurle pour briser ta cadence. Garde ton rythme et n'écoute que ta montre."],
+ ["Porte de la Cité-Fleuve","Le Golem de la Flemme","Theron quitte la Cité-Fleuve à l'aube. Le Golem de la Flemme garde la porte : chaque foulée l'effrite."],
+ ["Berges du Fleuve d'Argent","La Harpie du Bruit","Le long du fleuve, la Harpie du Bruit hurle pour briser ta cadence. Garde ton rythme et n'écoute que ta montre."],
  ["Forêt des Murmures","Le Spectre du « Demain »","Entre les arbres, le Spectre du « Demain » te souffle de rentrer. Regarde-le en face : il se dissipe."],
- ["Refuge du Lauragais","Les brigands du col","Semaine de répit. Au refuge, le mage reprend son souffle et recharge ses emplacements de sorts."],
+ ["Refuge des Bergers","Les brigands du col","Semaine de répit. Au refuge, le mage reprend son souffle et recharge ses emplacements de sorts."],
  ["Collines Ventées","Le Troll des Nuits Blanches","Les premières vraies côtes. Le Troll des Nuits Blanches rôde : couche-toi tôt la veille de l'épreuve."],
  ["Marais des Brumes","Le Basilic de la Malbouffe","Le Basilic guette au bord du marais. Pas de craquage avant la séance : vise juste, cours vite."],
  ["Col des Corbeaux","L'Hydre des Notifications","La plus longue montée du voyage. L'Hydre attaque : coupe toutes les notifications pendant l'épreuve."],
@@ -1954,7 +2208,9 @@ const REGIONS=[
 ];
 const regionOf=w=>REGIONS[Math.max(0,Math.min(11,w.abs))];
 function sessLabel(s,w){return s.tag==="Course"?"Course 10 km":s.tag}
-const foeLine=(s,w)=>s.tag==="Qualité"||s.tag==="Course"?`<div class="small story">Face à ${esc(regionOf(w)[1])}</div>`:"";
+/* « Face au Golem », « aux brigands », « à la Harpie », « à l'Hydre » (et plus « Face à Le Golem ») */
+function faceA(nom){const m=String(nom).match(/^(?:(Les|Le|La)\s+|(L['’]))(.*)$/);if(!m)return "à "+nom;return (m[1]?{Le:"au ",La:"à la ",Les:"aux "}[m[1]]:"à l'")+m[3]}
+const foeLine=(s,w)=>s.tag==="Qualité"||s.tag==="Course"?`<div class="small story">Face ${esc(faceA(regionOf(w)[1]))}</div>`:"";
 function renderQuestRun(){
   const {done,streak}=runWeekStatus(); const W=weeksPlan(); const wi=curWeekIdx();
   const w=W[Math.max(0,Math.min(W.length-1,wi))];
@@ -1962,8 +2218,8 @@ function renderQuestRun(){
   const today=W[wi]?.s.find(s=>s.date===todayISO());
   const pill=today?(state.run.logs[today.key]?'<span class="pill ok">Faite aujourd\'hui</span>':`<span class="pill warn">Aujourd'hui : ${esc(sessLabel(today,W[wi]).split(" · ")[0])}</span>`):"";
   $("#qRun").innerHTML=`<span class="k">Course<i class="kx"> · ${RUN_PER_WEEK} sorties / semaine</i></span>
-   <span class="big">${wi<0?esc(jourMois(W[0]?.monday||state.run.start))+'<small class="bsub">début '+esc(jourLong(W[0]?.monday||state.run.start))+'</small>':esc(label)}</span>
-   <span class="row"><span class="dots">${[0,1,2].map(i=>`<span class="dot ${i<done?"on":""}">${i<done?"✓":i+1}</span>`).join("")}</span>${pill||(wi<0?`<span class="pill neutral">J-${daysBetween(todayISO(),W[0]?.monday||state.run.start)}</span>`:`<span class="pill neutral">Semaines complètes : ${streak}</span>`)}</span>`;
+   <span class="big">${wi<0?esc(jourMois(W[0]?.monday||state.run.start))+'<small class="bsub">début '+esc(jourLong(W[0]?.monday||state.run.start))+'</small>':wi>=W.length?'<span class="sem-l">Plan terminé</span><span class="sem-c">Terminé</span>':`<span class="sem-l">Semaine</span><span class="sem-c">Sem.</span> ${wi+1} / ${W.length}`}</span>
+   <span class="row"><span class="dots">${[0,1,2].map(i=>`<span class="dot ${i<done?"on":""}">${i<done?"✓":i+1}</span>`).join("")}</span>${pill||(wi<0?`<span class="pill neutral">J-${daysBetween(todayISO(),W[0]?.monday||state.run.start)}</span>`:`<span class="pill neutral">Sorties : ${Math.min(done,RUN_PER_WEEK)}/${RUN_PER_WEEK}</span>`)}</span>`;
 }
 function mapSVG(W){
   const nodes=[];W.forEach((w,wi)=>w.s.forEach(s=>nodes.push({...s,wi})));
@@ -2013,15 +2269,16 @@ function renderRun(){
   return `<details class="week ${i===wi?"cur":""}" ${i===wi||(wi<0&&i===0)?'open id="curweek"':""}>
     <summary><h3>Semaine ${w.n}${[3,7].includes(w.abs)||w.auto?" · allégée":""} <span class="small muted" style="font-family:var(--body);font-weight:400">· ${esc(regionOf(w)[0])}</span></h3><span class="small muted">${frDate(w.monday)} · ${wd}/3 ${wd===3?"✦":""}</span></summary>
     ${rows.map(s=>{
-      if(s.kind==="str") return `<div class="sess strrow ${s.date===todayISO()?"today":""}"><button class="check ${s.sl?"on":""}" data-gostr aria-label="Voir le renfo">${s.sl?"✓":""}</button><div class="detail"><span class="tag">${DAYS[STR_DAY]} · Renfo</span><div><b>Séance ${esc(s.st.seance)} · ${esc(s.st.phase)}</b> · ${s.st.blocs.length} blocs (${s.st.blocs.map(x=>x.tours).join(" + ")} tours) · ${s.st.list.length} exercices · ~${tlMinutes(s.st)} min</div><div class="small muted">Séance guidée dans l'onglet Renfo</div></div></div>`;
-      const l=state.run.logs[s.key];return `<div class="sess ${s.date===todayISO()?"today":""}">
+      const manque=i===wi&&s.date<todayISO()&&!(s.kind==="str"?s.sl:state.run.logs[s.key]), rat=manque?' <span class="rattr">· à rattraper</span>':"";
+      if(s.kind==="str") return `<div class="sess strrow ${s.date===todayISO()?"today":""}${manque?" manque":""}"><button class="check ${s.sl?"on":""}" data-gostr aria-label="Voir le renfo">${s.sl?"✓":""}</button><div class="detail"><span class="tag">${DAYS[STR_DAY]} · Renfo${rat}</span><div><b>Séance ${esc(s.st.seance)} · ${esc(s.st.phase)}</b> · ${s.st.blocs.length} blocs (${s.st.blocs.map(x=>x.tours).join(" + ")} tours) · ${s.st.list.length} exercices · ~${tlMinutes(s.st)} min</div><div class="small muted">Séance guidée dans l'onglet Renfo</div></div></div>`;
+      const l=state.run.logs[s.key];return `<div class="sess ${s.date===todayISO()?"today":""}${manque?" manque":""}">
       <button class="check ${l?"on":""}" data-log="${s.key}" aria-label="Marquer comme faite">${l?"✓":""}</button>
-      <div class="detail"><span class="tag">${DAYS[s.dow]} · ${esc(sessLabel(s,w))}</span><div><b>${esc(s.title)}</b></div>${foeLine(s,w)}<div class="small muted">${esc(s.detail)} <span class="mono">${valid?"· "+mmss(P[s.zone])+"/km":""}</span></div>
+      <div class="detail"><span class="tag">${DAYS[s.dow]} · ${esc(sessLabel(s,w))}${rat}</span><div><b>${esc(s.title)}</b></div>${foeLine(s,w)}<div class="small muted">${esc(s.detail)} <span class="mono">${valid?"· "+mmss(P[s.zone])+"/km":""}</span></div>
         ${l?`<div class="small">Fait le ${frDate(l.date)}${l.auto?` · ⌚ ${l.km?l.km.toFixed(1).replace(".",",")+" km":""}${l.allure?" à "+mmss(l.allure)+"/km":""}${l.fc?" · "+l.fc+" bpm":""}`:""}${l.rpe?` · effort ${l.rpe}/10`:""}${l.note?` · ${esc(l.note)}`:""}</div>${l.auto&&!l.rpe?`<div class="row"><span class="small muted">Effort ressenti :</span>${[4,6,8,9].map(v=>`<button class="btn sm" data-rpe="${s.key}" data-v="${v}">${v}</button>`).join("")}</div>`:""}${l.story?`<p class="small story">${esc(l.story)}</p>`:`<div><button class="btn sm" data-story="${s.key}">Raconter la séance en légende</button></div>`}`:""}
         ${openLog===s.key?`<div class="grid2" style="margin-top:8px"><label>Date<input type="date" id="ld" value="${todayISO()}"></label><label>Effort ressenti (1–10)<input type="number" id="lr" min="1" max="10" value="6"></label><label style="grid-column:1/-1">Note<input id="ln" placeholder="ex. 5 × 1000 en 4:08 de moyenne, vent de face"></label><div class="row"><button class="btn primary run sm" id="lok">Enregistrer</button><button class="btn sm" id="lno">Annuler</button></div></div>`:""}
       </div></div>`}).join("")}
   </details>`}).join("")}`;
-  p.querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>{const k=b.dataset.log;if(state.run.logs[k]){if(!confirm(DECOCHER))return;delete state.run.logs[k];save();renderAll()}else{openLog=k;renderRun()}});
+  p.querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>{const k=b.dataset.log;if(state.run.logs[k]){if(!confirm(DECOCHER))return;decocher(state.run,k);save();renderAll()}else{openLog=k;renderRun()}});
   p.querySelectorAll("[data-gostr]").forEach(b=>b.onclick=()=>setTab("str"));
   bindDecaler(); bindHisto();
   $("#goWeek")&&($("#goWeek").onclick=()=>document.getElementById("curweek")?.scrollIntoView({block:"start",behavior:"smooth"}));
@@ -2032,14 +2289,14 @@ function renderRun(){
     if(!sample){toast(sampleErr("absent"));return}
     b.disabled=true; b.textContent="La plume court…";
     try{
-      const {text}=await sample(`Écris en français, en 2 ou 3 phrases au présent, la chronique épique et un peu malicieuse d'une étape de course à pied vécue par Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy).${acct&&acct.ville?" Le voyage part de la Ville Rose ("+acct.ville+").":""}
+      const {text}=await sample(`Écris en français, en 2 ou 3 phrases au présent, la chronique épique et un peu malicieuse d'une étape de course à pied vécue par Theron Corvane, mage de la Compagnie de l'Aube (univers fantasy).${acct&&acct.ville?" Le voyage part de la Cité-Fleuve, sa cité natale au bord du fleuve.":""}
 Région du voyage : « ${regionOf(ww)[0]} ». Séance : « ${ss.title} » (${sessLabel(ss,ww)}). Adversaire de la semaine : ${regionOf(ww)[1]}.
 Effort ressenti : ${l.rpe||"?"}/10. Note du coureur : « ${l.note||"aucune"} ».
 Intègre les vrais détails de sa note (temps, météo, sensations) dans le récit. Pas de titre, pas de markdown.`,{modelTier:"quick"});
       (state.run.logs[k]||l).story=text.trim(); save(); renderRun();
     }catch(e){b.disabled=false;b.textContent="Raconter la séance en légende";toast(sampleErr(e.code))}
   });
-  if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim()};openLog=null;save();sfx("ok");toast("Séance enregistrée · elle sera comptée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
+  if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim(),at:Date.now()};openLog=null;save();sfx("ok");toast("Séance enregistrée · elle sera comptée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
 }
 
 /* ======================================================================
@@ -2093,7 +2350,7 @@ Object.assign(EX,{
  stepup:{name:"Reverse step-up",cues:["Pied d'appui sur une marche ou un banc","Descends l'autre pied en arrière, lentement","Remonte en poussant dans le talon du pied d'appui","Fais toutes les reps d'une jambe, puis l'autre"],period:3.2,sides:true,
   A:{...STAND,p:[100,80],k:[112,104],f:[118,128],t:[127,130],k2:[96,112],f2:[96,140],t2:[105,143]},
   B:{h:[100,40],n:[100,54],p:[100,98],k:[112,118],f:[118,128],t:[127,130],k2:[86,124],f2:[74,146],t2:[82,150],e:[104,78],w:[108,100]}},
- legcurl:{name:"Flexion de genou",cues:["Allongé sur le ventre, élastique aux chevilles","Ramène les talons vers les fesses","Redescends lentement, sans cambrer"],period:2.6,
+ legcurl:{name:"Flexion de genou",ventre:true,cues:["Allongé sur le ventre, élastique aux chevilles","Ramène les talons vers les fesses","Redescends lentement, sans cambrer"],period:2.6,
   A:{h:[40,138],n:[54,141],p:[100,143],k:[130,144],f:[158,144],t:[162,138],e:[40,148],w:[26,148],k2:[128,144],f2:[156,144],t2:[160,138]},
   B:{h:[40,138],n:[54,141],p:[100,143],k:[130,144],f:[138,114],t:[146,108],e:[40,148],w:[26,148],k2:[128,144],f2:[136,114],t2:[144,108]}},
  tibial:{name:"Flexion tibiale",cues:["Dos contre un mur, talons à 30 cm du mur","Relève la pointe des pieds le plus haut possible","Redescends sans claquer"],period:2,
@@ -2155,7 +2412,8 @@ function drawFig(svg,q){
   S("bras2",capsule(q.n,q.e2,3.6,3));S("manche2",capsule(q.n,mix(q.n,q.e2,.45),4.4,3.9));S("avb2",capsule(q.e2,q.w2,3,2.4));C("main2",q.w2);
   S("cuisse2",capsule(q.p,q.k2,6.2,4.4));S("jambe2",capsule(q.p,mix(q.p,q.k2,.5),6.8,5.4));S("tibia2",capsule(q.k2,q.f2,4.3,3));S("pied2",capsule(mix(q.f2,q.t2,-.25),q.t2,3.2,2.5));
   // tronc : épaules → taille (t-shirt), taille → hanches (short), cou
-  const u=[q.h[0]-q.n[0],q.h[1]-q.n[1]],lu=Math.hypot(u[0],u[1])||1,up=[u[0]/lu,u[1]/lu],face=[-up[1],up[0]];
+  const u=[q.h[0]-q.n[0],q.h[1]-q.n[1]],lu=Math.hypot(u[0],u[1])||1,up=[u[0]/lu,u[1]/lu];
+  const face=(EX[svg.dataset.ex]||{}).ventre?[up[1],-up[0]]:[-up[1],up[0]]; // allongé sur le ventre : le visage regarde le sol
   const taille=mix(q.n,q.p,.62);
   S("tronc",capsule(mix(q.n,q.p,-.04),mix(q.n,q.p,.78),8.6,7));S("bassin",capsule(mix(q.n,q.p,.6),q.p,7.2,7.6));
   S("cou",capsule(q.n,mix(q.n,q.h,.6),3.4,3.2));
@@ -2302,7 +2560,7 @@ function renderPlayer(p){
     p.innerHTML=`<div class="player"><h2>Séance terminée</h2><p>${min} min · séance ${esc(pl.W.seance)} · ${esc(pl.W.phase)}. La Gargouille encaisse un coup.</p><p class="small muted">Enregistre la séance : ta quête de renfo sera validée dans la Compagnie.</p>
       <label>Effort ressenti (1–10)<input type="number" id="srpe" min="1" max="10" value="6"></label>
       <div class="row"><button class="btn primary str" id="ssave">Enregistrer</button><button class="btn" id="sdrop">Ne pas enregistrer</button></div></div>`;
-    $("#ssave").onclick=()=>{state.str.logs[pl.W.key]={date:todayISO(),rpe:+$("#srpe").value||null,min};pl=null;save();renderAll()};
+    $("#ssave").onclick=()=>{state.str.logs[pl.W.key]={date:todayISO(),rpe:+$("#srpe").value||null,min,at:Date.now()};pl=null;save();renderAll()};
     $("#sdrop").onclick=()=>{pl=null;renderAll()};
     return;
   }
@@ -2333,10 +2591,10 @@ function renderStr(){
   ${forgeCard(S)}
   <div class="card">
     <div class="row" style="justify-content:space-between">
-      <div class="gap" style="gap:4px"><span class="small muted">${DAYS[STR_DAY]} ${frDate(cur.date)} · semaine ${cur.n}${wi<0?" (à venir)":""}</span><h2>Séance ${cur.seance} · ${esc(cur.phase)}${cur.light?" · allégée":""}</h2>
+      <div class="gap" style="gap:4px"><span class="small muted">${DAYS[STR_DAY]} ${jourMois(cur.date)} · semaine ${cur.n}${wi<0?" (à venir)":""}</span><h2>Séance ${cur.seance} · ${esc(cur.phase)}${cur.light?" · allégée":""}</h2>
       <span class="muted">${cur.blocs.length} blocs en circuit · récup 1 min 30 entre les tours · ~${tlMinutes(cur)} min avec l'échauffement</span>
       <span class="small muted">Matériel : haltères, élastique, une marche</span></div>
-      ${log?`<span class="pill ok">Faite le ${frDate(log.date)}</span>`:""}
+      ${log?`<span class="pill ok">Faite le ${frDate(log.date)}</span>`:wi>=0&&wi<S.length&&cur.date<todayISO()?'<span class="pill bad">À rattraper</span>':""}
     </div>
     <div class="row"><button class="btn primary str" id="sgo">Lancer la séance guidée</button><button class="btn" id="smark">${log?"Annuler la validation":"Marquer comme faite"}</button></div>
     <p class="small muted">Le minuteur enchaîne les exercices, bipe sur les 3 dernières secondes et annonce l'exercice suivant à voix haute. Monte le son et pose le téléphone face à toi.</p>
@@ -2345,13 +2603,13 @@ function renderStr(){
     <div class="exgrid">${b.exos.map(x=>`<div class="ex"><div class="figbox">${figSVG(x.id)}</div><b>${esc(EX[x.id].name)}</b><span class="small"><b>${doseTxt(x)}</b> · effort ${esc(x.e)}</span><ul class="small muted">${EX[x.id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></div>`).join("")}
   <div class="card"><h3>Programme des jeudis</h3>
     <div class="tbl"><table><thead><tr><th>Sem.</th><th>Date</th><th>Phase</th><th>Séance</th><th></th></tr></thead><tbody>
-    ${S.map((w,i)=>`<tr class="${i===wi?"cur":""}"><td class="mono">${w.n}</td><td>${frDate(w.date)}</td><td>${esc(w.phase)}${w.light?" (allégée)":""}</td><td class="mono">${w.seance} · ${w.blocs.map(b=>b.tours).join("+")} tours</td><td>${state.str.logs[w.key]?'<span class="pill ok">fait</span>':""}</td></tr>`).join("")}
+    ${S.map((w,i)=>`<tr class="${i===wi?"cur":""}"><td class="mono">${w.n}</td><td>${jourMois(w.date)}</td><td>${esc(w.phase)}${w.light?" (allégée)":""}</td><td class="mono">${w.seance} · ${w.blocs.map(b=>b.tours).join("+")} tours</td><td>${state.str.logs[w.key]?'<span class="pill ok">fait</span>':""}</td></tr>`).join("")}
     </tbody></table></div>
     <p class="small muted">Le renfo le jeudi tombe au lendemain de la séance de qualité : les jours durs restent groupés et la sortie longue arrive après 48 h de récupération.</p>
   </div>
   <details class="card"><summary>Tous les exercices</summary><div class="exgrid" style="margin-top:10px">${Object.keys(EX).map(id=>`<div class="ex"><div class="figbox">${figSVG(id)}</div><b>${esc(EX[id].name)}</b><ul class="small muted">${EX[id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></details>`;
   $("#sgo").onclick=()=>startPlayer(cur);
-  $("#smark").onclick=()=>{if(log){if(!confirm(DECOCHER))return;delete state.str.logs[cur.key]}else state.str.logs[cur.key]={date:todayISO(),rpe:null,min:tlMinutes(cur)};save();renderAll()};
+  $("#smark").onclick=()=>{if(log){if(!confirm(DECOCHER))return;decocher(state.str,cur.key)}else state.str.logs[cur.key]={date:todayISO(),rpe:null,min:tlMinutes(cur),at:Date.now()};save();renderAll()};
 }
 
 /* ======================================================================
@@ -2407,7 +2665,7 @@ async function synchroMontre(){
     const libres=w.s.filter(s=>!state.run.logs[s.key]);
     const s=libres.find(s=>s.date===a.date)||libres.sort((x,y)=>Math.abs(daysBetween(x.date,a.date))-Math.abs(daysBetween(y.date,a.date)))[0];
     if(!s) return;
-    state.run.logs[s.key]={date:a.date,rpe:a.rpe||null,note:"",auto:true,km:a.km,min:a.min,allure:a.allure,fc:a.fc,id:a.id,travail:a.travail||null};
+    state.run.logs[s.key]={date:a.date,rpe:a.rpe||null,note:"",auto:true,km:a.km,min:a.min,allure:a.allure,fc:a.fc,id:a.id,travail:a.travail||null,at:Date.now()};
     state.run.garmin[a.id]=s.key; n++;
   });
   if(n){save();renderAll();toast(`${n} sortie${n>1?"s":""} récupérée${n>1?"s":""} de ta montre`)}
@@ -2497,7 +2755,11 @@ function renderSet(){
   $("#sv").onclick=()=>{
     const but=$("#sg").value.trim();
     if(isNaN(toSec(but))){$("#svm").innerHTML='<span class="err">Objectif 10 km illisible : écris-le en minutes:secondes, par exemple 55:00. Rien n\'a été enregistré.</span>';$("#sg").focus();return}
-    state.run.goal=but;state.run.ref=$("#sr").value.trim();state.run.start=mondayOf($("#ss").value||state.run.start);state.run.weeks=+$("#sw").value;
+    const debut=mondayOf($("#ss").value||state.run.start), duree=+$("#sw").value;
+    if(debut!==state.run.start||duree!==+state.run.weeks){ // début ou durée changés : les semaines du plan changent, l'ancien est archivé (comme « Recommencer »)
+      if(seancesPlan()&&!confirm("Changer le début ou la durée du plan range l'ancien plan dans les archives (séances de course et jeudis de renfo, rien n'est effacé). Continuer ?")){$("#svm").textContent="Rien n'a été enregistré.";return}
+      archiverPlan(debut,duree)}
+    state.run.goal=but;state.run.ref=$("#sr").value.trim();
     state.run.days={q:+$("#dq").value,s:+$("#ds").value,l:+$("#dl").value};
     for(const k in MODULES){const u=+$("#su-"+k).value;if(u!==state.en.mods[k].unit){state.en.mods[k].unit=u;state.en.mods[k].pack=null}}
     state.ttsRate=+$("#st").value;state.micLang=$("#sml").value;save();renderAll();$("#svm").textContent="Enregistré";
@@ -2571,6 +2833,132 @@ function renderAll(){renderQuestEn();renderQuestRun();renderQuestStr();if(!ses)r
 renderAll();
 try{const t=localStorage.getItem("quetes-tab");if(t&&t!=="en"&&t!=="set")setTab(t)}catch(e){}
 try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
+</script>
+<script>
+/* =====================================================================
+   ENLUMINEUR · Carnet de quêtes (proposition du 19/11/2026)
+   À coller dans un <script> placé APRÈS le grand script du Carnet (juste avant </body>).
+   Il ne touche à aucune donnée : il redessine seulement (thème, tuiles, boss, armurerie).
+   ===================================================================== */
+(function(){
+const R=document.documentElement;
+
+/* 1. Thème de l'app (même site) : classes pour le CSS + police Yggdrasil */
+function themeEnlu(){let th="aube";try{th=localStorage.getItem("theme")||"aube"}catch(e){}
+  if(th!=="olympe")th="aube";
+  R.classList.toggle("ygg",th==="aube");R.classList.toggle("th-aube",th==="aube");R.classList.toggle("th-olympe",th==="olympe")}
+themeEnlu();
+addEventListener("storage",e=>{if(e.key==="theme"||e.key==="themeCarnet")themeEnlu()});
+if(!document.getElementById("policeYgg")&&!document.querySelector('link[href*="IM+Fell"]')){const l=document.createElement("link");l.id="policeYgg";l.rel="stylesheet";
+  l.href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap";document.head.appendChild(l)}
+
+/* 2. Mode calme : celui de l'app (classe body.calme du parent), sinon localStorage « calme », sinon le système */
+const mq=matchMedia("(prefers-reduced-motion: reduce)");
+function calmeEnlu(){let c=mq.matches;
+  try{if(window.parent!==window&&window.parent.document.body.classList.contains("calme"))c=true}catch(e){}
+  try{if(localStorage.getItem("calme")==="1")c=true}catch(e){}
+  R.classList.toggle("calme",c)}
+calmeEnlu();
+mq.addEventListener&&mq.addEventListener("change",calmeEnlu);
+try{if(window.parent!==window)new MutationObserver(calmeEnlu).observe(window.parent.document.body,{attributes:true,attributeFilter:["class"]})}catch(e){}
+
+/* 3. Dessins des boss : ceux de l'app (iframe du même site), sinon le fichier partagé boss-dessins.js */
+let dessin=null;
+try{if(window.parent!==window&&typeof window.parent.bossSvg==="function")dessin=(c,id)=>window.parent.bossSvg(c,id)}catch(e){}
+if(!dessin){const s=document.createElement("script");s.src="boss-dessins.js?v="+encodeURIComponent(((window.COMPAGNIE||{}).VERSION_CARNET)||"");
+  s.onload=()=>{if(typeof window.bossSvg==="function"){dessin=(c,id)=>window.bossSvg(c,id);try{renderAll()}catch(e){}}};document.head.appendChild(s)}
+
+/* Mémoire légère (ce téléphone) : PV vus la dernière fois, pour jouer « touché » une seule fois */
+const lire=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
+const ecrire=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+function vuPV(id,pv,max){const k="enluPV-"+id,a=lire(k)||{},now=Date.now();
+  let t=a.t||0,d=a.d||0; if(a.max===max&&typeof a.pv==="number"&&pv<a.pv){t=now;d=a.pv-pv}
+  ecrire(k,{pv,max,t,d}); return now-t<1600?d:0}
+
+/* Fissures de la Gargouille : une de plus par quart de PV perdus (« chaque jeudi fissure sa carapace ») */
+const FISSURES=["M58 52 L54 60 L59 66 L55 74","M70 70 L76 76 L72 83 L78 90","M47 84 L52 90 L48 97","M63 96 L58 103 L64 109 L60 116"];
+function fissures(pv,max){const n=Math.min(4,Math.ceil((max-pv)/max*4));if(!n)return "";
+  return `<svg class="eb-fis" viewBox="0 0 120 130" aria-hidden="true">${FISSURES.slice(0,n).map(d=>`<path d="${d}"/><path class="l" d="${d}"/>`).join("")}</svg>`}
+
+/** Scène de boss : dessin animé de l'app, nom, PV en crans, état « touché » / « vaincu ». */
+function sceneBoss(o){
+  const pv=Math.max(0,o.pv), max=Math.max(1,o.max), d=vuPV(o.id,pv,max), vaincu=pv<=0;
+  const svg=dessin?dessin(o.cle,"cn"+o.id):"";
+  const aura=(svg.match(/--aura:([\d, ]+)/)||[])[1]||"255,120,90";
+  const crans=max<=24?`<div class="eb-pv" role="meter" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${pv}" aria-label="Points de vie">${Array.from({length:max},(_,i)=>`<i class="${i<pv?"":"vide"}${d&&i>=pv&&i<pv+d?" perdu":""}"></i>`).join("")}</div>`
+    :`<div class="eb-pv continu" role="meter" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${pv}" aria-label="Points de vie"><i style="--p:${pv/max*100}%;background:linear-gradient(90deg,var(--boss-pv1),var(--boss-pv2))"></i></div>`;
+  return `<div class="enlu-boss${d?" touche":""}${vaincu?" vaincu":""}" style="--aura:${aura}">
+    <div class="eb-av" aria-hidden="true"><i class="eb-aura"></i><i class="eb-sol"></i>${svg}${o.cle==="gargouille"?fissures(pv,max):""}${d&&!vaincu?`<b class="eb-degat">−${d}</b>`:""}</div>
+    <div class="eb-info"><span class="eb-k">${esc(o.kicker||"Boss")}</span><b class="eb-nom">${esc(o.nom)}</b>${crans}
+      <div class="eb-bas"><span class="eb-chiffre mono">${pv} / ${max} PV</span>${o.sous?`<span class="eb-sous">${esc(o.sous)}</span>`:""}</div>
+      ${vaincu?`<span class="eb-sceau">Vaincu</span>`:""}</div></div>`}
+window.sceneBoss=sceneBoss;
+
+/* 4. Anglais : l'Oubli dessiné (remplace la barre plate) */
+oubliHTML=function(){const O=state.en.oubli;
+  return sceneBoss({cle:"oubli",id:"oubli",kicker:"Boss de la mémoire",nom:`L'Oubli · rang ${O.rank}`,pv:O.hp,max:O.max,sous:"chaque mot retrouvé le blesse"})};
+
+/* 5. Renfo : la Gargouille + l'armurerie de 12 pièces */
+const ICONES=[ // 32×32, .f = forme pleine, .d = détail
+ '<path class="f" d="M5 16a9 9 0 1 1 18 0v8H16a9 9 0 0 1-11-8z"/><circle class="d" cx="14" cy="16" r="4"/><path class="f" d="M16 24h12v-5H23"/>',
+ '<path class="f" d="M9 3h10v14c4 1 8 3 8 7v4H8l1-6z"/><path class="d" d="M9 8h10M9 13h10M8 24h19"/>',
+ '<path class="f" d="M2 13h28v6H2z"/><rect class="f" x="12" y="10" width="8" height="12" rx="1.5"/><path class="d" d="M16 13v6"/>',
+ '<path class="f" d="M9 29V16l-3-6 3-2 3 5V5h3v8V3h3v10V5h3v9l3-3 2 2-5 7v9z"/>',
+ '<path class="f" d="M9 5h14l2 22H7z"/><path class="d" d="M8.4 12h15.2M7.8 20h16.4"/>',
+ '<path class="f" d="M10 3h12v9l-1.5 13L16 29l-4.5-4L10 12z"/><circle class="d" cx="16" cy="12" r="3.2"/>',
+ '<path class="f" d="M5 6l7-3 4 3 4-3 7 3-1.5 12L16 28 6.5 18z"/><path class="d" d="M16 7v19M9 12h14"/>',
+ '<path class="f" d="M3 21C3 12 9 7 16 7s13 5 13 14l-4.5-2.5-4 2.5-4.5-2.5-4.5 2.5-4-2.5z"/><path class="d" d="M8 14q8-5 16 0"/>',
+ '<path class="f" d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z"/><circle class="d" cx="16" cy="15" r="3.5"/><path class="d" d="M16 8v2.5M16 19.5V22M9 15h2.5M20.5 15H23"/>',
+ '<path class="f" d="M6 27V15C6 8.5 10.5 4 16 4s10 4.5 10 11v12h-7v-8h-6v8z"/><path class="d" d="M9 15h14M16 4v8"/>',
+ '<path class="f" d="M10 4h12l6 24-6-3-6 3-6-3-6 3z"/><path class="d" d="M13 8l-3 16M19 8l3 16M16 8v17"/>',
+ '<path class="f" d="M6.5 27.5l1.8 1.8L22 15.6l-1.8-1.8z"/><circle class="f" cx="23.5" cy="8.5" r="5"/><path class="d" d="M21 6.5l2.5 2 2.5-2"/>'];
+function armurerie(pieces,n,neuve){
+  return `<ul class="arm" aria-label="Pièces d'armure"><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="enluMetal" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="var(--metal2)"/><stop offset=".55" stop-color="var(--metal)"/><stop offset="1" stop-color="var(--metal-dark)"/></linearGradient></defs></svg>
+    ${pieces.map((f,i)=>{const on=i<n,next=i===n,ic=ICONES[(ICONES.length-pieces.length)+i]||ICONES[i%12];
+      return `<li class="pc${on?" on":next?" next":" lock"}${on&&i===neuve?" neuve":""}" aria-label="${esc(f)} : ${on?"gagnée":next?"la prochaine, à la séance "+(i+1):"à gagner à la séance "+(i+1)}">
+        ${on?"":`<i class="pc-n" aria-hidden="true">${i+1}</i>`}<svg viewBox="0 0 32 32" aria-hidden="true">${ic}</svg><span>${esc(f)}</span></li>`}).join("")}</ul>`}
+forgeCard=function(S){
+  const n=S.filter(w=>state.str.logs[w.key]).length, tot=S.length, pieces=FORGE.slice(FORGE.length-tot);
+  const a=lire("enluForge"), now=Date.now(); let t=a&&a.t||0; if(a&&n>a.n)t=now; ecrire("enluForge",{n,t});
+  const neuve=now-t<2000?n-1:-1;
+  return `<div class="card forge"><span class="kicker" style="color:var(--str)">Progression du renfo</span>
+    <h2>${n} séance${n>1?"s":""} sur ${tot}</h2>
+    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque jeudi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
+    ${sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:tot-n,max:tot,sous:n>=tot?"":"un jeudi = un coup"})}
+    <div class="forge-tete"><b>Armurerie du Veilleur</b><span class="small muted mono">${n} / ${tot} pièces</span></div>
+    ${armurerie(pieces,n,neuve)}
+  </div>`};
+
+/* 6. Course : le boss de la région de la semaine, 3 sorties = 3 coups */
+const BOSS_REGION=["golem","harpie","spectre",null,"troll","basilic","hydre",null,"dragon","mimique",null,"fatigue"];
+const _renderRun=renderRun;
+renderRun=function(){_renderRun.apply(this,arguments);
+  try{const W=weeksPlan(),wi=curWeekIdx(); if(wi>=W.length)return;
+    const w=W[Math.max(0,wi)], reg=regionOf(w), cle=BOSS_REGION[Math.max(0,Math.min(11,w.abs))];
+    const st=document.querySelector("#p-run .card .story"); if(!st||st.nextElementSibling&&st.nextElementSibling.matches(".enlu-boss,.enlu-repos"))return;
+    const done=wi<0?0:w.s.filter(s=>state.run.logs[s.key]).length;
+    const html=cle?sceneBoss({cle,id:"run"+w.abs,kicker:"Boss de la semaine "+w.n,nom:reg[1],pv:RUN_PER_WEEK-done,max:RUN_PER_WEEK,sous:"une sortie = un coup"})
+      :`<div class="enlu-repos"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 27l16-6M8 21l16 6" stroke="#7a4a22" stroke-width="2.4" stroke-linecap="round"/><path d="M16 22c-5 0-6-5-3-9 0 3 2 4 3 2-1-4 1-7 4-9-1 4 4 6 2 12-1 2-3 4-6 4z" fill="#e8b04b" class="b-flamme"/></svg><span><b>${esc(reg[0])}</b> · semaine de répit : pas de boss, le feu de camp t'attend.</span></div>`;
+    st.insertAdjacentHTML("afterend",html)}catch(e){}};
+
+/* 7. Les trois tuiles du haut : emblème, barre de progression, état (aujourd'hui / faite / en retard), « 5/12 » qui ne casse plus */
+const EMBL={en:'<svg class="q-embl" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 3v26M10 5l12 6-12 6 12 6" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  run:'<svg class="q-embl" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 3h10v14c4 1 8 3 8 7v4H8l1-6z" fill="currentColor"/></svg>',
+  str:'<svg class="q-embl" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9h17l-2 5h-5l1 4h-6l1-4H6zM12 18h6v3l4 7H8l4-7z" fill="currentColor"/></svg>'};
+function habiller(id,k,p){const b=document.getElementById(id); if(!b)return;
+  b.querySelectorAll(".q-embl,.q-bar").forEach(x=>x.remove());
+  const big=b.querySelector(".big");
+  if(big) big.innerHTML=big.innerHTML.replace(/^(\D*?)(\d+) \/ (\d+)/,'$1$2<small class="sur">/$3</small>');
+  b.querySelectorAll(".pill").forEach(x=>{x.textContent=x.textContent.replace(/^Prochaine : /,"")});
+  b.insertAdjacentHTML("afterbegin",EMBL[k]);
+  b.insertAdjacentHTML("beforeend",`<span class="q-bar" aria-hidden="true"><i style="--p:${Math.round(Math.max(0,Math.min(1,p))*100)}%"></i></span>`);
+  b.classList.toggle("q-auj",!!b.querySelector(".pill.warn")); b.classList.toggle("q-fait",!!b.querySelector(".pill.ok")); b.classList.toggle("q-retard",!!b.querySelector(".pill.bad"))}
+const _qEn=renderQuestEn, _qRun=renderQuestRun, _qStr=renderQuestStr;
+renderQuestEn=function(){_qEn();try{const g=G(),L=levelOf(g.xp,XP_BASE),a=lvlStart(L,XP_BASE),b=lvlStart(L+1,XP_BASE);habiller("qEn","en",(g.xp-a)/(b-a))}catch(e){}};
+renderQuestRun=function(){_qRun();try{const W=weeksPlan(),n=W.reduce((a,w)=>a+w.s.filter(s=>state.run.logs[s.key]).length,0);habiller("qRun","run",n/(W.length*3))}catch(e){}};
+renderQuestStr=function(){_qStr();try{const S=strWeeks();habiller("qStr","str",S.filter(w=>state.str.logs[w.key]).length/S.length)}catch(e){}};
+try{renderAll()}catch(e){}
+})();
 </script>
 </body>
 </html>

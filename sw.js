@@ -7,7 +7,7 @@
 try { importScripts('config.js'); } catch (e) {}
 const C = self.COMPAGNIE || {};
 const CACHE = 'compagnie-' + (C.VERSION_APP || 'x') + '-' + (C.VERSION_CARNET || 'x');
-const COQUILLE = ['./', 'index.html', 'carnet.html', 'config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable.png'];
+const COQUILLE = ['./', 'index.html', 'carnet.html', 'boss-dessins.js', 'config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(COQUILLE.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
