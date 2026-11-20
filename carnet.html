@@ -527,6 +527,79 @@ html.calme .eb-degat{display:none} html.calme .pc.neuve::before{display:none} ht
 /* Programme des jeudis : plus coupé à droite sur téléphone */
 @media (max-width:520px){.tbl td,.tbl th{white-space:normal;padding:7px 5px}}
 
+
+/* Renfo : héros articulé animé (enlumineur, 20/11) */
+/* =====================================================================
+   ENLUMINEUR · Renfo animé (20/11/2026) — à coller à la fin du <style> de carnet.html
+   Remplace les règles .fig … (lignes « .fig{width:100%… » à « .fig .loin{…} »).
+   Couleurs : variables du thème. Yggdrasil = bronze (--metal), Olympe = or (--metal de html.th-olympe).
+   ===================================================================== */
+:root{--fig-tunique:#2c5a69;--fig-peau:#e2ab83;--fig-cuir:#6b4429;--fig-botte:#3a2616;--fig-cheveux:#3b2414;--fig-trait:#1a1109}
+html.th-olympe{--fig-tunique:#7a2c3a;--fig-cuir:#5d3a26}
+.figbox{background:radial-gradient(ellipse at 50% 112%,var(--str-soft),transparent 68%),var(--sunk);border-radius:10px;border:1px solid var(--line2);overflow:hidden}
+.rfig{width:100%;height:auto;display:block;
+  --pe:var(--fig-peau);--tu:var(--fig-tunique);--cu:var(--fig-cuir);--bo:var(--fig-botte);--me:var(--metal,var(--gold,#d39a5c))}
+.rfig .fx-loin{--pe:#b07f60;--tu:color-mix(in srgb,var(--fig-tunique) 66%,#000);--cu:color-mix(in srgb,var(--fig-cuir) 66%,#000);
+  --bo:#24170d;--me:color-mix(in srgb,var(--metal,var(--gold,#d39a5c)) 62%,#000)}
+.rfig .p,.rfig .u,.rfig .c,.rfig .m,.rfig .b,.rfig .h{stroke:var(--fig-trait);stroke-width:.9;stroke-linejoin:round}
+.rfig .p{fill:var(--pe)} .rfig .u{fill:var(--tu)} .rfig .c{fill:var(--cu)} .rfig .b{fill:var(--bo)}
+.rfig .m{fill:var(--me)} .rfig path.m[stroke-width]{fill:none;stroke:var(--me)}
+.rfig .h{fill:var(--fig-cheveux)} .rfig .y{fill:var(--fig-trait)}
+.rfig .fx-g{fill:var(--str);pointer-events:none} .rfig .fx-g .c2{fill:#ffe2bf}
+.rfig .fx-sol{stroke:var(--line2);stroke-width:2;stroke-linecap:round}
+.rfig .fx-ombre{fill:rgba(0,0,0,.32)}
+.rfig .fx-tapis{fill:var(--str);opacity:.3}
+.rfig .fx-mur{fill:var(--line2);opacity:.75} .rfig .fx-marche{fill:color-mix(in srgb,var(--line2) 70%,var(--metal,#d39a5c));opacity:.9}
+.rfig .fx-arete{stroke:var(--metal,var(--gold));stroke-width:1.2;opacity:.6}
+.rfig .fx-halt{fill:#77808f;stroke:var(--fig-trait);stroke-width:.7}
+.rfig .fx-bande{stroke:#e8b04b;stroke-width:2.2;stroke-linecap:round;fill:none}
+
+/* Mouvement : chaque articulation joue ses propres @keyframes (générés par renfo-fig.js), même durée, en boucle */
+.rfig .fj{animation-duration:var(--fxT,3s);animation-timing-function:linear;animation-iteration-count:infinite}
+.rfig.fx-une .fj{animation-iteration-count:1;animation-fill-mode:both;animation-delay:.35s}
+.rfig.paused .fj{animation-play-state:paused}
+/* Mode calme de l'app et mouvement réduit : pose fixe au milieu du mouvement (attribut transform), lueur pleine */
+html.calme .rfig .fj,body.calme .rfig .fj{animation:none!important}
+@media (prefers-reduced-motion:reduce){.rfig .fj{animation:none!important}}
+
+/* ---------- Séance guidée ---------- */
+.player .bigfig{max-width:440px;width:100%;justify-self:center}
+.player.fx-entre h2,.player.fx-entre .bigfig{animation:fxEntre .5s cubic-bezier(.2,.8,.3,1) both}
+.player.fx-entre .bigfig{animation-delay:.06s}
+@keyframes fxEntre{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+.player.fx-repos .bigfig{opacity:.62}                       /* récupération : l'exercice suivant attend, en retrait */
+.player .count{display:inline-block;transform-origin:30% 60%}
+.player .count.fx-fin3{color:var(--str)}
+#plBar{transform-origin:0 50%}
+/* fin de séance : le héros frappe, la Gargouille encaisse */
+.fx-scene{display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:4px;background:radial-gradient(ellipse at 70% 100%,var(--str-soft),transparent 70%),var(--sunk);border:1px solid var(--line2);border-radius:12px;padding:6px 8px 0;overflow:hidden}
+.fx-coup-heros .rfig{max-height:150px}
+.fx-scene .boss-svg{overflow:hidden}
+.fx-coup-garg{position:relative;justify-self:center;width:min(130px,100%)}
+.fx-coup-garg svg{width:100%;height:auto;display:block}
+.fx-coup-bouge{animation:fxEncaisse .55s 1.15s both}
+@keyframes fxEncaisse{0%{transform:none}20%{transform:translateX(9px) rotate(4deg)}45%{transform:translateX(-5px) rotate(-2deg)}70%{transform:translateX(3px)}100%{transform:none}}
+.fx-coup-fis,.fx-coup-eclat{position:absolute;inset:0}
+.fx-coup-fis path{fill:none;stroke:#120b08;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fx-coup-fis path.l{stroke:#ffb067;stroke-width:1.2}
+.fx-coup-fis{animation:fxApparait .3s 1.2s both}
+.fx-coup-eclat path{fill:none;stroke:#fff1d6;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fx-coup-eclat{animation:fxEclat .45s 1.12s both}
+@keyframes fxApparait{from{opacity:0}to{opacity:1}}
+@keyframes fxEclat{0%{opacity:0;transform:scale(.6)}30%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.15)}}
+.fx-pierre{position:absolute;left:46%;top:46%;width:6px;height:5px;background:#8a8494;border-radius:1px;opacity:0;animation:fxPierre .8s 1.18s ease-out both}
+.fx-pierre.p1{--dx:34px;--dy:-30px}.fx-pierre.p0{--dx:22px;--dy:-44px}.fx-pierre.p2{--dx:40px;--dy:-6px}.fx-pierre.p3{--dx:16px;--dy:-18px}.fx-pierre.p4{--dx:30px;--dy:10px}
+@keyframes fxPierre{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(160deg)}}
+.fx-coup-pv{position:absolute;right:2px;top:4px;font:700 1.1rem var(--display);color:var(--bad);text-shadow:0 1px 0 #000;animation:fxPV 1.6s 1.2s both}
+@keyframes fxPV{0%{opacity:0;transform:translateY(8px) scale(.8)}15%{opacity:1;transform:none}75%{opacity:1}100%{opacity:1;transform:translateY(-6px)}}
+html.calme .fx-scene *,body.calme .fx-scene *,html.calme .player *,body.calme .player *{animation:none!important}
+@media (prefers-reduced-motion:reduce){.fx-scene *,.player.fx-entre *{animation:none!important}}
+html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
+@media (prefers-reduced-motion:reduce){.fx-coup-eclat{display:none}}
+.rfig .fx-oreille{fill:#c98f6a}
+.rfig .fx-manche{fill:#7a4f2c;stroke:var(--fig-trait);stroke-width:.8} .rfig .fx-reflet{stroke:#fff6dc;stroke-width:1;opacity:.6}
+.fx-coup-heros .fx-sol{display:none}
+
 </style>
 <style>html,body{margin:0}body{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -2959,6 +3032,253 @@ renderQuestRun=function(){_qRun();try{const W=weeksPlan(),n=W.reduce((a,w)=>a+w.
 renderQuestStr=function(){_qStr();try{const S=strWeeks();habiller("qStr","str",S.filter(w=>state.str.logs[w.key]).length/S.length)}catch(e){}};
 try{renderAll()}catch(e){}
 })();
+</script>
+<script>
+/* =====================================================================
+   ENLUMINEUR · Renfo animé du Carnet (proposition du 20/11/2026)
+   Un héros en armure légère, articulé comme une marionnette (bassin, buste, tête,
+   bras, avant-bras, cuisses, jambes, pieds), qui fait VRAIMENT chaque mouvement.
+   - Chaque exercice = quelques poses clés (angles) + un tempo. Le script calcule
+     les positions (pieds/mains posés au sol grâce à une petite cinématique inverse),
+     puis génère UNE fois des @keyframes CSS (rotate/translate/opacity uniquement).
+   - Plus aucune boucle requestAnimationFrame : le navigateur anime seul.
+   - Mode calme / mouvement réduit : animations coupées, il reste une pose fixe
+     lisible au milieu du mouvement (attribut transform de chaque articulation).
+   À coller dans un <script> APRÈS le grand script du Carnet (comme patch-carnet.js).
+   Remplace : figSVG ; rend inutiles drawFig, capsule, PROPS, propDe, animate.
+   ===================================================================== */
+(function(){
+"use strict";
+const LG={t:38,cou:13,th:30,sh:30,ft:12,ua:20,fa:19};
+const RAD=Math.PI/180, V=(a,l)=>[Math.sin(a*RAD)*l,Math.cos(a*RAD)*l], ad=(p,v)=>[p[0]+v[0],p[1]+v[1]];
+const ANG=["tr","cou","ua","fa","ua2","fa2","th","sh","ft","th2","sh2","ft2"];
+/* Angles en degrés : direction du segment, 0 = vers le bas, 90 = vers l'avant (droite), 180 = vers le haut.
+   tr = bassin→épaules, cou = épaules→tête, ua/fa = bras/avant-bras, th/sh/ft = cuisse/jambe/pied (2 = côté éloigné). */
+const DEBOUT={tr:180,cou:180,ua:6,fa:16,ua2:-6,fa2:4,th:0,sh:0,ft:65,th2:0,sh2:0,ft2:65};
+const SOL=150;
+const arc=(a,b,h)=>(J,s)=>[a[0]+(b[0]-a[0])*s,a[1]+(b[1]-a[1])*s-h*Math.sin(Math.PI*s)];  // pied qui avance en l'air puis se pose
+const FA=[142,144.5],FD=[69,145];
+
+function fk(P,o){o=o||[0,0];const J={p:o};
+  J.n=ad(o,V(P.tr,LG.t));J.h=ad(J.n,V(P.cou,LG.cou));
+  J.e=ad(J.n,V(P.ua,LG.ua));J.w=ad(J.e,V(P.fa,LG.fa));J.e2=ad(J.n,V(P.ua2,LG.ua));J.w2=ad(J.e2,V(P.fa2,LG.fa));
+  for(const s of ["","2"]){J["k"+s]=ad(o,V(P["th"+s],LG.th));J["f"+s]=ad(J["k"+s],V(P["sh"+s],LG.sh));
+    J["t"+s]=ad(J["f"+s],V(P["ft"+s],LG.ft));J["hl"+s]=ad(J["f"+s],V(P["ft"+s]-86,5.5))}
+  return J}
+/* cinématique inverse à deux os : renvoie [angle haut, angle bas] ; s = sens du pli (+1 genou vers l'avant) */
+function ik(b,t,l1,l2,s){const dx=t[0]-b[0],dy=t[1]-b[1];let d=Math.hypot(dx,dy);d=Math.max(Math.abs(l1-l2)+.01,Math.min(l1+l2-.01,d));
+  const phi=Math.atan2(dx,dy)/RAD,al=Math.acos((l1*l1+d*d-l2*l2)/(2*l1*d))/RAD,a1=phi+s*al,e=ad(b,V(a1,l1));
+  return [a1,Math.atan2(t[0]-e[0],t[1]-e[1])/RAD]}
+const MEMBRES={leg:["p","th","sh","f",LG.th,LG.sh,1],leg2:["p","th2","sh2","f2",LG.th,LG.sh,1],arm:["n","ua","fa","w",LG.ua,LG.fa,-1],arm2:["n","ua2","fa2","w2",LG.ua,LG.fa,-1]};
+const proche=(a,b)=>{while(a-b>180)a-=360;while(a-b<-180)a+=360;return a};
+
+/* ---------- Les exercices ---------- */
+const PL={tr:108,cou:114,ua:0,fa:0,ua2:0,fa2:0,th:-72,sh:-72,ft:22,th2:-72,sh2:-72,ft2:22}; // planche bras tendus
+const DOS={tr:-90,cou:-92,ua:84,fa:88,ua2:86,fa2:90};                                         // allongé sur le dos, tête à gauche
+const FIGS={
+ warm:{T:1.6,an:"p",at:{p:[100,82]},glow:["flech","flech2"],
+  poses:{d:{th:72,sh:-6,ft:84,th2:-4,sh2:-6,ft2:46,ua:-38,fa:30,ua2:42,fa2:118,cou:184},
+         g:{th2:72,sh2:-6,ft2:84,th:-4,sh:-6,ft:46,ua2:-38,fa2:30,ua:42,fa:118,cou:184}},
+  keys:[{p:0,o:"d",e:.8},{p:50,o:"g",e:.8},{p:100,o:"d",e:.8}],fixe:0},
+ squat:{T:3,an:"t",at:{t:[118,SOL]},glow:["quad","quad2","fessier"],
+  poses:{h:{ua:86,fa:90,ua2:84,fa2:88},b:{tr:142,cou:160,th:80,sh:-24,th2:78,sh2:-24,ua:96,fa:96,ua2:94,fa2:94}},
+  keys:[{p:0,o:"h",e:.1},{p:8,o:"h",e:.1},{p:50,o:"b",e:1},{p:58,o:"b",e:1},{p:92,o:"h",e:.2},{p:100,o:"h",e:.1}],fixe:40},
+ fente:{T:6.4,an:"t2",at:{t:[80,SOL],t2:[80,SOL]},glow:["quad","quad2","fessier"],
+  base:{ua:-28,fa:48,ua2:-30,fa2:44},
+  poses:{d:{},
+    pd:{th:30,sh:20,ft:76,th2:-35,sh2:-45,ft2:34},
+    bd:{th:78,sh:0,ft:65,th2:-15,sh2:-85,ft2:26},
+    pg:{th2:30,sh2:20,ft2:76,th:-35,sh:-45,ft:34},
+    bg:{th2:78,sh2:0,ft2:65,th:-15,sh:-85,ft:26}},
+  keys:[{p:0,o:"d",an:"t2",pin:{leg:arc(FD,FA,14)},e:.1},{p:13,o:"pd",an:"t2",pin:{leg:FA},e:.4},{p:28,o:"bd",an:"t2",pin:{leg:FA},e:1},{p:33,o:"bd",an:"t2",pin:{leg:FA},e:1},
+        {p:42,o:"pd",an:"t2",pin:{leg:arc(FA,FD,14)},e:.4},{p:50,o:"d",an:"t",pin:{leg2:arc(FD,FA,14)},e:.1},
+        {p:63,o:"pg",an:"t",pin:{leg2:FA},e:.4},{p:78,o:"bg",an:"t",pin:{leg2:FA},e:1},{p:83,o:"bg",an:"t",pin:{leg2:FA},e:1},{p:92,o:"pg",an:"t",pin:{leg2:arc(FA,FD,14)},e:.4},{p:100,o:"d",e:.1}],fixe:30},
+ pont:{T:3,an:"n",at:{n:[60,141]},props:["tapis"],glow:["fessier","ischio","ischio2"],pin:{leg:[124,145],leg2:[121,145]},
+  base:{...DOS,th:128,sh:12,ft:65,th2:128,sh2:12,ft2:65},
+  poses:{b:{},h:{tr:-63,cou:-88}},
+  keys:[{p:0,o:"b",e:.2},{p:40,o:"h",e:1},{p:55,o:"h",e:1},{p:100,o:"b",e:.2}],fixe:45},
+ mollets:{T:2.4,an:"t",at:{t:[110,SOL]},glow:["mollet","mollet2"],
+  poses:{b:{},h:{ft:12,ft2:12}},
+  keys:[{p:0,o:"b",e:.2},{p:35,o:"h",e:1},{p:50,o:"h",e:1},{p:100,o:"b",e:.2}],fixe:40},
+ gainage:{T:4,an:"t",at:{t:[44,SOL]},props:["tapis"],glow:["abdos"],pin:{arm:[157,146],arm2:[154,146]},
+  poses:{a:{tr:98,cou:102,th:-82,sh:-82,ft:18,th2:-82,sh2:-82,ft2:18},b:{tr:99,cou:103,th:-81,sh:-81,ft:18,th2:-81,sh2:-81,ft2:18}},
+  bend:{arm:-1,arm2:-1},keys:[{p:0,o:"a",e:.55},{p:50,o:"b",e:1},{p:100,o:"a",e:.55}],fixe:50},
+ gainage_lat:{T:4,an:"t",at:{t:[40,SOL]},props:["tapis"],face:true,glow:["obliques"],pin:{arm2:[157,146]},bend:{arm2:-1},
+  poses:{a:{tr:99,cou:103,th:-81,sh:-81,ft:-6,th2:-82,sh2:-82,ft2:-6,ua:178,fa:180},b:{tr:100,cou:104,th:-80,sh:-80,ft:-6,th2:-81,sh2:-81,ft2:-6,ua:176,fa:178}},
+  keys:[{p:0,o:"a",e:.55},{p:50,o:"b",e:1},{p:100,o:"a",e:.55}],fixe:50},
+ mountain:{T:1.4,an:"w",at:{w:[150,147]},props:["tapis"],glow:["abdos","flech","flech2"],
+  base:{...PL},
+  poses:{n:{th:58,sh:-80,ft:-50},f:{th2:58,sh2:-80,ft2:-50}},
+  keys:[{p:0,o:"n",e:1},{p:50,o:"f",e:1},{p:100,o:"n",e:1}],fixe:0},
+ birddog:{T:6.8,an:"p",at:{p:[84,115]},props:["tapis"],glow:["lombaires","fessier"],
+  base:{tr:100,cou:104,ua:0,fa:0,ua2:0,fa2:0,th:0,sh:-90,ft:-70,th2:0,sh2:-90,ft2:-70},
+  poses:{o:{},a:{ua:96,fa:98,th2:-82,sh2:-82,ft2:-30,cou:100},b:{ua2:96,fa2:98,th:-82,sh:-82,ft:-30,cou:100}},
+  keys:[{p:0,o:"o",e:.2},{p:18,o:"a",e:1},{p:36,o:"a",e:1},{p:50,o:"o",e:.2},{p:68,o:"b",e:1},{p:86,o:"b",e:1},{p:100,o:"o",e:.2}],fixe:27},
+ pompes:{T:2.6,an:"t",at:{t:[42,SOL]},props:["tapis"],glow:["pecs","triceps","triceps2"],pin:{arm:[131,147],arm2:[128,147]},
+  poses:{h:{...PL},b:{...PL,tr:93,cou:98,th:-87,sh:-87,th2:-87,sh2:-87,ft:30,ft2:30}},
+  keys:[{p:0,o:"h",e:.2},{p:45,o:"b",e:1},{p:55,o:"b",e:1},{p:100,o:"h",e:.2}],fixe:35},
+ deadbug:{T:6.8,an:"p",at:{p:[106,142]},props:["tapis"],glow:["abdos"],
+  base:{...DOS,ua:180,fa:180,ua2:180,fa2:180,th:180,sh:90,ft:150,th2:180,sh2:90,ft2:150},
+  poses:{o:{},a:{ua:264,fa:266,th2:97,sh2:97,ft2:150},b:{ua2:264,fa2:266,th:97,sh:97,ft:150}},
+  keys:[{p:0,o:"o",e:.3},{p:20,o:"a",e:1},{p:32,o:"a",e:1},{p:50,o:"o",e:.3},{p:70,o:"b",e:1},{p:82,o:"b",e:1},{p:100,o:"o",e:.3}],fixe:26},
+ sdt1j:{T:3.6,an:"t",at:{t:[112,SOL]},glow:["ischio","fessier"],
+  poses:{h:{th2:-6,sh2:-4,ft2:60,ua:2,fa:4,ua2:-2,fa2:0},b:{tr:104,cou:112,th:10,sh:-4,th2:-76,sh2:-76,ft2:8,ua:-4,fa:-2,ua2:-8,fa2:-6}},
+  keys:[{p:0,o:"h",e:.2},{p:45,o:"b",e:1},{p:55,o:"b",e:1},{p:100,o:"h",e:.2}],fixe:42},
+ stepup:{T:3.2,an:"t",at:{t:[124,137]},props:["marche"],marche:[96,137,44],glow:["quad","fessier"],
+  poses:{h:{ua:10,fa:30,ua2:-8,fa2:10},b:{tr:160,cou:168,th:58,sh:-14,th2:-8,sh2:-26,ft2:28,ua:28,fa:58,ua2:-14,fa2:16}},
+  keys:[{p:0,o:"h",e:.3},{p:50,o:"b",e:1},{p:56,o:"b",e:1},{p:100,o:"h",e:.3}],fixe:45},
+ legcurl:{T:2.6,an:"p",at:{p:[100,142.5]},props:["tapis","bande"],glow:["ischio","ischio2"],
+  base:{tr:90,cou:100,ua:54,fa:-82,ua2:58,fa2:-80,th:-90,sh:-90,ft:-14,th2:-91,sh2:-91,ft2:-15},
+  poses:{t:{},p:{sh:-208,ft:-130,sh2:-207,ft2:-129}},
+  keys:[{p:0,o:"t",e:.25},{p:40,o:"p",e:1},{p:50,o:"p",e:1},{p:100,o:"t",e:.25}],fixe:42},
+ tibial:{T:2,an:"f",at:{f:[118,145]},props:["mur"],mur:91,glow:["tibia","tibia2"],
+  base:{tr:192,cou:186,th:12,sh:12,th2:12,sh2:12,ua:-6,fa:2,ua2:-10,fa2:-2},
+  poses:{b:{ft:64,ft2:64},h:{ft:112,ft2:112}},
+  keys:[{p:0,o:"b",e:.2},{p:35,o:"h",e:1},{p:45,o:"h",e:1},{p:100,o:"b",e:.2}],fixe:35},
+ mollet_ext:{T:3,an:"t",at:{t:[118,138]},props:["marche","haltere"],marche:[106,138,48],glow:["mollet","mollet2"],
+  poses:{b:{ft:112,ft2:112},h:{ft:14,ft2:14}},
+  keys:[{p:0,o:"b",e:.4},{p:32,o:"h",e:1},{p:44,o:"h",e:1},{p:100,o:"b",e:.4}],fixe:38},
+ chaise:{T:4,an:"t",at:{t:[132,SOL]},props:["mur"],mur:88,glow:["quad","quad2"],
+  poses:{a:{tr:180,cou:180,th:90,sh:0,th2:90,sh2:0,ua:24,fa:84,ua2:20,fa2:80},b:{tr:181,cou:181,th:90,sh:0,th2:90,sh2:0,ua:25,fa:85,ua2:21,fa2:81}},
+  keys:[{p:0,o:"a",e:.55},{p:50,o:"b",e:1},{p:100,o:"a",e:.55}],fixe:50},
+ mollet_stat:{T:4,an:"t",at:{t:[110,SOL]},glow:["mollet","mollet2"],
+  poses:{a:{ft:12,ft2:12,cou:181},b:{ft:15,ft2:15,cou:179}},
+  keys:[{p:0,o:"a",e:.55},{p:50,o:"b",e:1},{p:100,o:"a",e:.55}],fixe:50},
+ sissy:{T:3.4,an:"t",at:{t:[96,SOL]},props:["poteau"],poteau:114,glow:["quad","quad2"],pin:{arm:J=>[117,J.n[1]+6],arm2:J=>[115,J.n[1]+7]},bend:{arm:-1,arm2:-1},
+  poses:{h:{ft:40,ft2:40,ua2:-6,fa2:2},b:{tr:218,cou:200,th:44,sh:-62,ft:14,th2:44,sh2:-62,ft2:14,ua2:-30,fa2:-10}},
+  keys:[{p:0,o:"h",e:.2},{p:50,o:"b",e:1},{p:58,o:"b",e:1},{p:100,o:"h",e:.2}],fixe:45},
+ mollet_exc:{T:5.2,an:"t",at:{t:[110,SOL]},glow:["mollet"],
+  poses:{b:{},h:{ft:12,ft2:12},h1:{ft:12,th2:-6,sh2:-84,ft2:-20},b1:{th2:-6,sh2:-84,ft2:-20}},
+  keys:[{p:0,o:"b",e:.2},{p:14,o:"h",e:.7},{p:22,o:"h1",e:1},{p:80,o:"b1",e:1},{p:90,o:"b",e:.2},{p:100,o:"b",e:.2}],fixe:50},
+ pont1j:{T:3,an:"n",at:{n:[60,141]},props:["tapis"],glow:["fessier","ischio2"],pin:{leg2:[121,145]},
+  base:{...DOS,th2:128,sh2:12,ft2:65,th:128,sh:128,ft:166},
+  poses:{b:{},h:{tr:-64,cou:-88,th:114,sh:114,ft:152}},
+  keys:[{p:0,o:"b",e:.2},{p:40,o:"h",e:1},{p:55,o:"h",e:1},{p:100,o:"b",e:.2}],fixe:45},
+ /* fin de séance : le héros frappe (joué une seule fois) */
+ coup:{T:1.3,once:true,vb:"34 4 150 150",props:["marteau"],an:"t2",at:{t2:[66,SOL],t:[66,SOL]},glow:["pecs"],
+  poses:{g:{th:24,sh:-4,ft:70,th2:-16,sh2:-18,ft2:40,tr:178,ua:24,fa:150,ua2:-14,fa2:40},
+         a:{th:20,sh:-2,ft:70,th2:-18,sh2:-20,ft2:40,tr:170,cou:176,ua:196,fa:226,ua2:150,fa2:200},
+         f:{th:58,sh:-12,ft:66,th2:-30,sh2:-40,ft2:30,tr:156,cou:164,ua:108,fa:72,ua2:100,fa2:70}},
+  keys:[{p:0,o:"g",e:.2},{p:45,o:"a",e:.5},{p:62,o:"f",e:1,lin:true},{p:100,o:"f",e:.6}],fixe:100}
+};
+
+/* ---------- Calcul des poses ---------- */
+function poseNom(F,n){F._c=F._c||{};return F._c[n]||(F._c[n]={...DEBOUT,...(F.base||{}),...F.poses[n]})}
+function placer(F,P,an,pins,K,u){
+  const J0=fk(P),at=F.at[an],o=[at[0]-J0[an][0],at[1]-J0[an][1]];let J=fk(P,o);
+  for(const m in pins){const M=MEMBRES[m];let t=pins[m];
+    if(typeof t==="number"){const k=K[t],Pk=poseNom(F,k.o);t=placer(F,Pk,k.an||F.an,{...(F.pin||{})},K).J[M[3]]}
+    else if(typeof t==="function")t=t(J,u||0);
+    const s=(F.bend&&F.bend[m])||M[6],r=ik(J[M[0]],t,M[4],M[5],s);P[M[1]]=r[0];P[M[2]]=r[1];J=fk(P,o)}
+  return {P,o,J}}
+function etat(F,pct){const K=F.keys;let i=0;while(i<K.length-2&&pct>=K[i+1].p)i++;
+  const a=K[i],b=K[i+1],u=b.p>a.p?Math.min(1,Math.max(0,(pct-a.p)/(b.p-a.p))):0,s=a.lin?u:.5-.5*Math.cos(Math.PI*u);
+  const A=poseNom(F,a.o),B=poseNom(F,b.o),P={};for(const k of ANG)P[k]=A[k]+(B[k]-A[k])*s;
+  const r=placer(F,P,a.an||F.an,{...(F.pin||{}),...(a.pin||{})},K,s);r.e=(a.e||0)+((b.e||0)-(a.e||0))*s;return r}
+function rel(P){return {T:-P.tr,C:-(P.cou-P.tr),A:-(P.ua-P.tr),B:-(P.fa-P.ua),A2:-(P.ua2-P.tr),B2:-(P.fa2-P.ua2),
+  Q:-P.th,S:-(P.sh-P.th),F:-(P.ft-P.sh),Q2:-P.th2,S2:-(P.sh2-P.th2),F2:-(P.ft2-P.sh2)}}
+const f1=v=>(Math.round(v*10)/10).toString();
+const BANDE=[22,146];
+const bandeTf=f=>{const dx=f[0]-BANDE[0],dy=f[1]-BANDE[1];return `translate(${BANDE[0]} ${BANDE[1]}) rotate(${f1(-Math.atan2(dx,dy)/RAD)}) scale(1 ${(Math.hypot(dx,dy)/10).toFixed(3)})`};
+/* Génère (une fois par exercice) les @keyframes et renvoie la pose fixe */
+const FAIT={};
+function preparer(id){if(FAIT[id])return FAIT[id];const F=FIGS[id];
+  const pcts=new Set();for(let p=0;p<=100;p+=4)pcts.add(p);F.keys.forEach(k=>pcts.add(k.p));const L=[...pcts].sort((a,b)=>a-b);
+  const pistes={},prev={};
+  L.forEach(p=>{const s=etat(F,p),r=rel(s.P);
+    for(const k in r){const v=k in prev?proche(r[k],prev[k]):r[k];prev[k]=v;(pistes[k]=pistes[k]||[]).push([p,`rotate(${f1(v)}deg)`,v])}
+    (pistes.R=pistes.R||[]).push([p,`translate(${f1(s.o[0])}px,${f1(s.o[1])}px)`,s.o[0]*1000+s.o[1]]);
+    (pistes.G=pistes.G||[]).push([p,null,.3+.7*s.e]);
+    if(F.props&&F.props.includes("bande")){const f=s.J.f,dx=f[0]-BANDE[0],dy=f[1]-BANDE[1];
+      (pistes.E=pistes.E||[]).push([p,`translate(${BANDE[0]}px,${BANDE[1]}px) rotate(${f1(-Math.atan2(dx,dy)/RAD)}deg) scale(1,${(Math.hypot(dx,dy)/10).toFixed(3)})`,Math.hypot(dx,dy)])}});
+  let css="";const nom=k=>`fx-${id}-${k}`;
+  for(const k in pistes){const t=pistes[k],v=t.map(x=>x[2]);if(Math.max(...v)-Math.min(...v)<.05)continue;
+    css+=`.fx-${id} .fj-${k}{animation-name:${nom(k)}}@keyframes ${nom(k)}{${t.map(x=>`${f1(x[0])}%{${k==="G"?`opacity:${x[2].toFixed(2)}`:`transform:${x[1]}`}}`).join("")}}\n`}
+  const st=document.createElement("style");st.id="fx-css-"+id;st.textContent=css;document.head.appendChild(st);
+  const fx=etat(F,F.fixe??50);fx.css=css.length;return FAIT[id]=fx}
+
+/* ---------- Dessin (une seule fois, les articulations bougent par transform) ---------- */
+function cap(a,b,ra,rb){const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1e-6,nx=-dy/L,ny=dx/L,f=v=>v.toFixed(1);
+  return `M${f(a[0]+nx*ra)} ${f(a[1]+ny*ra)}L${f(b[0]+nx*rb)} ${f(b[1]+ny*rb)}A${rb} ${rb} 0 0 0 ${f(b[0]-nx*rb)} ${f(b[1]-ny*rb)}L${f(a[0]-nx*ra)} ${f(a[1]-ny*ra)}A${ra} ${ra} 0 0 0 ${f(a[0]+nx*ra)} ${f(a[1]+ny*ra)}Z`}
+/* lueur sur le muscle : 3 ellipses concentriques (pas de filtre, pas de dégradé) */
+const lueur=(x,y,rx,ry)=>`<g class="fj fj-G fx-g"><ellipse cx="${x}" cy="${y}" rx="${rx*1.55}" ry="${ry*1.3}" opacity=".22"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" opacity=".5"/><ellipse class="c2" cx="${x}" cy="${y}" rx="${rx*.45}" ry="${ry*.6}" opacity=".85"/></g>`;
+const LUEURS={quad:["Q",3.4,15,3.4,10],ischio:["Q",-3.4,15,3.2,10],flech:["Q",3,5,3,5.5],mollet:["S",-3,9,2.8,7.5],tibia:["S",3.1,11,2.3,8],triceps:["A",-2.8,10,2.3,6.5],
+  abdos:["T",5.4,-17,3,8.5],pecs:["T",5.6,-30,3.4,4.6],lombaires:["T",-6,-15,3,8],fessier:["T",-7.2,0,4.4,5.4],obliques:["T",-5.5,-17,3,8.5]};
+const tf=(c,v,s)=>`class="fj fj-${c}${s||""}" transform="rotate(${f1(v)})"`;
+function rigSVG(F,fx){const r=rel(fx.P),g=new Set(F.glow||[]),face=!!F.face;
+  const L_=(k,s)=>{const n=k+(s||"");if(!g.has(n))return "";const d=LUEURS[k];return lueur(d[1],d[2],d[3],d[4])};
+  const jambe=s=>`<g ${tf("Q",r["Q"+s],s)}><path class="c" d="${cap([0,0],[0,30],6.6,4.8)}"/>${L_("quad",s)}${L_("ischio",s)}${L_("flech",s)}
+    <g transform="translate(0 30)"><g ${tf("S",r["S"+s],s)}><path class="c" d="${cap([0,0],[0,30],4.7,3.3)}"/>
+      <path class="m" d="M1.6 5 Q5.8 6.5 5.4 15 Q5 22 3 26 L.4 26 L.4 5Z"/>${L_("mollet",s)}${L_("tibia",s)}<circle class="m" cx="1.4" cy=".4" r="3.5"/>
+      <g transform="translate(0 30)"><g ${tf("F",r["F"+s],s)}><path class="b" d="M-4.3 -7 L4.1 -7 L4.4 2.4 Q5 7.6 2.4 11.4 Q1.2 13.4 -1 12.4 L-6 3 Q-6.6 0 -5.2 -3Z"/><path class="m" d="M-4.6 -5.4 L4.3 -5.4" stroke-width="1.6"/></g></g></g></g></g>`;
+  const bras=(s,halt)=>`<g ${tf("A",r["A"+s],s)}><path class="p" d="${cap([0,0],[0,20],3.9,3.2)}"/><path class="u" d="${cap([0,0],[0,8],5,4.4)}"/>${L_("triceps",s)}
+    <path class="m" d="M-6 3 Q-7 -5 0 -6.6 Q7 -5 6 3 Q0 6 -6 3Z"/>
+    <g transform="translate(0 20)"><g ${tf("B",r["B"+s],s)}><path class="p" d="${cap([0,0],[0,18],3.2,2.6)}"/><rect class="m" x="-3.9" y="7" width="7.8" height="9" rx="2"/>
+      ${halt==="marteau"?'<g class="fx-marteau"><rect class="fx-manche" x="-1.4" y="12" width="2.8" height="24" rx="1"/><rect class="m" x="-7" y="33" width="14" height="8" rx="1.6"/><path class="fx-reflet" d="M-5 35h10"/></g>':halt?'<g transform="translate(0 19.6)"><rect class="fx-halt" x="-8" y="-1.5" width="16" height="3" rx="1"/><rect class="fx-halt" x="-9.5" y="-4.8" width="4" height="9.6" rx="1.4"/><rect class="fx-halt" x="5.5" y="-4.8" width="4" height="9.6" rx="1.4"/></g>':""}
+      <circle class="p" cx="0" cy="19.6" r="3.3"/></g></g></g>`;
+  const torse=face?`<path class="u" d="M-9 6 C-10.5 -10 -11 -30 -9.5 -38 Q0 -42.5 9.5 -38 C11 -30 10.5 -10 9 6 Q0 8.5 -9 6Z"/>${L_("obliques")}
+      <path class="c" d="M-9.6 -7.4 L9.6 -7.4 L9.6 -3 L-9.6 -3Z"/><rect class="m" x="-2.4" y="-8.6" width="4.8" height="6.4" rx="1"/>`
+    :`<path class="u" d="M-8 6 C-10 -8 -10 -28 -6.5 -38 Q0 -43.5 6.5 -38.5 C10.5 -33 10.5 -25 8.6 -18 C7.6 -12 8.4 -4 9.6 6 Q0 8.5 -8 6Z"/>
+      <path class="c" d="M-5.6 -38.6 L-2.6 -39.6 L9.4 -13 L6.8 -12Z"/>${L_("abdos")}${L_("pecs")}${L_("lombaires")}${L_("fessier")}
+      <path class="c" d="M-9.2 -7 L9.4 -7.6 L9.7 -3 L-9 -2.4Z"/><rect class="m" x="5" y="-8.6" width="4.6" height="6.4" rx="1"/>`;
+  const tete=face?`<path class="p" d="${cap([0,2],[0,-8],3.3,3.3)}"/><circle class="p" cx="0" cy="-13" r="8.6"/>
+      <path class="h" d="M-8.8 -11 C-10 -23 10 -23 8.8 -11 C6 -17.5 -6 -17.5 -8.8 -11Z"/><path class="m" d="M-8.9 -14.6 Q0 -19.6 8.9 -14.6 L8.9 -12.2 Q0 -17 -8.9 -12.2Z"/>
+      <circle class="y" cx="-3.1" cy="-11.6" r="1.15"/><circle class="y" cx="3.1" cy="-11.6" r="1.15"/>`
+    :`<path class="p" d="${cap([0,2],[0,-8],3.3,3.3)}"/><circle class="p" cx=".6" cy="-13" r="8.6"/>
+      <path class="h" d="M-8.2 -9.4 C-10.6 -21 2 -26.6 9.2 -17.2 C4 -19.6 -1 -18.6 -2.4 -14 C-3.4 -11.4 -3.6 -8.4 -5.6 -6.2Z"/>
+      <path class="m" d="M-8.8 -15.4 Q0 -21.8 9.3 -17.8 L9.6 -15 Q0 -19 -8.9 -12.6Z"/><ellipse class="fx-oreille" cx="-.4" cy="-12.2" rx="1.4" ry="2"/><circle class="y" cx="5.5" cy="-12.4" r="1.15"/>`;
+  return `<g class="fj fj-R" transform="translate(${f1(fx.o[0])} ${f1(fx.o[1])})">
+    <g ${tf("T",r.T)}><g transform="translate(0 ${LG.t})"><g class="fx-loin">${bras("2")}</g></g></g>
+    <g class="fx-loin">${jambe("2")}</g>${jambe("")}
+    <g ${tf("T",r.T)}><g transform="rotate(180)">${torse}</g>
+      <g transform="translate(0 ${LG.t})"><g ${tf("C",r.C)}><g transform="rotate(180)">${tete}</g></g>${bras("",(F.props||[]).includes("marteau")?"marteau":(F.props||[]).includes("haltere"))}</g></g></g>`}
+function decor(F,fx){const P=F.props||[];let d="";
+  if(P.includes("tapis"))d+=`<rect class="fx-tapis" x="12" y="${SOL}" width="176" height="4.5" rx="2.2"/>`;
+  if(P.includes("mur"))d+=`<rect class="fx-mur" x="${F.mur-10}" y="4" width="10" height="${SOL-4}" rx="2"/>`;
+  if(P.includes("marche")){const m=F.marche||[96,126,44];d+=`<rect class="fx-marche" x="${m[0]}" y="${m[1]}" width="${m[2]}" height="${SOL-m[1]}" rx="3"/><path class="fx-arete" d="M${m[0]+2} ${m[1]+1.5}H${m[0]+m[2]-2}"/>`}
+  if(P.includes("poteau"))d+=`<rect class="fx-mur" x="${F.poteau}" y="36" width="6" height="${SOL-36}" rx="3"/><rect class="fx-marche" x="${F.poteau-6}" y="${SOL-4}" width="18" height="4" rx="2"/>`;
+  if(P.includes("bande"))d+=`<rect class="fx-marche" x="${BANDE[0]-4}" y="${BANDE[1]-4}" width="8" height="${SOL-BANDE[1]+4}" rx="2"/><g class="fj fj-E" transform="${bandeTf(fx.J.f)}"><path class="fx-bande" d="M0 0V10" vector-effect="non-scaling-stroke"/></g>`;
+  const xs=[fx.J.p[0],fx.J.n[0],fx.J.f[0],fx.J.f2[0],fx.J.t[0]],a=Math.min(...xs),b=Math.max(...xs);
+  d+=`<ellipse class="fx-ombre" cx="${f1((a+b)/2)}" cy="${SOL+1}" rx="${f1(Math.max(18,(b-a)/2+12))}" ry="3.2"/>`;
+  return d}
+
+/* ---------- API publique : remplace figSVG(id, cls) ---------- */
+const ANCIEN=typeof figSVG==="function"?figSVG:null;
+function figSVG2(id,cls=""){
+  const F=FIGS[id],nomEx=(typeof EX!=="undefined"&&EX[id]&&EX[id].name)||(id==="coup"?"le héros frappe":id);
+  if(!F)return ANCIEN?ANCIEN(id,cls):`<svg class="rfig" viewBox="0 0 200 160" role="img" aria-label="${esc2(nomEx)}"></svg>`;  // exercice ajouté plus tard : ancien bonhomme
+  const fx=preparer(id);
+  return `<svg class="rfig fx-${id}${F.once?" fx-une":""} ${cls}" data-fx="${id}" viewBox="${F.vb||"0 0 200 160"}" role="img" aria-label="Animation : ${esc2(nomEx)}" style="--fxT:${F.T}s">
+  <line class="fx-sol" x1="4" y1="${SOL+.5}" x2="196" y2="${SOL+.5}"/>${decor(F,fx)}${rigSVG(F,fx)}</svg>`}
+const esc2=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+window.FIGS_RENFO=FIGS;window.figRenfo=figSVG2;window.etatRenfo=(id,p)=>etat(FIGS[id],p);
+try{figSVG=figSVG2}catch(e){window.figSVG=figSVG2}
+/* l'ancienne boucle (animate) ne trouve plus de svg.fig : elle ne fait plus rien. La supprimer quand même. */
+
+/* ---------- Séance guidée : décompte, passage d'un exercice à l'autre, coup sur la Gargouille ---------- */
+const calme=()=>document.documentElement.classList.contains("calme")||document.body.classList.contains("calme")||matchMedia("(prefers-reduced-motion: reduce)").matches;
+function pouls(el,fort){if(!el||calme()||!el.animate)return;
+  el.animate(fort?[{transform:"scale(1.28)",opacity:.75},{transform:"scale(1)",opacity:1}]:[{transform:"scale(1.1)"},{transform:"scale(1)"}],{duration:fort?420:260,easing:"cubic-bezier(.2,.8,.3,1)"})}
+function sceneCoup(){const g=(typeof window.bossSvg==="function"?window.bossSvg:(window.parent&&window.parent!==window&&typeof window.parent.bossSvg==="function"?window.parent.bossSvg:null));
+  let garg="";try{garg=g?g("gargouille","cfin"):""}catch(e){}
+  if(!garg)garg=`<svg viewBox="0 0 120 130"><path d="M60 18 L78 30 L84 58 L100 44 L96 76 L84 92 L86 118 L34 118 L36 92 L24 76 L20 44 L36 58 L42 30Z" fill="#6d6a78" stroke="#2a2733" stroke-width="2"/><circle cx="52" cy="46" r="3" fill="#ffb347"/><circle cx="68" cy="46" r="3" fill="#ffb347"/></svg>`;
+  return `<div class="fx-scene" aria-hidden="true"><div class="fx-coup-heros">${figSVG2("coup")}</div>
+    <div class="fx-coup-garg"><div class="fx-coup-bouge">${garg}</div><svg class="fx-coup-fis" viewBox="0 0 120 130"><path d="M62 30 L56 46 L64 56 L55 72 L61 84"/><path class="l" d="M62 30 L56 46 L64 56 L55 72 L61 84"/></svg>
+      <svg class="fx-coup-eclat" viewBox="0 0 120 130"><path d="M30 64 L54 58 L32 52 L50 44" /><path d="M24 80 L50 68"/></svg>
+      ${[0,1,2,3,4].map(i=>`<i class="fx-pierre p${i}"></i>`).join("")}<b class="fx-coup-pv">−1 PV</b></div></div>`}
+/* Enrobe renderPlayer : animation d'entrée seulement quand l'exercice change (pas à la pause) */
+if(typeof renderPlayer==="function"){const _rp=renderPlayer;
+  renderPlayer=function(p){const neuf=pl&&!pl.done&&pl._vu!==pl.i, fin=pl&&pl.done&&!pl._finVu;_rp.apply(this,arguments);
+    const pv=p.querySelector(".player");if(!pv)return;
+    if(pl&&pl.done){const h=pv.querySelector("h2");if(h&&!pv.querySelector(".fx-scene"))h.insertAdjacentHTML("afterend",sceneCoup());if(fin){pl._finVu=1;pv.classList.add("fx-fin")}return}
+    const it=pl.tl[pl.i];pv.classList.toggle("fx-repos",it.kind==="rest");
+    if(neuf){pl._vu=pl.i;pv.classList.add("fx-entre");pouls(pv.querySelector(".count"),false)}}}
+if(typeof plStep==="function"){const _ps=plStep;
+  plStep=function(){const avant=pl&&pl.lastSec;_ps.apply(this,arguments);
+    if(!pl||pl.done||pl.paused)return;const c=document.getElementById("plCount");if(c&&pl.lastSec!==avant&&pl.lastSec<=3&&pl.lastSec>=1){c.classList.add("fx-fin3");pouls(c,true)}}}/* redessine l'onglet avec les nouveaux personnages (le Carnet a déjà rendu une fois) */
+if(typeof renderAll==="function")try{renderAll()}catch(e){}
+})();
+
 </script>
 </body>
 </html>
