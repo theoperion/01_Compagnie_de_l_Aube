@@ -2618,7 +2618,7 @@ async function startPlayer(W){
   try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume?.()}catch(e){}
   await garderEcran();
   pl={W,tl:buildTimeline(W),i:0,paused:false,startedAt:Date.now()};
-  enterInterval(0); clearInterval(plTick); plTick=setInterval(plStep,200); setTab("str");
+  setTab("str"); enterInterval(0); clearInterval(plTick); plTick=setInterval(plStep,200);
 }
 function enterInterval(i){
   pl.i=i; const it=pl.tl[i]; pl.endAt=Date.now()+it.dur*1000; pl.lastSec=null; pl.half=false;
