@@ -4781,7 +4781,7 @@ document.addEventListener('click', e => { // Réglages : savoir tout de suite si
   const ok = !!navigator.vibrate && navigator.vibrate([60, 60, 160]);
   toast(ok ? '📳 Ça a vibré ? Sinon, vérifie le mode économie d\'énergie et les « vibrations au toucher » de ton téléphone.' : '📳 Ce téléphone ou ce navigateur ne permet pas les vibrations.');
 });
-try { onglet = localStorage.getItem('onglet') || 'quetes'; } catch (e) {}
+onglet = 'quetes'; // le joueur (20/11) : à chaque ouverture, on arrive sur l'onglet Quêtes
 if (onglet === 'profil') onglet = 'heros';
 try { filtre = localStorage.getItem('filtre') || 'Tout'; } catch (e) {}
 
@@ -7035,7 +7035,7 @@ let sousOnglet = 'quetes';
 let sousHeros = 'perso';
 try { sousHeros = localStorage.getItem('sousHeros') || 'perso'; } catch (e) {}
 if (!['perso', 'aventure', 'exploits'].includes(sousHeros)) sousHeros = 'perso';
-try { sousOnglet = localStorage.getItem('sousOnglet') || 'quetes'; } catch (e) {}
+sousOnglet = 'quetes'; // et sur la liste des quêtes, pas sur les Nouvelles
 if (sousOnglet !== 'nouvelles') sousOnglet = 'quetes';
 const cleVues = () => 'vues|' + (herosActif || '');
 let vuesCache = null;
