@@ -769,14 +769,15 @@
   .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 10px; margin: -10px; }
   #reglesOv { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(8,6,12,.88); padding: 16px; }
   #reglesOv.on { display: grid; }
-  .rg-livre { position: relative; width: min(100%, 440px); height: min(92dvh, 600px); max-height: none; display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; padding: 18px 18px 0; border-radius: 18px;
+  .rg-livre { position: relative; width: min(100%, 440px); height: min(calc(100dvh - 40px), 760px); max-height: none; display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; padding: 18px 18px 0; border-radius: 18px;
     border: 2px solid color-mix(in srgb, var(--gold) 45%, var(--card));
     background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 7%, var(--panel)), var(--panel) 45%);
     box-shadow: 0 10px 40px rgba(0,0,0,.6), inset 0 0 0 4px var(--panel), inset 0 0 0 5px color-mix(in srgb, var(--gold) 28%, var(--line)); animation: rcIn .35s ease-out; }
   .rg-num { font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .rg-livre h2 { font-family: var(--f-titre); color: var(--gold); margin: 4px 0 12px; font-size: 21px; }
+  .rg-livre h2 { font-family: var(--f-titre); color: var(--gold); margin: 4px 0 12px; font-size: clamp(17px, 5.2vw, 21px); }
   .rg-livre ul { margin: 12px 0 4px; padding-left: 18px; display: grid; gap: 7px; font-size: 14px; line-height: 1.45; } .rg-livre li b { color: var(--xp2); }
   .rg-livre > ul { flex: 1 0 auto; align-content: start; } .rg-livre > * { flex-shrink: 0; } .rg-livre.deja { animation: none; }
+  .rg-nav::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 30px; background: linear-gradient(transparent, var(--panel)); pointer-events: none; opacity: 0; transition: opacity .2s; } .rg-livre.defile .rg-nav::before { opacity: 1; }
   .rg-nav { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: auto; position: sticky; bottom: 0; padding: 10px 0 14px; background: linear-gradient(transparent, var(--panel) 30%); z-index: 1; }
   .rg-nav .btn.mini { min-height: 44px; padding-left: 10px; padding-right: 10px; white-space: nowrap; flex: none; } .rg-nav .rg-points { gap: 4px; min-width: 0; } .rg-points { display: flex; gap: 5px; }
   .rg-points i { width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--gold) 35%, transparent); transition: width .2s; } .rg-points i.on { width: 18px; border-radius: 4px; background: var(--gold); }
@@ -802,8 +803,8 @@
   .rg-but { display: flex; align-items: center; justify-content: center; gap: 10px; }
   .rg-cof { position: relative; width: 92px; } .rg-cof > svg { width: 92px; height: auto; display: block; }
   .rg-faux { pointer-events: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .rg-rar4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 4px; text-align: center; }
-  .rg-rar4 div { display: grid; justify-items: center; gap: 1px; } .rg-rar4 svg { width: 40px; height: auto; } .rg-rar4 small { font-weight: 700; }
+  .rg-rar4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 4px; text-align: center; align-items: start; }
+  .rg-rar4 div { display: grid; justify-items: center; align-content: start; gap: 1px; } .rg-rar4 svg { width: 40px; height: auto; } .rg-rar4 small { font-weight: 700; } .rg-rar4 small.rg-p { font-weight: 400; font-size: 11.5px; line-height: 1.2; }
   .rg-ecl { display: flex; align-items: center; justify-content: center; gap: 10px; }
   .rg-src { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .rg-src > div { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); }
   .rg-src .pd-ic { flex: none; } .rg-src small { color: var(--text); }
@@ -843,7 +844,7 @@
   .rg-bond { animation: rgBond 2.4s ease-in-out infinite; } @keyframes rgBond { 50% { transform: translateY(-3px); } }
   body.calme .rg-livre, body.calme .rg-livre *, body.calme .rg-livre *::before, body.calme .rg-livre *::after { animation: none !important; }
   @media (prefers-reduced-motion: reduce) { .rg-livre, .rg-livre *, .rg-livre *::before, .rg-livre *::after { animation: none !important; } }
-  body.calme .rg-points i { transition: none; } @media (prefers-reduced-motion: reduce) { .rg-points i { transition: none; } }
+  body.calme .rg-points i, body.calme .rg-nav::before { transition: none; } @media (prefers-reduced-motion: reduce) { .rg-points i, .rg-nav::before { transition: none; } }
   /* Couleur d'accent de chaque saison (Aventure) */
   .saison-s1 { --gold: #8ad0ff; }
   .aventure.saison-s1 .saison { background: linear-gradient(180deg, #16243a, var(--panel)); border-color: #3a5a9a; }
@@ -4253,11 +4254,13 @@ const rgFleche = (dir) => { // flèche dorée : 'd' droite, 'g' gauche, 'b' bas,
 const rgEtinc = (x, y, r, c, d) => `<path class="rg-scint" style="animation-delay:${d || 0}s" d="M${x} ${y - r} L${x + r * .3} ${y - r * .3} L${x + r} ${y} L${x + r * .3} ${y + r * .3} L${x} ${y + r} L${x - r * .3} ${y + r * .3} L${x - r} ${y} L${x - r * .3} ${y - r * .3} Z" fill="${c || '#fff6c8'}"/>`;
 const rgCoffre = (type, w) => coffreSvg(type).replace('width="128" height="107"', `width="${w}" height="${Math.round(w * .84)}"`);
 const rgCosm = (id, slot) => { try { return apercuCosm({ id, slot }); } catch (e) { return ''; } };
+const rgAuraVig = (id) => { const c = (typeof AURA_COUL !== 'undefined' && AURA_COUL[id]) || '#ffb86b'; return `<svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><defs><radialGradient id="rgAv${id}"><stop offset=".25" stop-color="${c}" stop-opacity="0"/><stop offset=".62" stop-color="${c}" stop-opacity=".95"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs>
+  <ellipse cx="16" cy="17" rx="13" ry="14" fill="url(#rgAv${id})"/><path d="M16 9 a4 4 0 1 1 0 .1 M11 26 q5 -9 10 0" fill="#1a1208" opacity=".55"/>${rgEtinc(7, 7, 3, '#fff6c8')}${rgEtinc(26, 11, 2.4, '#fff6c8', .9)}${rgEtinc(24, 27, 2.2, '#fff6c8', 1.6)}</svg>`; };
 const rgHeros = (id) => { try { return state ? avatar(palierDe(Number(state.niveau) || 1, classeDe(state)), id, state) : ''; } catch (e) { return ''; } };
 const RG_RAR = { commun: '#8fc47a', rare: '#5ab0ff', epique: '#b392ee', legendaire: '#f2c94c' };
 // mini route du chemin (même dessin que « L'Horizon » : route sombre, pointillé, point rouge, losange)
-const rgMiniRoute = (w) => `<svg viewBox="0 0 34 30" width="${w}" height="${Math.round(w * .88)}" aria-hidden="true"><path d="M2 22 C10 12 18 26 32 14" class="ph-route" style="stroke-width:5"/><path d="M2 22 C10 12 18 26 32 14" class="ph-route2" style="stroke-width:1"/>
-  <path d="M2 22 C10 12 18 26 32 14" class="ph-fait" style="stroke-width:2.6" pathLength="1" stroke-dasharray=".35 1"/><circle cx="17" cy="20.5" r="3.4" class="ph-pt coffre"/><path d="M30 6 l3.2 4.6 l-3.2 4.6 l-3.2 -4.6z" class="ph-gros" style="stroke-width:1.4"/></svg>`;
+const rgMiniRoute = (w) => `<svg viewBox="0 0 34 30" width="${w}" height="${Math.round(w * .88)}" aria-hidden="true"><path d="M3 17 H31" class="ph-route" style="stroke-width:6"/><path d="M3 17 H14" class="ph-fait" style="stroke-width:2.6"/>
+  <circle cx="4.5" cy="17" r="2.6" class="ph-pt fait"/><circle cx="12" cy="17" r="2.6" class="ph-pt fait"/><circle cx="20" cy="17" r="3.6" class="ph-pt coffre"/><path d="M29 11 l4 6 l-4 6 l-4 -6z" class="ph-gros" style="stroke-width:1.6"/></svg>`;
 const rgDrapeau = (w) => `<svg viewBox="0 0 30 30" width="${w}" height="${w}" aria-hidden="true"><path d="M6 25 Q15 21 25 25" stroke="var(--line)" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 25 V5" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/><path class="rg-flotte" d="M11 5 h11 l-3 4.5 l3 4.5 h-11z" fill="var(--gold)"/></svg>`;
 const rgEpees = (w) => `<span style="color:var(--gold);display:block;width:${w}px;height:${w}px">${PICTO.combat}</span>`;
 const rgTrophee = (w) => `<svg viewBox="0 0 30 30" width="${w}" height="${w}" aria-hidden="true"><path d="M9 5 h12 v5 a6 6 0 0 1 -12 0z" fill="var(--gold)"/><path d="M9 7 h-3 a3 3 0 0 0 3 5 M21 7 h3 a3 3 0 0 1 -3 5" stroke="var(--gold)" stroke-width="1.6" fill="none"/>
@@ -4317,12 +4320,11 @@ function rgSchema(k) {
   /* ---------- 3. Les coffres : trois sources, un coffre, quatre raretés ---------- */
   if (n === 2) {
     const src = (ic, t) => `<div class="rg-carte"><span class="ph-v">${ic}</span><small style="color:var(--text)">${t}</small></div>`;
-    const conv = `<svg class="rg-conv" viewBox="0 0 288 22" preserveAspectRatio="none" aria-hidden="true"><path d="M48 0 Q48 12 140 18 M144 0 V18 M240 0 Q240 12 148 18" stroke="currentColor" stroke-width="1.6" fill="none" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg>`;
-    const cof = `<div class="rg-cof">${rgCoffre('epique', 92)}<svg viewBox="0 0 92 78" style="position:absolute;inset:0;width:92px;height:78px" aria-hidden="true">${rgEtinc(70, 10, 5)}${rgEtinc(18, 22, 3.4, '#ffe27a', 1.1)}</svg></div>`;
-    const bouton = `<div style="display:grid;gap:4px;justify-items:start"><span class="btn mini or rg-faux"><span class="ph-bi">${rgCoffre('rare', 20)}</span>Coffre (2)</span><small>sous le chemin :<br>touche pour ouvrir</small></div>`;
-    const rar = ['commun', 'rare', 'epique', 'legendaire'].map(r => `<div>${rgCoffre(r, 40)}<small style="color:${RG_RAR[r]}">${RARETE_NOM[r]}</small></div>`).join('');
-    return `<div class="rg-sch"><div class="rg-3">${src(rgMiniRoute(30), 'case coffre du chemin')}${src(rgEpees(24), 'boss vaincu')}${src(rgDrapeau(28), 'Défi de l\'Avent')}</div>
-      ${conv}<div class="rg-but">${cof}${bouton}</div><div class="rg-rar4">${rar}</div></div>`;
+    const conv = `<svg class="rg-conv" viewBox="0 0 288 22" preserveAspectRatio="none" aria-hidden="true" style="height:14px"><path d="M48 0 Q48 12 140 18 M144 0 V18 M240 0 Q240 12 148 18" stroke="currentColor" stroke-width="1.6" fill="none" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg>`;
+    const bouton = `<div class="rg-but"><span class="btn mini or rg-faux"><span class="ph-bi">${rgCoffre('rare', 20)}</span>Coffre (2)</span><small>sous le chemin :<br>touche pour ouvrir</small></div>`;
+    const rar = ['commun', 'rare', 'epique', 'legendaire'].map(r => `<div>${rgCoffre(r, 40)}<small style="color:${RG_RAR[r]}">${RARETE_NOM[r]}</small>${r === 'legendaire' ? '<small class="rg-p">palier 14 : Aura de l\'Aube</small>' : ''}</div>`).join('');
+    return `<div class="rg-sch"><div class="rg-3">${src(rgMiniRoute(30), 'case coffre du chemin')}${src(rgEpees(24), 'boss vaincu<br><span class="rg-p">+ sa panoplie</span>')}${src(rgDrapeau(28), 'Défi de l\'Avent')}</div>
+      ${conv}${bouton}<div class="rg-rar4">${rar}</div></div>`;
   }
   /* ---------- 4. Éclats et marchand : d'où viennent les éclats, où ils vont ---------- */
   if (n === 3) {
@@ -4332,8 +4334,8 @@ function rgSchema(k) {
     const sources = `<div class="rg-src"><div><span class="pd-ic">${ECLAT_SVG(18)}</span><small>paliers 6, 11 et 13</small></div>
       <div><span class="pd-ic">${rgCoffre('commun', 24)}</span><small>coffre sans nouveauté</small></div></div>`;
     const pastille = `<div style="display:grid;gap:4px;justify-items:center;text-align:center"><span class="btn mini ph-mar rg-faux">${ECLAT_SVG(13)} 120 ›</span><small>touche : le marchand</small></div>`;
-    const prix = [['fleurs', 'tete', 'commun', 40], ['tr_petales', 'trainee', 'rare', 100], ['vi_etoiles', 'victoire', 'epique', 250], ['aura_aube', 'aura', 'legendaire', 600]]
-      .map(([id, sl, r, p]) => `<div><span class="pd-ic ph-v s-${sl}" style="border-radius:8px;width:32px;height:32px;border-color:${RG_RAR[r]}">${rgCosm(id, sl)}</span><span style="min-width:0"><b style="color:${RG_RAR[r]}">${RARETE_NOM[r]}</b><em>${ECLAT_SVG(11)} ${p}</em></span></div>`).join('');
+    const prix = [['cape_rouge', 'cape', 'commun', 40], ['tr_petales', 'trainee', 'rare', 100], ['vi_etoiles', 'victoire', 'epique', 250], ['aura_aube', 'aura', 'legendaire', 600]]
+      .map(([id, sl, r, p]) => `<div><span class="pd-ic ph-v s-${sl}" style="border-radius:8px;width:36px;height:36px;border-color:${RG_RAR[r]}">${sl === 'aura' ? rgAuraVig(id) : rgCosm(id, sl)}</span><span style="min-width:0"><b style="color:${RG_RAR[r]}">${RARETE_NOM[r]}</b><em>${ECLAT_SVG(11)} ${p}</em></span></div>`).join('');
     return `<div class="rg-sch">${sources}<svg class="rg-conv" viewBox="0 0 288 22" preserveAspectRatio="none" aria-hidden="true" style="margin:-4px 0 -6px"><path d="M72 0 Q72 14 140 20 M216 0 Q216 14 148 20" stroke="currentColor" stroke-width="1.6" fill="none" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg><div class="rg-ecl">${tas}${rgFleche('d')}${pastille}</div>
       <div class="rg-titre-s">Le marchand du Rodage</div><div class="rg-mar">${prix}</div></div>`;
   }
@@ -4418,16 +4420,16 @@ function rgSchema(k) {
   return '';
 }
 const REGLES_PAGES = [
-  { t: 'L\'Aventure en un coup d\'œil', get s() { return rgSchema('aventure'); },
+  { t: 'L\'Aventure d\'un coup d\'œil', get s() { return rgSchema('aventure'); },
     p: ['Tu fais tes quêtes. Tout le reste en découle.', 'L\'XP te fait avancer sur le <b>chemin du Rodage</b> : 15 paliers jusqu\'au château de l\'Aube.', 'Chaque palier donne un objet, un <b>coffre</b> ou des <b>éclats</b>. Tu portes tes trésors dans ta <b>garde-robe</b>.'] },
   { t: 'Le chemin', get s() { return rgSchema('chemin'); },
     p: ['Un palier = <b>750 XP</b>, la moitié d\'une semaine parfaite : environ <b>2 paliers par semaine</b>.', 'Annexes, boss vaincus et défis comptent aussi : ils te font aller plus vite.', '<b>Épuisé</b>, ton XP ne vaut que <b>×0,85</b>. Soigne-toi : le chemin repart.',
       'Toi et ton compagnon d\'armes avancez au même pas sur la semaine, même avec des quêtes différentes.', 'Touche une étape : sa récompense et l\'XP qui manque. <b>Tout le chemin</b> déroule tous les paliers.'] },
   { t: 'Les coffres', get s() { return rgSchema('coffres'); },
     get p() { const s = (typeof state !== 'undefined' && state) || {}, sa = ((s.armurerie || {}).saison || {}).id, avant = sa !== 's1' && String(s.today || '') < COFFRES_S1_RODAGE;
-      return ['Le bouton <b>Coffre (N)</b> sous le chemin les ouvre. Le chiffre rouge sur « Aventure » compte ceux qui t\'attendent.', 'Touche une case coffre : ses chances par rareté. <b>Voir les objets</b> : ce qu\'il te reste à gagner.',
-        (avant ? 'Dès le 1er décembre, <b>plus de doublon</b>' : '<b>Plus de doublon</b>') + ' : si la rareté tirée est complète, le coffre monte de rareté (jusqu\'à épique).', 'Un coffre obéit aux lois du jour où on l\'ouvre&nbsp;: gagné en novembre, ouvert en décembre, il profite des nouvelles règles.',
-        'Un <b>coffre légendaire</b> donne un objet légendaire tant qu\'il en reste (palier 14 : l\'<b>Aura de l\'Aube</b>).', 'Un <b>boss du mois</b> laisse la pièce suivante de <b>sa panoplie</b> : cape, couronne, puis aura. Lui seul la donne.']; } },
+      return ['<b>Coffre (N)</b> sous le chemin. Le chiffre rouge sur « Aventure » les compte.', 'Touche une case coffre : ses chances par rareté. <b>Voir les objets</b> : ce qu\'il te reste à gagner.',
+        (avant ? 'Dès le 1er décembre, <b>plus de doublon</b>' : '<b>Plus de doublon</b>') + ' : si la rareté tirée est complète, le coffre monte de rareté (jusqu\'à épique).', 'Un coffre suit les règles du jour où tu l\'ouvres.',
+        'Seul le <b>boss du mois</b> donne <b>sa panoplie</b> : cape, couronne, puis aura.']; } },
   { t: 'Éclats et marchand', get s() { return rgSchema('eclats'); },
     p: ['Les paliers <b>6, 11 et 13</b> donnent <b>60 éclats</b> chacun.', 'Un coffre qui n\'a plus rien pour toi donne des éclats : <b>20</b>, <b>50</b>, <b>120</b> ou <b>300</b>, selon sa rareté.', 'Touche ton compteur <b>✦</b> sous le chemin : le marchand te vend l\'objet du Rodage de ton choix.'] },
   { t: 'Gagné sans coffre', get s() { return rgSchema('autrement'); },
@@ -4435,11 +4437,11 @@ const REGLES_PAGES = [
   { t: 'La garde-robe', get s() { return rgSchema('garde'); },
     p: ['Jusqu\'à 12 emplacements, de la cape au coup de grâce. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Combattre à deux', get s() { return rgSchema('deux'); },
-    p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. Si ton compagnon d\'armes est en vacances, le lien tient avec toi seul.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
+    p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
       '<b>Défi de l\'Avent</b>, du 7 au 13 décembre : un nombre de quêtes à atteindre à deux. Réussi, chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.'] },
   { t: 'Les saisons', get s() { return rgSchema('saisons'); },
     get p() { const s1 = (((typeof state !== 'undefined' && state && state.armurerie) || {}).saison || {}).id === 's1'; // pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage
-      return ['Chaque saison a <b>son chemin</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau). Les objets du Rodage s\'en vont avec lui.', 'Tes <b>trophées</b> et tes <b>titres</b> restent, souvenirs du Rodage.',
+      return ['Chaque saison a <b>son chemin</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau). Les objets du Rodage s\'en vont avec lui, sauf ton <b>Dragon de l\'Aube</b>, qui te suit.', 'Tes <b>trophées</b> et tes <b>titres</b> restent, souvenirs du Rodage.',
         s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 arrive le 1er janvier. Tout le reste est un secret.']
         .concat(s1 ? [] : ['<b>⚠ Ouvre tes coffres et dépense tes éclats avant le 31 décembre : ils disparaissent avec le Rodage.</b>']); } }
 ];
@@ -4463,6 +4465,8 @@ function ouvrirRegles(page) {
       <span class="rg-points">${REGLES_PAGES.map((_, k) => `<i class="${k === pageRegles ? 'on' : ''}"></i>`).join('')}</span>
       ${pageRegles < n - 1 ? `<button class="btn mini or" data-regles-page="${pageRegles + 1}">Suivant ›</button>` : '<button class="btn mini or" data-regles-fin="1">Compris !</button>'}</div></div>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
+  const L = ov.querySelector('.rg-livre'), maj = () => L.classList.toggle('defile', L.scrollTop + L.clientHeight < L.scrollHeight - 4);
+  L.addEventListener('scroll', maj, { passive: true }); maj();
 }
 function livretPageLue() { try { const p = Number(localStorage.getItem('livretPage')); return p >= 0 && p < REGLES_PAGES.length ? Math.floor(p) : 0; } catch (e) { return 0; } }
 // glissement du doigt : tourner les pages du livret
