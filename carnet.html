@@ -1178,7 +1178,7 @@ const WORLD={
  travail:"la vie professionnelle d'un scientifique dans un laboratoire : labo, collègues, réunions, congrès, présentations",
  voyage:"les voyages en Europe où l'anglais sert de langue commune : transports, hôtels, restaurants, rencontres, imprévus",
  series:"des scènes de séries anglophones : anglais parlé natif, contractions et formes réduites écrites comme dans des sous-titres familiers (gonna, wanna, y'know, 'cause), argot courant"};
-const RANKS=[[1,"Étranger"],[3,"Apprenti d'Albion"],[5,"Voyageur"],[8,"Interprète"],[12,"Conteur"],[16,"Orateur"],[20,"Barde d'Albion"]];
+const RANKS=[[1,"Étranger"],[3,"Apprenti d'Albion"],[5,"Messager"],[8,"Interprète"],[12,"Conteur"],[16,"Orateur"],[20,"Barde d'Albion"]];
 const XP_BASE=100, SKILL_BASE=60;               // courbe de progression (niveau global / compétences)
 const levelOf=(xp,base)=>Math.floor((1+Math.sqrt(1+8*Math.max(0,xp)/base))/2);
 const lvlStart=(l,base)=>base*l*(l-1)/2;
@@ -1193,21 +1193,21 @@ const earRate=()=>Math.min(1.15,0.82+0.035*(diffEar()-1)); // la voix accélère
 const mult=c=>Math.min(3,1+Math.floor(c/3)*0.5);                 // combo : x1.5 dès 3, x2 dès 6… max x3
 const MIC='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
 const BADGES=[
- ["first","Premier pas","Termine une mission",s=>s.missions>=1],
+ ["first","Premier message","Termine une mission",s=>s.missions>=1],
  ["combo5","Combo x5","5 bonnes réponses d'affilée",s=>s.maxCombo>=5],
- ["combo10","En feu","10 bonnes réponses d'affilée",s=>s.maxCombo>=10],
+ ["combo10","Langue de feu","10 bonnes réponses d'affilée",s=>s.maxCombo>=10],
  ["ear5","Oreille d'or","5 dictées parfaites",s=>s.dictPerfect>=5],
- ["ear25","Radar","25 dictées parfaites",s=>s.dictPerfect>=25],
+ ["ear25","Ouïe de lynx","25 dictées parfaites",s=>s.dictPerfect>=25],
  ["spk10","Langue déliée","10 phrases parfaites à l'oral",s=>s.speakPerfect>=10],
  ["spk50","Moulin à paroles","50 phrases parfaites à l'oral",s=>s.speakPerfect>=50],
  ["boss1","Boss vaincu","Bats un boss",s=>s.bossWins>=1],
- ["boss10","Chasseur de boss","10 boss vaincus",s=>s.bossWins>=10],
+ ["boss10","Fléau des boss","10 boss vaincus",s=>s.bossWins>=10],
  ["nojoker","Sans filet","Une mission sans joker",s=>s.noJoker>=1],
  ["stars3","Trois étoiles","Une mission à 3 étoiles",s=>s.threeStars>=1],
- ["globe","Globe-trotter","Une mission dans chaque monde",s=>Object.keys(s.worlds||{}).length>=3],
- ["streak5","Régulier","5 séances d'anglais sans dépasser 3 jours d'écart",s=>enStatus().streak>=5],
- ["lvl5","Explorateur","Atteins le niveau 5",s=>levelOf(G().xp,XP_BASE)>=5],
- ["lvl10","Niveau 10","Atteins le niveau 10",s=>levelOf(G().xp,XP_BASE)>=10]
+ ["globe","Arpenteur des trois mondes","Une mission dans chaque monde",s=>Object.keys(s.worlds||{}).length>=3],
+ ["streak5","Messager fidèle","5 séances d'anglais sans dépasser 3 jours d'écart",s=>enStatus().streak>=5],
+ ["lvl5","Lettré","Atteins le niveau 5",s=>levelOf(G().xp,XP_BASE)>=5],
+ ["lvl10","Érudit d'Albion","Atteins le niveau 10",s=>levelOf(G().xp,XP_BASE)>=10]
 ];
 
 /* ---------- effets : sons, messages, confettis ---------- */
@@ -1232,7 +1232,7 @@ function miss(){const m=ses.m;ses.dernierRate={combo:m.combo,total:m.total};m.co
 function annulerRate(){const d=ses&&ses.dernierRate;if(!d)return;ses.m.combo=d.combo;ses.m.total=d.total;ses.dernierRate=null;save()}
 const BTN_MICRO=`<button class="btn sm" id="micTrompe">🎤 Le micro s'est trompé : je redis</button>`;
 function spend(cost,label){ses.m.jokers++;G().xp=Math.max(0,G().xp-cost);ses.m.xp-=cost;toast(`Joker ${label} : −${cost} XP`);save()}
-function checkBadges(){const s=G().stats;BADGES.forEach(([id,name,,f])=>{if(!G().badges[id]&&f(s)){G().badges[id]=todayISO();ses?.m?.newBadges.push(name);setTimeout(()=>{sfx("badge");toast(`Badge débloqué : ${name}`)},700)}})}
+function checkBadges(){const s=G().stats;BADGES.forEach(([id,name,,f])=>{if(!G().badges[id]&&f(s)){G().badges[id]=todayISO();ses?.m?.newBadges.push(name);setTimeout(()=>{sfx("badge");toast(`Haut fait : ${name}`)},700)}})}
 
 /* ---------- quête ---------- */
 function enStatus(){
@@ -1253,7 +1253,7 @@ function renderQuestEn(){
   else if(st.left<0) pill=`<span class="pill bad">Retard : ${-st.left} j</span>`;
   else if(st.left===0) pill='<span class="pill warn">Aujourd\'hui</span>';
   else pill=`<span class="pill neutral">Prochaine : ${frDate(st.due)}</span>`;
-  $("#qEn").innerHTML=`<span class="k">Anglais<i class="kx"> · tous les ${EN_EVERY_DAYS} jours</i></span>
+  $("#qEn").innerHTML=`<span class="k">Anglais<i class="kx"> · un message d'Albion tous les ${EN_EVERY_DAYS} jours</i></span>
    <span class="big">Niveau ${L}</span>
    <span class="row">${pill}<span class="pill neutral">Série : ${st.streak}</span></span>`;
 }
@@ -1267,8 +1267,8 @@ function playerCard(){
     <div class="row" style="justify-content:space-between"><div><span class="small muted">Rang : ${rankOf(L)}</span><h2>Niveau ${L}</h2></div><span class="xp">${g.xp} XP</span></div>
     <div class="bar gold"><i style="width:${Math.round((g.xp-a)/(b-a)*100)}%"></i></div>
     <span class="small muted">${b-g.xp} XP avant le niveau ${L+1}</span>
-    <div class="grid2">${sk("Écoute",g.ear,`Voix ×${earRate().toFixed(2).replace(".",",")}`)}${sk("Parole",g.spk,"Plus tu montes, plus le boss est exigeant")}</div>
-    <div class="row small muted"><span>Badges ${Object.keys(g.badges).length}/${BADGES.length}</span><span>·</span><span>Meilleur combo ${g.stats.maxCombo}</span><span>·</span><span>Boss vaincus ${g.stats.bossWins}</span></div>
+    <div class="grid2">${sk("Écoute",g.ear,`Voix ×${earRate().toFixed(2).replace(".",",")}`)}${sk("Parole",g.spk,"Plus tu montes, plus les boss d'Albion sont exigeants")}</div>
+    <div class="row small muted"><span>Hauts faits ${Object.keys(g.badges).length}/${BADGES.length}</span><span>·</span><span>Meilleur combo ${g.stats.maxCombo}</span><span>·</span><span>Boss vaincus ${g.stats.bossWins}</span></div>
   </div>`;
 }
 /* Pierre runique : chaque séance d'anglais (mission ou conversation comptée) grave une rune ; la dernière luit */
@@ -1300,10 +1300,10 @@ function renderEn(){
   const starsOf=i=>state.en.mods[a].stars?.[i]||0;
   p.innerHTML=`
   ${hasTTS()?"":'<p class="note">Ce navigateur ne sait pas lire l\'audio. Ouvre la page dans Safari ou Chrome pour les exercices d\'écoute.</p>'}
-  <div class="card prochaine"><span class="kicker">Ce soir</span>
+  <div class="card prochaine"><span class="kicker">Ce soir, à la chandelle</span>
     ${dueCount?`<div class="cs-big">${dueCount}<small>carte${dueCount>1?"s":""}</small></div><div class="cs-sub">~${Math.max(2,Math.round(dueCount/3))} min · Mémoire des mots</div>
-    <button class="btn primary big" data-next="rev">Réviser ${dueCount} carte${dueCount>1?"s":""}</button>`:`<div class="cs-big">0<small>révision</small></div><div class="cs-sub">Mémoire à jour : place à la mission du jour</div>`}
-    <button class="btn ${dueCount?"":"primary big"}" data-next="go">Lancer la mission · ${esc(M.name)}</button></div>
+    <button class="btn primary big" data-next="rev">Réviser ${dueCount} carte${dueCount>1?"s":""}</button>`:`<div class="cs-big">0<small>révision</small></div><div class="cs-sub">L'Oubli dort : un message d'Albion t'attend</div>`}
+    <button class="btn ${dueCount?"":"primary big"}" data-next="go">Partir en mission · ${esc(M.name)}</button></div>
   ${playerCard()}
   ${convCard()}
   ${pierreRunique()}
@@ -1312,16 +1312,16 @@ function renderEn(){
   <div class="card mission">
     <span class="small muted">${M.name} · chapitre ${cur+1} / ${M.units.length} ${"★".repeat(starsOf(cur))}</span>
     <h2>${esc(u[0])}</h2><span class="muted">À placer à l'oral : ${esc(u[1])}</span>
-    <div class="row"><span class="pill neutral">1 · Écoute ×6</span><span class="pill neutral">2 · Parole ×6</span><span class="pill bad">3 · Boss</span></div>
-    <div class="row"><button class="btn primary" id="go">Lancer la mission</button><button class="btn" id="snd">Tester le son</button></div>
-    <p class="small muted">Réécouter est gratuit ; jokers payants : ralentir −3, voir le texte −8. Le chapitre suivant se débloque quand tu bats le boss.</p>
+    <div class="row"><span class="pill neutral">1 · Écoute ×6</span><span class="pill neutral">2 · Parole ×6</span><span class="pill bad">3 · Boss du passage</span></div>
+    <div class="row"><button class="btn primary" id="go">Partir en mission</button><button class="btn" id="snd">Tester le son</button></div>
+    <p class="small muted">Réécouter ne coûte rien. Les jokers se paient en XP : ralentir −3, voir le texte −8. Bats le boss pour ouvrir le chapitre suivant.</p>
     ${sample?"":'<p class="note">Les missions sont créées par Claude : ajoute ta clé API dans les réglages. La révision express marche sans.</p>'}
   </div>
   ${memoryCard()}
   ${a==="series"?seriesExtras():""}
-  <div class="card"><h3>Badges</h3><div class="badges">${BADGES.map(b=>`<div class="badge ${G().badges[b[0]]?"on":""}"><span class="medal">${b[1].replace(/[^A-Za-zÀ-ÿ ]/g,"").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()}</span><b class="small">${esc(b[1])}</b><span class="small muted">${esc(b[2])}</span></div>`).join("")}</div></div>
-  <div class="card"><h3>Carte ${M.name}</h3><div class="hist small">${M.units.map((x,i)=>`<div><span class="mono">${String(i+1).padStart(2,"0")}</span><span style="flex:1">${esc(x[0])}</span><span class="starline">${i<cur||starsOf(i)?"★".repeat(starsOf(i))+"☆".repeat(3-starsOf(i)):i===cur?'<span class="pill warn">en cours</span>':'<span class="muted">verrouillé</span>'}</span></div>`).join("")}</div></div>
-  <div class="card"><h3>Dernières missions</h3><div class="hist small">${state.en.sessions.slice(-6).reverse().map(s=>`<div><span>${frDate(s.date)}</span><span class="muted" style="flex:1">${esc(nomMonde(s))}</span><span class="starline">${s.stars!=null?"★".repeat(s.stars)+"☆".repeat(3-s.stars):""}</span><span class="mono">${s.xp!=null?"+"+s.xp+" XP":s.min+" min"}</span></div>`).join("")||'<p class="muted">Aucune mission pour l\'instant.</p>'}</div></div>`;
+  <div class="card"><h3>Hauts faits</h3><div class="badges">${BADGES.map(b=>`<div class="badge ${G().badges[b[0]]?"on":""}"><span class="medal">${b[1].replace(/[^A-Za-zÀ-ÿ ]/g,"").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()}</span><b class="small">${esc(b[1])}</b><span class="small muted">${esc(b[2])}</span></div>`).join("")}</div></div>
+  <div class="card"><h3>Carte ${M.name}</h3><div class="hist small">${M.units.map((x,i)=>`<div><span class="mono">${String(i+1).padStart(2,"0")}</span><span style="flex:1">${esc(x[0])}</span><span class="starline">${i<cur||starsOf(i)?"★".repeat(starsOf(i))+"☆".repeat(3-starsOf(i)):i===cur?'<span class="pill warn">en cours</span>':'<span class="muted">scellé</span>'}</span></div>`).join("")}</div></div>
+  <div class="card"><h3>Journal des missions</h3><div class="hist small">${state.en.sessions.slice(-6).reverse().map(s=>`<div><span>${frDate(s.date)}</span><span class="muted" style="flex:1">${esc(nomMonde(s))}</span><span class="starline">${s.stars!=null?"★".repeat(s.stars)+"☆".repeat(3-s.stars):""}</span><span class="mono">${s.xp!=null?"+"+s.xp+" XP":s.min+" min"}</span></div>`).join("")||'<p class="muted">Ton journal est vierge : la première mission t\'attend.</p>'}</div></div>`;
   p.querySelectorAll("[data-mod]").forEach(b=>b.onclick=()=>{state.en.active=b.dataset.mod;save();renderEn();renderQuestEn()});
   $("#go").onclick=startMission;
   $("#snd").onclick=()=>{if(!speak("Hello Theron! If you can hear me, you're ready to play.",earRate()))toast("Audio indisponible dans ce navigateur")};
@@ -1422,7 +1422,7 @@ function hitOubli(g){const O=state.en.oubli;O.hp=Math.min(O.max,O.hp-[-2,1,2,3][
   if(O.hp<=0){O.kills++;O.rank++;O.max=150+100*(O.rank-1);O.hp=O.max;addXP(50,"ear");setTimeout(()=>{sfx("level");toast(`L'Oubli recule ! Trophée : Plume de mémoire (${O.kills})`);confetti()},300)}}
 function oubliHTML(){const O=state.en.oubli;return `<div class="foe"><div class="row" style="justify-content:space-between"><b class="foe-name">L'Oubli · rang ${O.rank}</b><span class="small mono">${Math.max(0,O.hp)} / ${O.max} PV</span></div><div class="hp"><i style="width:${Math.max(0,O.hp)/O.max*100}%"></i></div></div>`}
 function memoryCard(){const q=srsQueue(),s=deckStats();
-  return `<div class="card"><div class="row" style="justify-content:space-between"><div><span class="kicker">Mémoire des mots</span><h3>${q.length?`${q.length} carte${q.length>1?"s":""} aujourd'hui`:"Rien à revoir aujourd'hui"}</h3></div><button class="btn primary" id="rev" ${q.length?"":"disabled"}>Réviser</button></div>
+  return `<div class="card"><div class="row" style="justify-content:space-between"><div><span class="kicker">Mémoire des mots</span><h3>${q.length?`${q.length} carte${q.length>1?"s":""} aujourd'hui`:"L'Oubli dort aujourd'hui"}</h3></div><button class="btn primary" id="rev" ${q.length?"":"disabled"}>Réviser</button></div>
   ${oubliHTML()}
   <p class="small story">« Apprends et retiens : chaque leçon gravée le repousse. » Chaque mot retrouvé le blesse, chaque raté le soigne.</p>
   <div class="gap" style="gap:4px;margin:6px 0"><div class="row" style="justify-content:space-between"><b class="small">Lexique avancé (B2+) maîtrisé</b><span class="small mono">${s.avances} / ${prochainPalier(s.avances)}</span></div>
@@ -1437,7 +1437,7 @@ function startReview(){const q=srsQueue();if(!q.length)return;ses={kind:"vocab",
 function cardMode(c){return c.phrase?"prod":isNew(c)?"new":["ecoute","prod","reco"][(c.reps||0)%3]}
 function renderReview(p){
   if(ses.idx>=ses.queue.length){
-    p.innerHTML=`<div class="card game"><span class="kicker">Mémoire des mots</span><h2>Séance terminée</h2><p>${ses.ok} / ${ses.n} cartes retrouvées.</p>${oubliHTML()}<button class="btn primary" id="back">Retour</button></div>`;
+    p.innerHTML=`<div class="card game"><span class="kicker">Mémoire des mots</span><h2>Révision achevée</h2><p>${ses.ok} / ${ses.n} cartes retrouvées. Chaque mot retrouvé a frappé l'Oubli.</p>${oubliHTML()}<button class="btn primary" id="back">Retour</button></div>`;
     $("#back").onclick=()=>{ses=null;renderAll()};return;
   }
   let c=state.en.deck.find(x=>x.id===ses.queue[ses.idx]); if(!c){ses.idx++;return renderReview(p)}
@@ -1579,7 +1579,7 @@ function startMission(){
 }
 function loadPack(){
   const b=$("#stepBody"); const mod=ses.mod;
-  b.innerHTML=`<div class="card game"><span class="kicker">Préparation</span><h3>Claude prépare ta mission…</h3><p class="muted">En général 15 à 40 secondes. Pendant ce temps, monte le son : tout se joue à l'oreille et à la voix.</p><div class="bar"><i class="indet"></i></div></div>`;
+  b.innerHTML=`<div class="card game"><span class="kicker">Un messager approche</span><h3>Ta mission arrive d'Albion…</h3><p class="muted">En général 15 à 40 secondes. Monte le son : là-bas, tout se joue à l'oreille et à la voix.</p><div class="bar"><i class="indet"></i></div></div>`;
   getPack(mod).then(P=>{if(!ses||ses.kind!=="mission"||ses.mod!==mod)return;
     ses.pack=P; ses.L=interleave(P.listen,["qcm","dictee","qcm","dictee","qcm","dictee"]); ses.S=interleave(P.speak,["dis","repond","dis","repete","dis","repond"]); renderEn();
   }).catch(e=>{if(!ses)return;b.innerHTML=`<div class="card"><p class="err">${esc(sampleErr(e.code))}</p><button class="btn" id="rt">Réessayer</button></div>`;$("#rt").onclick=loadPack});
@@ -1606,7 +1606,7 @@ function advance(){
   renderEn(); hautExercice();
 }
 function renderMission(p){
-  const m=ses.m, R=["Intro","Écoute","Parole","Boss"];
+  const m=ses.m, R=["Départ","Écoute","Parole","Boss"];
   p.innerHTML=`<div class="card hud mi-hud">
     <div class="row mi-l1"><span class="mi-etape"><b>${R[ses.round]||""}</b> <span class="mi-pts">${R.map((n,i)=>`<i class="${i===ses.round?"cur":i<ses.round?"done":""}" title="${n}"></i>`).join("")}</span></span><span class="xp sm">${m.xp>=0?"+":""}${m.xp} XP</span>
       ${m.combo>=2?`<span class="combo" title="Combo ×${m.combo}${mult(m.combo)>1?", XP ×"+mult(m.combo):""}">🔥×${m.combo}</span>`:""}
@@ -1614,7 +1614,7 @@ function renderMission(p){
       ${ses.round===3&&ses.boss?`<span class="hearts" aria-label="${ses.boss.hearts} cœurs">${"♥".repeat(ses.boss.hearts)}<span class="lost">${"♥".repeat(3-ses.boss.hearts)}</span></span>`:""}<span class="mono small" id="tm">00:00</span></div>
   </div>
   <div id="stepBody" class="panel"></div>
-  ${ses.round<4?`<div class="row"><button class="btn sm" id="quit">${ses.confirmQuit?"Confirmer l'abandon (mission non comptée)":"Abandonner"}</button>${ses.confirmQuit?'<button class="btn sm" id="stay">Continuer</button>':""}</div>`:""}`;
+  ${ses.round<4?`<div class="row"><button class="btn sm" id="quit">${ses.confirmQuit?"Confirmer la retraite (mission non comptée)":"Battre en retraite"}</button>${ses.confirmQuit?'<button class="btn sm" id="stay">Continuer</button>':""}</div>`:""}`;
   updTimer();
   if($("#quit")) $("#quit").onclick=()=>{if(ses.confirmQuit){stopTTS();clearInterval(tick);ses=null;renderAll()}else{ses.confirmQuit=true;renderEn()}};
   if($("#stay")) $("#stay").onclick=()=>{ses.confirmQuit=false;renderEn()};
@@ -1625,11 +1625,11 @@ function renderMission(p){
 const D20=r=>r===1?0.8:r<10?1:r<18?1.1:r<20?1.25:1.5;   // même table que le d20 du jour de la Compagnie
 function renderBrief(b){
   const P=ses.pack, T=P.tip||{};
-  b.innerHTML=`<div class="card game"><span class="kicker">Intro</span><h2>${esc(P.title)}</h2><p>${esc(P.brief)}</p></div>
+  b.innerHTML=`<div class="card game"><span class="kicker">Ordre de mission</span><h2>${esc(P.title)}</h2><p>${esc(P.brief)}</p></div>
   <div class="card"><span class="kicker">Structure à placer</span><h3>${esc(T.point)}</h3><p style="white-space:pre-wrap">${esc(T.explication)}</p>${T.exemple?`<div class="row"><button class="btn sm" id="ex" aria-label="Écouter l'exemple">▶</button><i>${esc(T.exemple)}</i></div>`:""}
     <p class="small muted">Utilise-la dans tes phrases pendant la partie Parole et face au boss.</p></div>
   <div class="card d20card"><div class="d20 ${ses.d20?"":"idle"}" id="d20">${ses.d20||"20"}</div>
-    <div class="gap" style="gap:4px;min-width:0"><h3>Bonus du d20</h3>
+    <div class="gap" style="gap:4px;min-width:0"><h3>Le dé du destin</h3>
       <p class="small muted">${ses.d20?`${ses.d20===20?"Coup critique ! ":ses.d20===1?"Échec critique… ":""}Les XP des défis sont multipliés par ${String(ses.d20m).replace(".",",")}.`:"1 : ×0,8 · 2-9 : ×1 · 10-17 : ×1,1 · 18-19 : ×1,25 · 20 : ×1,5"}</p>
       ${ses.d20?"":'<div><button class="btn" id="roll">Lancer le d20</button></div>'}</div></div>
   <button class="btn primary" id="nx">${ses.d20?"Commencer":"Lancer le d20 et commencer"}</button>`;
@@ -1693,7 +1693,7 @@ function renderSpeak(b){
     ${audioBlock}
     ${it.done||it.wait?"":micHTML("micS","Touche le micro et parle : c'est ta voix qu'on entraîne")}
     <textarea id="sp" rows="2" ${EN_IN} placeholder="Ta phrase apparaît ici quand tu parles…" ${it.done||it.wait?"disabled":""}>${esc(it.val||"")}</textarea>
-    ${it.wait?'<p class="muted">Le jury écoute…</p>':""}
+    ${it.wait?'<p class="muted">Le scribe d\'Albion écoute…</p>':""}
     ${it.err?`<p class="err small">${esc(it.err)}</p>`:""}
     ${it.done?`${verdictHTML(it)}${it.fb||""}<div class="row"><button class="btn primary" id="nx">Continuer</button>${it.cls==="bad"&&it.val&&!it.passe&&!it.reessai?BTN_MICRO:""}</div>`:it.wait?"":`<div class="row"><button class="btn primary" id="val">Valider</button><button class="btn sm" id="skip">Je passe</button></div>`}
   </div>`;
@@ -1741,7 +1741,7 @@ function renderBoss(b){
       ?`<div class="bub a"><button class="btn sm" data-bt="${i}" aria-label="Écouter">▶</button> ${B.show||B.over?esc(t.content):'<span class="muted">réplique audio</span>'}</div>`
       :`<div class="bub u">${esc(t.content)}</div>${B.notes[i]?`<div class="bnote small ${B.notes[i].lost?"bad":""}">${esc(B.notes[i].txt)}${annulable(i)?`<div style="margin-top:6px">${BTN_MICRO}</div>`:""}</div>`:""}`).join("")}
       ${B.wait?'<div class="bub a muted">…</div>':""}</div>
-    ${B.over?`<div class="verdict ${B.over==="win"?"perfect":"bad"}">${B.over==="win"?`Boss vaincu ! +${B.bonus} XP`:B.overMsg}</div><button class="btn primary" id="nx">Voir le bilan</button>`
+    ${B.over?`<div class="verdict ${B.over==="win"?"perfect":"bad"}">${B.over==="win"?`Boss vaincu, le passage s'ouvre ! +${B.bonus} XP`:B.overMsg}</div><button class="btn primary" id="nx">Voir le bilan</button>`
       :`${B.wait?"":micHTML("micB","Touche le micro et réponds : c'est envoyé dès que tu as fini de parler")}
       <textarea id="bsIn" rows="2" ${EN_IN} placeholder="Ta réponse…" ${B.wait?"disabled":""}>${esc(B.draft||"")}</textarea>
       ${B.err?`<p class="err small">${esc(B.err)}</p>`:""}
@@ -1770,7 +1770,7 @@ JSON seul : {"reply":"ta réplique","compris":true ou false (false seulement si 
       else gain(12,"spk",true);
       const nU=B.turns.filter(t=>t.role==="user").length;
       if(r.objectif_atteint&&B.hearts>0){B.over="win";B.bonus=40+15*B.hearts;addXP(B.bonus,"spk");G().stats.bossWins++;sfx("level");confetti();checkBadges()}
-      else if(B.hearts<=0){B.over="lose";B.overMsg="Plus de cœurs : le boss a gagné cette fois."}
+      else if(B.hearts<=0){B.over="lose";B.overMsg="Plus de cœurs : le boss garde le passage, pour cette fois."}
       else if(nU>=8){B.over="lose";B.overMsg="8 répliques écoulées sans atteindre l'objectif."}
       save(); speak(B.turns[B.turns.length-1].content,earRate());
     }catch(e){B.wait=false;B.turns.pop();B.draft=ans;B.err=sampleErr(e.code)}
@@ -1799,12 +1799,12 @@ function renderEnd(b){
   }
   const P=ses.pack;
   b.innerHTML=`<div class="card game" style="text-align:center;justify-items:center">
-    <span class="kicker">Bilan de mission</span>
+    <span class="kicker">Rapport de mission</span>
     <div class="stars" aria-label="${stars} étoiles sur 3">${"★".repeat(stars)}<span class="lost">${"☆".repeat(3-stars)}</span></div>
-    <h2>${won?"Chapitre suivant débloqué":"Boss invaincu"}</h2>
-    <p class="muted">${won?"Bravo. La prochaine mission sera un cran plus dure.":"Rejoue ce chapitre : nouvelle mission, nouveau boss."}</p>
+    <h2>${won?"Le chapitre suivant s'ouvre":"Le boss tient encore"}</h2>
+    <p class="muted">${won?"Message porté. Albion t'ouvre la route suivante.":"Reviens à la charge : nouvelle mission, nouveau boss."}</p>
     <div class="row" style="justify-content:center"><span class="pill ok">${m.xp>=0?"+":""}${m.xp} XP</span><span class="pill neutral">${Math.round(acc*100)} % de réussite</span><span class="pill neutral">${m.jokers} joker${m.jokers>1?"s":""}</span></div>
-    ${m.newBadges.length?`<p><b>Badges :</b> ${m.newBadges.map(esc).join(", ")}</p>`:""}
+    ${m.newBadges.length?`<p><b>Hauts faits :</b> ${m.newBadges.map(esc).join(", ")}</p>`:""}
   </div>
   ${m.errors.length?`<div class="card"><h3>À retenir</h3><div class="gap">${m.errors.slice(0,8).map((e,i)=>`<div class="err small row" style="justify-content:space-between"><span><s>${esc(e.faux)}</s> → <b>${esc(e.correct)}</b></span><button class="btn sm" data-er="${i}">▶</button></div>`).join("")}</div><p class="small muted">Dis chaque version juste à voix haute deux fois.</p></div>`:""}
   ${(P.vocab||[]).length?`<div class="card"><h3>Mots de la mission</h3>${glossaryHTML(P.vocab)}</div>`:""}
@@ -1845,7 +1845,7 @@ function convOublier(){try{localStorage.removeItem("quetes-conv")}catch(e){}}
 
 function convCard(){
   const sv=convSauvee(), sel=state.en.convScen||"libre";
-  return `<div class="card game"><span class="kicker">Parler avec Claude</span><h2>Conversation orale</h2>
+  return `<div class="card game"><span class="kicker">La taverne des voyageurs</span><h2>Conversation orale</h2>
    <p class="muted">Une vraie discussion à la voix : Claude te répond à voix haute, rebondit sur ce que tu dis et te montre la version naturelle de tes phrases. À partir de ${CONV_QUETE} répliques, la quête « Anglais » est validée.</p>
    ${sv?`<div class="note row" style="justify-content:space-between"><span>Conversation en cours : ${esc(scenOf(sv.scen).nom)} · ${sv.turns.filter(t=>t.role==="user").length} réplique(s)</span><button class="btn sm" id="cvResume">Reprendre</button></div>`:""}
    <div class="scen">${SCENARIOS.map(x=>`<button data-sc="${x.id}" aria-pressed="${x.id===sel}"><b>${esc(x.nom)}</b><span class="small muted">${esc(x.sub)}</span></button>`).join("")}</div>
@@ -2000,7 +2000,7 @@ function renderConvFin(p){
   </div>
   ${C.recapWait?'<div class="card"><p class="muted">Claude prépare ton bilan…</p><div class="bar"><i class="indet"></i></div></div>':""}
   ${C.recapErr?`<p class="err small">Bilan indisponible : ${esc(C.recapErr)}</p>`:""}
-  ${R?`<div class="card"><h3>Ce qu'en pense Claude</h3><p>${esc(R.bilan)}</p>${R.forts.length?`<ul class="small">${R.forts.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}${R.defi?`<p class="small story">Défi pour la prochaine fois : ${esc(R.defi)}</p>`:""}</div>`:""}
+  ${R?`<div class="card"><h3>L'avis du maître de langue</h3><p>${esc(R.bilan)}</p>${R.forts.length?`<ul class="small">${R.forts.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}${R.defi?`<p class="small story">Ta prochaine épreuve : ${esc(R.defi)}</p>`:""}</div>`:""}
   ${erreurs.length?`<div class="card"><h3>À retenir</h3><div class="gap">${erreurs.map((e,i)=>`<div class="err small" style="display:grid;gap:4px"><div class="row" style="justify-content:space-between"><span><s>${esc(e.faux)}</s> → <b>${esc(e.correct)}</b></span><button class="btn sm" data-ce="${i}">▶</button></div>${e.pourquoi?`<span class="muted">${esc(e.pourquoi)}</span>`:""}</div>`).join("")}</div><p class="small muted">Dis chaque version juste à voix haute deux fois.</p></div>`:""}
   ${mots.length?`<div class="card"><h3>Mots à garder</h3>${glossaryHTML(mots)}</div>`:""}
   <div class="row"><button class="btn primary" id="cvBack">Terminer</button><button class="btn" id="cvAgain">Nouvelle conversation</button></div>`;
@@ -2122,7 +2122,7 @@ function annulerPausePlan(){const lun=mondayOf(todayISO()),W=weeksPlan(),cur=W.f
 function lundisPlan(n){const out=[];let m=state.run.start;for(let g=0;out.length<n&&g<200;g++,m=addDays(m,7)){if(!semaineVacances(m))out.push(m)}return out}
 function pauseVacances(){const mon=mondayOf(todayISO());if(addDays(mon,6)<state.run.start||!semaineVacances(mon))return"";
   const W=weeksPlan(),suite=W.find(w=>w.monday>mon), pp=pausePlanActive();
-  const pourquoi=pp&&todayISO()>=pp.debut?"Plan décalé":"🏖️ Programme en pause pendant tes vacances ou ton voyage";
+  const pourquoi=pp&&todayISO()>=pp.debut?"Plan décalé":"🏖️ Halte : le voyage attend la fin de tes vacances";
   return `<p class="note">${pp&&todayISO()>=pp.debut?"⏸ ":""}${pourquoi}${suite?` : il reprend le ${frDate(suite.monday)}, à la semaine ${suite.n}.`:"."}</p>`}
 /* Bloc « Décaler le plan » de l'onglet Course */
 function decalerHTML(){const pp=pausePlanActive(), W=weeksPlan();
@@ -2175,10 +2175,10 @@ function weeksPlan(){
     const auto=(state.run.allege||{})[i];
     const w=auto?alleger(w0):w0;const mk=(k,dow,o)=>({key:`${i}-${k}`,dow,date:addDays(mon,dow),...o});
     return {n:i+1,abs:i+off,monday:mon,auto:!!auto,s:[
-    mk(0,D.q,{tag:"Qualité",title:w[0],detail:"Échauffement 15' EF + gammes, corps de séance, retour au calme 10'.",zone:/VMA/.test(w[0])?"VMA":"AS10"}),
-    mk(1,D.s,{tag:/seuil/.test(w[1])?"Seuil":"Endurance",title:w[1],detail:/seuil/.test(w[1])?"Échauffement 15' EF, retour au calme 10'.":"Allure facile, tu dois pouvoir parler.",zone:/seuil/.test(w[1])?"SEUIL":"EF"}),
-    w[2]==="RACE"?mk(2,D.l,{tag:"Course",title:`Le 10 km, objectif ${state.run.goal}`,detail:"Échauffement 15' + 3 accélérations. Pars à l'allure, pas plus vite sur le 1er km.",zone:"AS10"})
-      :mk(2,D.l,{tag:"Sortie longue",title:`${w[2]}' en endurance`,detail:i+off>=4?"Option : les 10 dernières minutes à allure 10 km.":"Allure facile du début à la fin.",zone:"SL"})
+    mk(0,D.q,{tag:"Qualité",title:w[0],detail:"L'assaut de la semaine. Échauffement 15' EF + gammes, corps de séance, retour au calme 10'.",zone:/VMA/.test(w[0])?"VMA":"AS10"}),
+    mk(1,D.s,{tag:/seuil/.test(w[1])?"Seuil":"Endurance",title:w[1],detail:/seuil/.test(w[1])?"Marche forcée. Échauffement 15' EF, retour au calme 10'.":"Route paisible. Allure facile, tu dois pouvoir parler.",zone:/seuil/.test(w[1])?"SEUIL":"EF"}),
+    w[2]==="RACE"?mk(2,D.l,{tag:"Course",title:`Le 10 km, objectif ${state.run.goal}`,detail:"Le combat final. Échauffement 15' + 3 accélérations. Pars à l'allure, pas plus vite sur le 1er km.",zone:"AS10"})
+      :mk(2,D.l,{tag:"Sortie longue",title:`${w[2]}' en endurance`,detail:i+off>=4?"Longue chevauchée. Option : les 10 dernières minutes à allure 10 km.":"Longue chevauchée. Allure facile du début à la fin.",zone:"SL"})
   ].sort((a,b)=>a.dow-b.dow)}});
 }
 const curWeekIdx=()=>{const t=todayISO();const W=weeksPlan();const d0=W[0]?.monday||state.run.start;if(t<d0)return Math.floor(daysBetween(d0,t)/7);
@@ -2200,10 +2200,10 @@ const REGIONS=[
  ["Collines Ventées","Le Troll des Nuits Blanches","Les premières vraies côtes. Le Troll des Nuits Blanches rôde : couche-toi tôt la veille de l'épreuve."],
  ["Marais des Brumes","Le Basilic de la Malbouffe","Le Basilic guette au bord du marais. Pas de craquage avant la séance : vise juste, cours vite."],
  ["Col des Corbeaux","L'Hydre des Notifications","La plus longue montée du voyage. L'Hydre attaque : coupe toutes les notifications pendant l'épreuve."],
- ["Abbaye du Silence","Les ombres du cloître","Les moines t'accueillent. Corps au repos, esprit aiguisé : la seconde moitié du voyage commence."],
+ ["Abbaye du Silence","Le silence du cloître","Les moines t'accueillent. Corps au repos, esprit aiguisé : la seconde moitié du voyage commence."],
  ["Plaines d'Ambre","Le Dragon de l'Usure","Terrain plat et rapide, idéal pour graver ton allure de course. Le Dragon de l'Usure espère que tu te lasses."],
  ["Tour du Guet","La Mimique du Confort","Du haut de la tour, on aperçoit la Cité de l'Aube. Dernier gros bloc : la Mimique du Confort te tend un piège."],
- ["Pont de l'Aube","Le Passeur du pont","On allège le sac : les jambes doivent arriver fraîches devant les portes de la cité."],
+ ["Pont de l'Aube","Le Passeur du pont","Le Passeur te laisse passer sans combat. On allège le sac : les jambes doivent arriver fraîches devant les portes de la cité."],
  ["Cité de l'Aube","La Fatigue Éternelle","La Fatigue Éternelle bloque les portes de la cité. Le 10 km est ton combat final."]
 ];
 const regionOf=w=>REGIONS[Math.max(0,Math.min(11,w.abs))];
@@ -2214,10 +2214,10 @@ const foeLine=(s,w)=>s.tag==="Qualité"||s.tag==="Course"?`<div class="small sto
 function renderQuestRun(){
   const {done,streak}=runWeekStatus(); const W=weeksPlan(); const wi=curWeekIdx();
   const w=W[Math.max(0,Math.min(W.length-1,wi))];
-  const label=wi<0?`Début le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${wi+1} / ${W.length}`;
+  const label=wi<0?`Début le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Voyage accompli":`Semaine ${wi+1} / ${W.length}`;
   const today=W[wi]?.s.find(s=>s.date===todayISO());
   const pill=today?(state.run.logs[today.key]?'<span class="pill ok">Faite aujourd\'hui</span>':`<span class="pill warn">Aujourd'hui : ${esc(sessLabel(today,W[wi]).split(" · ")[0])}</span>`):"";
-  $("#qRun").innerHTML=`<span class="k">Course<i class="kx"> · ${RUN_PER_WEEK} sorties / semaine</i></span>
+  $("#qRun").innerHTML=`<span class="k">Course<i class="kx"> · ${RUN_PER_WEEK} étapes / semaine</i></span>
    <span class="big">${wi<0?esc(jourMois(W[0]?.monday||state.run.start))+'<small class="bsub">début '+esc(jourLong(W[0]?.monday||state.run.start))+'</small>':wi>=W.length?'<span class="sem-l">Plan terminé</span><span class="sem-c">Terminé</span>':`<span class="sem-l">Semaine</span><span class="sem-c">Sem.</span> ${wi+1} / ${W.length}`}</span>
    <span class="row"><span class="dots">${[0,1,2].map(i=>`<span class="dot ${i<done?"on":""}">${i<done?"✓":i+1}</span>`).join("")}</span>${pill||(wi<0?`<span class="pill neutral">J-${daysBetween(todayISO(),W[0]?.monday||state.run.start)}</span>`:`<span class="pill neutral">Sorties : ${Math.min(done,RUN_PER_WEEK)}/${RUN_PER_WEEK}</span>`)}</span>`;
 }
@@ -2249,9 +2249,9 @@ function renderRun(){
   ${bilanCourseHTML()}
   <div class="card">
     <span class="kicker" style="color:var(--run)">Plan 10 km · ${esc(R[0])}</span>
-    <h2>${wi<0?`Début le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${cw.n} sur ${W.length}`}</h2>
+    <h2>${wi<0?`Début le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Voyage accompli":`Semaine ${cw.n} sur ${W.length}`}</h2>
     <p class="story">${esc(R[2])}</p>
-    <details class="parcours"><summary>🗺️ Voir le parcours · ${nDone} / ${nAll} étapes</summary>
+    <details class="parcours"><summary>🗺️ Carte du voyage · ${nDone} / ${nAll} étapes</summary>
     <div class="mapwrap">${mapSVG(W)}</div>
     <div class="row small muted"><span>cercle rouge : séance de qualité</span><span>·</span><span>grand cercle : sortie longue</span><span>·</span><span>losange : le 10 km</span></div></details>
     ${pauseVacances()}
@@ -2296,7 +2296,7 @@ Intègre les vrais détails de sa note (temps, météo, sensations) dans le réc
       (state.run.logs[k]||l).story=text.trim(); save(); renderRun();
     }catch(e){b.disabled=false;b.textContent="Raconter la séance en légende";toast(sampleErr(e.code))}
   });
-  if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim(),at:Date.now()};openLog=null;save();sfx("ok");toast("Séance enregistrée · elle sera comptée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
+  if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim(),at:Date.now()};openLog=null;save();sfx("ok");toast("Étape franchie ! Elle sera comptée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
 }
 
 /* ======================================================================
@@ -2514,12 +2514,12 @@ function strCurrent(){const S=strWeeks();const wi=curWeekIdx();return {S,wi,cur:
 function renderQuestStr(){
   const {S,wi,cur}=strCurrent(); const log=state.str.logs[cur.key]; const t=todayISO();
   let pill;
-  if(wi>=S.length) pill='<span class="pill neutral">Programme terminé</span>';
-  else if(log) pill='<span class="pill ok">Faite cette semaine</span>';
+  if(wi>=S.length) pill='<span class="pill neutral">Forge achevée</span>';
+  else if(log) pill='<span class="pill ok">Forgée cette semaine</span>';
   else if(cur.date===t) pill='<span class="pill warn">Aujourd\'hui</span>';
   else if(cur.date<t) pill='<span class="pill bad">À rattraper</span>';
   else pill=`<span class="pill neutral">${frDate(cur.date)}</span>`;
-  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · le jeudi</i></span><span class="big">${esc(cur.phase)}<small class="bsub">~${tlMinutes(cur)} min</small></span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
+  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · la forge du jeudi</i></span><span class="big">${esc(cur.phase)}<small class="bsub">~${tlMinutes(cur)} min</small></span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
 }
 
 /* ---------- Lecteur de séance guidée ---------- */
@@ -2551,13 +2551,13 @@ function plStep(){
   const c=$("#plCount"), b=$("#plBar"); if(c) c.textContent=mmss(sec); if(b) b.style.width=(100-left/(it.dur*10))+"%";
   if(sec!==pl.lastSec){pl.lastSec=sec; if(sec<=3&&sec>=1) beep(520,0.12)}
   if(it.kind==="work"&&EX[it.ex].sides&&!pl.half&&left<=it.dur*500){pl.half=true;beep(740,0.25);speakFr("Change de côté")}
-  if(left<=0){ if(pl.i+1<pl.tl.length) enterInterval(pl.i+1); else {pl.done=true;beep(988,0.6);speakFr("Séance terminée, bravo");releasePlayer();renderStr()} }
+  if(left<=0){ if(pl.i+1<pl.tl.length) enterInterval(pl.i+1); else {pl.done=true;beep(988,0.6);speakFr("Séance terminée. Le marteau retombe, bravo");releasePlayer();renderStr()} }
 }
 function releasePlayer(){clearInterval(plTick);try{wake?.release()}catch(e){}wake=null}
 function renderPlayer(p){
   if(pl.done){
     const min=Math.max(1,Math.round((Date.now()-pl.startedAt)/60000));
-    p.innerHTML=`<div class="player"><h2>Séance terminée</h2><p>${min} min · séance ${esc(pl.W.seance)} · ${esc(pl.W.phase)}. La Gargouille encaisse un coup.</p><p class="small muted">Enregistre la séance : ta quête de renfo sera validée dans la Compagnie.</p>
+    p.innerHTML=`<div class="player"><h2>Le marteau retombe</h2><p>${min} min · séance ${esc(pl.W.seance)} · ${esc(pl.W.phase)}. La Gargouille vacille.</p><p class="small muted">Enregistre la séance : le coup porte, ta pièce d'armure est forgée et ta quête de renfo est validée dans la Compagnie.</p>
       <label>Effort ressenti (1–10)<input type="number" id="srpe" min="1" max="10" value="6"></label>
       <div class="row"><button class="btn primary str" id="ssave">Enregistrer</button><button class="btn" id="sdrop">Ne pas enregistrer</button></div></div>`;
     $("#ssave").onclick=()=>{state.str.logs[pl.W.key]={date:todayISO(),rpe:+$("#srpe").value||null,min,at:Date.now()};pl=null;save();renderAll()};
@@ -2565,7 +2565,7 @@ function renderPlayer(p){
     return;
   }
   const it=pl.tl[pl.i], X=EX[it.ex], works=pl.tl.filter(x=>x.kind==="work").length, doneW=pl.tl.slice(0,pl.i).filter(x=>x.kind==="work").length;
-  const phase=it.kind==="warm"?"Échauffement":it.kind==="work"?`Bloc ${it.bloc}/${it.nbBlocs} · tour ${it.round}/${it.tours} · effort ${it.effort||"intense"}`:it.blocBreak?"Récupération avant le bloc suivant":it.roundBreak?"Récupération entre deux tours":"Mets-toi en place";
+  const phase=it.kind==="warm"?"Échauffement":it.kind==="work"?`Bloc ${it.bloc}/${it.nbBlocs} · tour ${it.round}/${it.tours} · effort ${it.effort||"intense"}`:it.blocBreak?"Récupération avant le bloc suivant":it.roundBreak?"Récupération entre deux tours":"Prends place à l'enclume";
   p.innerHTML=`<div class="player">
     <div class="row" style="justify-content:space-between"><span class="phase ${it.kind==="rest"?"rest":"work"}">${phase}</span><span class="small muted mono">${doneW}/${works} exercices</span></div>
     ${it.kind==="rest"?`<span class="small muted">Ensuite :</span>`:""}
@@ -2596,18 +2596,18 @@ function renderStr(){
       <span class="small muted">Matériel : haltères, élastique, une marche</span></div>
       ${log?`<span class="pill ok">Faite le ${frDate(log.date)}</span>`:wi>=0&&wi<S.length&&cur.date<todayISO()?'<span class="pill bad">À rattraper</span>':""}
     </div>
-    <div class="row"><button class="btn primary str" id="sgo">Lancer la séance guidée</button><button class="btn" id="smark">${log?"Annuler la validation":"Marquer comme faite"}</button></div>
-    <p class="small muted">Le minuteur enchaîne les exercices, bipe sur les 3 dernières secondes et annonce l'exercice suivant à voix haute. Monte le son et pose le téléphone face à toi.</p>
+    <div class="row"><button class="btn primary str" id="sgo">Allumer la forge · séance guidée</button><button class="btn" id="smark">${log?"Annuler la validation":"Marquer comme faite"}</button></div>
+    <p class="small muted">Le Veilleur attise la forge. Le minuteur enchaîne les exercices, bipe sur les 3 dernières secondes et annonce l'exercice suivant à voix haute. Monte le son et pose le téléphone face à toi.</p>
   </div>
   ${cur.blocs.map((b,bi)=>`<div class="card"><div class="row" style="justify-content:space-between"><h3>Bloc ${bi+1}</h3><span class="pill neutral">${b.tours} tours</span></div>
     <div class="exgrid">${b.exos.map(x=>`<div class="ex"><div class="figbox">${figSVG(x.id)}</div><b>${esc(EX[x.id].name)}</b><span class="small"><b>${doseTxt(x)}</b> · effort ${esc(x.e)}</span><ul class="small muted">${EX[x.id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></div>`).join("")}
-  <div class="card"><h3>Programme des jeudis</h3>
+  <div class="card"><h3>Calendrier de la forge</h3>
     <div class="tbl"><table><thead><tr><th>Sem.</th><th>Date</th><th>Phase</th><th>Séance</th><th></th></tr></thead><tbody>
     ${S.map((w,i)=>`<tr class="${i===wi?"cur":""}"><td class="mono">${w.n}</td><td>${jourMois(w.date)}</td><td>${esc(w.phase)}${w.light?" (allégée)":""}</td><td class="mono">${w.seance} · ${w.blocs.map(b=>b.tours).join("+")} tours</td><td>${state.str.logs[w.key]?'<span class="pill ok">fait</span>':""}</td></tr>`).join("")}
     </tbody></table></div>
     <p class="small muted">Le renfo le jeudi tombe au lendemain de la séance de qualité : les jours durs restent groupés et la sortie longue arrive après 48 h de récupération.</p>
   </div>
-  <details class="card"><summary>Tous les exercices</summary><div class="exgrid" style="margin-top:10px">${Object.keys(EX).map(id=>`<div class="ex"><div class="figbox">${figSVG(id)}</div><b>${esc(EX[id].name)}</b><ul class="small muted">${EX[id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></details>`;
+  <details class="card"><summary>Le manuel du forgeron : tous les exercices</summary><div class="exgrid" style="margin-top:10px">${Object.keys(EX).map(id=>`<div class="ex"><div class="figbox">${figSVG(id)}</div><b>${esc(EX[id].name)}</b><ul class="small muted">${EX[id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></details>`;
   $("#sgo").onclick=()=>startPlayer(cur);
   $("#smark").onclick=()=>{if(log){if(!confirm(DECOCHER))return;decocher(state.str,cur.key)}else state.str.logs[cur.key]={date:todayISO(),rpe:null,min:tlMinutes(cur),at:Date.now()};save();renderAll()};
 }
@@ -2921,7 +2921,7 @@ forgeCard=function(S){
   const n=S.filter(w=>state.str.logs[w.key]).length, tot=S.length, pieces=FORGE.slice(FORGE.length-tot);
   const a=lire("enluForge"), now=Date.now(); let t=a&&a.t||0; if(a&&n>a.n)t=now; ecrire("enluForge",{n,t});
   const neuve=now-t<2000?n-1:-1;
-  return `<div class="card forge"><span class="kicker" style="color:var(--str)">Progression du renfo</span>
+  return `<div class="card forge"><span class="kicker" style="color:var(--str)">La forge du Veilleur</span>
     <h2>${n} séance${n>1?"s":""} sur ${tot}</h2>
     <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque jeudi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
     ${sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:tot-n,max:tot,sous:n>=tot?"":"un jeudi = un coup"})}
