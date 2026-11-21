@@ -4436,7 +4436,7 @@ function rgSchema(k) {
 }
 const REGLES_PAGES = [
   { t: 'L\'Aventure d\'un coup d\'œil', get s() { return rgSchema('aventure'); },
-    p: ['Tu fais tes quêtes. Tout le reste en découle.', 'L\'XP te fait avancer sur le <b>chemin du Rodage</b> : 15 paliers jusqu\'au château de l\'Aube.', 'Chaque palier donne un objet, un <b>coffre</b> ou des <b>éclats</b>. Tu portes tes trésors dans ta <b>garde-robe</b>.'] },
+    p: ['Tu fais tes quêtes. Tout le reste en découle.', '<b>Astuce</b> : glisse le doigt vers la gauche ou la droite pour passer d\'un onglet à l\'autre.', 'L\'XP te fait avancer sur le <b>chemin du Rodage</b> : 15 paliers jusqu\'au château de l\'Aube.', 'Chaque palier donne un objet, un <b>coffre</b> ou des <b>éclats</b>. Tu portes tes trésors dans ta <b>garde-robe</b>.'] },
   { t: 'Le chemin', get s() { return rgSchema('chemin'); },
     p: ['Un palier = <b>750 XP</b>, la moitié d\'une semaine parfaite : environ <b>2 paliers par semaine</b>.', 'Annexes, boss vaincus et défis comptent aussi : ils te font aller plus vite.', '<b>Épuisé</b>, ton XP ne vaut que <b>×0,85</b>. Soigne-toi : le chemin repart.',
       'Toi et ton compagnon d\'armes avancez au même pas sur la semaine, même avec des quêtes différentes.', 'Touche une étape : sa récompense et l\'XP qui manque. <b>Tout le chemin</b> déroule tous les paliers.'] },
@@ -6518,6 +6518,7 @@ window.addEventListener('message', e => {
   const m = e.data || {};
   if (m.t === 'compagnie-erreur') { signaler({ ou: 'carnet', msg: m.msg, detail: m.detail }); return; }
   if (m.t === 'carnet-clavier') { document.body.classList.toggle('clavier-carnet', !!m.ouvert && onglet === 'carnet'); return; }
+  if (m.t === 'carnet-glisser') { if (window.glisserOnglet) glisserOnglet(m.sens > 0 ? 1 : -1); return; } // bout des onglets du Carnet : onglet voisin de l'appli
   if (m.t === 'compagnie-retour') { onglet = 'quetes'; try { localStorage.setItem('onglet', onglet); } catch (err) {} render(); window.scrollTo(0, 0); return; }
   if (m.t !== 'compagnie-etat' || !m.etat) return;
   const avant = state;
@@ -9437,6 +9438,46 @@ function ecranCle(msg) {
 }
 if (distant) { if (cleHeros) lancer(); else ecranCle(); }
 else if (herosActif) lancer(); else choisirHerosEcran();
+</script>
+<script>
+/* Glisser le doigt pour changer d'onglet (le joueur, 21/11/2026)
+ * droite → gauche = onglet suivant ; gauche → droite = précédent. Dans Quêtes (Quêtes/Nouvelles) et Héros (Personnage/Aventure/Exploits),
+ * le geste change d'abord de sous-onglet, puis passe à l'onglet voisin au bout. Ignoré : départ à moins de 30 px d'un bord (retour du téléphone),
+ * geste trop court (< 70 px) ou pas assez horizontal (|dx| < 2·|dy|), fenêtre ou champ de saisie ouvert, zone qui défile de côté. */
+(function () {
+  let g = null;
+  const ouvert = () => document.body.classList.contains('bloque')
+    || !!document.querySelector('#vitrine.on, #reglesOv, #coffreOv.on, #d20ov.on, #bossVue.on, .lvl-ov, .am-ov, .cine, .boss-win, .sheet.on, .sheet-bg.on, [role="dialog"]:not([hidden])');
+  const saisie = () => { const a = document.activeElement; return !!a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable); };
+  const defileCote = el => { for (let n = el; n && n !== document.body; n = n.parentElement) { const s = getComputedStyle(n); if (/(auto|scroll)/.test(s.overflowX) && n.scrollWidth > n.clientWidth + 2) return true; } return false; };
+  document.addEventListener('touchstart', e => {
+    g = null; if (e.touches.length !== 1) return;
+    const t = e.touches[0], w = window.innerWidth;
+    if (t.clientX < 30 || t.clientX > w - 30) return; // bord de l'écran : réservé au « retour » du téléphone
+    if (ouvert() || saisie() || e.target.closest('input, textarea, select, [contenteditable], .rg-livre, iframe') || defileCote(e.target)) return;
+    g = { x: t.clientX, y: t.clientY };
+  }, { passive: true });
+  document.addEventListener('touchcancel', () => { g = null; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!g) return; const t = e.changedTouches[0], dx = t.clientX - g.x, dy = t.clientY - g.y; g = null;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < 2 * Math.abs(dy) || ouvert() || saisie()) return;
+    glisserOnglet(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  window.glisserOnglet = function (sens) {
+    if (typeof onglet === 'undefined' || onglet === 'profil') return false;
+    const sous = onglet === 'quetes' ? [...document.querySelectorAll('.sous-onglets [data-sous]')] : onglet === 'heros' ? [...document.querySelectorAll('.sous-onglets [data-sous-heros]')] : [];
+    if (sous.length) { const i = sous.findIndex(b => b.classList.contains('on')), j = i + sens; if (i >= 0 && j >= 0 && j < sous.length) { sous[j].click(); return true; } }
+    const tabs = [...document.querySelectorAll('nav.tabs [data-tab]')].filter(b => b.offsetParent !== null);
+    const i = tabs.findIndex(b => b.dataset.tab === onglet), j = i + sens;
+    if (i < 0 || j < 0 || j >= tabs.length) return false;
+    tabs[j].click();
+    // on arrive par la gauche : premier sous-onglet ; par la droite : dernier (comme on tourne des pages)
+    const cible = tabs[j].dataset.tab;
+    const ss = cible === 'quetes' ? [...document.querySelectorAll('.sous-onglets [data-sous]')] : cible === 'heros' ? [...document.querySelectorAll('.sous-onglets [data-sous-heros]')] : [];
+    if (ss.length) { const b = sens > 0 ? ss[0] : ss[ss.length - 1]; if (!b.classList.contains('on')) b.click(); }
+    return true;
+  };
+})();
 </script>
 </body>
 </html>

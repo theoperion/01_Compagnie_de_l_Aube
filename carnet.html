@@ -3315,5 +3315,28 @@ if(typeof renderAll==="function")try{renderAll()}catch(e){}
 })();
 
 </script>
+<script>
+/* Glisser le doigt pour changer d'onglet (21/11/2026) : Anglais ↔ Course ↔ Renfo ; au bout, l'appli passe à son onglet voisin.
+ * Ignoré : bord de l'écran (< 30 px), geste court ou pas assez horizontal, champ de saisie, séance guidée en cours, réglages, zone qui défile de côté. */
+(function () {
+  let g = null; const ORDRE = ["en", "run", "str"];
+  const saisie = () => { const a = document.activeElement; return !!a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable); };
+  const defileCote = el => { for (let n = el; n && n !== document.body; n = n.parentElement) { const s = getComputedStyle(n); if (/(auto|scroll)/.test(s.overflowX) && n.scrollWidth > n.clientWidth + 2) return true; } return false; };
+  const occupe = () => (typeof pl !== "undefined" && pl && !pl.done) || (typeof ses !== "undefined" && ses) || document.querySelector("dialog[open]");
+  document.addEventListener("touchstart", e => {
+    g = null; if (e.touches.length !== 1) return; const t = e.touches[0], w = window.innerWidth;
+    if (t.clientX < 30 || t.clientX > w - 30 || saisie() || occupe() || e.target.closest("input, textarea, select, [contenteditable]") || defileCote(e.target)) return;
+    g = { x: t.clientX, y: t.clientY };
+  }, { passive: true });
+  document.addEventListener("touchcancel", () => { g = null; }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (!g) return; const t = e.changedTouches[0], dx = t.clientX - g.x, dy = t.clientY - g.y; g = null;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < 2 * Math.abs(dy) || saisie() || occupe() || typeof tab === "undefined" || tab === "set") return;
+    const sens = dx < 0 ? 1 : -1, i = ORDRE.indexOf(tab), j = i + sens;
+    if (i >= 0 && j >= 0 && j < ORDRE.length) { setTab(ORDRE[j]); window.scrollTo(0, 0); return; }
+    try { if (window.parent !== window) window.parent.postMessage({ t: "carnet-glisser", sens: sens }, "*"); } catch (x) {}
+  }, { passive: true });
+})();
+</script>
 </body>
 </html>
