@@ -9447,7 +9447,7 @@ else if (herosActif) lancer(); else choisirHerosEcran();
 (function () {
   let g = null;
   const ouvert = () => document.body.classList.contains('bloque')
-    || !!document.querySelector('#vitrine.on, #reglesOv, #coffreOv.on, #d20ov.on, #bossVue.on, .lvl-ov, .am-ov, .cine, .boss-win, .sheet.on, .sheet-bg.on, [role="dialog"]:not([hidden])');
+    || !!document.querySelector('#vitrine.on, #reglesOv.on, #bilanOv.on, #souvOv.on, #coffreOv.on, #d20ov.on, #bossVue.on, .lvl-ov, .am-ov, .cine, .boss-win, .sheet.on, .sheet-bg.on');
   const saisie = () => { const a = document.activeElement; return !!a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable); };
   const defileCote = el => { for (let n = el; n && n !== document.body; n = n.parentElement) { const s = getComputedStyle(n); if (/(auto|scroll)/.test(s.overflowX) && n.scrollWidth > n.clientWidth + 2) return true; } return false; };
   document.addEventListener('touchstart', e => {
