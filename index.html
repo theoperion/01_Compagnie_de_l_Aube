@@ -6413,16 +6413,21 @@ function degatsQuete(s, b, q, dXp, estAnnexe) {
 const bossFetes = {};
 const fileVictoires = []; // deux boss tombés le même jour : chacun sa cinématique, l'un après l'autre (semaine puis mois)
 // la file est aussi gardée sur le téléphone : quitter l'app pendant la 1re victoire ne fait plus perdre la 2e (rejouée à la prochaine ouverture, 7 jours au plus)
-const CLE_FILE_VICT = 'victoiresEnAttente';
-function sauverFileVictoires() { try { if (fileVictoires.length) localStorage.setItem(CLE_FILE_VICT, JSON.stringify({ le: (state && state.today) || '', file: fileVictoires })); else localStorage.removeItem(CLE_FILE_VICT); } catch (e) {} }
+const cleFileVict = () => 'victoiresEnAttente|' + (herosActif || ''); // propre à chaque héros (téléphone partagé)
+function sauverFileVictoires() { try { if (fileVictoires.length) localStorage.setItem(cleFileVict(), JSON.stringify({ le: (state && state.today) || '', file: fileVictoires })); else localStorage.removeItem(cleFileVict()); } catch (e) {} }
 let fileVictoiresRelue = false;
 function victoiresEnAttenteAFaire() {
   if (fileVictoiresRelue || !state || fileVictoires.length || document.querySelector('.boss-win') || document.body.classList.contains('bloque')) return;
   fileVictoiresRelue = true;
-  let m = null; try { m = JSON.parse(localStorage.getItem(CLE_FILE_VICT) || 'null'); } catch (e) {}
-  if (!m || !Array.isArray(m.file) || !m.file.length || !m.le || m.le < isoLocalPlus(-7)) { try { localStorage.removeItem(CLE_FILE_VICT); } catch (e) {} return; }
+  let m = null; try { m = JSON.parse(localStorage.getItem(cleFileVict()) || 'null'); } catch (e) {}
+  // trop vieille, ou d'une autre année (une victoire du Rodage ne passe pas sous le Grand Recommencement : gardien, 24/11)
+  if (!m || !Array.isArray(m.file) || !m.file.length || !m.le || m.le < isoLocalPlus(-7) || String(m.le).slice(0, 4) !== String(state.today || '').slice(0, 4)) { try { localStorage.removeItem(cleFileVict()); } catch (e) {} return; }
   fileVictoires.push(...m.file); const b = fileVictoires.shift(); sauverFileVictoires();
-  setTimeout(() => bossVaincu(b, true), 600);
+  setTimeout(() => {
+    // un autre grand écran s'est ouvert entre-temps (recommencement, bilan, ouverture de saison, fuite…) : la victoire attend son tour
+    if (document.body.classList.contains('bloque') || document.querySelector('[id$="Ov"].on, .boss-win')) { fileVictoires.unshift(b); sauverFileVictoires(); fileVictoires.length = 0; fileVictoiresRelue = false; return; }
+    bossVaincu(b, true);
+  }, 600);
 }
 const ordreVictoire = (x, y) => (x.type === 'mois') - (y.type === 'mois');
 /**
