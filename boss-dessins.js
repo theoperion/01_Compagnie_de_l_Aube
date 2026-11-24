@@ -1,4 +1,4 @@
-/* boss-dessins.js : extrait tel quel d'index.html (l.4825-5939 et 5972-5999), pour être partagé avec carnet.html. */
+/* boss-dessins.js : les dessins des boss, chargés par index.html (avant son grand script) et par carnet.html. Source unique depuis le 24/11/2026 (app 11.6) : ne plus les recopier dans index.html. */
 /* Boss du Crépuscule : 18 illustrations SVG (12 de la semaine + 6 du mois).
    bossSvg(cle, id) → chaîne <svg>. viewBox 120×130, style « jouet sombre » comme le Golem. */
 const BOSS_DESSINS = {
