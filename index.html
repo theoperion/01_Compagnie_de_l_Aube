@@ -1823,6 +1823,7 @@ html.th-olympe .jour::after { content:''; position:absolute; right:64px; top:8px
   border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--card)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--panel)); color: var(--text); font: 600 13px var(--f-texte, system-ui); }
 .rappel-cof span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rappel-cof b { color: var(--gold); }
 .rappel-cof em { font-style: normal; flex: none; font-size: 11px; font-weight: 800; color: #2a1a06; background: var(--gold); border-radius: 8px; padding: 1px 6px; }
+.rappel-camp + .rappel-camp, .rappel-cof + .rappel-camp { margin-top: 6px; } .rappel-camp em { background: none; color: var(--gold); font-size: 16px; padding: 0 2px; }
 .rappel-cof.dernier { border-color: #ff9f43; animation: cofPulse 2.4s ease-in-out infinite; } .rappel-cof.dernier b { color: #ffb366; }
 @keyframes cofPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,159,67,0); } 50% { box-shadow: 0 0 14px 1px rgba(255,159,67,.45); } }
 body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-motion: reduce) { .rappel-cof.dernier { animation: none; } }
@@ -3485,6 +3486,15 @@ document.addEventListener('click', e => {
   box.classList.add('on');
 });
 
+/* Rappels de la semaine en haut de Quêtes (Théo, 24/11/2026 : « sinon on oublie ») : pacte à proposer ou à sceller, vote du chapitre de la Saga.
+ * Chaque rappel disparaît dès que c'est fait ; un appui ouvre le camp (onglet Compagnie). */
+function bandeauRappels(s) {
+  const R = [], C = s.camp, P = C && C.pacte, m = s.mj;
+  if (C && !P && (C.modeles || []).length) R.push(['🤝', '<b>Pacte de la semaine</b> : à proposer']);
+  else if (P && !P.accepte && P.par !== s.heros) R.push(['🤝', '<b>Un pacte t\'attend</b> : scelle-le']);
+  if (m && m.pret && m.monVote == null) R.push(['📜', `<b>Chapitre ${esc(String(m.numero || ''))}</b> : choisis la suite`]);
+  return R.map(([ic, t]) => `<button class="rappel-cof rappel-camp" data-tab="compagnie"><span>${ic} ${t}</span><em>›</em></button>`).join('');
+}
 /* Rappel des coffres du Rodage (du 24 au 31/12, tant qu'il en reste) : toucher ouvre un coffre. */
 function bandeauCoffresRodage(s) {
   // la saison, pas seulement la date : entre minuit et le recommencement (01/01), le moteur envoie encore le Rodage et ses coffres
@@ -6485,10 +6495,11 @@ function carteAnnexe(a) {
     <div class="icon">${ICONES[a.carac] || '⭐'}</div>
     <div class="body">
       <div class="name">${esc(a.sous || a.nom)}</div>
-      <div class="meta">${info}${a.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(a.nom)}</div>
+      <div class="meta">${info}${a.jour.fait > 1 ? ` · <b class="ok-t">×${a.jour.fait} aujourd'hui</b>` : ''}${a.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(a.nom)}</div>
       ${gains(a)}
     </div>
-    <div class="right">${chipJour(a.jour)}</div>
+    ${a.jour.fait ? '' : `<div class="right">${chipJour(a.jour)}</div>`}
+    ${a.jour.fait ? `<span class="sceau ${sceauxFrais[a.nom] && Date.now() - sceauxFrais[a.nom] < 2500 ? 'tombe' : ''}">${sceauSvg()}</span>` : ''}
     <button class="more" data-more="${esc(a.nom)}" aria-label="Plus d'options">⋯</button>
   </div>`;
 }
@@ -6647,6 +6658,7 @@ function render() {
     ${bandeauHorsLigne(s)}
     ${bandeauMontre(s)}
     ${bandeauCoffresRodage(s)}
+    ${bandeauRappels(s)}
     ${carteDefi(s)}
     ${effetsActifs(s)}
     ${carteBossMini(s)}
