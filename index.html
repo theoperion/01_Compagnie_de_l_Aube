@@ -1789,6 +1789,7 @@ html.th-olympe .jour::after { content:''; position:absolute; right:64px; top:8px
     background: radial-gradient(1.5px 1.5px at 12% 18%, #f6dc9c, transparent), radial-gradient(1.2px 1.2px at 30% 8%, #fff, transparent), radial-gradient(1.6px 1.6px at 58% 14%, #f6dc9c, transparent), radial-gradient(1.2px 1.2px at 76% 6%, #fff, transparent), radial-gradient(1.5px 1.5px at 90% 22%, #f6dc9c, transparent), radial-gradient(1px 1px at 44% 26%, #fff, transparent);
     animation: olyScint 4s ease-in-out 4 alternate both; }
   @keyframes olyScint { from { opacity: .35; } to { opacity: 1; } }
+  body.calme.th-olympe::before, html.th-olympe body.calme::before { animation: none; } @media (prefers-reduced-motion: reduce) { html.th-olympe body::before { animation: none; } } /* grille, critère 4 : mode calme = 0 animation */
   html.th-olympe .card.flash::after { background: linear-gradient(90deg, transparent, #f6dc9c, #fff, #f6dc9c, transparent) -60% 0 / 50% 100% no-repeat; }
   /* ===== Thème « Épopée arcanique » ===== */
 html.th-epopee { font-synthesis: none; font-variant-numeric: lining-nums; }
