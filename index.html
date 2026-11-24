@@ -1068,7 +1068,6 @@
     -webkit-mask: radial-gradient(ellipse at 50% 50%, transparent 54%, #000 57%, #000 67%, transparent 70%); mask: radial-gradient(ellipse at 50% 50%, transparent 54%, #000 57%, #000 67%, transparent 70%); opacity: .9; }
   .bw-flaque::before { content: ''; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -6px 0 0 -4.5px; transform: rotate(45deg); border-radius: 1px;
     background: radial-gradient(circle at 35% 30%, #fff, var(--s2, #fff3c4) 45%, var(--s1, #c98d1a)); box-shadow: 0 0 10px var(--lueur, rgba(255,214,120,.8)); }
-  .mort-feu .bw-gerbe i { --forme: 50%; --chute: -20px; } /* feu : braises rondes qui s'élèvent un peu, comme d'un brasier */
   .mort-feu .bw-p { border-radius: 50%; box-shadow: 0 0 8px rgba(255,170,60,.9); } /* braises rondes et lumineuses, pas des confettis (avocat, 24/11) */
   @keyframes bwFlaque { 0% { opacity: 0; transform: scaleX(.1) scaleY(.6); } 25% { opacity: .95; } 100% { opacity: .8; transform: none; } }
   .mort-pierre .bw-gerbe i, .mort-pierre .bw-tache, .mort-pierre .bw-flaque, .mort-feu .bw-gerbe i, .mort-feu .bw-tache, .mort-feu .bw-flaque {
@@ -1076,6 +1075,7 @@
   .mort-ombre .bw-gerbe i, .mort-ombre .bw-tache, .mort-ombre .bw-flaque { --s1: #7a58b0; --s2: #e0ccff; --lueur: rgba(170,130,255,.7); --forme: 50%; --chute: -40px; --tour: 0deg; --fin: 1.6; }
   .mort-eau .bw-gerbe i, .mort-eau .bw-tache, .mort-eau .bw-flaque { --s1: #2a86b0; --s2: #e6f8ff; --lueur: rgba(140,215,255,.7); --forme: 50%; --chute: -40px; --tour: 0deg; --fin: .9; }
   .mort-nature .bw-gerbe i, .mort-nature .bw-tache, .mort-nature .bw-flaque { --s1: #3a8a3e; --s2: #c8f29a; --lueur: rgba(160,230,120,.6); --forme: 0 70% 0 70%; --chute: -50px; --tour: 260deg; }
+  .boss-win.mort-feu .bw-gerbe i { --forme: 50%; --chute: -20px; } /* feu : braises rondes qui s'élèvent (après la règle pierre/feu, sinon écrasée ; avocat 24/11) */
   /* Coups, ralenti, onde de choc */
   .bw-slash { position: absolute; left: 50%; top: 50%; width: 190px; height: 5px; margin: -2px 0 0 -95px; border-radius: 4px; opacity: 0; z-index: 3;
     background: linear-gradient(90deg, transparent, #fff 30%, #ffe08a 60%, transparent); box-shadow: 0 0 14px #ffd36b, 0 0 30px rgba(255,180,60,.6); }
