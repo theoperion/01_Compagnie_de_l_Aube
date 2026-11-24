@@ -129,10 +129,10 @@
   #fuiteOv { position: fixed; inset: 0; z-index: 9000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
     padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); background: radial-gradient(ellipse at 50% 40%, #282c46, #08090f 70%); color: var(--text); }
   #fuiteOv.on { display: flex; }
-  .fu-scene { position: relative; width: 240px; height: 190px; overflow: hidden; }
+  .fu-scene { position: relative; width: 240px; height: 190px; overflow: hidden; -webkit-mask: radial-gradient(ellipse 60% 60% at 50% 50%, #000 70%, transparent); mask: radial-gradient(ellipse 60% 60% at 50% 50%, #000 70%, transparent); }
   .fu-boss { position: absolute; left: 50%; top: 8px; width: 150px; margin-left: -75px; opacity: .55; filter: saturate(.6); }
   .fu-boss svg { width: 100%; height: auto; display: block; }
-  .fu-brume { position: absolute; left: -20%; right: -20%; bottom: 0; height: 70px; background: linear-gradient(0deg, rgba(160,170,200,.35), transparent); opacity: .6; }
+  .fu-brume { position: absolute; left: 0; right: 0; bottom: 0; height: 90px; background: radial-gradient(ellipse 50% 45% at 50% 85%, rgba(170,180,210,.38), transparent); opacity: .6; }
   .fu-poussiere i { position: absolute; left: calc(50% + var(--k) * 9px - 30px); bottom: 18px; width: 12px; height: 12px; border-radius: 50%; background: rgba(200,190,170,.5); opacity: 0; }
   .fu-t { font: 700 21px var(--f-titre); color: #c9c4d8; margin: 4px 0 0; }
   .fu-s { margin: 0 0 12px; max-width: 320px; font-size: 14px; color: var(--muted); }
