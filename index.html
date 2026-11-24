@@ -4764,7 +4764,9 @@ function orner(svg, orn, id, grand) {
   // découpe : en-tête et <defs> du héros | corps du héros | </svg>
   const m = /aria-label="([^",]+), palier (\d+)"/.exec(svg), mage = !!(m && /Magicien/.test(m[1])), pal = m ? Number(m[2]) : 2;
   const k0 = svg.indexOf('</defs>'), i0 = k0 >= 0 ? k0 + 7 : svg.indexOf('>') + 1, j0 = svg.lastIndexOf('</svg>');
-  const haut = svg.slice(0, i0), corps = svg.slice(i0, j0), fin = svg.slice(j0);
+  const haut = svg.slice(0, i0), fin = svg.slice(j0);
+  // Magicien couronné (couronne de lumière, fin de progression) : une coiffe la remplace au lieu de s'empiler dessus (galerie du 24/11)
+  const corps = orn.tete && mage ? svg.slice(i0, j0).replace(/<path d="M84,62 l5,-12 l6,8 l5,-14 l5,14 l6,-8 l5,12z"[^>]*\/>/, '') : svg.slice(i0, j0);
   const solS = sol ? `<g class="orn orn-sol"${grand ? ' transform="translate(100 243) scale(1.18) translate(-100 -243)"' : ''}>${sol(id)}</g>` : '';
   const avant = (fam ? `<g transform="${grand ? `translate(${mage ? 170 : 162} 238) scale(1.05) translate(-40 -232)` : `translate(${mage ? 118 : 110} 0)`}"><g class="orn orn-fam">${fam(id)}</g></g>` : '')
     + (emb ? `<g${grand ? ` transform="${orn.monture ? 'translate(190 34) scale(1.5)' : 'translate(100 -24) scale(2.4)'} translate(-42 -54)"` : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
@@ -4776,7 +4778,7 @@ function orner(svg, orn, id, grand) {
   let couronne = '';
   if (orn.tete) {
     // [y du bandeau, échelle] : chapeau du Magicien (paliers 2 à 7), tête nue, capuche du Voleur
-    const [y, k] = mage ? (pal <= 1 ? [56, .8] : pal >= 8 ? [43, .82] : [51, 1]) : (pal <= 1 ? [55, .8] : [46, .92]); // Voleur : posée sur la capuche (elle flottait ~5 px au-dessus)
+    const [y, k] = mage ? (pal <= 1 ? [56, .8] : pal >= 8 ? [36, .82] : [51, 1]) : (pal <= 1 ? [55, .8] : [46, .92]); // Voleur : posée sur la capuche (elle flottait ~5 px au-dessus)
     couronne = `<g class="orn-suit-tete"><g transform="translate(100 ${y}) scale(${k}) translate(-100 ${-y})">${teteSvg(orn.tete, y, mage && pal >= 2 && pal <= 7)}</g></g>`;
   }
   // Voleur plus mince : le familier de l'Aube se rapproche de 8 (avocat, 24/11 : « tous les cosmétiques »)
