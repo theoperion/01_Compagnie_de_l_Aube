@@ -333,7 +333,7 @@
   .vit-fam { text-align: center; margin: 4px 0 0; font-size: 12.5px; color: var(--muted); } .vit-fam b { color: var(--gold); font-weight: 600; }
   .vit-fam small { font-size: 12px; } .vit-fam i { display: block; width: 150px; height: 5px; margin: 5px auto 0; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; } .vit-fam em { display: block; height: 100%; border-radius: 3px; background: var(--gold); }
   .fam-ov { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; background: rgba(5,8,16,.9); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); } /* texte lisible sur n'importe quel écran (ergonome, 24/11) */ .fam-box { text-align: center; color: #fff; padding: 0 24px; }
-  .fam-sc { position: relative; width: 190px; height: 150px; margin: 0 auto; } .fam-sc svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .fam-sc { position: relative; width: 220px; height: 150px; margin: 0 auto; } .fam-sc svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .fam-a { animation: famSecoue .9s ease-in-out both, famPart .35s .9s ease-in forwards; } .fam-b { opacity: 0; transform: scale(.4); animation: famPop .5s 1.05s cubic-bezier(.3,1.6,.5,1) forwards; }
   .fam-sc::after { content: ''; position: absolute; inset: 18%; border-radius: 50%; border: 2px solid var(--gold); opacity: 0; animation: famOnde .7s 1.05s ease-out; }
   .fam-box p { margin: 10px 0 0; font: 600 17px var(--f-recit); color: var(--gold); opacity: 0; animation: famTxt .4s 1.3s forwards; } .fam-box small { display: block; margin-top: 6px; color: #b9c0d0; font-size: 12px; }
@@ -3519,8 +3519,9 @@ function famGrandiAFaire() {
   try { localStorage.setItem(k, String(f.st)); } catch (e) {}
   const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : ' + f.stade + '\u00a0!' : f.st === 4 ? 'Ton familier atteint sa forme ultime : ' + f.stade + '\u00a0!' : 'Ton familier évolue : ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
   if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) { toast((f.st === 1 ? '🐣 ' : '✨ ') + txt); return; }
+  const vbFam = f.st >= 3 ? '-60 -46 220 150' : '-28 -24 156 124'; // grandes formes (ailes, soleil, flammes) : cadre élargi, rien de coupé (avocat 25/11)
   const ov = document.createElement('div'); ov.id = 'famOv'; ov.className = 'fam-ov on'; document.body.classList.add('bloque');
-  ov.innerHTML = `<div class="fam-box"><div class="fam-sc"><svg class="fam-a" viewBox="-28 -24 156 124" aria-hidden="true">${familierAube(f.id, Math.min(Number(av) || 0, 4))}</svg><svg class="fam-b" viewBox="-28 -24 156 124" aria-hidden="true">${familierAube(f.id, f.st)}</svg></div><p>${esc(txt)}</p><small>toucher pour fermer</small></div>`;
+  ov.innerHTML = `<div class="fam-box"><div class="fam-sc"><svg class="fam-a" viewBox="${vbFam}" aria-hidden="true">${familierAube(f.id, Math.min(Number(av) || 0, 4))}</svg><svg class="fam-b" viewBox="${vbFam}" aria-hidden="true">${familierAube(f.id, f.st)}</svg></div><p>${esc(txt)}</p><small>toucher pour fermer</small></div>`;
   document.body.appendChild(ov); vib([20, 40, 60]);
   const fin = () => { if (!ov.isConnected) return; ov.remove(); document.body.classList.remove('bloque'); };
   ov.addEventListener('click', fin); setTimeout(fin, 3400);
