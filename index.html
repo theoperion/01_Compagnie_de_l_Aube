@@ -1107,7 +1107,7 @@
   @keyframes bwCoup { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, -6px) scale(1.15); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
   /* Riposte du boss du mois : trois griffures rouges vers les héros */
   /* griffures de la riposte aux couleurs de la famille du boss, pas en rouge (Théo, 24/11) ; or par défaut */
-  .mort-feu .bw-griffes { --g1: #ff8a2a; --g2: #ffe0a0; --g3: rgba(255,140,50,.85); } .mort-pierre .bw-griffes { --g1: #d8833a; --g2: #ffe2b8; --g3: rgba(230,140,60,.8); }
+  .mort-feu .bw-griffes { --g1: #ff8a2a; --g2: #ffe0a0; --g3: rgba(255,140,50,.85); } .mort-pierre .bw-griffes { --g1: #9a94a8; --g2: #ece8f4; --g3: rgba(190,180,210,.8); }
   .mort-ombre .bw-griffes { --g1: #9a70e0; --g2: #ecdcff; --g3: rgba(160,110,255,.85); } .mort-eau .bw-griffes { --g1: #4ab4e0; --g2: #e6f8ff; --g3: rgba(110,200,255,.85); }
   .mort-nature .bw-griffes { --g1: #5ab85a; --g2: #e0ffc8; --g3: rgba(120,220,110,.8); }
   .bw-griffes { position: absolute; left: 50%; top: 250px; width: 0; height: 0; z-index: 3; pointer-events: none; }
@@ -4740,7 +4740,7 @@ function orner(svg, orn, id, grand) {
   // Voleur (plus mince, épaules sous la capuche) : cape resserrée et rentrée sous la capuche, ourlet au même niveau (Théo, 24/11 : « mal ajustée »)
   // Magicien : cape un peu resserrée aussi (Théo, 24/11 : elle s'évasait en grand triangle)
   const ajusteCape = s => !s ? s : `<g transform="translate(100 250) scale(${mage ? '.9 .97' : '.82 .93'}) translate(-100 -250)">${s}</g>`;
-  const auraS = orn.aura ? auraSvg(orn.aura, 'au' + id) : '', capeS = ajusteCape(orn.cape ? capeSvg(orn.cape, 'ca' + id) : ''), capeAv = ajusteCape(orn.cape ? capeDevantSvg(orn.cape, 'ca' + id) : '');
+  const auraS = orn.aura ? auraSvg(orn.aura, 'au' + id) : '', capeS = ajusteCape(orn.cape ? capeSvg(orn.cape, 'ca' + id) : ''), capeAv = orn.cape ? (mage ? capeDevantSvg(orn.cape, 'ca' + id) : ajusteCape(capeDevantSvg(orn.cape, 'ca' + id))) : ''; // Magicien : agrafes restées au col de la robe (avocat, 24/11)
   let couronne = '';
   if (orn.tete) {
     // [y du bandeau, échelle] : chapeau du Magicien (paliers 2 à 7), tête nue, capuche du Voleur
