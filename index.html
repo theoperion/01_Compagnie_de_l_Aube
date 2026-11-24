@@ -5771,7 +5771,8 @@ function jouerFuite(avant, b) {
   let ov = document.getElementById('fuiteOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'fuiteOv'; ov.setAttribute('role', 'dialog'); document.body.appendChild(ov); }
   // phrases neutres, sans accord (aucun nom de boss écrit ici : les noms de la Saison 1 restent secrets)
-  const suite = `La poursuite coûte 5&nbsp;% de ses PV à ${esc(b.nom)}${b.enhardi === 'fuite' ? ' ; sa rancune vous maudit 2 jours.' : '.'}`;
+  const aNom = n => { n = String(n || ''); return /^Le\s/.test(n) ? 'au ' + n.slice(3) : /^Les\s/.test(n) ? 'aux ' + n.slice(4) : /^La\s/.test(n) ? 'à la ' + n.slice(3) : /^L'/.test(n) ? 'à l\'' + n.slice(2) : 'à ' + n; }; // « au Golem », « à la Liche »
+  const suite = `La poursuite coûte 5&nbsp;% de ses PV ${esc(aNom(b.nom))}${b.enhardi === 'fuite' ? ' ; sa rancune vous maudit 2 jours.' : '.'}`;
   const anime = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   ov.className = anime ? 'anim' : '';
   ov.innerHTML = `<div class="fu-scene" aria-hidden="true"><i class="fu-brume"></i><div class="fu-boss">${bossSvg(avant.visuel, 'fuite', avant)}</div>
