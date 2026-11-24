@@ -125,6 +125,13 @@
   .card.done .name { color: var(--muted); }
   .sceau { position: absolute; right: 44px; top: 50%; width: 38px; height: 38px; margin-top: -19px; transform: rotate(-14deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,.55)); pointer-events: none; }
   .sceau svg { width: 100%; height: 100%; display: block; }
+  /* sceaux à collectionner : leurs propres couleurs dans tous les thèmes ; partie vivante (rayons du soleil, braise, reflet), coupée en mode calme */
+  html.th-olympe .sceau:has(.sc-col) { filter: drop-shadow(0 3px 5px rgba(0,0,0,.6)); }
+  .sc-col .sc-rayons, .ap-sc .sc-rayons { transform-box: view-box; transform-origin: 18px 18px; animation: scTourne 30s linear infinite; }
+  .sc-col .sc-vif, .ap-sc .sc-vif { animation: scVif 2.4s ease-in-out infinite alternate; }
+  @keyframes scTourne { to { transform: rotate(360deg); } } @keyframes scVif { from { opacity: .35; } to { opacity: 1; } }
+  body.calme .sc-rayons, body.calme .sc-vif { animation: none !important; } @media (prefers-reduced-motion: reduce) { .sc-rayons, .sc-vif { animation: none !important; } }
+  .ap-sc { display: inline-block; width: 32px; height: 32px; } .ap-sc svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .card.done .body { padding-right: 44px; } /* place du sceau : un nom long ne passe plus dessous (avocat, 24/11) */
   .sceau.tombe { animation: sceauTombe .7s cubic-bezier(.3,1.4,.5,1) both; }
 
@@ -3411,7 +3418,7 @@ const SLOTS_COSM = [
   { id: 'cape', nom: 'Cape', aide: 'dans ton dos' }, { id: 'tete', nom: 'Couronne', aide: 'au-dessus de ta tête' }, { id: 'aura', nom: 'Aura', aide: 'autour de toi' },
   { id: 'familier', nom: 'Familier de l\'Aube', aide: 'il grandit avec tes jours de quêtes' }, { id: 'monture', nom: 'Monture', aide: 'dans la vitrine' },
   { id: 'repaire', nom: 'Repaire', aide: 'le décor autour de toi' }, { id: 'trainee', nom: 'Traînée', aide: 'quand tu valides une quête' },
-  { id: 'victoire', nom: 'Coup de grâce', aide: 'quand un boss tombe' }
+  { id: 'victoire', nom: 'Coup de grâce', aide: 'quand un boss tombe' }, { id: 'sceau', nom: 'Sceau', aide: 'posé sur tes quêtes faites' }
 ];
 const cosmListe = s => (((s || state || {}).catalogueCosm) || {}).liste || [];
 const cosmItem = (id, s) => cosmListe(s).find(x => x.id === id) || null;
@@ -3881,7 +3888,7 @@ function recompenseTexte(r) {
 let marchandOuvert = false;
 /* Garde-robe : on choisit un emplacement, puis on ne voit que ses objets (cosmétiques de la saison + petits ornements) */
 const GARDE_ROBE = [['cape', '🧥', 'Cape'], ['tete', '👑', 'Couronne'], ['aura', '✨', 'Aura'], ['familier', '🐉', 'Familier'], ['poche', '🦉', 'De poche'], ['monture', '🐎', 'Monture'],
-  ['repaire', '🏰', 'Repaire'], ['trainee', '💫', 'Traînée'], ['victoire', '⚡', 'Coup final'], ['embleme', '⭐', 'Emblème'], ['sol', '🌸', 'Sol'], ['lueur', '🌟', 'Lueur']];
+  ['repaire', '🏰', 'Repaire'], ['trainee', '💫', 'Traînée'], ['victoire', '⚡', 'Coup final'], ['sceau', '🔏', 'Sceau'], ['embleme', '⭐', 'Emblème'], ['sol', '🌸', 'Sol'], ['lueur', '🌟', 'Lueur']];
 let slotGarde = 'cape';
 function blocArmurerie() {
   const s = state, A = s.armurerie; if (!A) return '';
@@ -3926,6 +3933,7 @@ function apercuCosm(x) {
   if (x.slot === 'familier') return `<svg viewBox="0 0 100 100" width="34" height="34">${familierAube(x.id, 2)}</svg>`;
   if (x.slot === 'monture') return `<svg viewBox="-20 20 240 230" width="38" height="36">${montureSvg(x.id)}</svg>`;
   if (x.slot === 'repaire') return `<span class="ap-rep">${repaireSvg(x.id, p)}</span>`;
+  if (x.slot === 'sceau' && SCEAUX_COLLECTION[x.id]) return `<span class="ap-sc">${SCEAUX_COLLECTION[x.id](estMage && state ? !estMage(state) : false, p)}</span>`;
   return `<span class="ap-ef">${ICONES_EFFETS[x.id] || '✦'}</span>`;
 }
 const ICONES_EFFETS = { tr_etincelles: '✨', tr_petales: '🌸', tr_flammes: '🔥', vi_etoiles: '🌠', vi_foudre: '⚡', tr_bulles: '🫧' };
@@ -5056,10 +5064,59 @@ function chipJour(j) {
 }
 /** Sceau de cire posé sur une quête accomplie, avec l'emblème de la classe (étoile du mage, dague du voleur) */
 const sceauxFrais = {};
+/* Sceaux à collectionner (proposition 24/11/2026) : viewBox 36×36, emblème de la classe au centre (étoile du mage, dague du voleur). */
+function emblemeSceau(voleur, c) {
+  return voleur
+    ? `<g fill="${c}" stroke="${c}" stroke-linecap="round" stroke-linejoin="round"><path d="M26.5 9.5 L18.4 16.4 L19.6 17.6 Z" stroke-width=".8"/><path d="M15.4 16.2 L20.8 21.6" stroke-width="2" fill="none"/><path d="M18 19 L13.4 23.6" stroke-width="2.4" fill="none"/><circle cx="12.5" cy="24.5" r="1.6" stroke="none"/></g>`
+    : `<path d="M18 9.5 l2.4 5.4 5.6 .5 -4.3 3.7 1.3 5.6 -5 -3 -5 3 1.3 -5.6 -4.3 -3.7 5.6 -.5z" fill="${c}"/>`;
+}
+const SCEAUX_COLLECTION = {
+  // Rune de givre (commun) : médaillon de glace à six branches, givre sur le bord, emblème blanc bleuté
+  sc_givre: (v, p) => `<svg viewBox="0 0 36 36" aria-hidden="true"><defs><radialGradient id="${p}g" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#f2fbff"/><stop offset=".45" stop-color="#9fd8f2"/><stop offset="1" stop-color="#2f6f9a"/></radialGradient></defs>
+    <path d="M18 1.5 L21 6 L26.5 4.5 L27 10 L32.5 12 L30 17 L33.5 21.5 L28.5 24 L28.5 29.5 L23 29 L20.5 34 L18 30 L15.5 34 L13 29 L7.5 29.5 L7.5 24 L2.5 21.5 L6 17 L3.5 12 L9 10 L9.5 4.5 L15 6 Z" fill="url(#${p}g)" stroke="#1d4a6a" stroke-width="1"/>
+    <circle cx="18" cy="18" r="10.5" fill="none" stroke="#e8f7ff" stroke-width=".9" opacity=".7"/>
+    <g stroke="#ffffff" stroke-width=".8" opacity=".75" stroke-linecap="round"><path d="M18 3.5 V7 M18 29 V32.5 M5.5 11 L8.5 12.8 M27.5 23.2 L30.5 25 M5.5 25 L8.5 23.2 M27.5 12.8 L30.5 11"/></g>
+    <g transform="translate(.5 .6)" opacity=".5">${emblemeSceau(v, '#123a55')}</g>${emblemeSceau(v, '#ffffff')}
+    <path class="sc-vif" d="M9 9 A13 13 0 0 1 17 5" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/></svg>`,
+  // Couronne de laurier (rare) : disque d'or, couronne de feuilles vert sombre et or, emblème or sur pourpre
+  sc_laurier: (v, p) => `<svg viewBox="0 0 36 36" aria-hidden="true"><defs><radialGradient id="${p}l" cx="40%" cy="32%" r="75%"><stop offset="0" stop-color="#fff0b8"/><stop offset=".5" stop-color="#e0b44a"/><stop offset="1" stop-color="#8a5f12"/></radialGradient></defs>
+    <circle cx="18" cy="18" r="16" fill="url(#${p}l)" stroke="#5a3c08" stroke-width="1"/>
+    ${[-1, 1].map(s => Array.from({ length: 6 }, (_, i) => { const a = (s < 0 ? 200 - i * 26 : -20 + i * 26) * Math.PI / 180, x = 18 + Math.cos(a) * 12.2, y = 18 + Math.sin(a) * 12.2, r = a * 57.3 + (s < 0 ? -25 : 25) + 90;
+      return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="1.6" ry="3.3" transform="rotate(${r.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${i % 2 ? '#4f7a2e' : '#6a9a3a'}" stroke="#2c4a14" stroke-width=".5"/>`; }).join('')).join('')}
+    <circle cx="18" cy="18" r="8.6" fill="#6a1f3a" stroke="#f2d27a" stroke-width="1"/>
+    <g transform="translate(18 18) scale(.72) translate(-18 -18)">${emblemeSceau(v, '#ffe08a')}</g>
+    <path class="sc-vif" d="M7 12 A13 13 0 0 1 14 5.5" stroke="#fffbe8" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".7"/></svg>`,
+  // Braise (épique) : cire de charbon, fêlures de feu qui rougeoient (partie vivante : la lueur respire)
+  sc_braise: (v, p) => `<svg viewBox="0 0 36 36" aria-hidden="true"><defs><radialGradient id="${p}b" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#4a3a36"/><stop offset=".6" stop-color="#2a1f1c"/><stop offset="1" stop-color="#140c0a"/></radialGradient>
+    <radialGradient id="${p}f" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffd27a"/><stop offset=".5" stop-color="#ff7a2a"/><stop offset="1" stop-color="#ff7a2a" stop-opacity="0"/></radialGradient></defs>
+    <path d="M18 2.5c2 1.2 3.4.4 5.3 1.4 1.9 1 2 2.8 3.6 4.1 1.6 1.3 3.4 1 4.4 2.9 1 1.9-.1 3.4.4 5.4.5 2 2 3 1.6 5.1-.4 2.1-2.1 2.6-2.9 4.5-.8 1.9.1 3.6-1.4 5.1-1.5 1.5-3.2.8-5.1 1.6-1.9.8-2.6 2.6-4.7 2.9-2.1.3-3-1.2-5-1.6-2-.4-3.5.8-5.3-.4-1.8-1.2-1.4-3-2.6-4.6-1.2-1.6-3-1.8-3.6-3.8-.6-2 .8-3.3.7-5.4-.1-2.1-1.5-3.1-1-5.1.5-2 2.4-2.4 3.4-4.2 1-1.8.4-3.6 2-5 1.6-1.4 3.3-.6 5.2-1.4 1.9-.8 2.5-2.5 4.5-2.8z" fill="url(#${p}b)" stroke="#0a0504" stroke-width=".8"/>
+    <g class="sc-vif"><circle cx="18" cy="18" r="11" fill="url(#${p}f)" opacity=".55"/>
+    <path d="M6 13 L11 15 L9 19 M30 12 L25 16 L28 20 M11 29 L14 25 L18 27 M24 6 L22 10" stroke="#ff9a3c" stroke-width="1.1" fill="none" stroke-linecap="round"/></g>
+    ${emblemeSceau(v, '#ffe0a0')}</svg>`,
+  // Soleil de l'Aube (légendaire) : halo, couronne de 24 rayons (longs dorés, courts rosés) qui tournent lentement, anneau d'or gravé,
+  // pierre d'aube taillée au cœur (rose et or) portant l'emblème, quatre éclats d'étoile autour (partie vivante : rayons + scintillement)
+  sc_aube: (v, p) => `<svg viewBox="0 0 36 36" aria-hidden="true" overflow="visible"><defs>
+    <radialGradient id="${p}h" cx="50%" cy="50%" r="50%"><stop offset=".45" stop-color="#ffd27a" stop-opacity=".55"/><stop offset="1" stop-color="#ff9a5a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="${p}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".6" stop-color="#f2c14e"/><stop offset="1" stop-color="#b8770f"/></linearGradient>
+    <radialGradient id="${p}a" cx="45%" cy="38%" r="70%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".55" stop-color="#e8b840"/><stop offset="1" stop-color="#8a5a0a"/></radialGradient>
+    <radialGradient id="${p}g" cx="40%" cy="32%" r="75%"><stop offset="0" stop-color="#fff0f2"/><stop offset=".35" stop-color="#ff9fb0"/><stop offset=".75" stop-color="#e0506a"/><stop offset="1" stop-color="#7a1838"/></radialGradient></defs>
+    <circle cx="18" cy="18" r="18" fill="url(#${p}h)"/>
+    <g class="sc-rayons">${Array.from({ length: 24 }, (_, i) => i % 2
+      ? `<path d="M18 4.2 L19.1 8.4 L16.9 8.4 Z" transform="rotate(${i * 15} 18 18)" fill="#ffb3a0"/>`
+      : `<path d="M18 -.4 L20 8 L16 8 Z" transform="rotate(${i * 15} 18 18)" fill="url(#${p}r)" stroke="#8a5a10" stroke-width=".35"/>`).join('')}</g>
+    <circle cx="18" cy="18" r="10.6" fill="url(#${p}a)" stroke="#6a4208" stroke-width=".9"/>
+    ${Array.from({ length: 16 }, (_, i) => { const a = i / 16 * Math.PI * 2; return `<circle cx="${(18 + Math.cos(a) * 9.4).toFixed(2)}" cy="${(18 + Math.sin(a) * 9.4).toFixed(2)}" r=".45" fill="#fff6d8"/>`; }).join('')}
+    <path d="M18 9.6 L24.8 13.4 L24.8 22.6 L18 26.4 L11.2 22.6 L11.2 13.4 Z" fill="url(#${p}g)" stroke="#fff0c8" stroke-width=".9"/>
+    <path d="M18 9.6 L18 18 L24.8 13.4 M11.2 13.4 L18 18 M18 18 L18 26.4" stroke="#fff" stroke-width=".35" opacity=".45" fill="none"/>
+    <g transform="translate(18 18) scale(.62) translate(-18 -18)"><g transform="translate(.5 .6)" opacity=".5">${emblemeSceau(v, '#5a0a24')}</g>${emblemeSceau(v, '#ffffff')}</g>
+    <g class="sc-vif" fill="#fffbe8">${[[4, 5, 1], [32, 6, .8], [33, 30, 1], [3, 31, .7]].map(([x, y, k]) => `<path transform="translate(${x} ${y}) scale(${k})" d="M0 -2.6 L.6 -.6 L2.6 0 L.6 .6 L0 2.6 L-.6 .6 L-2.6 0 L-.6 -.6 Z"/>`).join('')}</g></svg>`,
+};
+/** Sceau porté (garde-robe, emplacement « sceau ») ou, à défaut, le sceau du thème */
 function sceauSvg(s) {
   const voleur = /voleur|assassin|roublard/i.test(String(((s || state || {}).classe || {}).nom || ''));
-  const emb = voleur ? '<path d="M24 12 l2.2 2.2 -8.4 8.4 -2.2 -2.2z M15.6 20.4 l-3 3 2.2 2.2 3 -3 M22 14 l3 -3" stroke="#ffe3c4" stroke-width="1.6" fill="#ffe3c4" stroke-linejoin="round"/>'
-    : '<path d="M18 9.5 l2.4 5.4 5.6 .5 -4.3 3.7 1.3 5.6 -5 -3 -5 3 1.3 -5.6 -4.3 -3.7 5.6 -.5z" fill="#ffe3c4"/>';
+  const porte = ((typeof ornementsDe === 'function' ? ornementsDe(s || state) : null) || {}).sceau;
+  if (porte && SCEAUX_COLLECTION[porte] && cosmPossede(porte, s || state)) return SCEAUX_COLLECTION[porte](voleur, 'sc' + porte).replace('<svg ', '<svg class="sc-col" ');
+  const emb = emblemeSceau(voleur, '#ffe3c4'); // dague redessinée (Théo, 24/11 : l'ancien trait ressemblait à un panneau « interdit »)
   if (document.documentElement.classList.contains('ygg')) {
     const rune = voleur ? '<path d="M14 10 V26 M14 10 L22 16 L14 22" />' : '<path d="M18 9 V27 M18 13 L12 9 M18 13 L24 9 M18 19 L12 15 M18 19 L24 15"/>';
     return `<svg viewBox="0 0 36 36" aria-hidden="true"><defs><radialGradient id="brz" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#ffe2b0"/><stop offset=".35" stop-color="#e0a463"/><stop offset=".75" stop-color="#9c6630"/><stop offset="1" stop-color="#5e3a17"/></radialGradient></defs>
