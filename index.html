@@ -3517,7 +3517,7 @@ function famGrandiAFaire() {
   if (f.st <= Number(av)) return;
   if (document.body.classList.contains('bloque') || document.querySelector('[id$="Ov"].on, .boss-win')) return; // un autre écran : au prochain passage
   try { localStorage.setItem(k, String(f.st)); } catch (e) {}
-  const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : voici ton ' + f.stade + '\u00a0!' : f.st === 4 ? 'Ton familier atteint sa forme ultime : ' + f.stade + '\u00a0!' : 'Ton familier évolue : voici ton ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
+  const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : ' + f.stade + '\u00a0!' : f.st === 4 ? 'Ton familier atteint sa forme ultime : ' + f.stade + '\u00a0!' : 'Ton familier évolue : ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
   if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) { toast((f.st === 1 ? '🐣 ' : '✨ ') + txt); return; }
   const ov = document.createElement('div'); ov.id = 'famOv'; ov.className = 'fam-ov on'; document.body.classList.add('bloque');
   ov.innerHTML = `<div class="fam-box"><div class="fam-sc"><svg class="fam-a" viewBox="-28 -24 156 124" aria-hidden="true">${familierAube(f.id, Math.min(Number(av) || 0, 4))}</svg><svg class="fam-b" viewBox="-28 -24 156 124" aria-hidden="true">${familierAube(f.id, f.st)}</svg></div><p>${esc(txt)}</p><small>toucher pour fermer</small></div>`;
@@ -3909,13 +3909,11 @@ function familierCinq0(id, st, ancien) {
       ${oeilChibi(42, 49, 4.4, '#ffb347')}${oeilChibi(58, 49, 4.4, '#ffb347')}${joues(58, '#ff5a3a')}
       <ellipse cx="50" cy="60" rx="2.6" ry="1.9" fill="#1a0a05"/><path d="M47 63 q3 2 6 0" stroke="#1a0a05" stroke-width=".9" fill="none" stroke-linecap="round"/>
       <path d="M50 33 C52 36 52 39 50 41 C48 39 48 36 50 33 Z" fill="#ffb347"/></g>`;
-    if (st >= 4) { // Renard-Soleil : soleil levant derrière lui, trois grandes queues de feu en éventail, front marqué d'or, pelage clair
-      const queueFeu = (rot) => `<g transform="rotate(${rot} 56 84)"><path d="M56 84 C74 86 84 66 80 40 C79 34 73 33 72 38 C74 56 70 70 54 76 Z" fill="#f08a3c" stroke="${S}" stroke-width="1"/><path d="M60 80 C72 78 78 62 76 46" stroke="#ffc07a" stroke-width="1.4" fill="none"/><g class="flam"><path d="M80 42 C92 30 88 12 74 2 C77 14 70 16 67 12 C62 24 66 36 80 42 Z" fill="#ff8a3c" stroke="#c84a1a" stroke-width=".8"/><path d="M79 40 C86 30 83 20 75 12 C75 22 71 24 70 22 C68 30 71 36 79 40 Z" fill="#ffe27a"/></g></g>`;
-      return `<g><defs><radialGradient id="fxSol"><stop offset=".55" stop-color="#fff3b0" stop-opacity=".9"/><stop offset=".75" stop-color="#ffc75a" stop-opacity=".55"/><stop offset="1" stop-color="#ff8a3c" stop-opacity="0"/></radialGradient></defs>
-        <g class="orn-halo"><circle cx="50" cy="30" r="34" fill="url(#fxSol)"/>${Array.from({ length: 16 }, (_, i) => { const a = (i * 22.5 - 90) * Math.PI / 180; return `<path d="M${(50 + Math.cos(a) * 30).toFixed(1)} ${(30 + Math.sin(a) * 30).toFixed(1)} L${(50 + Math.cos(a) * (i % 2 ? 40 : 46)).toFixed(1)} ${(30 + Math.sin(a) * (i % 2 ? 40 : 46)).toFixed(1)}" stroke="#ffd27a" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>`; }).join('')}</g>
-        ${queueFeu(-52)}<g transform="translate(100 0) scale(-1 1)">${queueFeu(-8)}</g>
-        <g transform="translate(50 92) scale(.97) translate(-50 -92)">${ancien(2)}
-          <g transform="translate(50 92) scale(1.3) translate(-50 -92)"><path d="M50 27 l3 5 l-3 6 l-3 -6 z" fill="#fff3b0" stroke="#c88a1a" stroke-width=".6"/><path d="M41 50 q-3 4 -1 8 M59 50 q3 4 1 8" stroke="#ffd27a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g></g></g>`;
+    if (st >= 4) { // Renard-Soleil : le Renard des braises en plus grand, soleil levant derrière la tête, troisième queue de feu dressée au centre, gemme d'or au front
+      return `<g><defs><radialGradient id="fxSol"><stop offset=".5" stop-color="#fff3b0" stop-opacity=".85"/><stop offset=".78" stop-color="#ffc75a" stop-opacity=".45"/><stop offset="1" stop-color="#ff8a3c" stop-opacity="0"/></radialGradient></defs>
+        <g class="orn-halo"><circle cx="50" cy="2" r="26" fill="url(#fxSol)"/>${Array.from({ length: 11 }, (_, i) => { const a = (180 + i * 18) * Math.PI / 180; return `<path d="M${(50 + Math.cos(a) * 26).toFixed(1)} ${(2 + Math.sin(a) * 26).toFixed(1)} L${(50 + Math.cos(a) * (i % 2 ? 34 : 40)).toFixed(1)} ${(2 + Math.sin(a) * (i % 2 ? 34 : 40)).toFixed(1)}" stroke="#ffd27a" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`; }).join('')}</g>
+        <g transform="translate(50 92) scale(1.1) translate(-50 -92)"><g transform="translate(50 92) scale(1.3) translate(-50 -92)"><g class="flam"><path d="M50 62 C42 50 44 36 50 24 C52 32 56 34 57 30 C62 40 60 54 50 62 Z" fill="#ff8a3c" stroke="#c84a1a" stroke-width=".8"/><path d="M50 58 C46 50 47 42 50 34 C52 40 54 41 55 39 C57 46 55 53 50 58 Z" fill="#ffe27a"/></g></g>
+          ${ancien(3)}<g transform="translate(50 92) scale(1.3) translate(-50 -92)"><path d="M50 27 l3 4.6 l-3 5.4 l-3 -5.4 z" fill="#fff3b0" stroke="#c88a1a" stroke-width=".6"/></g></g></g>`;
     }
     return ancien(st);
   }
@@ -3926,7 +3924,7 @@ function familierCinq0(id, st, ancien) {
       <path d="M62 88 C76 90 82 80 78 72 C76 76 70 80 60 81 Z" fill="#7f8ea2" stroke="${T}" stroke-width="1"/><path d="M78 72 C80 75 80 78 79 80 C78 77 77 75 76 74 Z" fill="#fff"/>
       <ellipse cx="50" cy="80" rx="16" ry="12" fill="#b8c4d2" stroke="${T}" stroke-width="1.2"/><path d="M42 72 L45 80 L48 75 L50 84 L52 75 L55 80 L58 72 Q50 69 42 72 Z" fill="#fff"/>
       <ellipse cx="41" cy="91" rx="5.5" ry="3" fill="#e8eef4" stroke="${T}" stroke-width=".9"/><ellipse cx="59" cy="91" rx="5.5" ry="3" fill="#e8eef4" stroke="${T}" stroke-width=".9"/>
-      <path d="M31 44 C24 34 26 24 32 22 C38 26 40 34 40 40 Z M69 44 C76 34 74 24 68 22 C62 26 60 34 60 40 Z" fill="#7f8ea2" stroke="${T}" stroke-width="1.1"/><path d="M33 38 C30 32 31 27 33 26 C36 29 37 33 37 37 Z M67 38 C70 32 69 27 67 26 C64 29 63 33 63 37 Z" fill="#e8b8c0"/>
+      <path d="M31 42 L30 24 L44 35 Z M69 42 L70 24 L56 35 Z" fill="#7f8ea2" stroke="${T}" stroke-width="1.1" stroke-linejoin="round"/><path d="M33.4 38 L33 29 L40 35 Z M66.6 38 L67 29 L60 35 Z" fill="#e8b8c0"/>
       <circle cx="50" cy="52" r="20" fill="#b8c4d2" stroke="${T}" stroke-width="1.3"/>
       <path d="M33 46 Q42 40 47 48 L50 54 L53 48 Q58 40 67 46 Q64 36 50 35 Q36 36 33 46 Z" fill="#7f8ea2"/>
       <ellipse cx="50" cy="62" rx="10" ry="7.5" fill="#fff"/>
@@ -3961,7 +3959,7 @@ function familierCinq0(id, st, ancien) {
       <circle cx="41" cy="38" r="3.6" fill="#1a1028"/><circle cx="59" cy="38" r="3.6" fill="#1a1028"/><circle cx="39.8" cy="36.6" r="1.3" fill="#fff"/><circle cx="57.8" cy="36.6" r="1.3" fill="#fff"/>
       <path d="M48 43 l2 5 l2 -5 z" fill="#d4ad3c" stroke="${T}" stroke-width=".5"/>
       ${astrale ? `<path d="M50 22 l1.2 2.6 l2.8 .3 l-2.1 1.9 l.6 2.8 l-2.5 -1.4 l-2.5 1.4 l.6 -2.8 l-2.1 -1.9 l2.8 -.3 z" fill="#fff3b0" stroke="#c8a23c" stroke-width=".4"/>` : ''}</g>`;
-    if (st <= 0) return oeufTheme('#2a2a5a', '#0e0e2a', '#0a0a1e', `${[[42, 54, 1.6], [56, 62, 2], [46, 76, 1.3], [58, 82, 1.1], [38, 66, 1], [60, 50, 1]].map(([x, y, r], i) => `<circle class="${i % 2 ? 'orn-runes' : ''}" cx="${x}" cy="${y}" r="${r}" fill="#fff3b0"/>`).join('')}<path d="M42 54 L56 62 L46 76 L58 82" stroke="#fff3b0" stroke-width=".6" fill="none" opacity=".6"/>`, '#7f9bff');
+    if (st <= 0) return oeufTheme('#4a4f9a', '#23265a', '#d8b84a', `${[[42, 54, 1.6], [56, 62, 2], [46, 76, 1.3], [58, 82, 1.1], [38, 66, 1], [60, 50, 1]].map(([x, y, r], i) => `<circle class="${i % 2 ? 'orn-runes' : ''}" cx="${x}" cy="${y}" r="${r}" fill="#fff3b0"/>`).join('')}<path d="M42 54 L56 62 L46 76 L58 82" stroke="#fff3b0" stroke-width=".6" fill="none" opacity=".6"/>`, '#7f9bff');
     if (st === 1) return `<g>
       <circle cx="50" cy="66" r="25" fill="#e8dcc4" stroke="${T}" stroke-width="1.2"/>
       ${Array.from({ length: 14 }, (_, i) => { const a = i / 14 * Math.PI * 2; return `<circle cx="${(50 + Math.cos(a) * 24).toFixed(1)}" cy="${(66 + Math.sin(a) * 24).toFixed(1)}" r="3.2" fill="#e8dcc4"/>`; }).join('')}
@@ -3975,12 +3973,10 @@ function familierCinq0(id, st, ancien) {
     if (st === 2) return chouette(1, false);
     if (st === 3) return chouette(1.2, true);
     // Grand-Duc des constellations : grandes ailes ouvertes en ciel étoilé, croissant de lune derrière, yeux de lune
-    const plume = (x, y, a, L, c) => `<path transform="translate(${x} ${y}) rotate(${a})" d="M0 0 C-3 -${L * .4} -2.4 -${L * .85} 0 -${L} C2.4 -${L * .85} 3 -${L * .4} 0 0 Z" fill="${c}" stroke="#0a0a1e" stroke-width=".7"/>`;
-    const aileC = (sg) => `<g transform="translate(50 0) scale(${sg} 1) translate(-50 0)">${[0, 1, 2, 3, 4, 5, 6].map(i => plume(36 - i * 1.2, 66 + i * 2.2, -78 + i * 12, 30 - i * 1.6, i % 2 ? '#2a3a7a' : '#1e2a5a')).join('')}
-      <path d="M38 52 C28 46 16 46 8 52 C18 54 26 58 34 66 Z" fill="#3a4a8a" stroke="#0a0a1e" stroke-width=".8"/><path d="M38 52 C28 46 16 46 8 52" stroke="#c8a23c" stroke-width="1.1" fill="none"/>
-      ${[[14, 56], [10, 66], [16, 74], [24, 70]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.1" fill="#fff3b0"/>`).join('')}<path d="M14 56 L10 66 L16 74 L24 70" stroke="#fff3b0" stroke-width=".5" fill="none" opacity=".8"/></g>`;
+    // ailes à vraies plumes (rémiges arrondies, comme le griffon) semées d'étoiles reliées en constellation
+    const etoilesAile = s2 => `<g transform="translate(50 0) scale(${s2} 1) translate(-50 0)" fill="#fff3b0">${[[18, 76], [6, 70], [20, 66], [10, 60]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.3"/>`).join('')}<path d="M18 76 L6 70 L20 66 L10 60" stroke="#fff3b0" stroke-width=".5" fill="none" opacity=".8"/></g>`;
     return `<g><path class="orn-halo" d="M84 -14 A22 22 0 1 0 104 16 A17 17 0 1 1 84 -14 Z" fill="#fff3b0" opacity=".8"/>
-      <g transform="translate(50 70) scale(1.32 1.25) translate(-50 -70)">${aileC(1)}${aileC(-1)}</g>
+      ${aileGriffon('translate(36 66) scale(-.62 .62) rotate(42)', '#2a3a7a', '#1e2a5a', '#3a4a8a')}${aileGriffon('translate(64 66) scale(.62) rotate(42)', '#2a3a7a', '#1e2a5a', '#3a4a8a')}${etoilesAile(1)}${etoilesAile(-1)}
       ${chouette(1.15, true, true)}
       <g fill="#fff3b0">${[[2, 10], [20, -8], [96, 60], [6, 86], [92, 88]].map(([x, y], i) => `<path class="orn-etinc" style="animation-delay:${(i * .4).toFixed(1)}s" d="M${x} ${y - 3} l.9 2.1 l2.1 .9 l-2.1 .9 l-.9 2.1 l-.9 -2.1 l-2.1 -.9 l2.1 -.9 z"/>`).join('')}</g></g>`;
   }
@@ -5146,6 +5142,7 @@ const ornAvecSerie = s => Object.assign({ _jours: joursDe(s), _serie: serieDe(s)
 const ornCompagnon = c => Object.assign({ _jours: joursDe(c), _serie: serieDe(c) }, (c && c.ornements) || {});
 function ornementDebloque(s, o) { try { return !!o.ok(s); } catch (e) { return false; } }
 /** Ajoute les ornements équipés au dessin du personnage (cadre 200 × 260, pieds vers y = 242). */
+var PANOPLIE_COMPLETE = null; // rempli par le fichier d'une saison : (ornements, id) → { derriere, devant } quand une panoplie complète est portée
 function orner(svg, orn, id, grand) {
   if (!orn || !svg) return svg;
   id = String(id || '').replace(/\W/g, '');
@@ -5168,6 +5165,9 @@ function orner(svg, orn, id, grand) {
   // Magicien : cape un peu resserrée aussi (Théo, 24/11 : elle s'évasait en grand triangle)
   const ajusteCape = s => !s ? s : `<g transform="translate(100 250) scale(${mage ? '.9 .97' : '.82 .93'}) translate(-100 -250)">${s}</g>`;
   const auraS = orn.aura ? auraSvg(orn.aura, 'au' + id) : '', capeS = ajusteCape(orn.cape ? capeSvg(orn.cape, 'ca' + id) : ''), capeAv = orn.cape ? (mage ? capeDevantSvg(orn.cape, 'ca' + id) : ajusteCape(capeDevantSvg(orn.cape, 'ca' + id))) : ''; // Magicien : agrafes restées au col de la robe (avocat, 24/11)
+  // panoplie complète (cape + couronne + aura d'un même ensemble) : effet en plus, fourni par le fichier de la saison (PANOPLIE_COMPLETE)
+  let pano = null; try { pano = typeof PANOPLIE_COMPLETE === 'function' ? PANOPLIE_COMPLETE(orn, id) : null; } catch (e) { pano = null; }
+  const panoD = pano && pano.derriere ? `<g class="orn orn-pano">${pano.derriere}</g>` : '', panoA = pano && pano.devant ? `<g class="orn orn-pano">${pano.devant}</g>` : '';
   let couronne = '';
   if (orn.tete) {
     // [y du bandeau, échelle] : chapeau du Magicien (paliers 2 à 7), tête nue, capuche du Voleur
@@ -5188,9 +5188,9 @@ function orner(svg, orn, id, grand) {
       : `<path d="M84 150 L116 150 L114 200 L112 222 L94 222 L92 200 Z" fill="#2c2630"/><path d="M90 196 h22 l1 32 q8 4 4 10 h-24 q-3 -4 -1 -10 z" fill="#5a3a22"/><path d="M89 196 h24 v7 h-24 z" fill="#7a5232"/>`;
     const etrier = `<path d="M90 236 h24 M93 236 v-8 M111 236 v-8" stroke="#c9ccd2" stroke-width="2.4" fill="none"/>`;
     const tr = `translate(${(sx - 100 * sk).toFixed(1)} ${(sy - H * sk).toFixed(1)}) scale(${sk})`;
-    heros = `<g class="orn-derriere">${auraS}</g><g class="orn-monte">${dos}${cut >= 0 ? '</g>' : ''}<g transform="${tr}">${capeS}<clipPath id="se${id}"><rect x="-80" y="-140" width="360" height="${H + 150}"/></clipPath><g clip-path="url(#se${id})">${corps}</g>${capeAv}${couronne}</g></g>
+    heros = `<g class="orn-derriere">${panoD}${auraS}</g><g class="orn-monte">${dos}${cut >= 0 ? '</g>' : ''}<g transform="${tr}">${capeS}<clipPath id="se${id}"><rect x="-80" y="-140" width="360" height="${H + 150}"/></clipPath><g clip-path="url(#se${id})">${corps}</g>${capeAv}${couronne}</g></g>
       <g class="orn-monte">${cut >= 0 ? '<g>' : ''}${devant}<g transform="${tr}">${jambe}${etrier}</g></g>`;
-  } else heros = (auraS || capeS ? `<g class="orn-derriere">${auraS}${capeS}</g>` : '') + corps + capeAv + couronne;
+  } else heros = (panoD || auraS || capeS ? `<g class="orn-derriere">${panoD}${auraS}${capeS}</g>` : '') + corps + capeAv + couronne + panoA;
   const LC = { argent: '#e6eefa', or: '#f5cd5a', pourpre: '#c8327a' }[orn.lueur];
   if (LC) heros = `<defs><radialGradient id="lu${id}"><stop offset="0" stop-color="${LC}" stop-opacity=".5"/><stop offset=".6" stop-color="${LC}" stop-opacity=".16"/><stop offset="1" stop-color="${LC}" stop-opacity="0"/></radialGradient></defs><ellipse class="orn-lueur" cx="100" cy="150" rx="74" ry="108" fill="url(#lu${id})"/>` + heros;
   return haut + solS + heros + avant + famAube + fin;
