@@ -980,7 +980,7 @@
   @keyframes fadeIn { from { opacity: 0; } }
   .bw-xp { color: var(--gold); font-weight: 700; } .bw-tr { font-size: 13px; color: var(--muted); }
   .boss-win .btn { margin-top: 16px; }
-  /* Cinématique d'exécution du boss (app 11.1, Théo 21/11 : « plus épique, un peu de sang stylisé, le boss du mois plus long et plus satisfaisant »).
+  /* Cinématique d'exécution du boss (app 11.1, Théo 21/11 : « plus épique, un peu de sang stylisé » ; le sang a été remplacé le 24/11 par des éclats selon la famille : « pas dans la DA, le boss du mois plus long et plus satisfaisant »).
      Un seul minutage par variables : semaine ≈ 6,6 s, mois ≈ 11 s (carton, rugissement, riposte, à genoux, coup de grâce, relique).
      Les mêmes scènes servent à « Revoir la victoire » (fiche du boss, salle des trophées). Mode calme / prefers-reduced-motion : écran fixe sans animation. */
   .boss-win.anim { --t1: 1.3s; --t2: 2.2s; --tc: 2.95s; --t3: 3.6s; --tm: 3.9s; --tv: 5.2s; --dm: 1.8s;
@@ -1044,25 +1044,30 @@
   @keyframes bwEnvole { 0% { opacity: 1; transform: none; } 30% { transform: rotate(-12deg) scale(.95); filter: hue-rotate(60deg); } 100% { opacity: 0; transform: translateY(-160px) rotate(220deg) scale(.2); filter: hue-rotate(80deg) blur(3px); } }
   @keyframes bwMort { 0% { opacity: 1; transform: scale(1); filter: brightness(1.6); } 15% { opacity: .3; } 22% { opacity: 1; filter: brightness(2.6) contrast(1.5); } 35% { transform: scale(1.1) rotate(3deg); filter: brightness(3) saturate(0); } 100% { opacity: 0; transform: scale(.3) translateY(-60px) rotate(-8deg); filter: brightness(4) blur(6px); } }
   @media (prefers-reduced-motion: reduce) { .bw-fx { display: none; } }
-  /* Sang stylisé : gouttes en larme (une gerbe par coup, plus large au coup final), taches au sol, flaque qui s'étale sous le boss */
+  /* Éclats de victoire, selon la famille du boss (Théo, 24/11 : « pas de sang, pas dans la DA ; quelque chose de plus roleplay ») :
+   * pierre et feu = braises carrées qui tournoient et retombent ; ombre = volutes de fumée violette qui montent ; eau = bulles d'écume qui montent ;
+   * nature = feuilles qui tourbillonnent ; autres = étincelles dorées. Au sol : des lueurs, puis un cercle runique qui s'allume sous le boss.
+   * Uniquement transform / opacity ; coupé en mode calme et en mouvement réduit comme le reste de la scène. */
   .bw-gerbe { position: absolute; left: 50%; top: 46%; width: 0; height: 0; z-index: 3; pointer-events: none; }
-  .bw-gerbe i { position: absolute; left: 0; top: 0; width: var(--w, 7px); height: calc(var(--w, 7px) * 1.6); margin: -6px 0 0 -4px; opacity: 0;
-    border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 35% 30%, var(--s2, #e0444a), var(--s1, #8f0f12) 60%); box-shadow: 0 0 4px rgba(0,0,0,.35);
+  .bw-gerbe i { position: absolute; left: 0; top: 0; width: var(--w, 7px); height: var(--w, 7px); margin: -4px 0 0 -4px; opacity: 0;
+    border-radius: var(--forme, 2px); background: radial-gradient(circle at 35% 30%, var(--s2, #fff3c4), var(--s1, #c98d1a) 65%); box-shadow: 0 0 6px var(--lueur, rgba(255,214,120,.7));
     animation: bwGoutte .95s var(--t) cubic-bezier(.15,.6,.4,1) forwards; }
   @keyframes bwGoutte { 0% { opacity: 1; transform: translate(0, 0) rotate(var(--r)) scale(.5); } 40% { opacity: 1; transform: translate(var(--dx), var(--dy)) rotate(var(--r)) scale(1); }
-    100% { opacity: 0; transform: translate(calc(var(--dx) * 1.25), calc(var(--dy) + 95px)) rotate(var(--r)) scale(.7); } }
+    100% { opacity: 0; transform: translate(calc(var(--dx) * 1.25), calc(var(--dy) + var(--chute, 30px))) rotate(calc(var(--r) + var(--tour, 90deg))) scale(var(--fin, .5)); } }
   .mois .bw-tache { top: calc(242px - var(--y)); }
   .bw-tache { position: absolute; z-index: 0; width: var(--w); height: calc(var(--w) * .38); left: calc(50% + var(--x) * .6); top: calc(222px - var(--y)); margin-left: calc(var(--w) / -2); border-radius: 50%; opacity: 0;
-    background: radial-gradient(ellipse at 45% 40%, var(--s2, #e0444a), var(--s1, #8f0f12) 55%, transparent 72%); animation: bwTache .5s var(--t) ease-out forwards; }
-  @keyframes bwTache { 0% { opacity: 0; transform: scale(.2); } 60% { opacity: .9; transform: scale(1.1); } 100% { opacity: .8; transform: scale(1); } }
+    background: radial-gradient(ellipse at 50% 45%, var(--s2, #fff3c4), color-mix(in srgb, var(--s1, #c98d1a) 70%, transparent) 40%, transparent 72%); animation: bwTache .5s var(--t) ease-out forwards; }
+  @keyframes bwTache { 0% { opacity: 0; transform: scale(.2); } 60% { opacity: .85; transform: scale(1.1); } 100% { opacity: .55; transform: scale(1); } }
   .bw-flaque { position: absolute; z-index: 0; left: 50%; top: 212px; width: 128px; height: 20px; margin-left: -64px; border-radius: 50%; opacity: 0; transform: scaleX(.1);
-    background: radial-gradient(ellipse at 50% 45%, var(--s2, #e0444a) 0, var(--s1, #8f0f12) 45%, rgba(60,0,0,.55) 66%, transparent 72%); animation: bwFlaque 1.6s calc(var(--tm) + .25s) ease-out forwards; }
+    background: radial-gradient(ellipse at 50% 50%, transparent 50%, var(--s2, #fff3c4) 58%, var(--s1, #c98d1a) 64%, transparent 72%); box-shadow: 0 0 14px var(--lueur, rgba(255,214,120,.6));
+    animation: bwFlaque 1.6s calc(var(--tm) + .25s) ease-out forwards; }
   .mois .bw-flaque { top: 232px; width: 156px; height: 22px; margin-left: -78px; }
-  @keyframes bwFlaque { 0% { opacity: 0; transform: scaleX(.1) scaleY(.6); } 25% { opacity: .95; } 100% { opacity: .85; transform: none; } }
-  .mort-eau .bw-gerbe i, .mort-eau .bw-tache, .mort-eau .bw-flaque { --s1: #7a0d18; --s2: #c4303c; }
-  .mort-ombre .bw-gerbe i, .mort-ombre .bw-tache, .mort-ombre .bw-flaque { --s1: #3a0a2a; --s2: #8a1a48; }
-  .mort-pierre .bw-gerbe i, .mort-pierre .bw-tache, .mort-pierre .bw-flaque { --s1: #9a2a08; --s2: #ff8a2a; }
-  .mort-nature .bw-gerbe i, .mort-nature .bw-tache, .mort-nature .bw-flaque { --s1: #7a0d18; --s2: #c8323a; }
+  @keyframes bwFlaque { 0% { opacity: 0; transform: scaleX(.1) scaleY(.6); } 25% { opacity: .95; } 100% { opacity: .8; transform: none; } }
+  .mort-pierre .bw-gerbe i, .mort-pierre .bw-tache, .mort-pierre .bw-flaque, .mort-feu .bw-gerbe i, .mort-feu .bw-tache, .mort-feu .bw-flaque {
+    --s1: #c24a0e; --s2: #ffd27a; --lueur: rgba(255,150,60,.75); --forme: 2px; --chute: 40px; --tour: 200deg; }
+  .mort-ombre .bw-gerbe i, .mort-ombre .bw-tache, .mort-ombre .bw-flaque { --s1: #4a2a78; --s2: #c9a8ff; --lueur: rgba(170,130,255,.7); --forme: 50%; --chute: -70px; --tour: 0deg; --fin: 1.6; }
+  .mort-eau .bw-gerbe i, .mort-eau .bw-tache, .mort-eau .bw-flaque { --s1: #2a86b0; --s2: #e6f8ff; --lueur: rgba(140,215,255,.7); --forme: 50%; --chute: -55px; --tour: 0deg; --fin: .9; }
+  .mort-nature .bw-gerbe i, .mort-nature .bw-tache, .mort-nature .bw-flaque { --s1: #3a8a3e; --s2: #c8f29a; --lueur: rgba(160,230,120,.6); --forme: 0 70% 0 70%; --chute: 70px; --tour: 260deg; }
   /* Coups, ralenti, onde de choc */
   .bw-slash { position: absolute; left: 50%; top: 50%; width: 190px; height: 5px; margin: -2px 0 0 -95px; border-radius: 4px; opacity: 0; z-index: 3;
     background: linear-gradient(90deg, transparent, #fff 30%, #ffe08a 60%, transparent); box-shadow: 0 0 14px #ffd36b, 0 0 30px rgba(255,180,60,.6); }
@@ -6265,20 +6270,20 @@ function bossVaincu(b, revoir) {
     const dy = mort === 'pierre' ? Math.abs(Math.sin(ang) * dist) + 40 : mort === 'ombre' || mort === 'nature' ? -Math.abs(Math.sin(ang) * dist) - 40 : Math.sin(ang) * dist - 20;
     return `<i class="bw-p" style="--dx:${Math.round(Math.cos(ang) * dist)}px;--dy:${Math.round(dy)}px;--r:${(i * 47) % 360}deg;background:${M.c[i % M.c.length]}"></i>`;
   }).join('') + `<div class="bw-fx">${Array.from({ length: 10 }, (_, i) => `<i style="--x:${(i * 37) % 100 - 50}px;--d:${(i % 5) * .12}s">${M.e[i % M.e.length]}</i>`).join('')}</div>`;
-  /* Animation de victoire (app 11.1, Théo 21/11) : les héros frappent l'un après l'autre (gerbe de sang à chaque coup, la barre se vide),
+  /* Animation de victoire (app 11.1, Théo 21/11) : les héros frappent l'un après l'autre (gerbe d'éclats à chaque coup, la barre se vide),
      le boss chancelle, ralenti, coup final commun (onde de choc, l'écran tremble), il tombe à sa façon dans une flaque, tampon « VICTOIRE ».
      Boss du MOIS (~11 s) : carton, rugissement, deux assauts, riposte (griffures), à genoux, coup de grâce, relique qui s'élève.
      « Passer » saute à la fin ; « Revoir » rejoue (aussi depuis la fiche du boss et la salle des trophées). */
   const mois = b.type === 'mois';
   const nomG = heros[0] ? heros[0].nom : 'Toi', nomD = heros[1] ? heros[1].nom : nomG;
   const rayons = Array.from({ length: 12 }, (_, i) => `<i style="--a:${i * 30}deg"></i>`).join('');
-  // Gerbe de sang : n gouttes projetées loin du héros qui frappe (sens 1 = vers la droite, -1 = vers la gauche, 0 = tout autour)
+  // Gerbe d'éclats (braises, fumée, écume, feuilles selon la famille) : n éclats projetés loin du héros qui frappe (sens 1 = vers la droite, -1 = vers la gauche, 0 = tout autour)
   const gerbe = (t, sens, n, loin) => `<div class="bw-gerbe" style="--t:${t}">${Array.from({ length: n }, (_, i) => {
     const a = sens === 0 ? (i / n) * Math.PI * 2 + (i % 3) * .3 : (-1.45 + (i / Math.max(1, n - 1)) * 1.55) + (i % 2) * .12;
     const d = (loin ? 70 : 45) + (i * 29) % (loin ? 70 : 40), dx = Math.cos(a) * d * (sens || 1), dy = Math.sin(a) * d - 10;
     return `<i style="--dx:${Math.round(dx)}px;--dy:${Math.round(dy)}px;--r:${Math.round(Math.atan2(dy, dx) * 57.3 + 90)}deg;--w:${7 + (i * 7) % 5}px"></i>`; }).join('')}</div>`;
   const taches = (t, n) => Array.from({ length: n }, (_, i) => `<i class="bw-tache" style="--t:calc(${t} + ${(.15 + i * .06).toFixed(2)}s);--x:${[-96, 92, -54, 58, -128, 124, 10][i % 7]}px;--y:${[-4, 2, -12, -9, 6, 8, -16][i % 7]}px;--w:${[24, 20, 15, 17, 12, 14, 11][i % 7]}px"></i>`).join('');
-  const sang = mois
+  const effets = mois
     ? { gerbes: gerbe('var(--t1)', 1, 10) + gerbe('var(--t2)', -1, 10) + gerbe('var(--t1b)', 1, 11, true) + gerbe('var(--t2b)', -1, 11, true) + gerbe('var(--t3)', 0, 24, true), sol: taches('var(--t3)', 7) }
     : { gerbes: gerbe('var(--t1)', 1, 10) + gerbe('var(--t2)', -1, 11) + gerbe('var(--t3)', 0, 20, true), sol: taches('var(--t3)', 5) };
   const relique = `<div class="bw-relique"><svg viewBox="0 0 100 112" aria-hidden="true"><defs><radialGradient id="bwRelOr" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#f2c14e"/><stop offset="1" stop-color="#9a6a12"/></radialGradient>
@@ -6298,10 +6303,10 @@ function bossVaincu(b, revoir) {
       <div class="bw-vie"><i></i></div>
       <div class="bw-boss"><div class="bw-bi">${bossSvg(b.visuel, 'win', b)}</div>
         <span class="bw-slash s1"></span><span class="bw-slash s2"></span><span class="bw-slash s3"></span><span class="bw-slash s4"></span>
-        <i class="bw-onde ${mois ? 'o0' : 'o1'}"></i><i class="bw-onde o1"></i><i class="bw-onde o2"></i>${eclats}${sang.gerbes}
+        <i class="bw-onde ${mois ? 'o0' : 'o1'}"></i><i class="bw-onde o1"></i><i class="bw-onde o2"></i>${eclats}${effets.gerbes}
         <b class="bw-coup c1">⚔ ${esc(nomG)}</b><b class="bw-coup c2">⚔ ${esc(nomD)}</b><b class="bw-coup c3">${mois ? 'COUP DE GRÂCE !' : 'COUP FINAL !'}</b>${mois ? '<b class="bw-coup c4">IL RIPOSTE !</b>' : ''}</div>
       ${mois ? `<div class="bw-griffes">${[1, 2, 3].map(k => `<i style="--k:${k}"></i>`).join('')}</div>${relique}` : ''}
-      <i class="bw-flaque"></i>${sang.sol}
+      <i class="bw-flaque"></i>${effets.sol}
       ${heros.map((h, i) => `<div class="bw-h ${i ? 'd' : 'g'}"><div class="bw-hi">${h.svg}</div><small>${esc(h.nom)}</small></div>`).join('')}
       <div class="bw-noir"></div>
       <div class="bw-flash"></div>
