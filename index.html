@@ -131,6 +131,7 @@
   .sc-col .sc-vif, .ap-sc .sc-vif { animation: scVif 2.4s ease-in-out infinite alternate; }
   @keyframes scTourne { to { transform: rotate(360deg); } } @keyframes scVif { from { opacity: .35; } to { opacity: 1; } }
   body.calme .sc-rayons, body.calme .sc-vif { animation: none !important; } @media (prefers-reduced-motion: reduce) { .sc-rayons, .sc-vif { animation: none !important; } }
+  .orn-t.lock .sc-rayons, .orn-t.lock .sc-vif { animation: none; } /* un sceau pas encore gagné ne s'anime pas (ergonome) */
   .ap-sc { display: inline-block; width: 32px; height: 32px; } .ap-sc svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .card.done .body { padding-right: 44px; } /* place du sceau : un nom long ne passe plus dessous (avocat, 24/11) */
   .sceau.tombe { animation: sceauTombe .7s cubic-bezier(.3,1.4,.5,1) both; }
@@ -3910,8 +3911,8 @@ function blocArmurerie() {
     return `<div class="orn-t ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : o.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(o.nom)}"><span class="orn-ic">${miniOrnement(o)}</span><b>${esc(o.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>
       ${ok ? `<button class="orn-q info" data-orn-info="${o.id}" aria-label="À propos de cet objet">i</button>` : `<button class="orn-q" data-orn-info="${o.id}" aria-label="Comment le gagner">?</button>`}</div>`; }).join('');
   const prix = ((s.catalogueCosm || {}).prix) || {};
-  const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id).sort((a, b) => (prix[a.rarete] || 0) - (prix[b.rarete] || 0)).map(x =>
-    `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
+  const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id).sort((a, b) => (a.prix || prix[a.rarete] || 0) - (b.prix || prix[b.rarete] || 0)).map(x =>
+    `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (x.prix || prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${x.prix || prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
   return `<div id="armurerie"><div class="section"><h2>Garde-robe</h2><button class="lien-regles" data-regles="garde">📖 Comment ça marche ?</button></div>
     <div class="gr-onglets">${onglets}</div>
     <div class="orn-info" id="info-cosm"></div><div class="orn-info" id="info-${E[0]}"></div>
@@ -4675,7 +4676,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-marchand]')) { marchandOuvert = !marchandOuvert; dessinerVitrine(); return; }
   const ach = e.target.closest('[data-acheter]');
   if (ach) {
-    const x = cosmItem(ach.dataset.acheter), prix = ((state.catalogueCosm || {}).prix || {})[x && x.rarete];
+    const x = cosmItem(ach.dataset.acheter), prix = x && (x.prix || ((state.catalogueCosm || {}).prix || {})[x.rarete]); // prix propre (Soleil de l'Aube : 400)
     if (!x) return;
     if (state.armurerie.eclats < prix) { toast(`Il te faut ${prix} éclats (tu en as ${state.armurerie.eclats})`, 'info'); return; }
     if (ach.dataset.sur !== '1') { ach.dataset.sur = '1'; ach.textContent = 'Confirmer ?'; setTimeout(() => { ach.dataset.sur = ''; ach.textContent = '✦ ' + prix; }, 3000); return; }
@@ -5092,8 +5093,8 @@ const SCEAUX_COLLECTION = {
     <radialGradient id="${p}f" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffd27a"/><stop offset=".5" stop-color="#ff7a2a"/><stop offset="1" stop-color="#ff7a2a" stop-opacity="0"/></radialGradient></defs>
     <circle cx="18" cy="19.6" r="15" fill="#000" opacity=".35"/><path d="M18 2.5c2 1.2 3.4.4 5.3 1.4 1.9 1 2 2.8 3.6 4.1 1.6 1.3 3.4 1 4.4 2.9 1 1.9-.1 3.4.4 5.4.5 2 2 3 1.6 5.1-.4 2.1-2.1 2.6-2.9 4.5-.8 1.9.1 3.6-1.4 5.1-1.5 1.5-3.2.8-5.1 1.6-1.9.8-2.6 2.6-4.7 2.9-2.1.3-3-1.2-5-1.6-2-.4-3.5.8-5.3-.4-1.8-1.2-1.4-3-2.6-4.6-1.2-1.6-3-1.8-3.6-3.8-.6-2 .8-3.3.7-5.4-.1-2.1-1.5-3.1-1-5.1.5-2 2.4-2.4 3.4-4.2 1-1.8.4-3.6 2-5 1.6-1.4 3.3-.6 5.2-1.4 1.9-.8 2.5-2.5 4.5-2.8z" fill="url(#${p}b)" stroke="#0a0504" stroke-width=".8"/>
     <g class="sc-vif"><circle cx="18" cy="18" r="11" fill="url(#${p}f)" opacity=".55"/>
-    <path d="M6 13 L11 15 L9 19 M30 12 L25 16 L28 20 M11 29 L14 25 L18 27 M24 6 L22 10" stroke="#ff9a3c" stroke-width="1.1" fill="none" stroke-linecap="round"/></g>
-    ${emblemeSceau(v, '#ffe0a0')}</svg>`,
+    <path d="M5 12 L9 14 L8 17 M31 11 L27 14 L29 17 M9 31 L12 28 L14 30 M27 5 L25 8" stroke="#ff9a3c" stroke-width="1.1" fill="none" stroke-linecap="round"/></g>
+    <g transform="translate(.6 .7)">${emblemeSceau(v, '#120806')}</g>${emblemeSceau(v, '#ffe0a0')}</svg>`, // fêlures écartées du centre et contour sombre : la dague se lit (ergonome)
   // Soleil de l'Aube (légendaire) : halo, couronne de 24 rayons (longs dorés, courts rosés) qui tournent lentement, anneau d'or gravé,
   // pierre d'aube taillée au cœur (rose et or) portant l'emblème, quatre éclats d'étoile autour (partie vivante : rayons + scintillement)
   sc_aube: (v, p) => `<svg viewBox="0 0 36 36" aria-hidden="true" overflow="visible"><defs>
