@@ -3008,7 +3008,7 @@ function bilanRodageAFaire() {
   bilanPrevu = true;
   const essayer = () => {
     let reco = false; try { reco = typeof recommencementDu === 'function' && recommencementDu() && !localStorage.getItem('recommencement2027'); } catch (e) {}
-    const occupe = document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #recapOv, .am-ov, .lvl-ov')].some(el => el.classList.contains('on') || el.classList.contains('lvl-ov'));
+    const occupe = document.body.classList.contains('bloque') || !!document.querySelector('.boss-win') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #recapOv, .am-ov, .lvl-ov')].some(el => el.classList.contains('on') || el.classList.contains('lvl-ov'));
     if (reco || occupe) { setTimeout(essayer, 1500); return; } // le Grand Recommencement (ou un d20, un boss) passe d'abord
     try { localStorage.setItem('bilanRodage2026', '1'); } catch (e) {}
     ouvrirBilanRodage(state.bilanRodage);
@@ -3330,7 +3330,7 @@ function souvenirAFaire(ev) {
   let vu = false; try { vu = !!localStorage.getItem('souvenir2027'); } catch (e) {} if (vu) return;
   souvenirPrevu = true;
   const essayer = () => {
-    if (document.body.classList.contains('bloque') || document.querySelector('.lvl-ov, .cine') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #bilanOv')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 1500); return; }
+    if (document.body.classList.contains('bloque') || document.querySelector('.lvl-ov, .cine') || !!document.querySelector('.boss-win') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #bilanOv')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 1500); return; }
     try { localStorage.setItem('souvenir2027', '1'); } catch (e) {}
     ouvrirSouvenir(n26, n, (ev && ev.titre) || SOUVENIR_TITRE);
   };
@@ -5657,7 +5657,7 @@ function annonceAventureAFaire() {
   if (vu || !state || !state.armurerie || state.today > AVENTURE_NOUVELLE_JUSQUA || annonceAventurePrevue) return;
   annonceAventurePrevue = true;
   const essayer = () => {
-    if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
+    if (document.body.classList.contains('bloque') || !!document.querySelector('.boss-win') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
     if (!localStorage.getItem('annonceBoss2026')) { setTimeout(essayer, 3000); return; } // l'annonce des boss passe d'abord
     const S0 = state.armurerie && state.armurerie.saison; if (S0 && OUVERTURES[S0.id] && !localStorage.getItem('ouverture|' + S0.id)) { setTimeout(essayer, 3000); return; } // puis l'ouverture de la saison
     try { localStorage.setItem('annonceAventure1', '1'); } catch (e) {}
@@ -5683,7 +5683,7 @@ function ouvertureSaisonAFaire() {
     let reco = false; try { reco = typeof recommencementDu === 'function' && recommencementDu() && !localStorage.getItem('recommencement2027'); } catch (e) {}
     if (reco) { setTimeout(essayer, 2000); return; } // la cinématique du 1er janvier passe d'abord
     if (bilanRodageEnAttente()) { setTimeout(essayer, 2000); return; } // puis le Bilan du Rodage
-    if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
+    if (document.body.classList.contains('bloque') || !!document.querySelector('.boss-win') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem('ouverture|' + S.id, '1'); } catch (e) {} ouvrirOuverture(S.id);
   };
   setTimeout(essayer, 1800);
@@ -5735,7 +5735,7 @@ function annonceBossAFaire() {
   annonceBossPrevue = true;
   // attend qu'aucune autre fenêtre (d20, célébration) ne soit ouverte
   const essayer = () => {
-    const occupe = document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on') || (el.id === 'd20ov' && el.style.display && el.style.display !== 'none'));
+    const occupe = document.body.classList.contains('bloque') || !!document.querySelector('.boss-win') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue')].some(el => el.classList.contains('on') || (el.id === 'd20ov' && el.style.display && el.style.display !== 'none'));
     if (occupe) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem('annonceBoss2026', '1'); } catch (e) {}
     ouvrirAnnonceBoss();
@@ -7136,7 +7136,7 @@ function avantMatchAFaire(s) {
   const k = 'avantMatch|' + lundi; let vu = false; try { vu = !!localStorage.getItem(k); } catch (e) {} if (vu) return;
   avantMatchPrevu = true;
   const essayer = () => {
-    if (document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #coffreOv, .rc-ov')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
+    if (document.body.classList.contains('bloque') || !!document.querySelector('.boss-win') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #coffreOv, .rc-ov')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem(k, '1'); } catch (e) {}
     const moi = { nom: s.heros, classe: (s.classe || {}).nom, look: s.look, niveau: s.niveau, moi: true };
     const dess = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
