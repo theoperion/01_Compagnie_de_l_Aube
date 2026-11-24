@@ -58,30 +58,18 @@
   .hx-med .aura, .hx-med .p, .hx-med .spin { display: none; }
   .hx-lvl { font: italic 900 44px/.8 var(--f-titre); color: var(--xp2); text-shadow: 0 0 18px rgba(242,165,65,.35); cursor: pointer; }
   .hx-txt { flex: 1; min-width: 0; cursor: pointer; } .hx-txt .hero-name { font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .hx-sub { margin-top: 3px; font: 600 12px var(--f-texte); color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; white-space: nowrap; } .hx-sub .joker { margin: 0; flex: none; }
-  .hx-titre { min-width: 0; overflow: hidden; text-overflow: ellipsis; } /* une seule ligne : le surnom seul s'il existe, sinon le titre */
+   /* une seule ligne : le surnom seul s'il existe, sinon le titre */
   .hx-btn { position: static !important; width: 44px !important; height: 44px !important; border-radius: 50% !important; display: grid; place-items: center; color: var(--text); }
   .hx-btn svg { width: 22px; height: 22px; }
   .t { display: block; height: 7px; border-radius: 4px; background: rgba(255,214,170,.09); overflow: hidden; transform: skewX(-14deg); }
   .t > i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--xp2)); }
-  .t.pv > i, .jbar.pv .t > i { background: linear-gradient(90deg, var(--wax), var(--wax2)); }
-  .hx-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 2px 2px; } .hx-bars .t { height: 5px; }
+  .t.pv > i { background: linear-gradient(90deg, var(--wax), var(--wax2)); }
   .jour { margin-top: 10px; padding: 11px 12px 10px 14px; border-radius: 20px; border: 1px solid var(--line); display: flex; gap: 10px; align-items: stretch;
     background: radial-gradient(120% 100% at 100% 0%, rgba(242,165,65,.14), transparent 55%), var(--card); }
-  .jour-g { flex: 1; min-width: 0; }
-  .jour .kick { font: 800 10.5px var(--f-texte); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
-  .jour-l1 { display: flex; align-items: center; gap: 10px; } .jour-l1 .jour-sub { flex: 1; flex-direction: column; gap: 2px; margin: 0; }
   .jour-sub .epu { color: var(--wax2); font-weight: 700; }
   .jour-d20 { flex: none; display: grid; justify-items: center; gap: 1px; border: 0; background: none; padding: 0; cursor: pointer; color: var(--gold); font: 800 10px var(--f-texte); text-transform: uppercase; letter-spacing: .06em; }
   .jour-d20 svg { width: 40px; height: 40px; } .jour-d20:not(.fait) svg { animation: pulseD20 2s ease-in-out infinite; } .jour-d20.malus { color: var(--wax2); }
-  .jbars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; } .jbars .jbar { margin: 0; grid-template-columns: 20px 1fr auto; gap: 6px; }
-  .jour-big { font: italic 900 40px/.9 var(--f-titre); white-space: nowrap; } .jour-big small { font-size: 24px; color: var(--muted); } .jour-big em { font: italic 800 19px var(--f-titre); color: var(--muted); }
   .jour-sub { display: flex; gap: 10px; margin: 6px 0 8px; font: 600 12px var(--f-texte); color: var(--muted); flex-wrap: wrap; } .jour-sub b { color: var(--xp2); font: italic 900 15px var(--f-titre); }
-  .jbar { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; margin-top: 5px; font: 800 10.5px var(--f-texte); letter-spacing: .08em; color: var(--muted); }
-  .jbar em { font: 600 11.5px var(--f-texte); font-style: normal; color: var(--muted); } .jbar em b { color: var(--text); font: italic 900 14px var(--f-titre); }
-  .jour-boss { width: 96px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: none; color: var(--text); cursor: pointer; padding: 0; }
-  .jour-boss svg { width: 70px; height: 76px; } .jour-boss b { font: italic 800 13px/1 var(--f-titre); text-align: center; }
-  .jour-boss .t { width: 80px; height: 5px; } .jour-boss em { font: italic 900 13px var(--f-titre); color: var(--wax2); }
   /* Ambiance selon l'heure : aube le matin, jour neutre, bougie le soir, nuit profonde */
   body.h-aube { --haut: #3a2418; } body.h-soir { --haut: #3a220e; } body.h-nuit { --haut: #1a120c; }
   body.h-aube::before, body.h-soir::before { content: ''; position: fixed; inset: 0 0 auto; height: 260px; pointer-events: none; z-index: -1; }
@@ -91,15 +79,11 @@
   body.calme.h-soir::before { animation: none; } @media (prefers-reduced-motion: reduce) { body.h-soir::before { animation: none; } }
   /* En-tête personnage */
   header { padding: 22px 0 6px; }
-  .hero-row { display: flex; align-items: center; gap: 14px; }
   .profil { cursor: pointer; margin: -6px -8px; padding: 6px 8px; border-radius: 14px; -webkit-tap-highlight-color: transparent; transition: background .15s; }
   .profil:active { background: var(--card); }
-  .profil .hero-txt { flex: 1; min-width: 0; }
-  .profil .chev { color: var(--gold); font-size: 26px; line-height: 1; opacity: .8; display: flex; align-items: center; gap: 2px; margin-right: 34px; }
   .avenir-bloc { margin: 10px 0 4px; } .avenir-bloc summary { cursor: pointer; color: var(--muted); font-size: 13px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 12px; list-style: none; }
   .avenir-bloc summary::-webkit-details-marker { display: none; } .avenir-bloc[open] summary { color: var(--gold); margin-bottom: 6px; }
   .card.avenir { opacity: .6; filter: saturate(.5); pointer-events: none; }
-  .profil .chev small { font: 600 10px var(--f-texte); letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 3px 7px; opacity: .9; }
   .lvl { width: 66px; height: 66px; flex: none; border-radius: 50%;
     display: grid; place-items: center; position: relative;
     background: conic-gradient(var(--gold) calc(var(--p) * 1%), var(--line) 0);
@@ -110,12 +94,7 @@
     font-size: 10px; letter-spacing: .08em; background: var(--gold); color: #1a1408;
     padding: 1px 6px; border-radius: 6px; font-weight: 700; }
   .hero-name { font-family: var(--f-titre); font-style: italic; font-size: 26px; font-weight: 900; letter-spacing: .01em; line-height: 1; text-transform: uppercase; }
-  .hero-title { font-family: var(--f-titre); color: var(--gold); font-size: 14px; font-style: italic; margin-top: 2px; }
-  .hero-sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
 
-  .bars { margin-top: 16px; display: grid; gap: 10px; }
-  .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .bar-label b { color: var(--text); font-weight: 600; }
   .bar { height: 10px; border-radius: 6px; background: #2a2018; overflow: hidden; position: relative; }
   .bar > i { display: block; height: 100%; border-radius: 6px; transition: width .6s cubic-bezier(.2,.8,.2,1); }
   .bar.xp > i { background: linear-gradient(90deg, var(--xp), var(--xp2)); }
@@ -147,12 +126,7 @@
   .sceau { position: absolute; right: 44px; top: 50%; width: 38px; height: 38px; margin-top: -19px; transform: rotate(-14deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,.55)); pointer-events: none; }
   .sceau svg { width: 100%; height: 100%; display: block; }
   .sceau.tombe { animation: sceauTombe .7s cubic-bezier(.3,1.4,.5,1) both; }
-  .card.flash::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 2px; pointer-events: none;
-    background: linear-gradient(90deg, transparent, var(--xp2), #fff, var(--xp2), transparent) -60% 0 / 50% 100% no-repeat;
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: lisere .9s ease-out forwards; }
-  @keyframes lisere { 0% { background-position: -60% 0; opacity: 1; } 85% { opacity: 1; } 100% { background-position: 160% 0; opacity: 0; } }
-  body.calme .card.flash::after { display: none; } @media (prefers-reduced-motion: reduce) { .card.flash::after { display: none; } }
+
   @keyframes sceauTombe { 0% { transform: translateY(-40px) rotate(-200deg) scale(1.8); opacity: 0; } 60% { opacity: 1; transform: translateY(2px) rotate(-10deg) scale(.92); } 80% { transform: rotate(-16deg) scale(1.06); } 100% { transform: rotate(-14deg) scale(1); } }
   /* Médaillon d'humeur : sous le seuil d'épuisement, le héros respire lentement, cligne longuement et une lueur rouge pulse */
   /* perf : la lueur rouge pulse en opacité sur un pseudo-élément (composité), plus de box-shadow animé */
@@ -161,7 +135,7 @@
   @keyframes medFatiguePulse { 50% { opacity: 1; } }
   .hx-med.fatigue svg { filter: saturate(.55) brightness(.85); } .hx-med.fatigue .h-corps { animation-duration: 6.5s; } .hx-med.fatigue .h-paup ellipse { transform: scaleY(.5); animation: none; }
   .hx-med.fatigue .h-tete { animation: hTeteBas 6.3s ease-in-out infinite; }
-  @keyframes medFatigue { 0%, 100% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold), 0 0 14px rgba(224,88,75,.25); } 50% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--wax2), 0 0 24px rgba(224,88,75,.6); } }
+
   html.ygg .hx-med.fatigue { box-shadow: 0 0 0 2px #081117, 0 0 0 4px #d0704a, 0 0 0 5px #6b4321, 0 0 16px rgba(232,96,79,.4); }
   @keyframes hTeteBas { 0%, 100% { transform: rotate(2deg) translateY(1px); } 50% { transform: rotate(3deg) translateY(2px); } }
   body.calme .hx-med.fatigue, body.calme .hx-med.fatigue *, body.calme .hx-med.fatigue::after { animation: none !important; }
@@ -328,7 +302,6 @@
   .vit-chemin b { color: var(--text); } .vit-chemin span { flex: none; } .vit-chemin em { min-width: 0; font-style: normal; font-weight: 700; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .vit-ancre { flex: none; padding: 0 14px; font-size: 14px; } .vit-acts .vit-ancre:only-child { margin: 0 auto; }
   .vit-coffre { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0; font-size: 15px; } .vit-coffre b { min-width: 22px; padding: 0 6px; border-radius: 11px; background: rgba(0,0,0,.25); font-size: 13px; }
-  .orn-slot h4 { margin: 14px 0 8px; font: 600 14px var(--f-recit); color: var(--gold); } .orn-slot h4 span { font: 400 12px var(--f-texte); color: var(--muted); margin-left: 6px; }
   .orn-liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; }
   .orn-t { position: relative; }
   .orn-b { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 4px 6px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
@@ -347,11 +320,6 @@
   .evo-t { flex: 0 0 56px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
   .evo-t span svg { width: 46px; height: auto; display: block; }
   .evo-t b { font-size: 10px; } .evo-t.lock span { opacity: .25; filter: brightness(.3); } .evo-t.ici { border-color: var(--gold); }
-  .id-card.sans-av { grid-template-columns: 1fr !important; }
-  .orn-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 8px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; text-align: center; min-height: 64px; }
-  .orn-item b { font-size: 12.5px; } .orn-item small { font-size: 10.5px; color: var(--muted); line-height: 1.3; }
-  .orn-item.eq { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(242,165,65,.35) inset; }
-  .orn-item.lock { opacity: .55; }
   .orn-ic { height: 34px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
   .mini-lueur { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle, #fffaf0 0 22%, rgba(255,246,220,.55) 34%, #261c15 62%); display: inline-block; }
   .mini-lueur.l-argent { box-shadow: 0 0 10px 3px rgba(220,230,245,.8); } .mini-lueur.l-or { box-shadow: 0 0 10px 3px rgba(240,200,90,.85); }
@@ -359,10 +327,6 @@
   .horsligne.nouveau-jour { border-style: solid; border-color: rgba(242,165,65,.35); }
   .reg-lien { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer; color: var(--text); font: inherit; }
   .reg-lien > span { font-size: 22px; } .reg-lien div { flex: 1; display: grid; } .reg-lien small { color: var(--muted); font-size: 12px; } .reg-lien i { color: var(--gold); font-style: normal; font-size: 20px; }
-  .jjour { margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
-  .jtete { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; margin-bottom: 6px; }
-  .jtete b { font-family: var(--f-titre); color: var(--gold); font-size: 14.5px; }
-  .jtete span { color: var(--muted); font-size: 12px; text-align: right; }
   .jl { display: flex; gap: 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); }
   .jl .ji { width: 24px; height: 24px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
   .jl.ok .ji { background: rgba(110,190,120,.18); color: #7fcf8a; } .jl.ko .ji { background: rgba(229,115,122,.18); color: #ec8a90; }
@@ -469,17 +433,14 @@
     background: linear-gradient(180deg, #2a1414, var(--panel)); border: 1px solid #5a2620; border-radius: 14px; color: var(--text); font: inherit; cursor: pointer; }
   .boss-mini.vaincu { border-color: color-mix(in srgb, var(--gold) 45%, var(--card)); background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 14%, var(--card)), var(--panel)); }
   .bm-av { width: 54px; flex: none; } .bm-av svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 3px 5px rgba(0,0,0,.5)); }
-  .bm-txt { flex: 1; min-width: 0; } .bm-txt b { display: block; font: 700 14.5px var(--f-recit); color: #ff9b8a; }
-  .bm-txt span { font-size: 12px; color: var(--muted); } .bm-ok { color: var(--gold) !important; font-weight: 600; }
+   .bm-ok { color: var(--gold) !important; font-weight: 600; }
   .bm-go { color: var(--gold); font-size: 22px; }
   .bar.boss { height: 8px; margin: 5px 0 3px; background: #271d15; } .bar.boss i { background: linear-gradient(90deg, #8f2b24, var(--boss)); }
-  .bar.boss.big { height: 14px; border-radius: 7px; }
   .bar.split { display: flex; height: 7px; margin-top: 5px; background: #271d15; } .bar.split i { height: 100%; display: block; }
   .boss-card { background: linear-gradient(180deg, #2a1414, var(--panel)); border: 1px solid #5a2620; border-radius: 18px; padding: 14px; margin-bottom: 10px; }
   .boss-card.mois { background: linear-gradient(180deg, #1f1430, var(--panel)); border-color: #46306a; }
   .boss-card.vaincu { border-color: color-mix(in srgb, var(--gold) 45%, var(--card)); }
   .boss-card.vaincu .bc-av svg { filter: grayscale(.7) brightness(.7); }
-  .bc-top { display: flex; gap: 12px; align-items: center; }
   .bc-av { width: 104px; flex: none; } .bc-av svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 10px rgba(0,0,0,.6)); }
   .bc-av.hit svg { animation: bossHit .35s; }
   /* Boss animés */
@@ -572,17 +533,10 @@
   #bossVue .bv-av svg { width: 100%; height: auto; position: relative; }
   #bossVue h3 { font: 700 22px var(--f-recit); color: #ff9b8a; margin: 8px 0 4px; } #bossVue p { margin: 3px 0; font-size: 13.5px; color: var(--muted); }
   @keyframes bossHit { 25% { transform: translateX(-6px) rotate(-3deg); } 50% { transform: translateX(6px) rotate(3deg); } 75% { transform: translateX(-3px); } }
-  .bc-id { min-width: 0; } .bc-type { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-  .bc-id b { display: block; font: 800 17px var(--f-recit); color: #ff9b8a; line-height: 1.2; margin: 2px 0; }
-  .boss-card.mois .bc-id b { color: #c9a8ff; }
-  .bc-rang { color: var(--gold); font-size: 12.5px; }
   .bc-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; font-size: 11.5px; }
   .bc-tags .tag { padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); background: #130e0a; }
   .bc-tags .tag.f { border-color: color-mix(in srgb, var(--gold) 45%, var(--card)); color: var(--gold); } .bc-tags .tag.r { color: var(--muted); }
-  .bc-pv { display: flex; justify-content: space-between; font-size: 13px; margin: 12px 0 4px; } .bc-pv span { color: var(--muted); }
-  .bc-dmg { font-size: 12.5px; color: var(--muted); margin-top: 10px; } .bc-dmg .rip { color: #ff8b8b; }
   .bc-tags .tag.ph { border-color: #7a2a2a; color: #ff9a8a; }
-  .bc-stade { display: block; font-size: 11.5px; color: #d6b46a; margin-top: 1px; }
   .bc-coup { margin-top: 10px; padding: 9px 11px; border-radius: 12px; background: #1b1024; border: 1px solid #5a2f6e; font-size: 12.5px; line-height: 1.4; }
   .bc-coup b { display: block; font-size: 13.5px; color: #e2c4ff; margin-bottom: 2px; }
   .bc-coup span { display: block; }
@@ -611,9 +565,6 @@
 
   /* Armurerie */
   .saison { background: linear-gradient(180deg, var(--card), var(--panel)); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; margin: 10px 0; display: grid; gap: 6px; }
-  .saison .sa-t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; } .saison .sa-t b { color: var(--gold); font-family: var(--f-titre); }
-  .saison .sa-t span { font-size: 12.5px; color: var(--muted); } .saison .sa-n { font-size: 12.5px; color: var(--muted); } .saison .sa-n b { color: var(--text); }
-  .bar.sa-bar i { background: linear-gradient(90deg, #b8862b, #f2c94c); }
   .sa-b { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; } .sa-b:has(> [data-armurerie]) { flex-wrap: nowrap; } .sa-b .btn { white-space: nowrap; } .sa-b .eclats { font-size: 13px; color: #9fe4ff; }
   .chemin { list-style: none; margin: 8px 0; padding: 4px 0 8px; display: flex; gap: 6px; overflow-x: auto; }
   .chemin li { flex: none; width: 86px; display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: 10px; border: 1px solid var(--line); background: #15111c; text-align: center; font-size: 11px; line-height: 1.2; opacity: .7; }
@@ -724,7 +675,7 @@
   .ph-liste .ph-detail { margin: 4px 0 6px 30px; }
   body.calme .ph-detail, body.calme .ph-corps { animation: none; } @media (prefers-reduced-motion: reduce) { .ph-detail, .ph-detail.entre, .ph-corps, .ph-corps.entre { animation: none; } }
   .ph-liste li.proch .pt-nom::before { content: 'Prochaine · '; color: var(--gold); font-weight: 700; }
-  .ph-pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 6px 2px 0; font-size: 11.5px; color: var(--muted); } .ph-ec { color: #9fe4ff; display: inline-flex; align-items: center; gap: 4px; }
+  .ph-pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 6px 2px 0; font-size: 11.5px; color: var(--muted); } 
   .ph-actions { display: flex; gap: 8px; padding: 2px 12px 10px; } .ph-actions .ph-mar { margin-left: auto; } .ph-actions .btn { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
   .ph-bi { display: inline-grid; place-items: center; width: 20px; height: 18px; } .ph-bi svg { display: block; }
   body.calme .ph-etoile, body.calme .ph-fenetre, body.calme .ph-toi, body.calme .ph-corps, body.calme .ph-rayons { animation: none; } body.calme .ph-chev { transition: none; }
@@ -759,13 +710,8 @@
   @keyframes rcIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
   @keyframes rcBarre { from { width: 0; } to { width: 100%; } } @keyframes rcBarreW { from { width: 0; } }
   @keyframes rcPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-  .regles-box { position: relative; } .regles-reduire::after { content: ''; position: absolute; inset: -6px; } .regles-reduire { position: absolute; top: 2px; right: -6px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--card)); background: var(--panel); color: var(--muted); font-size: 12px; cursor: pointer; display: grid; place-items: center; }
   .regles-mini { margin-left: 6px; padding: 2px 8px; border-radius: 99px; border: 1px solid #f2a541; background: color-mix(in srgb, var(--gold) 10%, var(--card)); color: var(--gold); font: 700 11px var(--f-texte); cursor: pointer; vertical-align: 2px; }
-  .regles-btn { width: 100%; margin: 6px 0 12px; padding: 10px 12px; border-radius: 14px; border: 1.5px solid #f2a541; background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 22%, var(--card)), var(--card));
-    color: var(--text); font: inherit; cursor: pointer; display: flex; align-items: center; gap: 12px; text-align: left; box-shadow: 0 0 0 0 rgba(242,165,65,.5); animation: rgAppel 2.6s ease-in-out 3; }
-  .regles-btn .rq { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: #1a1208; font: 800 20px var(--f-titre); }
-  .regles-btn b { display: block; color: var(--gold); font-size: 15px; } .regles-btn small { display: block; color: var(--muted); font-size: 12px; } .regles-btn .fl { margin-left: auto; color: var(--gold); font-size: 22px; }
-  @keyframes rgAppel { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,165,65,0); } 50% { box-shadow: 0 0 14px 2px rgba(242,165,65,.45); } }
+
   .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 10px; margin: -10px; }
   #reglesOv { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(8,6,12,.88); padding: 16px; }
   #reglesOv.on { display: grid; }
@@ -801,7 +747,6 @@
   .rg-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
   .rg-conv { display: block; width: 100%; height: 22px; color: var(--gold); }
   .rg-but { display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .rg-cof { position: relative; width: 92px; } .rg-cof > svg { width: 92px; height: auto; display: block; }
   .rg-faux { pointer-events: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .rg-rar4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 4px; text-align: center; align-items: start; }
   .rg-rar4 div { display: grid; justify-items: center; align-content: start; gap: 1px; } .rg-rar4 svg { width: 40px; height: auto; } .rg-rar4 small { font-weight: 700; } .rg-rar4 small.rg-p { font-weight: 400; font-size: 11.5px; line-height: 1.2; }
@@ -848,8 +793,6 @@
   /* Couleur d'accent de chaque saison (Aventure) */
   .saison-s1 { --gold: #8ad0ff; }
   .aventure.saison-s1 .saison { background: linear-gradient(180deg, #16243a, var(--panel)); border-color: #3a5a9a; }
-  .aventure.saison-s1 .bar.sa-bar i { background: linear-gradient(90deg, #3a8ad8, #bfe8ff); }
-  .aventure.saison-s1 .regles-btn { background: linear-gradient(90deg, #14304a, var(--card)); border-color: #8ad0ff; } .aventure.saison-s1 .regles-btn .rq { background: #8ad0ff; color: #0a1a2a; }
   #ouvertureOv { position: fixed; inset: 0; z-index: 85; display: none; background: radial-gradient(circle at 50% 35%, #1a2e4a, #05070e 75%); color: var(--text); overflow: hidden; }
   #ouvertureOv.on { display: grid; place-items: center; animation: vitIn .6s ease-out; }
   .ouv-ciel i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #bfe8ff; box-shadow: 0 0 6px #8ad0ff; animation: etinc 2.6s ease-in-out infinite; }
@@ -870,8 +813,6 @@
   .s1-boss { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; margin-top: 8px; }
   .s1-boss > div { display: grid; justify-items: center; gap: 2px; text-align: center; } .s1-boss small { font-size: 10.5px; line-height: 1.2; color: var(--muted); }
   .s1-myst { width: 64px; height: 70px; display: grid; place-items: center; font: 800 30px var(--f-titre); color: #3a5a9a; border: 1px dashed #3a5a9a; border-radius: 12px; }
-  .s1-av { width: 80px; height: 86px; } .s1-av svg { width: 100%; height: 100%; }
-  .orn-t .tag-s1 { position: absolute; left: 4px; bottom: 4px; font-style: normal; font-size: 9px; font-weight: 700; color: #8ad0ff; border: 1px solid #3a5a9a; border-radius: 6px; padding: 0 4px; background: #101828; }
   .marchand { display: grid; gap: 6px; margin: 8px 0; }
   .mar-l { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); }
   .mar-l small { display: block; color: var(--muted); font-size: 11px; }
@@ -886,7 +827,7 @@
   .hx-med .h-tete, .hero-perso .h-tete, .vit-perso .h-tete { transform-origin: 100px 96px; animation: hTete 6.3s ease-in-out infinite; }
   .hx-med .h-paup ellipse, .hero-perso .h-paup ellipse, .vit-perso .h-paup ellipse { animation: hCligne 5.4s ease-in-out infinite; }
   .hero-perso .h-arme, .vit-perso .h-arme { transform-origin: 134px 238px; animation: hArme 5s ease-in-out infinite; }
-  @keyframes hResp { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.006, 1.016); } }
+
   @keyframes hTete { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(-1.4deg); } 70% { transform: rotate(1deg); } }
   @keyframes hCligne { 0%, 90%, 100% { transform: scaleY(0); } 93% { transform: scaleY(1); } 95% { transform: scaleY(.1); } 97% { transform: scaleY(1); } }
   @keyframes hArme { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-1.2deg); } }
@@ -1021,11 +962,6 @@
   @keyframes cdgFilante { 0% { opacity: 0; transform: rotate(var(--a)) translateX(-40px); } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateX(var(--d)); } }
   @keyframes cdgEclat { 0% { opacity: 0; transform: scale(.2) rotate(0); } 25% { opacity: 1; transform: scale(1) rotate(20deg); } 100% { opacity: 0; transform: scale(1.5) rotate(45deg); } }
   @media (prefers-reduced-motion: reduce) { .orn-flotte, .orn-aura, .orn-etinc, .orn-aile, .cof, .trainee, .cdg * { animation: none !important; } }
-  .bc-tip { margin-top: 10px; font-style: italic; font-size: 13px; color: #d8c9a8; }
-  .bc-xp { margin-top: 6px; font-size: 12px; color: var(--gold); }
-  .bc-win { margin-top: 12px; padding: 10px; border-radius: 12px; background: color-mix(in srgb, var(--gold) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--card)); color: var(--gold); font-weight: 700; font-size: 14px; text-align: center; }
-  .bc-win.avenir { background: #1d1626; border-color: var(--line); color: var(--text); font-weight: 600; }
-  .bc-win span { font-weight: 500; color: var(--text); font-size: 13px; }
   .coups { padding: 4px 12px; }
   .coup { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
   .coup:last-child { border-bottom: 0; }
@@ -1253,7 +1189,6 @@
   .chronique { font-family: var(--f-recit); font-style: italic; color: #e8dcc0; line-height: 1.5; margin: 10px 0 2px; }
   details.recap { margin-top: 0; background: none; border: 0; padding: 0; border-radius: 0; }
   details.recap summary { padding: 0; display: block; font: inherit; } details.recap summary::after, details.recap[open] summary::after { content: none; }
-  .bc-parole { margin-top: 10px; padding: 8px 10px; border-left: 3px solid var(--boss); background: rgba(224,88,75,.08); font-size: 13px; color: #ffc9c0; font-style: italic; }
   .panel.coach { border-color: color-mix(in srgb, var(--gold) 45%, var(--card)); } .panel.coach p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; }
   .surnom { color: var(--gold); font-style: italic; font-family: var(--f-recit); font-size: 12.5px; display: inline-block; }
   .comp-txt .surnom { display: block; margin-top: 1px; }
@@ -1269,7 +1204,6 @@
   .titre-l div { flex: 1; min-width: 0; } .titre-l b { display: block; font: 700 14px var(--f-recit); }
   .titre-l span { font-size: 12px; color: var(--muted); } .titre-l:not(.ok) b { color: var(--muted); }
   .titre-l.ok b { color: var(--gold); } .titre-l .btn { padding: 6px 10px; font-size: 12px; flex: none; }
-  .titre-sep { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 10px 0 2px; }
   .comp[data-voir] { cursor: pointer; }
   .comp .voir { color: var(--gold); font-weight: 600; font-size: 12.5px; margin-top: 4px; display: block; }
   .comp-detail .retour { margin: 4px 0 10px; font-size: 14px; }
@@ -1345,7 +1279,6 @@
   .comp-av { width: 74px; flex: none; } .comp-av svg { width: 74px; height: auto; display: block; }
   .comp-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
   .comp-txt b { color: var(--text); font-size: 15px; font-family: var(--f-titre); } .comp-txt .tt { color: var(--gold); font-style: italic; }
-  .comp-bilan { margin-top: 12px; text-align: center; font-size: 13px; color: var(--muted); } .comp-bilan b { color: var(--gold); font-size: 20px; }
   .aide-coop { text-align: center; font-size: 12px; color: var(--muted); margin: 12px 0 90px; }
   .choix { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 24px 16px; gap: 14px; }
   .choix h1 { font-family: var(--f-titre); color: var(--gold); text-align: center; font-size: 22px; margin: 0; }
@@ -1381,9 +1314,6 @@
   .evo-rang, .orn-liste { overscroll-behavior-x: contain; }
   .vit-saut { transform-style: preserve-3d; }
   .vit-saut.salut { animation: salut .8s cubic-bezier(.3,.7,.4,1); }
-  .vit-mode { display: flex; justify-content: center; gap: 4px; margin: 4px auto 0; padding: 3px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); width: max-content; }
-  .vit-mode button { border: 0; background: transparent; color: var(--muted); font: 600 12px var(--f-texte); padding: 6px 12px; border-radius: 9px; cursor: pointer; }
-  .vit-mode button.on { background: var(--card); color: var(--gold); }
   .etincelle { position: absolute; left: 50%; top: 55%; width: 6px; height: 6px; border-radius: 50%; background: var(--xp2); box-shadow: 0 0 10px #ffd34d; pointer-events: none;
     animation: etincSalut .9s ease-out forwards; }
   @keyframes etincSalut { from { transform: rotate(var(--a)) translateY(0) scale(1); opacity: 1; } to { transform: rotate(var(--a)) translateY(-120px) scale(.2); opacity: 0; } }
@@ -1448,10 +1378,6 @@
   .effets span { font-size: 11.5px; padding: 4px 9px; border-radius: 99px; border: 1px solid rgba(242,165,65,.35); background: rgba(242,165,65,.08); color: var(--gold); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
   #app > *:not(nav) { zoom: var(--zoom-texte, 1); } /* la barre d'onglets du bas garde sa taille (le Carnet s'y cale) */
   .voir-themes { display: block; width: 100%; margin-top: 8px; padding: 8px; border-radius: 10px; border: 1px dashed var(--line); background: transparent; color: var(--gold); font: 600 13px var(--f-texte); cursor: pointer; }
-  .opt-titre { margin: 12px 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-  .opts { display: flex; flex-wrap: wrap; gap: 6px; }
-  .opts button { padding: 7px 11px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-size: 13px; cursor: pointer; }
-  .opts button.on { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
   .themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
   .theme { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); cursor: pointer; text-align: left; min-width: 0; }
   .theme b { font-size: 13px; line-height: 1.15; } .theme small { font-size: 10px; opacity: .7; line-height: 1.2; }
@@ -1522,8 +1448,6 @@
   .lvl-num b { font-size: 64px; line-height: 1; font-weight: 800; text-shadow: 0 0 18px rgba(242,165,65,.6); }
   .lvl-num b.pop { animation: lvlPop .6s cubic-bezier(.2,1.6,.4,1); }
   @keyframes lvlPop { 0% { transform: scale(.4); opacity: .2; } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
-  .lvl-perso { position: absolute; right: -22px; bottom: -6px; width: 64px; opacity: 0; animation: lvlMonte .6s ease-out 1.3s forwards; }
-  .lvl-perso svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
   @keyframes lvlMonte { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   .lvl-box h2 { font-family: var(--f-titre); color: var(--gold); font-size: 24px; letter-spacing: .04em; margin: 6px 0 2px; opacity: 0; animation: lvlMonte .5s ease-out 1.2s forwards; }
   .lvl-sous { color: var(--muted); font-size: 13px; margin: 0 0 12px; opacity: 0; animation: lvlMonte .5s ease-out 1.3s forwards; }
@@ -1544,7 +1468,7 @@
   .lvl-anneau { margin-bottom: 22px; }
   .lvl-stats { display: flex; flex-wrap: wrap; gap: 4px 10px; } .lvl-stats > span { white-space: nowrap; }
   .lvl-box .btn[data-lvl-fin] { position: sticky; bottom: 0; z-index: 2; box-shadow: 0 -10px 18px 6px rgba(10,8,14,.85); }
-  @keyframes fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
   .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 200; max-width: min(92vw, 440px); width: max-content;
     background: #3a1f1f; color: #ffc2c2; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.4; display: none; text-align: center;
     border: 1px solid rgba(255,255,255,.08); box-shadow: 0 8px 26px rgba(0,0,0,.5); animation: toastIn .25s ease-out; }
@@ -1641,13 +1565,13 @@ html.ygg .hx-btn, html.ygg .engrenage { background: rgba(255,255,255,.04) !impor
 html.ygg .jour { border-radius:14px; border:1px solid #2a4556; backdrop-filter: blur(6px);
   background: linear-gradient(160deg, rgba(207,232,245,.10), transparent 40%), radial-gradient(100% 120% at 100% 0%, rgba(99,230,173,.14), transparent 60%), rgba(17,32,41,.85);
   box-shadow: inset 0 1px 0 rgba(220,240,255,.18), 0 10px 24px rgba(0,0,0,.35); }
-html.ygg .jour .kick { color:#9fe9cf; letter-spacing:.22em; }
-html.ygg .jour-big { font-family:var(--f-texte); font-weight:700; font-size:38px; }
-html.ygg .jour-big em { font-family:var(--f-texte); font-weight:600; font-size:17px; color:#9fb6c2; text-transform:uppercase; letter-spacing:.06em; }
-html.ygg .jour-sub b, html.ygg .jbar em b, html.ygg .dl-v b { font-family:var(--f-texte); font-weight:700; }
+
+
+
+html.ygg .jour-sub b, html.ygg .dl-v b { font-family:var(--f-texte); font-weight:700; }
 html.ygg .t { transform:none; height:6px !important; border-radius:6px !important; background: rgba(160,210,235,.10) !important; }
 html.ygg .t > i { background: linear-gradient(90deg, #a96a33, #f3c88c) !important; }
-html.ygg .t.pv > i, html.ygg .jbar.pv .t > i { background: linear-gradient(90deg, #a3382f, #ff8a70) !important; }
+html.ygg .t.pv > i { background: linear-gradient(90deg, #a3382f, #ff8a70) !important; }
 html.ygg .sous-onglets { border-radius:12px; background: rgba(10,22,30,.8); border-color:#1f3442; }
 html.ygg .sous-onglets button { font-family:var(--f-texte); font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:14px; }
 html.ygg .sous-onglets button.on { background: linear-gradient(180deg, #17303d, #12252f); color:#fff; box-shadow: inset 0 0 0 1px rgba(99,230,173,.45), 0 0 14px rgba(99,230,173,.18); }
@@ -1703,7 +1627,6 @@ html.ygg .empty { border-color:#24404f; }
   .flocons i { position: absolute; top: -10px; width: 3px; height: 3px; border-radius: 50%; background: #dff3ff; opacity: .55; animation: flocon linear infinite; }
   @keyframes flocon { to { transform: translate(var(--dx, 20px), 105vh); } }
   /* rune de validation : le liseré prend les couleurs de l'aurore, des éclats de givre partent du sceau */
-  html.ygg .card.flash::after { background: linear-gradient(90deg, transparent, #63e6ad, #fff, #a98bff, transparent) -60% 0 / 50% 100% no-repeat; }
   .givre-eclat { position: fixed; width: 6px; height: 6px; pointer-events: none; z-index: 120; background: #dff3ff; clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
     animation: givreEclat .8s ease-out forwards; }
   @keyframes givreEclat { from { transform: translate(0, 0) scale(1.4) rotate(0); opacity: 1; } to { transform: translate(var(--x), var(--y)) scale(.3) rotate(180deg); opacity: 0; } }
@@ -1734,14 +1657,14 @@ html.th-olympe .hx-btn, html.th-olympe .engrenage { background: rgba(255,255,255
 html.th-olympe .jour { border-radius:18px; border:1px solid rgba(224,184,102,.45); position:relative;
   background: radial-gradient(110% 120% at 100% 0%, rgba(122,162,255,.14), transparent 55%), linear-gradient(180deg, #1c2338, #151a2b);
   box-shadow: inset 0 0 0 4px #151a2b, inset 0 0 0 5px rgba(224,184,102,.18), 0 10px 26px rgba(0,0,0,.35); }
-html.th-olympe .jour .kick { color:var(--gold); letter-spacing:.2em; }
-html.th-olympe .jour-big { font-family:Cinzel; font-weight:700; font-size:38px; }
-html.th-olympe .jour-big em { font-family:Cinzel; font-weight:600; font-size:17px; color:#c9c4b4; }
-html.th-olympe .jour-sub b, html.th-olympe .jbar em b, html.th-olympe .dl-v b { font-family:Cinzel; font-weight:800; }
+
+
+
+html.th-olympe .jour-sub b, html.th-olympe .dl-v b { font-family:Cinzel; font-weight:800; }
 html.th-olympe .jour-sub b { color:var(--xp2); }
 html.th-olympe .t { transform:none; height:6px !important; border-radius:6px !important; background: rgba(200,210,255,.09) !important; }
 html.th-olympe .t > i { background: linear-gradient(90deg, #b88a3a, #f6dc9c) !important; }
-html.th-olympe .t.pv > i, html.th-olympe .jbar.pv .t > i { background: linear-gradient(90deg, #a8452f, #e8846a) !important; }
+html.th-olympe .t.pv > i { background: linear-gradient(90deg, #a8452f, #e8846a) !important; }
 html.th-olympe .sous-onglets { border-radius:14px; background:#121728; border-color:#2a3250; }
 html.th-olympe .sous-onglets button.on { background: linear-gradient(180deg, #232b45, #1b2238); color:#fff6df; box-shadow: inset 0 0 0 1px rgba(224,184,102,.5); }
 html.th-olympe .section { margin-top:26px; position:relative; padding-bottom:9px; }
@@ -1778,7 +1701,7 @@ html.th-olympe .comp.moi { border-color: rgba(224,184,102,.5) !important; }
 html.th-olympe .comp-txt b { font-family:Cinzel; font-weight:700; }
 html.th-olympe .boss-card { background: radial-gradient(90% 70% at 15% 20%, rgba(226,113,90,.20), transparent 60%), #171c2e !important; border:1px solid rgba(226,113,90,.45) !important; border-radius:18px;
   box-shadow: inset 0 0 0 4px #171c2e, inset 0 0 0 5px rgba(224,184,102,.16); }
-html.th-olympe .boss-card b, html.th-olympe .bc-nom, html.th-olympe .boss-card h3 { font-family:Cinzel !important; }
+html.th-olympe .boss-card b, html.th-olympe .boss-card h3 { font-family:Cinzel !important; }
 html.th-olympe .bar.boss, html.th-olympe .bar.split { background:#222a44 !important; }
 html.th-olympe .bar.boss i { background: linear-gradient(90deg, #a8452f, #e8846a) !important; }
 html.th-olympe .empty { border-color:#2f3856; }
@@ -1790,7 +1713,6 @@ html.th-olympe .jour::after { content:''; position:absolute; right:64px; top:8px
     animation: olyScint 4s ease-in-out 4 alternate both; }
   @keyframes olyScint { from { opacity: .35; } to { opacity: 1; } }
   body.calme.th-olympe::before, html.th-olympe body.calme::before { animation: none; } @media (prefers-reduced-motion: reduce) { html.th-olympe body::before { animation: none; } } /* grille, critère 4 : mode calme = 0 animation */
-  html.th-olympe .card.flash::after { background: linear-gradient(90deg, transparent, #f6dc9c, #fff, #f6dc9c, transparent) -60% 0 / 50% 100% no-repeat; }
   /* ===== Thème « Épopée arcanique » ===== */
 html.th-epopee { font-synthesis: none; font-variant-numeric: lining-nums; }
 html.th-epopee, html.th-epopee body { background:#0d0a0b !important; }
@@ -1812,14 +1734,14 @@ html.th-epopee .jour { border-radius:6px; border:1px solid #5a4528;
   background: var(--fil) 3px 3px/30px no-repeat, var(--fil) right 3px top 3px/30px no-repeat, var(--fil) 3px bottom 3px/30px no-repeat, var(--fil) right 3px bottom 3px/30px no-repeat,
     radial-gradient(100% 120% at 100% 0%, rgba(162,116,255,.16), transparent 55%), linear-gradient(180deg, #221a17, #18120f); }
 html.th-epopee .jour, html.th-epopee .duel, html.th-epopee .boss-card { position:relative; }
-html.th-epopee .jour .kick { color:#c7b3ff; letter-spacing:.18em; }
+
 html.th-epopee .jour-d20 svg { filter: drop-shadow(0 0 10px rgba(162,116,255,.7)); }
-html.th-epopee .jour-big { font-family:'Alegreya SC'; font-weight:900; font-size:40px; }
-html.th-epopee .jour-big em { font-family:'Alegreya SC'; font-weight:700; font-size:20px; color:#c9b89c; }
-html.th-epopee .jour-sub b, html.th-epopee .jbar em b, html.th-epopee .dl-v b { font-family:'Alegreya SC'; font-weight:900; }
+
+
+html.th-epopee .jour-sub b, html.th-epopee .dl-v b { font-family:'Alegreya SC'; font-weight:900; }
 html.th-epopee .t { transform:none; height:7px !important; border-radius:1px !important; background:#2a201b !important; box-shadow: inset 0 0 0 1px #4a3a28; }
 html.th-epopee .t > i { background: linear-gradient(90deg, #9c7330, #f1d48e) !important; }
-html.th-epopee .t.pv > i, html.th-epopee .jbar.pv .t > i { background: linear-gradient(90deg, #7a1a1d, #d0483b) !important; }
+html.th-epopee .t.pv > i { background: linear-gradient(90deg, #7a1a1d, #d0483b) !important; }
 html.th-epopee .sous-onglets { border-radius:6px; background:#141010; border-color:#3b2e25; }
 html.th-epopee .sous-onglets button { font-family:'Alegreya SC'; font-weight:700; font-size:16px; }
 html.th-epopee .sous-onglets button.on { background: linear-gradient(180deg, #2a2019, #1e1713); color:#f1d48e; box-shadow: inset 0 0 0 1px #8a6a36; border-radius:4px; }
@@ -1872,7 +1794,6 @@ html.th-epopee .empty { border-color:#4a3a28; border-radius:6px; font-style:ital
   @keyframes runeLuit { 0%, 100% { filter: drop-shadow(0 0 2px rgba(162,116,255,.4)); opacity: .8; } 50% { filter: drop-shadow(0 0 8px rgba(162,116,255,.95)); opacity: 1; } }
   html.th-epopee .jour-d20 { position: relative; }
   html.th-epopee .jour-d20:not(.fait)::before { content: ''; position: absolute; left: 50%; top: 20px; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%; border: 1px dashed rgba(162,116,255,.7); box-shadow: 0 0 14px rgba(162,116,255,.35); animation: runeTourne 20s linear infinite; }
-  html.th-epopee .card.flash::after { background: linear-gradient(90deg, transparent, #a274ff, #fff, #f1d48e, transparent) -60% 0 / 50% 100% no-repeat; }
   /* ===== Thème « Arène » ===== */
 
   /* rayures qui défilent et liseré néon */
@@ -1898,7 +1819,6 @@ html.th-epopee .empty { border-color:#4a3a28; border-radius:6px; font-style:ital
   /* Corrections du critique (19/11) : onglets qui tiennent, troncatures, boutons posés au bon endroit */
   .sous-onglets button { position: relative; flex: 1 1 auto; white-space: nowrap; padding-left: 8px; padding-right: 8px; }
   .sous-onglets .pastille { position: absolute; top: -8px; right: 2px; margin: 0; font-size: 10px; line-height: 14px; padding: 1px 6px; }
-  .regles-btn > span:nth-child(2) { padding-right: 48px; }
   @media (max-width: 470px) { .sous-onglets.trois .ic { display: none; } } /* trois onglets : sans icône sur téléphone, le texte respire (le joueur, 20/11) */
   @media (max-width: 380px) { .capa select { min-width: 0; text-overflow: ellipsis; } }
   /* Bug Héros (19/11) : en texte « Très grande », la colonne des capacités débordait et poussait la barre d'onglets hors de l'écran sur Chrome Android */
@@ -1910,7 +1830,6 @@ html.th-epopee .empty { border-color:#4a3a28; border-radius:6px; font-style:ital
   html.th-epopee .sous-onglets button { font-size: 15px; }
   html.ygg .sous-onglets button { font-size: 15px; letter-spacing: .03em; } html[class].ygg .tabs button { font-size: 13.5px; } html[class].th-olympe .tabs button { font-size: 12px; } html.th-olympe .sous-onglets button { font-size: 15px; } /* le joueur (20/11) : onglets un peu plus grands */
   .hero-perso .loupe { right: auto; left: 10px; }
-  .regles-reduire { top: 8px; right: 8px; }
 
   /* ===== Souvenirs du Rodage, rappel des coffres (Enlumineur, 19/11) ===== */
 /* ===== 2. Souvenirs du Rodage (armurerie) : ombres dorées, non portables ===== */
@@ -2133,8 +2052,7 @@ html.th-epopee .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 21px); letter-
 /* 2. Petits écrans (360 × 640) : carte du jour et sous-onglets plus compacts, la première quête remonte */
 @media (max-height: 700px) {
   :root .jour { padding: 8px 10px 8px 12px; margin-top: 8px; }
-  :root .jour .jour-big { font-size: 32px; } :root .jour .jour-big small { font-size: 20px; } :root .jour .jour-big em { font-size: 15px; }
-  :root .jour .jour-sub { margin: 3px 0 4px; } :root .jour .jour-d20 svg { width: 34px; height: 34px; } :root .jour .jbars { margin-top: 4px; }
+  :root .jour .jour-sub { margin: 3px 0 4px; } :root .jour .jour-d20 svg { width: 34px; height: 34px; } 
   :root .sous-onglets { margin: 8px 0 6px; padding: 3px; } :root .sous-onglets button { min-height: 40px; padding: 7px 6px; }
   :root .section { margin: 14px 0 8px; }
 }
@@ -2209,7 +2127,7 @@ html[class] .tabs button.on::after { content: ''; position: absolute; bottom: 2p
   transform: translateX(-50%) rotate(45deg); border-radius: 1px; box-shadow: 0 0 6px color-mix(in srgb, var(--gold) 70%, transparent); }
 html[class] .tabs button.carn { color: var(--muted); } html[class] .tabs button.carn svg { filter: none; } html[class] .tabs button.carn.on { color: var(--gold); }
 html[class] .tabs button i:not(.jr) { top: 1px; left: calc(50% + 9px); background: var(--gold); color: var(--bg); }
-.tabs i.bpt { position: absolute; top: 5px; left: calc(50% + 12px); width: 8px; height: 8px; min-width: 0; padding: 0; border-radius: 50%; background: var(--pv); box-shadow: 0 0 0 2px var(--bg); }
+
 @media (prefers-reduced-motion: reduce) { html[class] .tabs button span { transition: none; } }
 body.calme .tabs button span { transition: none; }
 
@@ -2237,10 +2155,10 @@ html.th-olympe .hxc-m::before { content: ''; position: absolute; left: -7px; top
 html.th-epopee .hxc-m::before { content: ''; position: absolute; inset: -6px; pointer-events: none; z-index: 1;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%23b8a0ff' stroke-width='1.3' stroke-dasharray='0.1 4.6' stroke-linecap='round'/%3E%3Cg fill='%23d9c8ff'%3E%3Cpath d='M32 0l1.3 2.7 2.7 1.3-2.7 1.3L32 8l-1.3-2.7L28 4l2.7-1.3z'/%3E%3Cpath d='M60 32l1.3 2.7 2.7 1.3-2.7 1.3L60 40l-1.3-2.7L56 36l2.7-1.3z' transform='translate(0 -4)'/%3E%3Cpath d='M4 32l1.3 2.7 2.7 1.3-2.7 1.3L4 40l-1.3-2.7L0 36l2.7-1.3z' transform='translate(0 -4)'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat; filter: drop-shadow(0 0 3px #a274ff); }
 .hxc-l1 { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 6px; row-gap: 40px; padding-top: 2px; min-width: 0; max-height: 21px; overflow: hidden; } /* le titre passe à la ligne… cachée : il s'affiche en entier ou pas du tout */
-.hxc-l1.long { max-height: none; } .hxc-l1.long .hx-titre { display: none; } /* nom très long : 2 lignes possibles, titre lisible sur la fiche */
+.hxc-l1.long { max-height: none; }  /* nom très long : 2 lignes possibles, titre lisible sur la fiche */
 html[class] .hxc .hero-name { flex: 0 1 auto; min-width: 0; font-size: clamp(12.5px, calc(24px - var(--nl) * .5px), 16.5px); line-height: 1.1; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
 html.th-aube .hxc .hero-name, html.th-olympe .hxc .hero-name { font-size: clamp(12px, calc(21px - var(--nl) * .5px), 14.5px) !important; } /* polices larges : le surnom tient avec un nom court (critique) */
-.hxc .hx-titre { flex: none; font: italic 600 11.5px/19px var(--f-texte); color: var(--gold); white-space: nowrap; }
+
 .hxc-d { flex: none; align-self: stretch; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
 html[class] .hxc .joker { flex: none; margin: 0; padding: 0 5px; border-radius: 6px; font: 700 10.5px/16px var(--f-texte); white-space: nowrap;
   background: color-mix(in srgb, var(--gold) 12%, transparent) !important; color: var(--gold) !important; border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent) !important; }
@@ -2253,7 +2171,7 @@ html[class] .hxc .joker { flex: none; margin: 0; padding: 0 5px; border-radius: 
 html[class] .hxc .hx-btn { width: 36px !important; height: 30px !important; background: none !important; border: 0 !important; color: var(--muted); }
 html[class] .hxc .hx-btn svg { width: 22px; height: 22px; }
 /* carte du jour : plus de barres en double, resserrée */
-.jour .jbars { display: none; }
+
 .hx .jour { padding: 8px 12px 8px 14px; margin-top: 8px; } .hx .jour .jour-sub { margin: 0; } .hx .jour-d20 svg { width: 36px; height: 36px; }
 
 /* ===== Fiche du boss (Conseil 19/11) et jauge d'XP qui glisse ===== */
@@ -2336,8 +2254,8 @@ body.calme .cfu *, body.calme .cfu *::after { animation: none !important; transi
 @keyframes hxqPop { from { transform: skewX(-14deg) scaleX(.2); opacity: 0; } to { transform: skewX(-14deg) scaleX(1); opacity: 1; } }
 @keyframes hxqAttend { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
 @keyframes hxsFlamme { 0%, 100% { transform: scale(1) rotate(-3deg); } 35% { transform: scale(1.12, .94) rotate(2deg); } 70% { transform: scale(.95, 1.08) rotate(-1deg); } }
-body.calme .hxq i, body.calme .hxs i, body.calme .hxd svg, body.calme .hxr::before { animation: none !important; }
-@media (prefers-reduced-motion: reduce) { .hxq i, .hxs i, .hxd svg, .hxr::before { animation: none !important; } }
+body.calme .hxq i, body.calme .hxs i, body.calme .hxd svg { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .hxq i, .hxs i, .hxd svg { animation: none !important; } }
 /* « Journée accomplie » : la jauge devient une ligne d'or, la rune (dagaz, « le jour ») remplace l'épée ; animation unique .frappe ≈ 1,5 s */
 .hxq { position: relative; }
 .hxq-or { position: absolute; inset: 0; border-radius: 3px; pointer-events: none; transform-origin: 0 50%;
@@ -2481,11 +2399,6 @@ const PALIERS_MAGE = [
   { n: 75, titre: 'le Légendaire', desc: 'Regard arcanique, cercle de runes sous les pieds.' },
   { n: 100, titre: "l'Ascendant", desc: 'Lévitation, halo de lumière, trois orbes en orbite.' }
 ];
-function palierMage(niveau) {
-  let i = 0;
-  PALIERS_MAGE.forEach((p, k) => { if (niveau >= p.n) i = k; });
-  return i;
-}
 
 function magicien(st, id) {
   const C = {
@@ -2975,7 +2888,6 @@ const POLICES_TEXTE = [
   { id: 'mono', nom: 'Machine', css: '"JetBrains Mono", ui-monospace, monospace', g: 'JetBrains+Mono:wght@400;600' }
 ];
 const TAILLES = [{ id: '', nom: 'Normale', z: 1 }, { id: 'grand', nom: 'Grande', z: 1.08 }, { id: 'tgrand', nom: 'Très grande', z: 1.16 }];
-function lireOpt(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
 /* Réglages : 3 thèmes affichés (dont celui choisi), les autres derrière « Voir plus » */
 let themesOuverts = false, apparenceOuverte = false; // réglages d'apparence repliés par défaut (app 4.1)
 document.addEventListener('click', e => { if (e.target.closest('[data-apparence]')) { apparenceOuverte = !apparenceOuverte; render(); } });
@@ -3026,16 +2938,6 @@ function appliquerTheme(id) {
   try { localStorage.setItem('theme', T.id); localStorage.setItem('themeCarnet', JSON.stringify(T.id === 'aube' && !PT.css ? {} : { '--bg': V.bg, '--surface': V.panel, '--surface2': V.card, '--sunk': V.bg, '--line2': V.line, '--fg': V.text, '--muted': V.muted, '--gold': V.gold, '--gold2': V.gold, police: familles, titre: T.id === 'aube' ? '' : (V['f-titre'] || ''), texte: texte })); } catch (e) {}
 }
 appliquerTheme(themeChoisi());
-/** Yggdrasil : éclats de givre qui partent du sceau, et flocons discrets en fond */
-function eclatsGivre(nom) {
-  if (!confort().animations) return;
-  const c = [...document.querySelectorAll('.card[data-q]')].find(x => x.dataset.q === nom), sc = c && c.querySelector('.sceau'); if (!sc) return;
-  const r = sc.getBoundingClientRect();
-  for (let i = 0; i < 7; i++) { const e = document.createElement('i'); e.className = 'givre-eclat'; const a = i / 7 * Math.PI * 2;
-    e.style.left = (r.left + r.width / 2 - 3) + 'px'; e.style.top = (r.top + r.height / 2 - 3) + 'px';
-    e.style.setProperty('--x', Math.round(Math.cos(a) * 46) + 'px'); e.style.setProperty('--y', Math.round(Math.sin(a) * 46) + 'px');
-    document.body.appendChild(e); setTimeout(() => e.remove(), 900); }
-}
 function flocons() {
   if (document.querySelector('.flocons') || !document.documentElement.classList.contains('ygg')) return;
   try { if (!confort().animations) return; } catch (e) {}
@@ -3606,7 +3508,7 @@ function bandeauCoffresRodage(s) {
   const A = s.armurerie; if (!A || !A.saison || A.saison.id !== 'pre' || s.today < '2026-12-24' || s.today > '2027-01-01') return '';
   const n = (A.coffres || []).filter(c => c.saison === 'pre').length; if (!n) return '';
   const j = s.today > '2026-12-31' ? 0 : 31 - Number(s.today.slice(8, 10)), dernier = j === 0;
-  return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? ': dernier soir' : 'à ouvrir'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
+  return `<button class="rappel-cof ${dernier ? 'dernier' : ''}" data-coffre="1"><span>🎁 <b>${n} coffre${n > 1 ? 's' : ''} du Rodage</b> ${dernier ? (s.today > '2026-12-31' ? ': avant l\'aube' : ': dernier soir') : 'à ouvrir'}</span>${dernier ? '' : `<em>J-${j}</em>`}</button>`;
 }
 
 const AURA_COUL = { aura_aube: '#ffb86b', aura_etincelles: '#ffd75a', aura_lune: '#dfe4ff', aura_abysses: '#2a9ab8' };
@@ -6032,7 +5934,6 @@ Object.assign(BOSS_DESSINS, {
     <g class="b-oeil"><circle cx="54.6" cy="31" r="4.4" fill="#ffd34d" stroke="#2a0e06" stroke-width="1"/><circle cx="65.4" cy="31" r="4.4" fill="#ffd34d" stroke="#2a0e06" stroke-width="1"/><circle cx="55.4" cy="31.4" r="2" fill="#1a0804"/><circle cx="64.6" cy="31.4" r="2" fill="#1a0804"/><circle cx="56" cy="30.6" r=".7" fill="#fff"/><circle cx="65.2" cy="30.6" r=".7" fill="#fff"/></g>
     <path d="M49.4 25.6 l9 3.4 M70.6 25.6 l-9 3.4" stroke="#2a0e06" stroke-width="2.2" stroke-linecap="round"/>
     <path d="M56.4 40.6 Q60 50.4 63.6 40.6Z" fill="#7a1420"/><path d="M58 45 Q60 48 62 45 Q60 46 58 45Z" fill="#e5585a"/><path d="M55.4 36.4 Q60 33.4 64.6 36.4 Q63.6 40 60 42.6 Q56.4 40 55.4 36.4Z" fill="#f2c24a" stroke="#6a4a10" stroke-width="1"/><path d="M57 46.6 Q60 51.6 63 46.6 Q60 48.4 57 46.6Z" fill="#d8a43a" stroke="#6a4a10" stroke-width=".9"/>
-    
     <g class="b-onde" fill="none" stroke="#ffd34d" stroke-width="1.7" stroke-linecap="round"><path d="M38 34 q-5 5 0 10" opacity=".9"/><path d="M32 30 q-8 9 0 18" opacity=".55"/><path d="M82 34 q5 5 0 10" opacity=".9"/><path d="M88 30 q8 9 0 18" opacity=".55"/></g>
     ${m ? '' : '<g class="b-volute" fill="#f2a060" opacity=".85"><path d="M14 92 q4 -3 6 1 q-3 3 -6 -1z"/><path d="M104 96 q4 -3 6 1 q-3 3 -6 -1z"/></g>'}`; },
 
@@ -6331,14 +6232,6 @@ const etoiles = r => '★'.repeat(r) + '☆'.repeat(Math.max(0, 5 - r));
 const joursRestants = fin => Math.max(0, Math.round((versDate(fin) - versDate(state.today)) / 864e5));
 const estMage = s => /magicien/i.test(String(((s || state).classe || {}).nom || ''));
 function couleurHeros(nom, s) { return nom === s.heros ? 'var(--moi)' : 'var(--allie)'; }
-function miniCoup(b) {
-  const c = coupActif(b);
-  if (c && c.capacite !== 'vol' && c.capacite !== 'hurlement') return `<span class="bm-coup">${c.icone} ${esc(c.nom)} : à contrer</span>`;
-  if (c) return `<span class="bm-coup">${c.icone} ${esc(c.nom)} : ne ratez rien</span>`;
-  if (b.coupDuJour && b.coupDuJour.brise && b.coupDuJour.breche) return '<span class="bm-coup ok">✨ Brèche : +25 % de dégâts</span>';
-  if (b.coupDemain) return `<span class="bm-coup demain">${b.coupDemain.icone} Demain : ${esc(b.coupDemain.nom)}</span>`;
-  return '';
-}
 /* ===== Cartes de boss : outils communs aux options A et B (maquette de l'Enlumineur, 19/11/2026) ===== */
 const nbF = n => Math.round(Number(n) || 0).toLocaleString('fr-FR').replace(/ /g, ' ');
 /** Les chiffres d'un boss, prêts à afficher. Jamais PV > PV max, même si le moteur renvoie un PV trop haut. */
@@ -6385,22 +6278,6 @@ function barreCoups(c, s) {
   return `<div class="bk-split" aria-hidden="true"><i style="width:${c.pMoi}%;background:var(--moi)"></i><i style="width:${100 - c.pMoi}%;background:var(--allie)"></i></div>
     <div class="bk-leg"><span><i style="background:var(--moi)"></i>Toi <b>${nbF(c.dMoi)}</b></span><span><b>${nbF(c.dLui)}</b> ${esc(nomCompagnon(((s || state || {}).compagnons || [])[0], true))}<i style="background:var(--allie)"></i></span></div>`;
 }
-/** Coup du jour / de demain en une ligne (l'annonce complète au toucher) */
-function coupLigne(b) {
-  if (!b.nouvellesRegles || b.statut !== 'En cours') return '';
-  const c = b.coupDuJour, d = b.coupDemain; let h = '';
-  if (c) {
-    const neutre = c.capacite === 'vol' || c.capacite === 'hurlement';
-    const etat = c.etourdi ? ['ok', '😵 Étourdi : son coup échoue'] : neutre ? (c.brise ? ['ok', '🙏 Aucun raté : tenez jusqu\'à minuit'] : ['ko', c.capacite === 'vol' ? '🃏 Un raté : joker volé' : '📢 Un raté : riposte ×2'])
-      : c.brise ? ['ok', '✨ Contré' + (c.breche ? ' · brèche +25 % aujourd\'hui' : '')] : ['contre', '🗡 ' + c.contre.replace(/\s*\(sa faiblesse\)\.?$/, '').replace(/\.$/, '')];
-    h += `<button class="bk-coup ${etat[0]}" data-bk-coup="1" aria-expanded="false"><span class="ic">${c.icone}</span><span class="tx"><b>${esc(c.nom)}</b> aujourd'hui<em>${esc(etat[1])}</em><small>${esc(c.annonce)}</small></span></button>`;
-  }
-  if (d) h += `<button class="bk-coup demain" data-bk-coup="1" aria-expanded="false"><span class="ic">${d.icone}</span><span class="tx">Demain&nbsp;: <b>${esc(d.nom)}</b><small>${esc(d.annonce)} 🗡 ${esc(d.contre)}</small></span></button>`;
-  if (b.sbire && !b.sbire.vaincu) h += `<div class="bc-sbire"><span>👹 Sbire&nbsp;: ${nbF(b.sbire.pv)} / ${nbF(b.sbire.pvMax)} PV · vos coups le frappent d'abord</span><div class="bar sbire"><i style="width:${b.sbire.pvMax ? Math.max(0, Math.min(100, b.sbire.pv / b.sbire.pvMax * 100)) : 0}%"></i></div></div>`;
-  else if (b.sbire && b.sbire.vaincu) h += '<div class="bc-sbire ok">👹 Sbire abattu : +20 XP chacun</div>';
-  return h;
-}
-const bkJours = c => c.j ? `${c.j} j` : 'Dernier jour';
 const bkEtats = (b, vaincu) => `${b.statut === 'En cours' && PHASES_BOSS[b.phase] ? `<span class="bk-et">${PHASES_BOSS[b.phase]}</span>` : ''}${b.enhardi && !vaincu ? `<span class="bk-et">🩹 Blessé −5 %${b.enhardi === 'fuite' ? ' · 😈 rancunier' : ''}</span>` : ''}`;
 /** Fuite : le boss garde des PV à la fin de sa période */
 const bkFuite = c => c.max && c.pv / c.max > 0.1 ? 'Le prochain arrive blessé (−5 %), mais rancunier&nbsp;: maudit 2 jours.' : 'De justesse : le prochain arrive blessé (−5 %).';
@@ -7107,10 +6984,6 @@ document.addEventListener('click', e => {
   const i = Number(v.dataset.vote);
   regler('voterMJ', i).then(ok => ok && toast('Ton vote est scellé'));
 });
-function carteSagaMini(s) {
-  const m = s.mj; if (!m || !m.pret || m.monVote != null) return '';
-  return `<button class="evt on" data-tab="compagnie" style="width:100%;text-align:left;cursor:pointer"><div class="evt-t">📜 Nouveau chapitre : ${esc(titreChapitre(m))}</div><div class="evt-e">Le Maître du Jeu attend votre choix pour la semaine ›</div></button>`;
-}
 
 /* ---------- Nouvelles : saga, bénédiction, rebondissement, événement, rétrospective, bilan du dimanche ---------- */
 let sousOnglet = 'quetes';
@@ -7476,26 +7349,6 @@ function tagsCoups(s, q) {
   });
   return out.join('');
 }
-/** Bloc « coup du jour / coup de demain / sbire / capacités » de la grande carte du boss */
-function blocCoups(b) {
-  if (!b.nouvellesRegles || b.statut !== 'En cours') return '';
-  const c = b.coupDuJour, d = b.coupDemain;
-  let h = '';
-  if (c) {
-    const neutre = c.capacite === 'vol' || c.capacite === 'hurlement';
-    const etat = c.etourdi ? '<span class="cp-ok">😵 Étourdi : vous avez tant frappé hier que son coup échoue.</span>'
-      : neutre ? (c.brise ? '<span class="cp-ok">🙏 Aucun raté pour l\'instant : tenez bon jusqu\'à minuit.</span>'
-        : `<span class="cp-ko">${c.capacite === 'vol' ? '🃏 Un raté : il a volé un joker.' : '📢 Un raté : sa riposte compte double.'}</span>`)
-      : c.brise ? `<span class="cp-ok">✨ Contré !${c.breche ? ' Brèche ouverte : vos quêtes frappent +25 % aujourd\'hui.' : ''}</span>`
-      : `<span class="cp-contre">🗡 ${esc(c.contre)}</span>`;
-    h += `<div class="bc-coup ${c.brise || c.etourdi ? 'brise' : ''}"><b>${c.icone} Aujourd'hui : ${esc(c.nom)}</b><span>${esc(c.annonce)}</span>${etat}</div>`;
-  }
-  if (d) h += `<div class="bc-coup demain"><b>${d.icone} Demain : ${esc(d.nom)}</b><span>${esc(d.annonce)}</span><span class="cp-contre">🗡 ${esc(d.contre)}</span></div>`;
-  if (b.sbire && !b.sbire.vaincu) h += `<div class="bc-sbire"><span>👹 Sbire : ${Math.round(b.sbire.pv)} / ${Math.round(b.sbire.pvMax)} PV · vos coups le frappent d'abord</span><div class="bar sbire"><i style="width:${b.sbire.pvMax ? Math.max(0, Math.min(100, b.sbire.pv / b.sbire.pvMax * 100)) : 0}%"></i></div></div>`;
-  else if (b.sbire && b.sbire.vaincu) h += '<div class="bc-sbire ok">👹 Sbire abattu : +20 XP chacun</div>';
-  if (b.capacites && b.capacites.length) h += `<div class="bc-capa">Ses capacités : ${b.capacites.map(x => `${x.icone} ${esc(x.nom)}`).join(' · ')}</div>`;
-  return h;
-}
 /** Petit éclat doré (coup brisé) ou secousse violette (coup subi) sur la carte du boss */
 function effetCoup(type) {
   document.querySelectorAll('.boss-mini, .boss-card').forEach(el => { el.classList.remove('eclat', 'subi'); void el.offsetWidth; el.classList.add(type); setTimeout(() => el.classList.remove(type), 1200); });
@@ -7504,12 +7357,6 @@ function regleBoss(s) {
   const R = (s.boss && s.boss.regles) || {};
   const f = x => String(x).replace('.', ',');
   return `<div class="aide-coop">Chaque quête accomplie frappe le boss avec l'XP gagnée : ×${f(estMage(s) ? R.faibleMage : R.faible)} sur sa faiblesse, ×${f(R.resiste)} sur sa résistance${estMage(s) ? `, ×${f(R.sort)} avec le sort préparé` : `, ×${f(R.annexeRoublard)} sur les quêtes annexes`}. Chaque raté lui rend ${Math.round((R.ripSemaine || 0) * 100)} % de ses PV.</div>`;
-}
-/** Tag faiblesse / résistance sur les cartes de quête */
-function tagBoss(q) {
-  const b = state && state.boss && state.boss.semaine;
-  if (!b || b.statut !== 'En cours') return '';
-  return q.carac === b.faible ? ' · <span class="faible">⚡ faiblesse</span>' : q.carac === b.resiste ? ' · <span class="resiste">🛡 résiste</span>' : '';
 }
 /** Dégâts d'une quête sur un boss (même calcul que l'onglet Combats) */
 function degatsQuete(s, b, q, dXp, estAnnexe) {
@@ -7618,11 +7465,6 @@ function bossVaincu(b, revoir) {
   });
 }
 
-function carteD20(s) {
-  if (!s.d20) return `<button class="d20-card" data-d20="1">${d20Svg('?')}Lance ton d20 du jour<span>→</span></button>`;
-  const d = s.d20;
-  return `<button class="d20-card fait ${d.mult < 1 ? 'malus' : ''}" data-d20="1">${d20Svg(d.de)}<div><b>${esc(d.titre)}</b><br>${d.mult !== 1 ? `XP ×${String(d.mult).replace('.', ',')} sur tes quêtes du jour` : 'Ni bonus ni malus aujourd\'hui'}</div></button>`;
-}
 let d20Vu = false;
 function ouvrirD20() {
   d20Vu = true;
@@ -8222,27 +8064,6 @@ function corneSvg(xp, classe, miroir) {
 }
 /* Duel de la semaine (charte 2026) : les deux héros face à face, chacun sa couleur fixe (mage azur, voleur jade), couronne au meneur */
 const couleurClasse = c => /voleur|assassin|roublard/i.test(String(c || '')) ? 'var(--allie)' : 'var(--theron)';
-function duelHTML(s, moi, lui) {
-  const B = (s.boss || {}).semaine, dg = n => Math.round(Number(((B || {}).degats || {})[n]) || 0);
-  const dessin = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
-  const a = Number(moi.xpSemaine) || 0, b = Number(lui.xpSemaine) || 0, meneur = a === b ? '' : a > b ? 'g' : 'd';
-  const barre = (titre, va, vb, unite) => { const t = Math.max(1, va + vb);
-    return `<div class="dl-bar"><div class="dl-t">${titre}</div><div class="dl-v"><b>${va.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b>${unite}<span></span><b>${vb.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</b>${unite}</div>
-      <div class="dl-l">${va + vb ? `<i style="width:${va / t * 100}%;background:${couleurClasse(moi.classe)}"></i><i style="width:${vb / t * 100}%;background:${couleurClasse(lui.classe)}"></i>` : '<i class="vide"></i>'}</div></div>`; };
-  return `<div class="duel" data-meneur="${meneur}">
-    <div class="dl-face">
-      <div class="dl-niche" style="--c:${couleurClasse(moi.classe)}" data-vitrine="1" role="button" aria-label="Voir ton héros">${dessin(moi, 'dlg')}</div>
-      <div class="dl-vs">VS</div>
-      <div class="dl-niche" style="--c:${couleurClasse(lui.classe)}" data-vitrine-nom="${esc(lui.nom)}" role="button" aria-label="Voir ${esc(nomCompagnon(lui))}">${dessin(lui, 'dld')}</div>
-      ${meneur ? `<span class="dl-couronne" aria-label="En tête cette semaine"><svg viewBox="0 0 40 30" aria-hidden="true"><defs><linearGradient id="crg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a8"/><stop offset=".55" stop-color="var(--xp2)"/><stop offset="1" stop-color="var(--gold)"/></linearGradient></defs><path d="M4 24 L2 7 L12 15 L20 3 L28 15 L38 7 L36 24Z" fill="url(#crg)" stroke="#6b4321" stroke-width="1.4" stroke-linejoin="round"/><rect x="4" y="23" width="32" height="5" rx="1.5" fill="url(#crg)" stroke="#6b4321" stroke-width="1.2"/><circle cx="20" cy="12" r="2.2" fill="var(--theron)"/><circle cx="11" cy="17" r="1.6" fill="var(--wax2)"/><circle cx="29" cy="17" r="1.6" fill="var(--allie)"/></svg></span>` : ''}
-    </div>
-    <div class="dl-noms"><div style="color:${couleurClasse(moi.classe)}"><b>Toi</b><small>${esc(moi.classe || '')} · niv. ${moi.niveau}</small></div><div style="color:${couleurClasse(lui.classe)}"><b>${esc(nomCompagnon(lui))}</b><small>${esc(lui.classe || '')} · niv. ${lui.niveau}</small></div></div>
-    ${barre('XP de la semaine', a, b, ' XP')}
-    ${a !== b ? `<div class="dl-ecart">${a < b ? `Plus que <b>${(b - a).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> pour prendre la couronne` : `${esc(nomCompagnon(lui))} est à <b>${(a - b).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP</b> de la couronne`}</div>` : ''}
-    ${CORNES_ACTIVES ? `<div class="cornes">${corneSvg(a, moi.classe)}<div class="cornes-t">Corne de la semaine<small>${Math.min(100, Math.round(a / SEMAINE_PARFAITE * 100))} % · ${Math.min(100, Math.round(b / SEMAINE_PARFAITE * 100))} %</small></div>${corneSvg(b, lui.classe, true)}</div>` : ''}
-    ${B && B.statut !== 'À venir' ? barre('Dégâts ' + esc(aLaBoss(B.nomStade || B.nom)), dg(moi.nom), dg(lui.nom), '') : ''}
-  </div>`;
-}
 /** Avant-match : le lundi, une fois par semaine, les deux héros entrent en scène et le « VS » claque */
 let avantMatchPrevu = false;
 function avantMatchAFaire(s) {
