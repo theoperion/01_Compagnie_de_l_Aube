@@ -190,8 +190,8 @@ window.demo = (() => {
     const n = new Date(), lun = new Date(n.getFullYear(), n.getMonth(), n.getDate() - (n.getDay() + 6) % 7), plus = k => jIso(new Date(lun.getFullYear(), lun.getMonth(), lun.getDate() + k));
     const moi = r.heros, lui = ((demo.getHeros() || []).find(h => h.nom !== moi) || {}).nom || 'ton compagnon d\'armes';
     const auj = jIso(n), dem = jIso(new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1));
-    const coups = [{ date: auj, heros: moi, quete: 'Lire 20 pages', type: 'coup', valeur: 312, faible: true, resiste: false },
-      { date: auj, heros: lui, quete: 'Course à pied', type: 'coup', valeur: 268, faible: false, resiste: false },
+    const coups = [{ date: auj, heros: moi, quete: 'Lire 20 pages', type: 'coup', valeur: 312, faible: true, resiste: false, lien: true },
+      { date: auj, heros: lui, quete: 'Course à pied', type: 'coup', valeur: 268, faible: false, resiste: false, lien: true },
       { date: plus(0), heros: lui, quete: 'Sommeil', type: 'riposte', valeur: 180 },
       { date: plus(0), heros: moi, quete: 'Anglais', type: 'coup', valeur: 205, faible: false, resiste: true }];
     const semaine = { coups, type: 'semaine', nom: 'La Liche du Scroll', rang: 1, faible: 'Intelligence', resiste: 'Sagesse', debut: plus(0), fin: plus(6),

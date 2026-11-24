@@ -2339,6 +2339,8 @@ html[class] small.epu-p, html[class] .hxc .joker { padding: 0 7px !important; } 
 .bf-plaques button.x { padding: 3px 9px; }
 /* Zones de toucher de 40 px sans changer le dessin (trouvé par le contrôle de l'onglet Combat, 24/11/2026) */
 .bf-plaques button.x, .bf-coup { position: relative; }
+/* Lien d'armes dans le Journal des coups : coup porté un jour où les deux héros ont agi (c.lien, moteur) */
+.coups .lien-x { font: 700 11px var(--f-texte); color: var(--gold); white-space: nowrap; letter-spacing: .02em; }
 .bf-plaques button.x::after { content: ''; position: absolute; inset: -10px -2px; }
 .bf-coup::after { content: ''; position: absolute; inset: -5px 0; }
 .ph-c { padding: 8px 6px 7px; } @media (max-width: 380px) { .ph-c small { font-size: 9.5px; } .pt-nom small { display: none; } }
@@ -6145,7 +6147,7 @@ function vueCombat(s) {
   const nq = c => { const h = (!c.heros || String(c.heros) === String(s.heros || '')) && [...(s.habitudes || []), ...(s.annexes || [])].find(x => x.nom === c.quete); return h ? nomVu(h) : c.quete; };
   const ligne = c => `<div class="coup ${c.type}">
       <span class="qui" style="color:${couleurHeros(c.heros, s)}">${esc(nomAmbiance(c.heros, s))}</span>
-      <span class="quoi">${c.type === 'riposte' ? `rate « ${esc(nq(c))} » : le boss se soigne` : esc(nq(c))}${c.faible ? ' <b class="faible">⚡</b>' : c.resiste ? ' 🛡' : ''}<small>${jour(c.date)}</small></span>
+      <span class="quoi">${c.type === 'riposte' ? `rate « ${esc(nq(c))} » : le boss se soigne` : esc(nq(c))}${c.faible ? ' <b class="faible">⚡</b>' : c.resiste ? ' 🛡' : ''}${c.lien && c.type !== 'riposte' ? ` <b class="lien-x" aria-label="Lien d'armes : vous avez agi tous les deux ce jour-là, coup ×${(1 + ((s.lienArmes && s.lienArmes.bonus) || 0.05)).toLocaleString('fr-FR')}">⚭ ×${(1 + ((s.lienArmes && s.lienArmes.bonus) || 0.05)).toLocaleString('fr-FR')}</b>` : ''}<small>${jour(c.date)}</small></span>
       <span class="val">${c.type === 'riposte' ? '+' : '−'}${Math.round(c.valeur).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')}</span></div>`;
   return `
     <div class="section"><h2>Boss du Crépuscule</h2><span>à abattre ensemble</span></div>
