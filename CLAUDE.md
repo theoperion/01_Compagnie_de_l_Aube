@@ -8,7 +8,7 @@ App d'habitudes façon jeu de rôle, à deux, installable sur le téléphone : h
 - Tout en français, ton simple ; Théo ne fait rien de technique.
 - **Jamais** le prénom du compagnon d'armes, l'e-mail de Théo, une clé ou un identifiant privé dans ce dépôt.
 - **Jamais** rien de la saison à venir (noms, dessins, objets) avant sa date de sortie : avant chaque publication, le test secret-public du dépôt privé doit passer (bloquant).
-- Publier l'app : modifier `index.html` / `carnet.html`, monter la version dans `config.js`, pousser sur `main` (GitHub Pages).
+- Publier l'app : modifier `index.html` / `carnet.html`, monter la version dans `config.js`, commiter, puis **uniquement** par `outils/publier-app.sh` du dépôt privé (contrôles bloquants, puis push sur `main`). **Gel des fêtes : rien du 20/12 au 02/01 sans le « oui » de Théo.**
 
 ## Agents (`.claude/agents/`)
-En cours de redéfinition (tri du 24/11).
+4 agents en lecture seule, définis avec Théo le 24/11 et testés sur une erreur cachée : `maitre-du-jeu`, `gardien-du-code`, `ergonome`, `avocat-du-diable`. Qui relit quoi et règles détaillées : fiche privée, §3.
