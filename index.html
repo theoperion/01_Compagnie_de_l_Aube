@@ -6322,7 +6322,7 @@ function bossVaincu(b, revoir) {
     </div></div>` : `<div class="bw-svg">${bossSvg(b.visuel, 'win', b)}</div>`}
     <div class="bw-txt"><h3>${mois ? 'BOSS DU MOIS VAINCU !' : 'BOSS VAINCU !'}</h3>
     <p>${esc(b.nom)} tombe sous les coups de la Compagnie${mois ? '. Le mois prochain, un autre boss se lèvera' : ''}.</p>
-    ${b.xp ? `<p class="bw-xp">+${b.xp} XP pour toi · ton compagnon reçoit aussi sa part</p>` : ''}
+    ${b.xp ? `<p class="bw-xp">+${b.xp} XP ${(state && (state.compagnons || []).length) ? 'chacun' : 'pour toi'}</p>` : ''}
     ${b.trophee ? `<p class="bw-tr">Trophée : ${esc(b.trophee)}</p>` : ''}
     <div class="row" style="justify-content:center;gap:8px">${anim ? '<button class="btn" data-bw-rejouer="1">↻ Revoir</button>' : ''}
     <button class="btn or plein" data-bw="1">${mois ? 'Gloire à la Compagnie' : 'À la semaine prochaine…'}</button></div></div></div>`;
