@@ -4642,7 +4642,7 @@ function ouvrirUnCoffre() {
   if (navigator.onLine === false) { toast('📴 Il faut du réseau pour ouvrir un coffre', 'info'); return; }
   let ov = document.getElementById('coffreOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'coffreOv'; document.body.appendChild(ov); }
-  const o = tirerCoffreLocal(c, state);
+  const o = tirerCoffreLocal(c, state), jourTirage = state.today; // le moteur tire avec ce même jour (coffre ouvert à cheval sur minuit)
   const xo = o.item ? cosmItem(o.item) : null, rar = (xo && xo.rarete) || o.rarete || c.type; // le faisceau prend la couleur de ce qui sort
   const [tS, tL, tR] = COF_TEMPS[c.type] || COF_TEMPS.rare;
   const anime = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -4653,7 +4653,7 @@ function ouvrirUnCoffre() {
   state = appliquerCoffre(copie(state), c.source, o);
   coffresEnVol[c.source] = o;
   // un envoi à la fois (coffres ouverts à la suite) ; chaque réponse garde ouverts les coffres pas encore confirmés
-  apiFond('ouvrirCoffre', c.source).then(r => {
+  apiFond('ouvrirCoffre', c.source, jourTirage).then(r => {
     delete coffresEnVol[c.source];
     state = avecAttente(r); if (!document.getElementById('coffreOv').classList.contains('on')) render();
   }).catch(e => {
@@ -5022,7 +5022,7 @@ window.addEventListener('unhandledrejection', e => { const r = e.reason; const m
 /* Héros joué sur ce téléphone (mémorisé). Chaque appel au serveur l'envoie en dernier paramètre. */
 let herosActif = '';
 try { herosActif = localStorage.getItem('heros') || ''; } catch (e) {}
-const ARITE = { ouvrirCoffre: 1, acheterCosmetique: 1, getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
+const ARITE = { ouvrirCoffre: 2, acheterCosmetique: 1, getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
   decalerSeance: 3, annulerDecalage: 3, reglerRappel: 1, testerRappel: 0, changerDifficulte: 1, reglerConfort: 1, reglerDevise: 1,
   getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, equiperOrnement: 2, planifierVoyage: 3, annulerVoyage: 2, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1, journalRecent: 1, corrigerJour: 3, retirerSaisie: 2 };
 function api(fn, ...args) {
