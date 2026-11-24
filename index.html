@@ -125,6 +125,28 @@
   .card.done .name { color: var(--muted); }
   .sceau { position: absolute; right: 44px; top: 50%; width: 38px; height: 38px; margin-top: -19px; transform: rotate(-14deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,.55)); pointer-events: none; }
   .sceau svg { width: 100%; height: 100%; display: block; }
+  /* Fuite d'un boss : regard en arrière (0,7 s), il file au loin dans la brume (1,2 s), le texte arrive ; coupé en mode calme */
+  #fuiteOv { position: fixed; inset: 0; z-index: 9000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
+    padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); background: radial-gradient(ellipse at 50% 40%, #282c46, #08090f 70%); color: var(--text); }
+  #fuiteOv.on { display: flex; }
+  .fu-scene { position: relative; width: 240px; height: 190px; overflow: hidden; }
+  .fu-boss { position: absolute; left: 50%; top: 8px; width: 150px; margin-left: -75px; opacity: .55; filter: saturate(.6); }
+  .fu-boss svg { width: 100%; height: auto; display: block; }
+  .fu-brume { position: absolute; left: -20%; right: -20%; bottom: 0; height: 70px; background: linear-gradient(0deg, rgba(160,170,200,.35), transparent); opacity: .6; }
+  .fu-poussiere i { position: absolute; left: calc(50% + var(--k) * 9px - 30px); bottom: 18px; width: 12px; height: 12px; border-radius: 50%; background: rgba(200,190,170,.5); opacity: 0; }
+  .fu-t { font: 700 21px var(--f-titre); color: #c9c4d8; margin: 4px 0 0; }
+  .fu-s { margin: 0 0 12px; max-width: 320px; font-size: 14px; color: var(--muted); }
+  .fu-ok { min-height: 44px; min-width: 160px; }
+  #fuiteOv.anim .fu-boss { opacity: 1; filter: none; animation: fuRegard .7s ease-in-out, fuFile 1.2s .7s cubic-bezier(.55,0,.85,.35) forwards; }
+  #fuiteOv.anim .fu-brume { animation: fuBrume 1.9s ease-out forwards; }
+  #fuiteOv.anim .fu-poussiere i { animation: fuPoussiere .9s calc(.75s + var(--k) * .08s) ease-out forwards; }
+  #fuiteOv.anim .fu-t, #fuiteOv.anim .fu-s, #fuiteOv.anim .fu-ok { opacity: 0; animation: fuTexte .5s 1.5s ease-out forwards; }
+  @keyframes fuRegard { 0%, 100% { transform: none; } 30% { transform: translateX(-4px) rotate(-5deg); } 60% { transform: translateX(3px) rotate(4deg); } }
+  @keyframes fuFile { 0% { transform: none; opacity: 1; } 100% { transform: translate(150px, -14px) scale(.45); opacity: 0; } }
+  @keyframes fuBrume { from { opacity: .2; transform: translateX(-30px); } to { opacity: .9; transform: none; } }
+  @keyframes fuPoussiere { 0% { opacity: .8; transform: none; } 100% { opacity: 0; transform: translate(-26px, -18px) scale(2.2); } }
+  @keyframes fuTexte { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
   /* sceaux à collectionner : leurs propres couleurs dans tous les thèmes ; partie vivante (rayons du soleil, braise, reflet), coupée en mode calme */
   .sceau:has(.sc-col), html.ygg .sceau:has(.sc-col), html.th-olympe .sceau:has(.sc-col) { filter: none; } /* l'ombre est dans le dessin : rien n'est redessiné à chaque image (avocat) */
   .sc-col .sc-rayons, .ap-sc .sc-rayons { transform-box: view-box; transform-origin: 18px 18px; animation: scTourne 30s linear infinite; }
@@ -5713,6 +5735,47 @@ function annonceBossAFaire() {
   setTimeout(essayer, 1500);
 }
 let annonceBossPrevue = false, recapPrevu = false;
+/* Fuite d'un boss (Théo, 24/11 : « petite cinématique quand un boss s'enfuit, défaite sobre ») : le moteur n'envoie plus l'ancien boss,
+ * seulement le nouveau marqué `enhardi` ('fuite' ou 'fuiteJuste'). L'app retient donc le boss en cours (sur ce téléphone) et,
+ * le jour où le suivant arrive marqué, rejoue une fois la fuite de l'ancien : regard en arrière, il file dans la brume (≈ 2,4 s). */
+const lireLS = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+const ecrireLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+function memoBossEnCours(s) {
+  ['semaine', 'mois'].forEach(ty => { const b = s && s.boss && s.boss[ty]; if (b && b.statut === 'En cours' && b.debut)
+    ecrireLS('bossEnCours|' + ty, { nom: b.nom, visuel: b.visuel, debut: b.debut, stade: b.stade, teinte: b.teinte, attribut: b.attribut }); });
+}
+let fuitePrevue = false;
+function fuiteAFaire(s) {
+  if (fuitePrevue || !s || !s.boss) return;
+  const ty = ['semaine', 'mois'].find(x => { const b = s.boss[x]; return b && b.enhardi && b.debut && !lireLS('fuiteVue|' + x + '|' + b.debut); });
+  if (!ty) return;
+  const b = s.boss[ty], avant = lireLS('bossEnCours|' + ty);
+  ecrireLS('fuiteVue|' + ty + '|' + b.debut, 1);
+  if (!avant || !avant.debut || avant.debut >= b.debut || avant.nom === b.nom) return; // pas vu l'ancien sur ce téléphone : rien à rejouer
+  fuitePrevue = true;
+  const essayer = () => {
+    const occupe = document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #bilanOv, #ouvertureOv')].some(el => el.classList.contains('on')) || document.querySelector('.lvl-ov');
+    if (occupe) { setTimeout(essayer, 1500); return; }
+    jouerFuite(avant, b);
+  };
+  setTimeout(essayer, 1200);
+}
+function jouerFuite(avant, b) {
+  let ov = document.getElementById('fuiteOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'fuiteOv'; ov.setAttribute('role', 'dialog'); document.body.appendChild(ov); }
+  const fem = /^(La |Une )|^L'(Hydre|Harpie|Ombre)/.test(avant.nom || '');
+  const fem2 = /^(La |Une )|^L'(Hydre|Harpie)/.test(b.nom || '');
+  const suite = `${esc(b.nom)} arrive blessé${fem2 ? 'e' : ''} par la poursuite (−5 % PV)${b.enhardi === 'fuite' ? `, mais rancuni${fem2 ? 'ère' : 'er'} : ${fem2 ? 'elle' : 'il'} vous maudit 2 jours.` : '.'}`;
+  const anime = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  ov.className = anime ? 'anim' : '';
+  ov.innerHTML = `<div class="fu-scene" aria-hidden="true"><i class="fu-brume"></i><div class="fu-boss">${bossSvg(avant.visuel, 'fuite', avant)}</div>
+      <div class="fu-poussiere">${Array.from({ length: 7 }, (_, i) => `<i style="--k:${i}"></i>`).join('')}</div></div>
+    <h3 class="fu-t">💨 ${esc(avant.nom)} s'est enfui${fem ? 'e' : ''} !</h3><p class="fu-s">${suite}</p>
+    <button class="btn or fu-ok" data-fuite-ok="1">Continuer</button>`;
+  ov.classList.add('on'); document.body.classList.add('bloque');
+}
+document.addEventListener('click', e => { if (!e.target.closest('[data-fuite-ok]')) return; const ov = document.getElementById('fuiteOv'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque'); });
+
 document.addEventListener('click', e => { if (e.target.closest('[data-annonce-boss]')) ouvrirAnnonceBoss(); });
 function ouvrirEncouragement() {
   const C = state.camp; if (!C) return;
@@ -6686,6 +6749,7 @@ function render() {
   annonceMiseAJour(state);
   if (ongletAffiche !== onglet) { ongletAffiche = onglet; document.querySelectorAll('.float').forEach(x => x.remove()); } // un gain ne flotte pas sur l'onglet suivant
   annonceBossAFaire();
+  fuiteAFaire(state); memoBossEnCours(state);
   annonceAventureAFaire();
   if (state.today < '2027-01-01') try { localStorage.setItem('niveauRodage', String(state.niveau || '')); } catch (e) {} // niveau atteint au Rodage
   if (typeof recommencementAFaire === 'function') recommencementAFaire();
