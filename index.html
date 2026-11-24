@@ -5630,7 +5630,6 @@ function recapAFaire() {
   if (!(j === 6 && h >= 18) && !prec) return;
   if (prec && !(s.bilan.precedente && s.bilan.precedente.faits)) return;
   try { if (localStorage.getItem(cle)) return; } catch (e) { return; }
-  if (recapPrevu) return; recapPrevu = true;
   // réessaie tant qu'un autre écran est ouvert (ex. la fuite d'un boss le lundi) ; « vu » seulement quand il s'ouvre (ergonome, 24/11)
   const essayer = () => { if (document.body.classList.contains('bloque') || document.querySelector('.lvl-ov, .cine')) { setTimeout(essayer, 2000); return; }
     try { if (localStorage.getItem(cle)) return; localStorage.setItem(cle, '1'); } catch (e) { return; } ouvrirRecap(prec); };
