@@ -311,6 +311,7 @@
   .vit-box { max-width: 460px; margin: 0 auto; padding: 18px 16px 40px; position: relative; }
   .vit-x { position: sticky; top: 0; float: right; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
   /* La route en perspective (maquette, éteinte par défaut) */
+  .rv-2d { position: absolute; right: 12px; top: calc(max(10px, env(safe-area-inset-top)) + 52px); z-index: 2001; min-height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,.5); background: rgba(10,14,30,.72); color: #fff; font: 700 13px var(--f-texte); }
   .rv-ov { position: fixed; inset: 0; z-index: 70; overflow: hidden; background: #0f1a36; touch-action: none; }
   .rv-fond { position: absolute; inset: 0; width: 100%; height: 100%; }
   .rv-objets { position: absolute; inset: 0; }
@@ -1036,6 +1037,10 @@
   .coup .val { font-weight: 800; color: #ff8b7a; font-variant-numeric: tabular-nums; }
   .coup.riposte .val { color: #8fd6a0; } .coup.riposte .quoi { color: var(--muted); }
   .tabs i.pvb { background: #8f2b24; }
+  i.pastille { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #e5383b; box-shadow: 0 0 0 2px var(--bg, #0e1220); margin-left: 5px; vertical-align: 6px; }
+  .tabs button { position: relative; } .tabs i.pastille { position: absolute; top: 4px; right: calc(50% - 20px); margin: 0; }
+  .orn-b i.neuf { position: absolute; top: 3px; left: 3px; font: 700 9px/1 var(--f-texte, sans-serif); font-style: normal; color: #fff; background: #e5383b; border-radius: 6px; padding: 2px 4px; }
+  .gr-b.a-neuf { position: relative; } .gr-b.a-neuf::after { content: ''; position: absolute; top: 3px; right: 3px; width: 8px; height: 8px; border-radius: 50%; background: #e5383b; }
   .faible { color: var(--gold); font-weight: 700; } .resiste { color: var(--muted); }
   .boss-win { position: fixed; inset: 0; z-index: 30; display: grid; place-items: safe center; overflow-y: auto; overscroll-behavior: contain; text-align: center; padding: 20px;
     background: radial-gradient(circle, rgba(70,52,16,.97), rgba(10,8,14,.98) 70%); animation: fadeIn .3s; }
@@ -4230,6 +4235,19 @@ let marchandOuvert = false;
 const GARDE_ROBE = [['cape', '🧥', 'Cape'], ['tete', '👑', 'Couronne'], ['aura', '✨', 'Aura'], ['familier', '🐉', 'Familier'], ['poche', '🦉', 'De poche'], ['monture', '🐎', 'Monture'],
   ['repaire', '🏰', 'Repaire'], ['trainee', '💫', 'Traînée'], ['victoire', '⚡', 'Coup final'], ['sceau', '🏵️', 'Sceau'], ['embleme', '⭐', 'Emblème'], ['sol', '🌸', 'Sol'], ['lueur', '🌟', 'Lueur']];
 let slotGarde = 'cape';
+/* Nouveaux objets (Théo, 25/11 : « une petite coche rouge sur l'armurerie quand j'ai de nouveaux objets ») : ce que tu possèdes et n'as pas encore vu dans la garde-robe.
+ * Première fois : tout ce que tu as déjà compte comme vu (pas de pastille pour l'existant). Vus à l'ouverture de l'armurerie ; « Nouveau » reste affiché jusqu'à sa fermeture. */
+const cleCosmVus = () => 'cosmVus|' + (herosActif || '');
+function cosmVus() { try { const v = localStorage.getItem(cleCosmVus()); return v === null ? null : JSON.parse(v); } catch (e) { return []; } }
+function nouveauxCosm(s) {
+  const A = (s || state || {}).armurerie; if (!A) return [];
+  const pos = (A.possede || []).filter(Boolean), vus = cosmVus();
+  if (vus === null) { try { localStorage.setItem(cleCosmVus(), JSON.stringify(pos)); } catch (e) {} return []; }
+  return pos.filter(id => vus.indexOf(id) < 0);
+}
+let nouveauxVitrine = null; // instantané pendant que l'armurerie est ouverte
+function marquerCosmVus() { const n = nouveauxCosm(state); if (nouveauxVitrine === null) nouveauxVitrine = n; if (!n.length) return;
+  try { localStorage.setItem(cleCosmVus(), JSON.stringify(((state.armurerie || {}).possede || []).filter(Boolean))); } catch (e) {} }
 function blocArmurerie() {
   const s = state, A = s.armurerie; if (!A) return '';
   const orn = ornementsDe(s) || {};
@@ -4240,11 +4258,14 @@ function blocArmurerie() {
   const objets = slot => liste.filter(x => x.slot === slot);
   const petits = slot => slot === 'poche' ? ORNEMENTS.filter(o => o.slot === 'familier' && ornementDebloque(s, o)) : slot === 'familier' ? [] : ORNEMENTS.filter(o => o.slot === slot);
   const compte = slot => [objets(slot).filter(x => cosmPossede(x.id)).length + petits(slot).filter(o => ornementDebloque(s, o)).length, objets(slot).length + petits(slot).length];
-  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''}" data-garde="${id}" title="${nom} · ${a} / ${t} gagnés" aria-label="${nom} : ${a} sur ${t} gagnés"><span aria-hidden="true">${ic}</span><b>${nom}</b></button>` : ''; }).join('');
+  const neufs = nouveauxVitrine || [];
+  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); const nf = neufs.some(n => objets(id).some(x => x.id === n)); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''} ${nf ? 'a-neuf' : ''}" data-garde="${id}" title="${nom} · ${a} / ${t} gagnés" aria-label="${nom} : ${a} sur ${t} gagnés"><span aria-hidden="true">${ic}</span><b>${nom}</b></button>` : ''; }).join('');
   const E = GARDE_ROBE.find(g => g[0] === slotGarde) || GARDE_ROBE[0];
-  const tuilesCosm = objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
+  // le sceau de base (celui du thème) reste choisissable : le toucher retire le sceau porté (Théo, 25/11)
+  const sceauBase = E[0] === 'sceau' ? `<div class="orn-t ${orn.sceau ? '' : 'eq'}"><button class="orn-b" data-orn="sceau|" aria-label="Sceau de base"><span class="orn-ic"><span class="ap-sc">${sceauSvg({ classe: s.classe })}</span></span><b>De base</b></button></div>` : '';
+  const tuilesCosm = sceauBase + objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
     return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
-      <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(NOM_COURT[x.id] || x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>${ok ? `<button class="orn-q info" data-cosm-info="${x.id}" aria-label="À propos de cet objet">i</button>` : `<button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button>`}</div>`; }).join('');
+      <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(NOM_COURT[x.id] || x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}${neufs.indexOf(x.id) >= 0 ? '<i class="neuf">Nouveau</i>' : ''}</button>${ok ? `<button class="orn-q info" data-cosm-info="${x.id}" aria-label="À propos de cet objet">i</button>` : `<button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button>`}</div>`; }).join('');
   const pocheActuel = orn.poche || (/^fa_/.test(orn.familier || '') ? '' : orn.familier);
   const tuilesOrn = petits(E[0]).map(o => { const ok = ornementDebloque(s, o), eq = E[0] === 'poche' ? pocheActuel === o.id : orn[E[0]] === o.id;
     return `<div class="orn-t ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : o.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(o.nom)}"><span class="orn-ic">${miniOrnement(o)}</span><b>${esc(o.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>
@@ -4459,11 +4480,31 @@ function vignetteEtape(e, w) {
  * Théo, 24/11 : « quand on clique sur la piste, j'aimerais que ça s'affiche en 3D ; on voit même pas les deux personnages ; le décor doit être lié à la saison ».
  * Plein écran : ciel et horizon de la saison (DECORS_ROUTE, la Saison 1 ajoute le sien dans saison1.js), route qui serpente vers le château,
  * une borne de pierre par palier avec sa vraie récompense, les deux héros à leur place ; on glisse le doigt pour avancer ou reculer. */
-const routeAllumee = () => { try { return localStorage.getItem('chemin3d') === '1' || window.CHEMIN_3D === true; } catch (e) { return window.CHEMIN_3D === true; } };
+// deux vues du chemin (Théo, 25/11 : « garde une vision 2D et une vision 3D ») : la piste 2D reste à l'écran, le bouton « Vue 3D » ouvre la route
+const routeAllumee = () => { try { return localStorage.getItem('chemin3d') !== '0' && window.CHEMIN_3D !== false; } catch (e) { return window.CHEMIN_3D !== false; } };
+/* Décor du Rodage (refait le 25/11, Théo : « il faut du décor ») : aube sur la vallée, nuages, trois chaînes de montagnes enneigées, collines,
+ * forêt variée (sapins, chênes, bouleaux), buissons, rochers, fleurs, lanternes et panneaux le long de la route pavée, village et château au bout */
+const decoRodage = k => {
+  const h = hashPl(k + 7), v = Math.floor(h * 10);
+  const sapin = (c1, c2, t) => `<rect x="-1.8" y="-2" width="3.6" height="7" fill="#4a3018"/>${[0, 1, 2].map(i => `<path d="M0 ${-38 * t + i * 11 * t} L${-(10 + i * 3) * t} ${(-22 + i * 11) * t} L${(10 + i * 3) * t} ${(-22 + i * 11) * t} Z" fill="${i % 2 ? c2 : c1}"/>`).join('')}<path d="M0 ${-38 * t} L${-4 * t} ${-30 * t} L0 ${-31 * t}Z" fill="#fff" opacity=".18"/>`;
+  const chene = c => `<path d="M-2 4 L-1.6 -14 L1.6 -14 L2 4Z" fill="#5a3a1e"/><circle cx="-7" cy="-20" r="9" fill="${c}"/><circle cx="7" cy="-21" r="9" fill="${c}"/><circle cx="0" cy="-29" r="11" fill="${c}"/><circle cx="-4" cy="-31" r="5" fill="#fff" opacity=".1"/><circle cx="8" cy="-14" r="5" fill="#000" opacity=".12"/>`;
+  const bouleau = `<path d="M-1.4 4 V-26 H1.4 V4Z" fill="#eee8dc"/><path d="M-1.4 -6 h1.6 M0 -14 h1.4 M-1.4 -20 h1.2" stroke="#3a3a3a" stroke-width=".9"/><ellipse cx="0" cy="-30" rx="8" ry="11" fill="#7aa83a"/><ellipse cx="-3" cy="-33" rx="3" ry="4" fill="#fff" opacity=".12"/>`;
+  const buisson = `<ellipse cx="-5" cy="0" rx="7" ry="5" fill="#2e6a32"/><ellipse cx="5" cy="-1" rx="7" ry="6" fill="#3a7a3a"/><ellipse cx="0" cy="-4" rx="6" ry="5" fill="#4a8a42"/>${h > .5 ? '<circle cx="-3" cy="-3" r="1.2" fill="#e8384a"/><circle cx="4" cy="-5" r="1.2" fill="#e8384a"/>' : ''}`;
+  const rocher = `<path d="M-10 4 L-8 -4 L-2 -8 L6 -6 L10 0 L9 4Z" fill="#7a7488"/><path d="M-8 -4 L-2 -8 L1 -3 L-6 0Z" fill="#9a94a8"/><path d="M-10 4 Q0 6 9 4" stroke="#3a3448" stroke-width="1" fill="none"/>`;
+  const fleurs = `${[[-6, 0, '#f2c94c'], [0, -2, '#e86a9a'], [5, 1, '#fff'], [-2, 3, '#9a7ae8']].map(([x, y, c]) => `<path d="M${x} ${y + 4} V${y}" stroke="#3a7a3a" stroke-width=".8"/><circle cx="${x}" cy="${y}" r="1.8" fill="${c}"/>`).join('')}`;
+  const lanterne = `<path d="M0 4 V-30" stroke="#3a2a1a" stroke-width="2"/><path d="M0 -30 h6 v3" stroke="#3a2a1a" stroke-width="1.4" fill="none"/><circle cx="6" cy="-22" r="7" fill="#ffd27a" opacity=".25"/><rect x="3" y="-26" width="6" height="7" rx="1.4" fill="#ffd27a" stroke="#3a2a1a" stroke-width=".8"/>`;
+  const panneau = `<path d="M0 4 V-24" stroke="#5a3a1e" stroke-width="2"/><path d="M-10 -22 H8 L12 -18 L8 -14 H-10Z" fill="#a8783e" stroke="#4a2a10" stroke-width=".8"/><path d="M-7 -18 H6" stroke="#4a2a10" stroke-width=".8"/>`;
+  // loin de la route : arbres ; près : buissons, rochers, fleurs ; le long : lanternes et panneaux (k pair/impair = côtés)
+  return [() => sapin('#1e4a2a', '#245a30', 1), () => sapin('#2a5a34', '#1a4022', 1.15), () => chene('#2e6a32'), () => chene('#3a7a36'), () => bouleau, () => sapin('#1a4022', '#22502c', .85), () => buisson, () => rocher, () => fleurs, () => (k % 7 === 3 ? panneau : lanterne)][v]();
+};
 const DECORS_ROUTE = {
-  pre: { ciel: ['#0f1a36', '#2c3a6a', '#d9825a'], sol: ['#2f5a36', '#16301c'], route: ['#c9a06a', '#8a6a3e'], bord: '#3a2a18', astre: '#ffd36a', nom: 'Le chemin du Rodage',
+  pre: { ciel: ['#1a2350', '#5a4a8a', '#f0a070'], sol: ['#4a8a46', '#1e4a24'], route: ['#d8b07a', '#9a7444'], bord: '#5a3a1e', astre: '#ffe08a', nom: 'Le chemin du Rodage',
+    nuages: '#f8d8c8', monts3: ['#6a6a9a', '#4a5282', '#2e4a5a'], neige: '#f4eefa', collines: ['#3a7a3e', '#2e6a34'], paves: '#b89060',
     monts: '#2a3858', arbre: (k) => `<path d="M0 0 l-9 0 l9 -30 l9 30 z" fill="${k % 2 ? '#1e4a2a' : '#245a30'}"/><path d="M0 -30 l-6 14 h12 z" fill="#2e6a3a"/><rect x="-1.6" y="0" width="3.2" height="5" fill="#4a3018"/>`,
-    horizon: `<path d="M-26 0 V-30 h7 v5 h4 v-5 h7 V-44 l6 -9 l6 9 V-30 h7 v5 h4 v-5 h7 V0Z" fill="#141c34"/><rect x="-3" y="-36" width="6" height="7" rx="3" fill="#ffd36a"/>` }
+    deco: decoRodage,
+    horizon: `${[[-46, 0, 1], [-34, -2, .9], [30, 0, 1], [42, -1, .85]].map(([x, y, k]) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-6 0 V-8 L0 -14 L6 -8 V0Z" fill="#e8d8c0"/><path d="M-8 -7 L0 -15 L8 -7" fill="#a83a2a"/><rect x="-2" y="-5" width="3" height="4" fill="#ffd27a"/></g>`).join('')}
+      <path d="M-26 0 V-30 h7 v5 h4 v-5 h7 V-44 l6 -9 l6 9 V-30 h7 v5 h4 v-5 h7 V0Z" fill="#3a3a5a"/><path d="M-26 0 V-30 h7 v5 h4 v-5 h7 V-44 l6 -9 l6 9 V-30 h7 v5 h4 v-5 h7 V0Z" fill="#000" opacity=".15"/>
+      <path d="M0 -53 V-64" stroke="#2a2a3a" stroke-width="1.2"/><path d="M0 -64 L9 -61 L0 -58Z" fill="#e5383b"/><rect x="-3" y="-36" width="6" height="7" rx="3" fill="#ffd36a"/><rect x="-18" y="-22" width="3" height="4" fill="#ffd36a"/><rect x="15" y="-22" width="3" height="4" fill="#ffd36a"/>` }
 };
 let routeCam = 0, routeEl = null;
 function ouvrirRoute() {
@@ -4478,7 +4519,7 @@ function ouvrirRoute() {
   const prochE = E.find(e => !e.fait);
   ov.innerHTML = `<svg class="rv-fond" aria-hidden="true"></svg><div class="rv-objets"></div>
     <div class="rv-tete"><b>${esc(D.nom || 'Le chemin de la saison')}</b><span>palier ${S.palier} / ${N}${prochE ? ` · prochaine borne : ${esc(prochE.nom)}, encore ${xpFr(prochE.reste)} XP` : ' · chemin terminé'}</span></div>
-    <button class="rv-x" data-route-fermer="1" aria-label="Fermer">✕</button><p class="rv-aide">glisse le doigt pour avancer sur la route</p>`;
+    <button class="rv-x" data-route-fermer="1" aria-label="Revenir à la vue 2D">✕</button><button class="rv-2d" data-route-fermer="1">Vue 2D</button><p class="rv-aide">glisse le doigt pour avancer sur la route</p>`;
   document.body.appendChild(ov);
   const objets = ov.querySelector('.rv-objets');
   // bornes (une par palier) et héros : éléments posés une fois, déplacés à chaque mouvement
@@ -4486,8 +4527,11 @@ function ouvrirRoute() {
     d.innerHTML = `<span class="rv-recomp ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 34)}</span><i class="rv-pierre"><b>${e.n}</b></i>`; objets.appendChild(d); return { el: d, z: e.n, cote: 0 }; });
   [moi, lui].filter(Boolean).forEach((h, k) => { const d = document.createElement('div'); d.className = 'rv-heros';
     d.innerHTML = `${h.svg}<span style="background:${h.coul}">${esc(h.nom)}</span>`; objets.appendChild(d); items.push({ el: d, z: h.z, cote: k ? .34 : -.34, heros: true }); });
-  const deco = Array.from({ length: (N + 3) * 2 }, (_, k) => { const d = document.createElement('div'); d.className = 'rv-deco';
-    d.innerHTML = `<svg viewBox="-12 -34 24 40" width="48" height="80" aria-hidden="true">${D.arbre(k)}</svg>`; objets.appendChild(d); return { el: d, z: k / 2 - .6, cote: k % 2 ? 1.25 + (k % 3) * .18 : -1.25 - (k % 5) * .1, deco: true }; });
+  const nDeco = D.deco ? (N + 3) * 5 : (N + 3) * 2;
+  const deco = Array.from({ length: nDeco }, (_, k) => { const d = document.createElement('div'); d.className = 'rv-deco';
+    if (!D.deco) { d.innerHTML = `<svg viewBox="-12 -34 24 40" width="48" height="80" aria-hidden="true">${D.arbre(k)}</svg>`; objets.appendChild(d); return { el: d, z: k / 2 - .6, cote: k % 2 ? 1.25 + (k % 3) * .18 : -1.25 - (k % 5) * .1, deco: true }; }
+    const v = Math.floor(hashPl(k + 7) * 10), pres = v >= 6, cote = (k % 2 ? 1 : -1) * (v === 9 ? .74 : pres ? .9 + hashPl(k + 3) * .4 : 1.3 + hashPl(k + 11) * 1.1);
+    d.innerHTML = `<svg viewBox="-24 -48 48 54" width="96" height="108" aria-hidden="true">${D.deco(k)}</svg>`; objets.appendChild(d); return { el: d, z: k / 5 - .6 + hashPl(k + 19) * .15, cote, deco: true }; });
   const dessiner = () => {
     const W = ov.clientWidth, H = ov.clientHeight, hz = H * .4, larg = W * .62;
     const proj = (z, cote) => { const p = z - routeCam, f = 1 / (1 + Math.max(-.6, p) * .62), x = W / 2 + Math.sin(z * .8) * W * .2 * f + cote * larg * .5 * f; return { x, y: hz + (H * .9 - hz) * f, f, p }; };
@@ -4500,11 +4544,21 @@ function ouvrirRoute() {
         <linearGradient id="rvS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.sol[0]}"/><stop offset="1" stop-color="${D.sol[1]}"/></linearGradient>
         <linearGradient id="rvR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.route[1]}"/><stop offset="1" stop-color="${D.route[0]}"/></linearGradient>
         <radialGradient id="rvA"><stop offset="0" stop-color="${D.astre}" stop-opacity=".7"/><stop offset="1" stop-color="${D.astre}" stop-opacity="0"/></radialGradient></defs>
-      <rect width="${W}" height="${hz + 2}" fill="url(#rvC)"/>${Array.from({ length: 40 }, (_, k) => `<circle cx="${(hashPl(k + 5) * W).toFixed(0)}" cy="${(hashPl(k + 61) * hz * .75).toFixed(0)}" r="${(.6 + hashPl(k + 17) * 1.2).toFixed(1)}" fill="#fff" opacity="${(.35 + hashPl(k + 29) * .6).toFixed(2)}"/>`).join('')}<circle cx="${W * .72}" cy="${hz - 26}" r="70" fill="url(#rvA)"/><circle cx="${W * .72}" cy="${hz - 26}" r="20" fill="${D.astre}"/>
-      <path d="M0 ${hz - 30} L${W * .1} ${hz - 92} L${W * .22} ${hz - 54} L${W * .36} ${hz - 120} L${W * .5} ${hz - 70} L${W * .66} ${hz - 104} L${W * .84} ${hz - 58} L${W} ${hz - 96} V${hz + 2} H0Z" fill="${D.monts}" opacity=".55"/><path d="M0 ${hz} L${W * .12} ${hz - 38} L${W * .26} ${hz - 14} L${W * .42} ${hz - 52} L${W * .58} ${hz - 20} L${W * .8} ${hz - 46} L${W} ${hz - 12} V${hz + 2} H0Z" fill="${D.monts}"/>
+      <rect width="${W}" height="${hz + 2}" fill="url(#rvC)"/>${Array.from({ length: D.nuages ? 18 : 40 }, (_, k) => `<circle cx="${(hashPl(k + 5) * W).toFixed(0)}" cy="${(hashPl(k + 61) * hz * .75).toFixed(0)}" r="${(.6 + hashPl(k + 17) * 1.2).toFixed(1)}" fill="#fff" opacity="${(.35 + hashPl(k + 29) * .6).toFixed(2)}"/>`).join('')}<circle cx="${W * .72}" cy="${hz - (D.nuages ? 110 : 26)}" r="70" fill="url(#rvA)"/>${D.nuages ? Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI; return `<path d="M${(W * .72 + Math.cos(a * 2) * 30).toFixed(0)} ${(hz - 110 - Math.sin(a * 2) * 30).toFixed(0)} L${(W * .72 + Math.cos(a * 2) * 52).toFixed(0)} ${(hz - 110 - Math.sin(a * 2) * 52).toFixed(0)}" stroke="${D.astre}" stroke-width="3" stroke-linecap="round" opacity=".35"/>`; }).join('') : ''}<circle cx="${W * .72}" cy="${hz - (D.nuages ? 110 : 26)}" r="20" fill="${D.astre}"/>
+      ${D.nuages ? [[.18, .32, 1], [.5, .2, .8], [.82, .4, 1.1], [.36, .5, .7]].map(([x, y, k]) => `<g transform="translate(${(W * x).toFixed(0)} ${(hz * y).toFixed(0)}) scale(${k})" fill="${D.nuages}" opacity=".55"><ellipse cx="0" cy="0" rx="34" ry="9"/><ellipse cx="-12" cy="-7" rx="14" ry="9"/><ellipse cx="10" cy="-9" rx="17" ry="11"/></g>`).join('') : ''}
+      ${D.monts3 ? [[0, 128, .7], [1, 84, .85], [2, 40, 1]].map(([i, hm, o]) => { const pts = Array.from({ length: 9 }, (_, k) => [W * k / 8, hz - (k % 2 ? hm * (.6 + hashPl(k + i * 9) * .4) : hm * (.2 + hashPl(k + i * 5) * .3))]);
+          return `<path d="M0 ${hz + 2} ${pts.map(([x, y]) => `L${x.toFixed(0)} ${y.toFixed(0)}`).join(' ')} L${W} ${hz + 2}Z" fill="${D.monts3[i]}" opacity="${o}"/>` + (i < 2 ? pts.filter((_, k) => k % 2).map(([x, y]) => `<path d="M${(x - 14).toFixed(0)} ${(y + 12).toFixed(0)} L${x.toFixed(0)} ${y.toFixed(0)} L${(x + 14).toFixed(0)} ${(y + 12).toFixed(0)} L${(x + 6).toFixed(0)} ${(y + 9).toFixed(0)} L${x.toFixed(0)} ${(y + 13).toFixed(0)} L${(x - 6).toFixed(0)} ${(y + 9).toFixed(0)}Z" fill="${D.neige}" opacity="${o}"/>`).join('') : ''); }).join('')
+        : `<path d="M0 ${hz - 30} L${W * .1} ${hz - 92} L${W * .22} ${hz - 54} L${W * .36} ${hz - 120} L${W * .5} ${hz - 70} L${W * .66} ${hz - 104} L${W * .84} ${hz - 58} L${W} ${hz - 96} V${hz + 2} H0Z" fill="${D.monts}" opacity=".55"/><path d="M0 ${hz} L${W * .12} ${hz - 38} L${W * .26} ${hz - 14} L${W * .42} ${hz - 52} L${W * .58} ${hz - 20} L${W * .8} ${hz - 46} L${W} ${hz - 12} V${hz + 2} H0Z" fill="${D.monts}"/>`}
       <rect y="${hz}" width="${W}" height="${H - hz}" fill="url(#rvS)"/>
+      ${D.collines ? `<path d="M0 ${hz + 4} Q${W * .2} ${hz - 14} ${W * .42} ${hz + 6} T${W} ${hz + 2} V${hz + 40} H0Z" fill="${D.collines[0]}"/><path d="M0 ${hz + 18} Q${W * .3} ${hz + 4} ${W * .6} ${hz + 20} T${W} ${hz + 14} V${hz + 60} H0Z" fill="${D.collines[1]}" opacity=".8"/><rect y="${hz - 6}" width="${W}" height="30" fill="${D.ciel[2]}" opacity=".18"/>
+        ${Array.from({ length: 14 }, (_, k) => { const y = hz + 40 + hashPl(k + 41) * (H - hz - 60), f = (y - hz) / (H - hz), x = hashPl(k + 43) * W; return `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(30 + 90 * f).toFixed(0)}" ry="${(4 + 14 * f).toFixed(0)}" fill="${k % 3 ? '#2e6a30' : '#6a9a3e'}" opacity=".35"/>`; }).join('')}
+        ${Array.from({ length: 60 }, (_, k) => { const y = hz + 30 + hashPl(k + 71) * (H - hz - 30), f = (y - hz) / (H - hz), x = hashPl(k + 73) * W, h = 3 + 7 * f; return `<path d="M${x.toFixed(0)} ${y.toFixed(0)} l${(-1.4 * f).toFixed(1)} ${(-h).toFixed(1)} M${x.toFixed(0)} ${y.toFixed(0)} l${(1.6 * f).toFixed(1)} ${(-h * .8).toFixed(1)}" stroke="#1e4a24" stroke-width="${(.8 + f).toFixed(1)}" opacity=".5"/>`; }).join('')}` : ''}
       ${fin.p > 0 ? `<g transform="translate(${fin.x.toFixed(1)} ${fin.y.toFixed(1)}) scale(${(fin.f * 2.2).toFixed(2)})">${D.horizon}</g>` : ''}
+      ${D.paves ? (() => { const ga = [], da = []; for (let z = routeCam - .6; z <= Math.min(N + .8, routeCam + 18); z += .2) { const a = proj(z, -.62), b = proj(z, .62); ga.push(`${a.x.toFixed(1)},${a.y.toFixed(1)}`); da.unshift(`${b.x.toFixed(1)},${b.y.toFixed(1)}`); } return `<polygon points="${ga.concat(da).join(' ')}" fill="#6a5a3a" opacity=".55"/>`; })() : ''}
       <polygon points="${g.concat(dr).join(' ')}" fill="url(#rvR)" stroke="${D.bord}" stroke-width="2"/>
+      ${D.paves ? (() => { let o = ''; for (let z = Math.ceil(routeCam * 4) / 4 - .5; z <= routeCam + 10; z += .25) for (const c of [-.5, .5]) { const P = proj(z, c); if (P.p < -.5) continue; o += `<ellipse cx="${P.x.toFixed(1)}" cy="${P.y.toFixed(1)}" rx="${(7 * P.f).toFixed(1)}" ry="${(3.4 * P.f).toFixed(1)}" fill="${D.paves}" stroke="#4a3418" stroke-width="${(.8 * P.f).toFixed(2)}"/>`; }
+          const orn = c => { const pts = []; for (let z = routeCam - .5; z <= routeCam + 12; z += .3) { const P = proj(z, c); pts.push(`${P.x.toFixed(1)},${P.y.toFixed(1)}`); } return `<polyline points="${pts.join(' ')}" stroke="#7a5a32" stroke-width="2" fill="none" opacity=".35"/>`; };
+          return orn(-.22) + orn(.22) + o; })() : ''}
       <path d="${mil.join(' ')}" stroke="#fff6d8" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>`;
     // objets : plus loin = plus petit, plus haut, derrière ; cachés hors de la scène
     items.concat(deco).forEach(it => { const P = proj(it.z, it.cote), vis = P.p > -.35 && P.p < 16;
@@ -4621,7 +4675,7 @@ function parcoursHTML(s) {
       ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>${esc(nomCompagnon(comp))}</title></circle>` : ''}
     </svg>
     <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>${routeAllumee() && xa != null ? `<span class="ph-lui" style="left:${(xa / 360 * 100).toFixed(1)}%">${orner(classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }).dessin(palierDe(Number(comp.niveau) || 1, classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } })), 'phl', lookDe(comp.look)), ornCompagnon(comp), 'phl')}</span>` : ''}
-    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button>${routeAllumee() ? '<button class="ph-regles" data-route="1" aria-label="Voir la route"><span aria-hidden="true">🛤️</span> La route</button>' : ''}<em>${S.palier}<small> / ${N}</small></em></span>`;
+    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button>${routeAllumee() ? '<button class="ph-regles" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">🛤️</span> Vue 3D</button>' : ''}<em>${S.palier}<small> / ${N}</small></em></span>`;
   const suite = E.filter(e => !e.fait).slice(0, 6), fin = E[N - 1];
   const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${parcoursEtape === e.n ? 'choisi' : ''}" data-etape="${e.n}" aria-expanded="${parcoursEtape === e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
   const choisi = parcoursEtape ? E[parcoursEtape - 1] : null, dansGrille = choisi && (suite.includes(choisi) || choisi === fin);
@@ -4643,7 +4697,7 @@ function parcoursHTML(s) {
   return `<section class="parcours ph ${parcoursOuvert ? 'ouvert' : ''}">
     <div class="ph-pano">${pano}</div>
     <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · ${xpFr(S.cout - S.dansPalier)} XP</span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
-    <div class="ph-actions">${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} ›</button></div>
+    <div class="ph-actions">${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} ›</button></div>
     ${corps}
   </section>`;
 }
@@ -6198,12 +6252,13 @@ function ouvrirEncouragement() {
 let vitrineCible = null; // null = moi ; sinon la fiche du compagnon (lecture seule)
 function ouvrirVitrine(comp) {
   vitrineCible = comp || null;
+  if (!comp) { nouveauxVitrine = null; marquerCosmVus(); }
   let ov = document.getElementById('vitrine');
   if (!ov) { ov = document.createElement('div'); ov.id = 'vitrine'; document.body.appendChild(ov); }
   dessinerVitrine();
   ov.classList.add('on'); document.body.classList.add('bloque');
 }
-function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; marchandOuvert = false; document.body.classList.remove('bloque'); if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; } }
+function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; marchandOuvert = false; if (nouveauxVitrine && nouveauxVitrine.length) { nouveauxVitrine = null; setTimeout(() => { try { render(); } catch (e) {} }, 0); } else nouveauxVitrine = null; /* la pastille disparaît une fois les objets vus */ document.body.classList.remove('bloque'); if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; } }
 /* vitrine : la prochaine récompense du chemin en une ligne (« Coffre rare dans 320 XP › ») */
 function prochaineVitrine() {
   const S = state.armurerie.saison; if (S.palier >= S.paliers) return 'Chemin terminé ›';
@@ -7350,7 +7405,7 @@ function render() {
       ${distant && s.carnet ? `<button data-tab="carnet" class="carn ${onglet === 'carnet' ? 'on' : ''}"><span>📖</span>Carnet</button>` : ''}
       ${aBoss ? `<button data-tab="combat" class="${onglet === 'combat' ? 'on' : ''}"><span>🐉</span>Combat${bossEnCours ? `<i class="jr ${joursRestants(bs.fin) ? '' : 'urg'}" title="${joursRestants(bs.fin) ? 'Jours restants pour abattre le boss de la semaine' : 'Dernier jour pour abattre le boss'}">${joursRestants(bs.fin) ? 'J-' + joursRestants(bs.fin) : 'Auj.'}</i>` : ''}</button>` : ''}
       ${coop ? `<button data-tab="compagnie" class="${onglet === 'compagnie' ? 'on' : ''}"><span>🤝</span>Compagnie</button>` : ''}
-      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros${s.armurerie && (s.armurerie.coffres || []).length ? `<i class="pvb" aria-label="Coffres à ouvrir">${s.armurerie.coffres.length}</i>` : ''}</button>
+      <button data-tab="heros" class="${onglet === 'heros' ? 'on' : ''}"><span>🛡️</span>Héros${s.armurerie && (s.armurerie.coffres || []).length ? `<i class="pvb" aria-label="Coffres à ouvrir">${s.armurerie.coffres.length}</i>` : nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button>
     </nav>`);
   if (onglet === 'profil' && change) dessinerGrille();
   afficherCarnet(onglet === 'carnet');
