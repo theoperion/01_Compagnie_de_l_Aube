@@ -47,6 +47,21 @@ window.demo = (() => {
   }
   let vacDemo = false, xp = 3400, rates = 0, pvDemo = 35, jokers = 1, log = [], nouveaux = [];
   const lundi = ilYa((now.getDay() + 6) % 7);
+  // Camp et Saga (duo seulement, même forme que le moteur : camp_ et mjPublic_) : le script de publication contrôle ainsi
+  // les rappels en haut de Quêtes (pacte à proposer, chapitre à voter) et l'onglet Compagnie (24/11)
+  let pacteDemo = null, voteDemo = null;
+  const duo = () => location.hash === '#duo';
+  const moiDemo = () => herosActif === 'Kael' ? 'Kael' : 'Theron Corvane', autreDemo = () => moiDemo() === 'Kael' ? 'Theron Corvane' : 'Kael';
+  const MODELES_PACTE = [{ id: 'zero_rate', texte: 'Zéro raté dans toute la Compagnie cette semaine' }, { id: 'chaque_jour', texte: 'Chacun valide au moins une quête chaque jour (vacances exceptées)' },
+    { id: 'annexes', texte: 'Au moins 3 quêtes annexes chacun' }, { id: 'boss', texte: 'Abattre le boss de la semaine avant dimanche soir' }];
+  const campDemo = () => !duo() ? null : { aujourdhui: [{ nom: moiDemo(), faits: 1, moi: true }, { nom: autreDemo(), faits: 0, moi: false }], ensemble: 1,
+    fil: [{ date: lundi, texte: '🔥 ' + autreDemo().split(' ')[0] + ' : série 7 jours sur « Lecture »' }], pacte: pacteDemo, pactePrecedent: null, modeles: MODELES_PACTE, lundi, encourage: false,
+    messages: ['Courage, on lâche rien ! ⚔️', 'Bien joué aujourd\'hui ! 👏', 'Le boss tremble, continue ! 🐉', 'Fier de toi, compagnon. 🌅'],
+    recap: { lundi: ilYa((now.getDay() + 6) % 7 + 7), heros: [{ nom: moiDemo(), xp: 1240, faits: 12 }, { nom: autreDemo(), xp: 860, faits: 9 }], chronique: '', pacte: null } };
+  const mjDemo = () => !duo() ? { lundi, pret: false } : { lundi, pret: true, numero: 4, titre: 'Le gué des brumes',
+    texte: 'La Compagnie atteint un gué noyé de brume. Une voix propose un passage sûr, contre une promesse. Il faut choisir avant la nuit.',
+    choix: [{ texte: 'Accepter la promesse et traverser', effet: 'tout', effetTexte: 'XP ×1,1 sur toutes les quêtes' }, { texte: 'Chercher un autre passage', effet: 'joker', effetTexte: '+1 joker cette semaine' }],
+    monVote: voteDemo == null ? undefined : voteDemo, votes: voteDemo == null ? {} : { [moiDemo()]: voteDemo }, decision: null, parMJ: false, destin: null, rebond: null, rebondPossible: false };
   function etat() {
     const niv = Math.max(1, Math.floor(Math.pow(xp / a, 1 / k)));
     const bas = niv === 1 ? 0 : a * Math.pow(niv, k), haut = a * Math.pow(niv + 1, k);
@@ -81,6 +96,7 @@ window.demo = (() => {
       compagnons: location.hash !== '#duo' ? [] : [herosActif === 'Kael'
         ? { nom: 'Theron Corvane', classe: 'Magicien', look: '', niveau: 14, titre: 'le Vagabond', pv: 85, faitsAujourdhui: 2, quetesDuJour: 4, xpSemaine: 1240 }
         : { nom: 'Kael', classe: 'Voleur assassin', look: '#c99a74,#2b1d14,#3d6e9e', niveau: 9, titre: "l'Aventurier", pv: 70, faitsAujourdhui: 0, quetesDuJour: 3, xpSemaine: 860 }],
+      camp: campDemo(), mj: mjDemo(),
       jokersRestants: jokers, jokersParSemaine: 1, nouveauxBonus: nouveaux.splice(0), seuilEpuise: 40, malus: 0.85, arc: null, // ×0,85 : même valeur que le moteur (migration du 19/11/2026)
       d20: d20Demo, capacites: capaDemo(),
       bilan: { semaine: { lundi, dimanche: ilYa((now.getDay() + 6) % 7 - 6), xp: Math.round(xp - 1220), faits: 7 + log.filter(l => l.statut === 'Fait').length,
@@ -91,6 +107,11 @@ window.demo = (() => {
   function gain(q) { const n = q.jour.fait; return q.xp * (n === 1 ? 1 : n === 2 ? 0.5 : 0.25); }
   return {
     getState: etat,
+    proposerPacte(id) { const m = MODELES_PACTE.find(x => x.id === id); if (m) pacteDemo = { id: m.id, texte: m.texte, par: moiDemo(), accepte: false }; return etat(); },
+    accepterPacte() { if (pacteDemo) pacteDemo.accepte = true; return etat(); },
+    voterMJ(i) { voteDemo = Number(i); return etat(); },
+    encourager() { return etat(); },
+    maitreDuJeu() { return mjDemo(); },
     getHeros() {
       return location.hash === '#duo' ? [{ nom: 'Theron Corvane', classe: 'Magicien', titre: 'le Vagabond', niveau: 12, look: '' },
         { nom: 'Kael', classe: 'Voleur assassin', titre: "l'Aventurier", niveau: 9, look: '#c99a74,#2b1d14,#3d6e9e' }]
