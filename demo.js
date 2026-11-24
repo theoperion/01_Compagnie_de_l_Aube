@@ -108,7 +108,7 @@ window.demo = (() => {
   return {
     getState: etat,
     proposerPacte(id) { const m = MODELES_PACTE.find(x => x.id === id); if (m) pacteDemo = { id: m.id, texte: m.texte, par: moiDemo(), accepte: false }; return etat(); },
-    accepterPacte() { if (pacteDemo) pacteDemo.accepte = true; return etat(); },
+    accepterPacte() { if (pacteDemo) Object.assign(pacteDemo, { accepte: true, scelleLe: today, ok: true, detail: 'en bonne voie' }); return etat(); }, // comme evaluerPacte_ du moteur
     voterMJ(i) { voteDemo = Number(i); return etat(); },
     encourager() { return etat(); },
     maitreDuJeu() { return mjDemo(); },
