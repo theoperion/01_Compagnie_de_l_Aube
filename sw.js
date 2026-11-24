@@ -10,7 +10,9 @@ const CACHE = 'compagnie-' + (C.VERSION_APP || 'x') + '-' + (C.VERSION_CARNET ||
 const COQUILLE = ['./', 'index.html', 'carnet.html', 'boss-dessins.js', 'config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => Promise.all(COQUILLE.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
+  // index.html et boss-dessins.js sont indispensables ensemble (11.6) : si l'un manque, l'installation échoue et l'ancienne copie reste en place
+  const ESSENTIELS = ['index.html', 'boss-dessins.js'];
+  e.waitUntil(caches.open(CACHE).then(c => Promise.all(COQUILLE.map(u => { const p = c.add(new Request(u, { cache: 'reload' })); return ESSENTIELS.includes(u) ? p : p.catch(() => {}); }))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
