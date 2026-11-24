@@ -963,7 +963,7 @@
   .cof-duo { display: flex; align-items: flex-end; justify-content: center; gap: 14px; position: relative; z-index: 1; }
   .cof-porte { display: grid; justify-items: center; } .cof-porte svg { width: 76px; height: auto; display: block; } .cof-porte small { color: #f3e6d0; opacity: .7; font-size: 11px; }
   .cof-rar.r-commun { color: #a8d88f; } .cof-rar.r-rare { color: #8ccaff; } .cof-rar.r-epique { color: #d0b8ff; } .cof-rar.r-legendaire { color: #ffc46b; }
-  .cof-obj { font-size: 54px; position: relative; z-index: 1; } .cof-obj svg, .cof-obj .ap-rep { width: 120px !important; height: 120px !important; }
+  .cof-obj { font-size: 54px; position: relative; z-index: 1; } .cof-obj svg, .cof-obj .ap-rep { width: 120px !important; height: 120px !important; } .cof-obj .ap-sc { width: 120px; height: 120px; } .cof-aide { margin: -4px 0 10px; font-size: 13px; color: var(--muted, #a3a7b8); } /* sceau : la boîte suit le dessin, il ne déborde plus sur le titre (Théo, 25/11) */
   .cof-box.ouvert h3 { margin: 0; font-family: var(--f-titre); font-size: 22px; position: relative; z-index: 1; }
   .cof-box.ouvert > * { animation: vitIn .4s ease-out both; }
   .cof-rayons { position: absolute; top: -20px; width: 260px; height: 260px; border-radius: 50%; border: none !important; background: radial-gradient(circle, rgba(255,215,120,.45), transparent 65%); animation: pulse 2s ease-in-out infinite; }
@@ -5059,7 +5059,7 @@ function ouvrirUnCoffre() {
     const etinc0 = leve ? `<span class="cof-etinc">${Array.from({ length: 7 }, (_, i) => `<i style="--a:${-150 + i * 20}deg;--d:${(i % 3) * 60}ms"></i>`).join('')}</span>` : '';
     const etinc = (leve ? '<i class="cof-faisceau fin"></i>' : '') + etinc0; // le faisceau reste sous l'objet, qui s'élève dedans
     ov.innerHTML = `<div class="cof-box ouvert ${leve ? 'leve' : ''}" style="--tr:${tR}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
-      ${x ? `<div class="cof-duo"><div class="cof-obj">${apercuCosm(x)}${etinc}</div>${herosPortant(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p><b class="cof-rar r-${x.rarete}">${RARETE_NOM[x.rarete]}</b> · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>
+      ${x ? `<div class="cof-duo"><div class="cof-obj">${apercuCosm(x)}${etinc}</div>${herosPortant(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p><b class="cof-rar r-${x.rarete}">${RARETE_NOM[x.rarete]}</b> · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>${x.slot === 'sceau' ? '<p class="cof-aide">Porté, il se pose sur chaque quête que tu valides.</p>' : ''}
         <button class="btn or plein" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">${tasEclats()}${etinc}</div><h3><span class="cof-n">${leve ? 0 : o.eclats || 0}</span> éclats</h3><p>${texteEclatsCoffre(o)} : voici des éclats pour le marchand.</p>`}
       ${(state.armurerie.coffres || []).length ? `<div class="cof-liens">${x ? `<button class="cof-lien" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>` : `<button class="btn or plein" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>`}<button class="cof-lien" data-cof-plus-tard="1">Plus tard</button></div>` : `<button class="${x ? 'cof-lien' : 'btn or plein'}" data-cof-fermer="1">Fermer</button>`}</div>`;
     vib([30, 60, 30]);
@@ -5499,7 +5499,7 @@ const SCEAUX_COLLECTION = {
     <circle cx="18" cy="18" r="9.6" fill="url(#${p}g)" stroke="#4f7a90" stroke-width="1"/>
     <g transform="translate(18 18) scale(.7) translate(-18 -18)"><g transform="translate(.5 .6)" opacity=".45">${emblemeSceau(v, '#2a4a5c')}</g>${emblemeSceau(v, '#ffffff')}</g>
     <path class="sc-vif" d="M11.5 13 A8 8 0 0 1 16 9.4" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".8"/></svg>`,
-  // Couronne de laurier (rare) : disque d'or, couronne de feuilles vert sombre et or, emblème or sur pourpre
+  // Laurier du vainqueur (rare) : disque d'or, couronne de feuilles vert sombre et or, emblème or sur pourpre
   sc_laurier: (v, p) => `<svg viewBox="0 0 36 36" aria-hidden="true"><defs><radialGradient id="${p}l" cx="40%" cy="32%" r="75%"><stop offset="0" stop-color="#fff0b8"/><stop offset=".5" stop-color="#e0b44a"/><stop offset="1" stop-color="#8a5f12"/></radialGradient></defs>
     <circle cx="18" cy="19.6" r="15.5" fill="#000" opacity=".3"/><circle cx="18" cy="18" r="16" fill="url(#${p}l)" stroke="#5a3c08" stroke-width="1"/>
     ${[-1, 1].map(s => Array.from({ length: 6 }, (_, i) => { const a = (s < 0 ? 200 - i * 26 : -20 + i * 26) * Math.PI / 180, x = 18 + Math.cos(a) * 12.2, y = 18 + Math.sin(a) * 12.2, r = a * 57.3 + (s < 0 ? -25 : 25) + 90;
