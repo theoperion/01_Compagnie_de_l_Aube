@@ -3487,9 +3487,11 @@ function couleurPano(id) { const m = /^(?:cape|tete|aura)_(.+)$/.exec(id || '');
 const stadeFamilier = j => (j == null ? 1 : j < 7 ? 0 : j < 30 ? 1 : j < 90 ? 2 : 3);
 const serieDe = s => (s && s.armurerie ? s.armurerie.recordSerie : s && s.recordSerie);
 const SEUILS_DRAGON = [10, 21, 45, 90], FORMES_DRAGON = ['Œuf', 'Dragonnet', 'Jeune dragon', 'Dragon de l\'Aube', 'Dragon Ancien'];
+// familiers qui évoluent avec la meilleure série, en 5 formes (Théo, 24/11 : « pour l'ensemble des familiers ») ; les saisons ajoutent les leurs (saison1.js)
+const FORMES_SERIE = { fa_dragon: FORMES_DRAGON };
 /** Stade d'un familier de l'Aube : le Dragon évolue avec la meilleure série (5 formes), les autres avec les jours actifs (4 stades). */
 function stadeFamilierDe(id, jours, serie) {
-  if (id !== 'fa_dragon') return stadeFamilier(jours);
+  if (!FORMES_SERIE[id]) return stadeFamilier(jours);
   if (serie == null) return jours == null ? 1 : Math.min(3, stadeFamilier(jours)); // fiche sans série (ancienne version du moteur)
   return SEUILS_DRAGON.filter(x => serie >= x).length;
 }
@@ -3497,9 +3499,9 @@ function stadeFamilierDe(id, jours, serie) {
 const STADES_FAM = ['Œuf', 'Petit', 'Jeune', 'Adulte'], SEUILS_FAM = [7, 30, 90]; // mêmes seuils que stadeFamilier
 function infoFamilier(s, orn) {
   const id = ((orn || ornementsDe(s)) || {}).familier; if (!/^fa_/.test(id || '') || joursDe(s) == null) return null;
-  const dragon = id === 'fa_dragon' && serieDe(s) != null, SE = dragon ? SEUILS_DRAGON : SEUILS_FAM, j = Number(dragon ? serieDe(s) : joursDe(s)) || 0;
+  const dragon = !!FORMES_SERIE[id] && serieDe(s) != null, SE = dragon ? SEUILS_DRAGON : SEUILS_FAM, j = Number(dragon ? serieDe(s) : joursDe(s)) || 0;
   const st = dragon ? stadeFamilierDe(id, joursDe(s), j) : stadeFamilier(j), x = cosmItem(id, s) || cosmItem(id, state) /* fiche du compagnon : pas de catalogue */, bas = st ? SE[st - 1] : 0, haut = SE[st];
-  return { id, nom: x ? x.nom : 'Familier', moi: s === state, st, dragon, stade: dragon ? FORMES_DRAGON[st] : STADES_FAM[st], j, reste: haut ? haut - j : 0, pct: haut ? Math.round(100 * (j - bas) / (haut - bas)) : 100 };
+  return { id, nom: x ? x.nom : 'Familier', moi: s === state, st, dragon, stade: dragon ? FORMES_SERIE[id][st] : STADES_FAM[st], j, reste: haut ? haut - j : 0, pct: haut ? Math.round(100 * (j - bas) / (haut - bas)) : 100 };
 }
 function ligneFamilier(f) {
   if (!f) return '';
@@ -3513,7 +3515,7 @@ function famGrandiAFaire() {
   if (f.st <= Number(av)) return;
   if (document.body.classList.contains('bloque') || document.querySelector('[id$="Ov"].on, .boss-win')) return; // un autre écran : au prochain passage
   try { localStorage.setItem(k, String(f.st)); } catch (e) {}
-  const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : voici ton Dragonnet\u00a0!' : 'Ton dragon évolue : ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
+  const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : voici ' + f.stade + '\u00a0!' : 'Ton familier évolue : ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
   if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) { toast((f.st === 1 ? '🐣 ' : '✨ ') + txt); return; }
   const ov = document.createElement('div'); ov.id = 'famOv'; ov.className = 'fam-ov on'; document.body.classList.add('bloque');
   ov.innerHTML = `<div class="fam-box"><div class="fam-sc"><svg class="fam-a" viewBox="0 0 100 100" aria-hidden="true">${familierAube(f.id, Math.min(Number(av) || 0, 4))}</svg><svg class="fam-b" viewBox="0 0 100 100" aria-hidden="true">${familierAube(f.id, f.st)}</svg></div><p>${esc(txt)}</p><small>toucher pour fermer</small></div>`;
