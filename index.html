@@ -980,7 +980,7 @@
   @keyframes fadeIn { from { opacity: 0; } }
   .bw-xp { color: var(--gold); font-weight: 700; } .bw-tr { font-size: 13px; color: var(--muted); }
   .boss-win .btn { margin-top: 16px; }
-  /* Cinématique d'exécution du boss (app 11.1, Théo 21/11 : « plus épique, un peu de sang stylisé » ; le sang a été remplacé le 24/11 par des éclats selon la famille : « pas dans la DA, le boss du mois plus long et plus satisfaisant »).
+  /* Cinématique d'exécution du boss (app 11.1, Théo 21/11 : « plus épique, le boss du mois plus long et plus satisfaisant ». Le 24/11, Théo : « le sang, pas dans la DA » → éclats selon la famille du boss).
      Un seul minutage par variables : semaine ≈ 6,6 s, mois ≈ 11 s (carton, rugissement, riposte, à genoux, coup de grâce, relique).
      Les mêmes scènes servent à « Revoir la victoire » (fiche du boss, salle des trophées). Mode calme / prefers-reduced-motion : écran fixe sans animation. */
   .boss-win.anim { --t1: 1.3s; --t2: 2.2s; --tc: 2.95s; --t3: 3.6s; --tm: 3.9s; --tv: 5.2s; --dm: 1.8s;
@@ -1044,6 +1044,7 @@
   @keyframes bwEnvole { 0% { opacity: 1; transform: none; } 30% { transform: rotate(-12deg) scale(.95); filter: hue-rotate(60deg); } 100% { opacity: 0; transform: translateY(-160px) rotate(220deg) scale(.2); filter: hue-rotate(80deg) blur(3px); } }
   @keyframes bwMort { 0% { opacity: 1; transform: scale(1); filter: brightness(1.6); } 15% { opacity: .3; } 22% { opacity: 1; filter: brightness(2.6) contrast(1.5); } 35% { transform: scale(1.1) rotate(3deg); filter: brightness(3) saturate(0); } 100% { opacity: 0; transform: scale(.3) translateY(-60px) rotate(-8deg); filter: brightness(4) blur(6px); } }
   @media (prefers-reduced-motion: reduce) { .bw-fx { display: none; } }
+  /* (ergonome, 24/11 : le jet du coup final part 0,35 s après l'éclair blanc pour rester visible ; feuilles qui s'envolent comme la harpie) */
   /* Éclats de victoire, selon la famille du boss (Théo, 24/11 : « pas de sang, pas dans la DA ; quelque chose de plus roleplay ») :
    * pierre et feu = braises carrées qui tournoient et retombent ; ombre = volutes de fumée violette qui montent ; eau = bulles d'écume qui montent ;
    * nature = feuilles qui tourbillonnent ; autres = étincelles dorées. Au sol : des lueurs, puis un cercle runique qui s'allume sous le boss.
@@ -1062,12 +1063,19 @@
     background: radial-gradient(ellipse at 50% 50%, transparent 50%, var(--s2, #fff3c4) 58%, var(--s1, #c98d1a) 64%, transparent 72%); box-shadow: 0 0 14px var(--lueur, rgba(255,214,120,.6));
     animation: bwFlaque 1.6s calc(var(--tm) + .25s) ease-out forwards; }
   .mois .bw-flaque { top: 232px; width: 156px; height: 22px; margin-left: -78px; }
+  /* cercle runique : traits de runes sur l'anneau, et l'éclat d'une relique au centre (ce que le boss laisse derrière lui) */
+  .bw-flaque::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: repeating-conic-gradient(var(--s2, #fff3c4) 0 5deg, transparent 5deg 24deg);
+    -webkit-mask: radial-gradient(ellipse at 50% 50%, transparent 54%, #000 57%, #000 67%, transparent 70%); mask: radial-gradient(ellipse at 50% 50%, transparent 54%, #000 57%, #000 67%, transparent 70%); opacity: .9; }
+  .bw-flaque::before { content: ''; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -6px 0 0 -4.5px; transform: rotate(45deg); border-radius: 1px;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--s2, #fff3c4) 45%, var(--s1, #c98d1a)); box-shadow: 0 0 10px var(--lueur, rgba(255,214,120,.8)); }
+  .mort-feu .bw-gerbe i { --forme: 50%; --chute: -20px; } /* feu : braises rondes qui s'élèvent un peu, comme d'un brasier */
+  .mort-feu .bw-p { border-radius: 50%; box-shadow: 0 0 8px rgba(255,170,60,.9); } /* braises rondes et lumineuses, pas des confettis (avocat, 24/11) */
   @keyframes bwFlaque { 0% { opacity: 0; transform: scaleX(.1) scaleY(.6); } 25% { opacity: .95; } 100% { opacity: .8; transform: none; } }
   .mort-pierre .bw-gerbe i, .mort-pierre .bw-tache, .mort-pierre .bw-flaque, .mort-feu .bw-gerbe i, .mort-feu .bw-tache, .mort-feu .bw-flaque {
     --s1: #c24a0e; --s2: #ffd27a; --lueur: rgba(255,150,60,.75); --forme: 2px; --chute: 40px; --tour: 200deg; }
-  .mort-ombre .bw-gerbe i, .mort-ombre .bw-tache, .mort-ombre .bw-flaque { --s1: #4a2a78; --s2: #c9a8ff; --lueur: rgba(170,130,255,.7); --forme: 50%; --chute: -70px; --tour: 0deg; --fin: 1.6; }
-  .mort-eau .bw-gerbe i, .mort-eau .bw-tache, .mort-eau .bw-flaque { --s1: #2a86b0; --s2: #e6f8ff; --lueur: rgba(140,215,255,.7); --forme: 50%; --chute: -55px; --tour: 0deg; --fin: .9; }
-  .mort-nature .bw-gerbe i, .mort-nature .bw-tache, .mort-nature .bw-flaque { --s1: #3a8a3e; --s2: #c8f29a; --lueur: rgba(160,230,120,.6); --forme: 0 70% 0 70%; --chute: 70px; --tour: 260deg; }
+  .mort-ombre .bw-gerbe i, .mort-ombre .bw-tache, .mort-ombre .bw-flaque { --s1: #7a58b0; --s2: #e0ccff; --lueur: rgba(170,130,255,.7); --forme: 50%; --chute: -40px; --tour: 0deg; --fin: 1.6; }
+  .mort-eau .bw-gerbe i, .mort-eau .bw-tache, .mort-eau .bw-flaque { --s1: #2a86b0; --s2: #e6f8ff; --lueur: rgba(140,215,255,.7); --forme: 50%; --chute: -40px; --tour: 0deg; --fin: .9; }
+  .mort-nature .bw-gerbe i, .mort-nature .bw-tache, .mort-nature .bw-flaque { --s1: #3a8a3e; --s2: #c8f29a; --lueur: rgba(160,230,120,.6); --forme: 0 70% 0 70%; --chute: -50px; --tour: 260deg; }
   /* Coups, ralenti, onde de choc */
   .bw-slash { position: absolute; left: 50%; top: 50%; width: 190px; height: 5px; margin: -2px 0 0 -95px; border-radius: 4px; opacity: 0; z-index: 3;
     background: linear-gradient(90deg, transparent, #fff 30%, #ffe08a 60%, transparent); box-shadow: 0 0 14px #ffd36b, 0 0 30px rgba(255,180,60,.6); }
@@ -5324,7 +5332,7 @@ const MORT_BOSS = { hydre: 'eau',
   dragon: 'feu', archidemon: 'feu', procrastination: 'feu', 
   basilic: 'nature', harpie: 'nature', dissipation: 'nature', tentation: 'nature' };
 const MORTS = { eau: { c: ['#3fa9c9', '#bfe8ff', '#7ad0f0'], e: ['💧', '🫧', '💦'] }, ombre: { c: ['#2a1a3a', '#6a4a8a', '#14101a'], e: ['🦇', '💨', '🦇'] },
-  pierre: { c: ['#8a8496', '#5a5468', '#b8b0c4'], e: ['🪨', '💥', '🪨'] }, feu: { c: ['#ff9a3c', '#ffd23a', '#e8452c'], e: ['🔥', '✨', '🔥'] },
+  pierre: { c: ['#8a8496', '#5a5468', '#b8b0c4'], e: ['🪨', '💥', '🪨'] }, feu: { c: ['#ff9a3c', '#ffd23a', '#ffb347'], e: ['🔥', '✨', '🔥'] },
   nature: { c: ['#5aa85a', '#9ae08a', '#d4ad3c'], e: ['🍃', '🍂', '🌿'] }, eclat: { c: ['var(--gold)', 'var(--gold)', '#8a7aa8'], e: ['✨', '⭐', '✨'] } };
 /* ---------- Carnet de quêtes : page à part (carnet.html), chargée au premier passage puis gardée en mémoire ---------- */
 const VERSION_CARNET = CONFIG.VERSION_CARNET || String(Date.now()); // config.js : changer la version force le téléphone à recharger carnet.html
@@ -6271,7 +6279,7 @@ function bossVaincu(b, revoir) {
     return `<i class="bw-p" style="--dx:${Math.round(Math.cos(ang) * dist)}px;--dy:${Math.round(dy)}px;--r:${(i * 47) % 360}deg;background:${M.c[i % M.c.length]}"></i>`;
   }).join('') + `<div class="bw-fx">${Array.from({ length: 10 }, (_, i) => `<i style="--x:${(i * 37) % 100 - 50}px;--d:${(i % 5) * .12}s">${M.e[i % M.e.length]}</i>`).join('')}</div>`;
   /* Animation de victoire (app 11.1, Théo 21/11) : les héros frappent l'un après l'autre (gerbe d'éclats à chaque coup, la barre se vide),
-     le boss chancelle, ralenti, coup final commun (onde de choc, l'écran tremble), il tombe à sa façon dans une flaque, tampon « VICTOIRE ».
+     le boss chancelle, ralenti, coup final commun (onde de choc, l'écran tremble), il tombe à sa façon au-dessus d'un cercle runique, tampon « VICTOIRE ».
      Boss du MOIS (~11 s) : carton, rugissement, deux assauts, riposte (griffures), à genoux, coup de grâce, relique qui s'élève.
      « Passer » saute à la fin ; « Revoir » rejoue (aussi depuis la fiche du boss et la salle des trophées). */
   const mois = b.type === 'mois';
@@ -6281,11 +6289,11 @@ function bossVaincu(b, revoir) {
   const gerbe = (t, sens, n, loin) => `<div class="bw-gerbe" style="--t:${t}">${Array.from({ length: n }, (_, i) => {
     const a = sens === 0 ? (i / n) * Math.PI * 2 + (i % 3) * .3 : (-1.45 + (i / Math.max(1, n - 1)) * 1.55) + (i % 2) * .12;
     const d = (loin ? 70 : 45) + (i * 29) % (loin ? 70 : 40), dx = Math.cos(a) * d * (sens || 1), dy = Math.sin(a) * d - 10;
-    return `<i style="--dx:${Math.round(dx)}px;--dy:${Math.round(dy)}px;--r:${Math.round(Math.atan2(dy, dx) * 57.3 + 90)}deg;--w:${7 + (i * 7) % 5}px"></i>`; }).join('')}</div>`;
+    return `<i style="--dx:${Math.round(dx)}px;--dy:${Math.round(dy)}px;--r:${Math.round(Math.atan2(dy, dx) * 57.3 + 90)}deg;--w:${9 + (i * 7) % 4}px"></i>`; }).join('')}</div>`;
   const taches = (t, n) => Array.from({ length: n }, (_, i) => `<i class="bw-tache" style="--t:calc(${t} + ${(.15 + i * .06).toFixed(2)}s);--x:${[-96, 92, -54, 58, -128, 124, 10][i % 7]}px;--y:${[-4, 2, -12, -9, 6, 8, -16][i % 7]}px;--w:${[24, 20, 15, 17, 12, 14, 11][i % 7]}px"></i>`).join('');
   const effets = mois
-    ? { gerbes: gerbe('var(--t1)', 1, 10) + gerbe('var(--t2)', -1, 10) + gerbe('var(--t1b)', 1, 11, true) + gerbe('var(--t2b)', -1, 11, true) + gerbe('var(--t3)', 0, 24, true), sol: taches('var(--t3)', 7) }
-    : { gerbes: gerbe('var(--t1)', 1, 10) + gerbe('var(--t2)', -1, 11) + gerbe('var(--t3)', 0, 20, true), sol: taches('var(--t3)', 5) };
+    ? { gerbes: gerbe('var(--t1)', 1, 10) + gerbe('var(--t2)', -1, 10) + gerbe('var(--t1b)', 1, 11, true) + gerbe('var(--t2b)', -1, 11, true) + gerbe('calc(var(--t3) + .35s)', 0, 24, true), sol: taches('var(--t3)', 7) }
+    : { gerbes: gerbe('var(--t1)', 1, 10) + gerbe('var(--t2)', -1, 11) + gerbe('calc(var(--t3) + .35s)', 0, 20, true), sol: taches('var(--t3)', 5) };
   const relique = `<div class="bw-relique"><svg viewBox="0 0 100 112" aria-hidden="true"><defs><radialGradient id="bwRelOr" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#f2c14e"/><stop offset="1" stop-color="#9a6a12"/></radialGradient>
     <radialGradient id="bwRelGemme" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffb3a8"/><stop offset=".5" stop-color="#d0283a"/><stop offset="1" stop-color="#5a0816"/></radialGradient></defs>
     <path d="M30 18 Q50 -2 70 18" fill="none" stroke="#c99a3a" stroke-width="3" stroke-dasharray="4 3"/>
