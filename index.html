@@ -310,6 +310,26 @@
   @keyframes vitIn { from { opacity: 0; } to { opacity: 1; } }
   .vit-box { max-width: 460px; margin: 0 auto; padding: 18px 16px 40px; position: relative; }
   .vit-x { position: sticky; top: 0; float: right; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
+  /* La route en perspective (maquette, éteinte par défaut) */
+  .rv-ov { position: fixed; inset: 0; z-index: 70; overflow: hidden; background: #0f1a36; touch-action: none; }
+  .rv-fond { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .rv-objets { position: absolute; inset: 0; }
+  .rv-objets > div { position: absolute; left: 0; top: 0; transform-origin: 50% 100%; will-change: transform; }
+  .rv-borne { display: grid; justify-items: center; }
+  .rv-recomp { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: radial-gradient(#3a3248, #1c1828); border: 2px solid #d8b888; box-shadow: 0 4px 10px rgba(0,0,0,.45); }
+  .rv-borne.gros .rv-recomp { border-color: #f2c94c; box-shadow: 0 0 16px rgba(242,201,76,.6); }
+  .rv-borne.proch .rv-recomp { border-color: #fff6c8; box-shadow: 0 0 18px rgba(255,246,200,.75); }
+  .rv-borne.fait .rv-recomp { filter: saturate(.5) brightness(.85); }
+  .rv-pierre { display: grid; place-items: center; width: 40px; height: 30px; margin-top: 3px; border-radius: 8px 8px 4px 4px; background: linear-gradient(#a7a2b4, #6a6478); border: 1.5px solid #3a3448; font-style: normal; }
+  .rv-pierre b { font: 800 14px var(--f-texte); color: #1c1828; }
+  .rv-borne.fait .rv-pierre::after { content: '✓'; position: absolute; margin: -34px 0 0 34px; width: 18px; height: 18px; border-radius: 50%; background: #1e6a2a; color: #fff; font: 700 12px/18px var(--f-texte); text-align: center; }
+  .rv-heros { display: grid; justify-items: center; } .rv-heros svg { width: 74px; height: 96px; }
+  .rv-heros span { margin-top: -2px; padding: 1px 9px; border-radius: 9px; border: 1px solid #fff; color: #fff; font: 800 11px var(--f-texte); }
+  .rv-tete { position: absolute; left: 16px; right: 64px; top: max(14px, env(safe-area-inset-top)); color: #fff; text-shadow: 0 1px 3px #000; z-index: 2000; }
+  .rv-tete b { display: block; font: 700 20px var(--f-titre); color: var(--gold); } .rv-tete span { font-size: 13px; }
+  .rv-x { position: absolute; right: 12px; top: max(10px, env(safe-area-inset-top)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); background: rgba(10,14,30,.7); color: #fff; font-size: 18px; z-index: 2000; }
+  .rv-aide { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 22px 0 max(12px, env(safe-area-inset-bottom)); text-align: center; color: #fff; font-size: 13px; text-shadow: 0 1px 3px #000; z-index: 2000; background: linear-gradient(transparent, rgba(8,12,24,.75)); pointer-events: none; }
+  .ph-lui { position: absolute; bottom: 6px; width: 30px; transform: translateX(-50%); pointer-events: none; } .ph-lui svg { width: 30px; height: 40px; }
   .vit-fam { text-align: center; margin: 4px 0 0; font-size: 12.5px; color: var(--muted); } .vit-fam b { color: var(--gold); font-weight: 600; }
   .vit-fam small { font-size: 12px; } .vit-fam i { display: block; width: 150px; height: 5px; margin: 5px auto 0; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; } .vit-fam em { display: block; height: 100%; border-radius: 3px; background: var(--gold); }
   .fam-ov { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; background: rgba(5,8,16,.9); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); } /* texte lisible sur n'importe quel écran (ergonome, 24/11) */ .fam-box { text-align: center; color: #fff; padding: 0 24px; }
@@ -4287,6 +4307,76 @@ function vignetteEtape(e, w) {
   if (e.type === 'coffre') return coffreSvg(e.r.coffre).replace('width="128" height="107"', `width="${w || 30}" height="${Math.round((w || 30) * .84)}"`);
   return ECLAT_SVG(w ? Math.round(w * .75) : 22);
 }
+/* ---------- La route en perspective (maquette du 24/11 nuit, ÉTEINTE par défaut : localStorage « chemin3d » = « 1 » pour l'allumer) ----------
+ * Théo, 24/11 : « quand on clique sur la piste, j'aimerais que ça s'affiche en 3D ; on voit même pas les deux personnages ; le décor doit être lié à la saison ».
+ * Plein écran : ciel et horizon de la saison (DECORS_ROUTE, la Saison 1 ajoute le sien dans saison1.js), route qui serpente vers le château,
+ * une borne de pierre par palier avec sa vraie récompense, les deux héros à leur place ; on glisse le doigt pour avancer ou reculer. */
+const routeAllumee = () => { try { return localStorage.getItem('chemin3d') === '1' || window.CHEMIN_3D === true; } catch (e) { return window.CHEMIN_3D === true; } };
+const DECORS_ROUTE = {
+  pre: { ciel: ['#0f1a36', '#2c3a6a', '#d9825a'], sol: ['#2f5a36', '#16301c'], route: ['#c9a06a', '#8a6a3e'], bord: '#3a2a18', astre: '#ffd36a', nom: 'Le chemin du Rodage',
+    monts: '#2a3858', arbre: (k) => `<path d="M0 0 l-9 0 l9 -30 l9 30 z" fill="${k % 2 ? '#1e4a2a' : '#245a30'}"/><path d="M0 -30 l-6 14 h12 z" fill="#2e6a3a"/><rect x="-1.6" y="0" width="3.2" height="5" fill="#4a3018"/>`,
+    horizon: `<path d="M-26 0 V-30 h7 v5 h4 v-5 h7 V-44 l6 -9 l6 9 V-30 h7 v5 h4 v-5 h7 V0Z" fill="#141c34"/><rect x="-3" y="-36" width="6" height="7" rx="3" fill="#ffd36a"/>` }
+};
+let routeCam = 0, routeEl = null;
+function ouvrirRoute() {
+  const s = state; if (!s || !s.armurerie || !s.armurerie.saison) return;
+  const S = s.armurerie.saison, D = DECORS_ROUTE[S.id] || DECORS_ROUTE.pre, E = etapesParcours(s), N = S.paliers;
+  const moiZ = Math.min(N, S.palier + (S.cout ? S.dansPalier / S.cout : 0)), comp = (s.compagnons || [])[0];
+  const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
+  const lui = comp && comp.palierSaison != null ? { z: Math.min(N, Number(comp.palierSaison) || 0), svg: orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'rvc', lookDe(comp.look)), comp.ornements || {}, 'rvc'), nom: nomCompagnon(comp), coul: '#3a6ad8' } : null;
+  const moi = { z: moiZ, svg: avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'rvm', s), nom: 'Toi', coul: '#c8902a' };
+  routeCam = Math.max(0, moiZ - 1.2);
+  const ov = document.createElement('div'); ov.id = 'routeOv'; ov.className = 'rv-ov on'; document.body.classList.add('bloque'); routeEl = ov;
+  const prochE = E.find(e => !e.fait);
+  ov.innerHTML = `<svg class="rv-fond" aria-hidden="true"></svg><div class="rv-objets"></div>
+    <div class="rv-tete"><b>${esc(D.nom || 'Le chemin de la saison')}</b><span>palier ${S.palier} / ${N}${prochE ? ` · prochaine borne : ${esc(prochE.nom)}, encore ${xpFr(prochE.reste)} XP` : ' · chemin terminé'}</span></div>
+    <button class="rv-x" data-route-fermer="1" aria-label="Fermer">✕</button><p class="rv-aide">glisse le doigt pour avancer sur la route</p>`;
+  document.body.appendChild(ov);
+  const objets = ov.querySelector('.rv-objets');
+  // bornes (une par palier) et héros : éléments posés une fois, déplacés à chaque mouvement
+  const items = E.map(e => { const d = document.createElement('div'); d.className = 'rv-borne' + (e.fait ? ' fait' : '') + (e.proch ? ' proch' : '') + (e.gros ? ' gros' : '');
+    d.innerHTML = `<span class="rv-recomp ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 34)}</span><i class="rv-pierre"><b>${e.n}</b></i>`; objets.appendChild(d); return { el: d, z: e.n, cote: 0 }; });
+  [moi, lui].filter(Boolean).forEach((h, k) => { const d = document.createElement('div'); d.className = 'rv-heros';
+    d.innerHTML = `${h.svg}<span style="background:${h.coul}">${esc(h.nom)}</span>`; objets.appendChild(d); items.push({ el: d, z: h.z, cote: k ? .34 : -.34, heros: true }); });
+  const deco = Array.from({ length: (N + 3) * 2 }, (_, k) => { const d = document.createElement('div'); d.className = 'rv-deco';
+    d.innerHTML = `<svg viewBox="-12 -34 24 40" width="48" height="80" aria-hidden="true">${D.arbre(k)}</svg>`; objets.appendChild(d); return { el: d, z: k / 2 - .6, cote: k % 2 ? 1.25 + (k % 3) * .18 : -1.25 - (k % 5) * .1, deco: true }; });
+  const dessiner = () => {
+    const W = ov.clientWidth, H = ov.clientHeight, hz = H * .4, larg = W * .62;
+    const proj = (z, cote) => { const p = z - routeCam, f = 1 / (1 + Math.max(-.6, p) * .62), x = W / 2 + Math.sin(z * .8) * W * .2 * f + cote * larg * .5 * f; return { x, y: hz + (H * .9 - hz) * f, f, p }; };
+    // route : bande qui rétrécit vers l'horizon
+    const g = [], dr = [];
+    for (let z = routeCam - .6; z <= Math.min(N + .8, routeCam + 18); z += .2) { const a = proj(z, -.5), b = proj(z, .5); g.push(`${a.x.toFixed(1)},${a.y.toFixed(1)}`); dr.unshift(`${b.x.toFixed(1)},${b.y.toFixed(1)}`); }
+    const mil = []; for (let z = Math.ceil(routeCam * 2) / 2 - .5; z <= routeCam + 12; z += .5) { const a = proj(z, 0), b = proj(z + .22, 0); mil.push(`M${a.x.toFixed(1)} ${a.y.toFixed(1)} L${b.x.toFixed(1)} ${b.y.toFixed(1)}`); }
+    const fin = proj(N + .8, 0);
+    ov.querySelector('.rv-fond').innerHTML = `<defs><linearGradient id="rvC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.ciel[0]}"/><stop offset=".7" stop-color="${D.ciel[1]}"/><stop offset="1" stop-color="${D.ciel[2]}"/></linearGradient>
+        <linearGradient id="rvS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.sol[0]}"/><stop offset="1" stop-color="${D.sol[1]}"/></linearGradient>
+        <linearGradient id="rvR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.route[1]}"/><stop offset="1" stop-color="${D.route[0]}"/></linearGradient>
+        <radialGradient id="rvA"><stop offset="0" stop-color="${D.astre}" stop-opacity=".7"/><stop offset="1" stop-color="${D.astre}" stop-opacity="0"/></radialGradient></defs>
+      <rect width="${W}" height="${hz + 2}" fill="url(#rvC)"/>${Array.from({ length: 40 }, (_, k) => `<circle cx="${(hashPl(k + 5) * W).toFixed(0)}" cy="${(hashPl(k + 61) * hz * .75).toFixed(0)}" r="${(.6 + hashPl(k + 17) * 1.2).toFixed(1)}" fill="#fff" opacity="${(.35 + hashPl(k + 29) * .6).toFixed(2)}"/>`).join('')}<circle cx="${W * .72}" cy="${hz - 26}" r="70" fill="url(#rvA)"/><circle cx="${W * .72}" cy="${hz - 26}" r="20" fill="${D.astre}"/>
+      <path d="M0 ${hz - 30} L${W * .1} ${hz - 92} L${W * .22} ${hz - 54} L${W * .36} ${hz - 120} L${W * .5} ${hz - 70} L${W * .66} ${hz - 104} L${W * .84} ${hz - 58} L${W} ${hz - 96} V${hz + 2} H0Z" fill="${D.monts}" opacity=".55"/><path d="M0 ${hz} L${W * .12} ${hz - 38} L${W * .26} ${hz - 14} L${W * .42} ${hz - 52} L${W * .58} ${hz - 20} L${W * .8} ${hz - 46} L${W} ${hz - 12} V${hz + 2} H0Z" fill="${D.monts}"/>
+      <rect y="${hz}" width="${W}" height="${H - hz}" fill="url(#rvS)"/>
+      ${fin.p > 0 ? `<g transform="translate(${fin.x.toFixed(1)} ${fin.y.toFixed(1)}) scale(${(fin.f * 2.2).toFixed(2)})">${D.horizon}</g>` : ''}
+      <polygon points="${g.concat(dr).join(' ')}" fill="url(#rvR)" stroke="${D.bord}" stroke-width="2"/>
+      <path d="${mil.join(' ')}" stroke="#fff6d8" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>`;
+    // objets : plus loin = plus petit, plus haut, derrière ; cachés hors de la scène
+    items.concat(deco).forEach(it => { const P = proj(it.z, it.cote), vis = P.p > -.35 && P.p < 16;
+      it.el.style.display = vis ? '' : 'none'; if (!vis) return;
+      it.el.style.transform = `translate(${P.x.toFixed(1)}px, ${P.y.toFixed(1)}px) translate(-50%, -100%) scale(${(P.f * (it.deco ? 1.2 : it.heros ? 1.25 : 1)).toFixed(3)})`;
+      it.el.style.zIndex = String(1000 - Math.round(P.p * 10)); it.el.style.opacity = P.p > 12 ? String(Math.max(0, (16 - P.p) / 4)) : ''; });
+  };
+  dessiner();
+  // glisser : vers le haut = avancer
+  let y0 = null, c0 = 0;
+  const bouge = y => { routeCam = Math.max(-.3, Math.min(N - .5, c0 + (y0 - y) / 110)); requestAnimationFrame(dessiner); };
+  ov.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; c0 = routeCam; }, { passive: true });
+  ov.addEventListener('touchmove', e => { if (y0 != null) bouge(e.touches[0].clientY); }, { passive: true });
+  ov.addEventListener('touchend', () => { y0 = null; });
+  ov.addEventListener('wheel', e => { y0 = 0; c0 = routeCam; bouge(-e.deltaY); y0 = null; }, { passive: true });
+  ov.addEventListener('click', e => { if (e.target.closest('[data-route-fermer]')) fermerRoute(); });
+  addEventListener('resize', dessiner);
+}
+function fermerRoute() { const ov = document.getElementById('routeOv'); if (ov) ov.remove(); routeEl = null; document.body.classList.remove('bloque'); }
+document.addEventListener('click', e => { if (e.target.closest('[data-route]')) ouvrirRoute(); });
 let parcoursTout = false, parcoursEtape = 0, parcoursObjets = false; // « Tout le chemin » ; palier dont on montre le détail (0 = aucun) ; vignettes du coffre dépliées
 let parcoursAnim = ''; // 'corps' | 'detail' : n'anime que ce qui vient de s'ouvrir (gardien : sinon chaque render() fait clignoter et sauter la grille)
 function rendreParcours(cle) { // redessine en gardant l'élément de référence sous le doigt
@@ -4382,8 +4472,8 @@ function parcoursHTML(s) {
       <g transform="translate(26 ${Y(26).toFixed(1)})"><path d="M0 0 V-14 l9 3.5 l-9 3.5" class="ph-drapeau"/></g>
       ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>${esc(nomCompagnon(comp))}</title></circle>` : ''}
     </svg>
-    <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>
-    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button><em>${S.palier}<small> / ${N}</small></em></span>`;
+    <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>${routeAllumee() && xa != null ? `<span class="ph-lui" style="left:${(xa / 360 * 100).toFixed(1)}%">${orner(classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }).dessin(palierDe(Number(comp.niveau) || 1, classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } })), 'phl', lookDe(comp.look)), comp.ornements || {}, 'phl')}</span>` : ''}
+    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button>${routeAllumee() ? '<button class="ph-regles" data-route="1" aria-label="Voir la route"><span aria-hidden="true">🛤️</span> La route</button>' : ''}<em>${S.palier}<small> / ${N}</small></em></span>`;
   const suite = E.filter(e => !e.fait).slice(0, 6), fin = E[N - 1];
   const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${parcoursEtape === e.n ? 'choisi' : ''}" data-etape="${e.n}" aria-expanded="${parcoursEtape === e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
   const choisi = parcoursEtape ? E[parcoursEtape - 1] : null, dansGrille = choisi && (suite.includes(choisi) || choisi === fin);
@@ -8140,7 +8230,8 @@ window.addEventListener('popstate', () => {
   const ouvert = id => { const el = document.getElementById(id); return el && el.classList.contains('on') ? el : null; };
   const bw = document.querySelector('.boss-win');
   if (bw) { bw.remove(); document.body.classList.remove('bloque'); return ok(); }
-  const fo = document.getElementById('famOv'); if (fo) { fo.remove(); document.body.classList.remove('bloque'); return ok(); } // familier qui grandit (ergonome, 24/11)
+  const fo = document.getElementById('famOv'); if (fo) { fo.remove(); document.body.classList.remove('bloque'); return ok(); }
+  if (document.getElementById('routeOv')) { fermerRoute(); return ok(); } // route en perspective // familier qui grandit (ergonome, 24/11)
   if (ouvert('ouvertureOv')) { ouvert('ouvertureOv').classList.remove('on'); document.body.classList.remove('bloque'); return ok(); }
   if (ouvert('reglesOv')) { fermerRegles(); return ok(); }
   if (ouvert('recapOv')) { fermerRecap(); return ok(); }

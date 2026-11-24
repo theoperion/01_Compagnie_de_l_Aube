@@ -94,8 +94,8 @@ window.demo = (() => {
       look: herosActif === 'Kael' ? '#c99a74,#2b1d14,#3d6e9e' : '',
       compagnie: location.hash === '#duo' ? [{ nom: 'Theron Corvane', classe: 'Magicien' }, { nom: 'Kael', classe: 'Voleur assassin' }] : [{ nom: 'Ton nom de héros', classe: 'Magicien' }],
       compagnons: location.hash !== '#duo' ? [] : [herosActif === 'Kael'
-        ? { nom: 'Theron Corvane', classe: 'Magicien', look: '', niveau: 14, titre: 'le Vagabond', pv: 85, faitsAujourdhui: 2, quetesDuJour: 4, xpSemaine: 1240 }
-        : { nom: 'Kael', classe: 'Voleur assassin', look: '#c99a74,#2b1d14,#3d6e9e', niveau: 9, titre: "l'Aventurier", pv: 70, faitsAujourdhui: 0, quetesDuJour: 3, xpSemaine: 860 }],
+        ? { nom: 'Theron Corvane', classe: 'Magicien', look: '', niveau: 14, titre: 'le Vagabond', palierSaison: 5, pv: 85, faitsAujourdhui: 2, quetesDuJour: 4, xpSemaine: 1240 }
+        : { nom: 'Kael', classe: 'Voleur assassin', look: '#c99a74,#2b1d14,#3d6e9e', niveau: 9, titre: "l'Aventurier", palierSaison: 3, pv: 70, faitsAujourdhui: 0, quetesDuJour: 3, xpSemaine: 860 }],
       camp: campDemo(), mj: mjDemo(),
       jokersRestants: jokers, jokersParSemaine: 1, nouveauxBonus: nouveaux.splice(0), seuilEpuise: 40, malus: 0.85, arc: null, // ×0,85 : même valeur que le moteur (migration du 19/11/2026)
       d20: d20Demo, capacites: capaDemo(),
