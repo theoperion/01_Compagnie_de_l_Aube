@@ -1834,6 +1834,12 @@ html.th-olympe .jour::after { content:''; position:absolute; right:64px; top:8px
 .souv-t.on { border-color: var(--gold); box-shadow: inset 0 0 8px rgba(0,0,0,.45), 0 0 0 1px var(--gold); }
 
 /* ===== 4. Rappel des coffres du Rodage (24 → 31/12) : une ligne ===== */
+.maj-ban { position: fixed; z-index: 9999; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 50%; transform: translateX(-50%); max-width: calc(100% - 32px); pointer-events: none;
+  padding: 8px 16px; border-radius: 999px; border: 1px solid var(--gold); background: var(--card); color: var(--text); font: 700 13px var(--f-texte, system-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 6px 18px rgba(0,0,0,.45); transition: opacity .6s; animation: majIn .35s ease-out; }
+.maj-ban.part { opacity: 0; }
+@keyframes majIn { from { opacity: 0; transform: translate(-50%, -12px); } to { opacity: 1; transform: translateX(-50%); } }
+body.calme .maj-ban { animation: none; transition: none; } @media (prefers-reduced-motion: reduce) { .maj-ban { animation: none; transition: none; } }
 .rappel-cof { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; margin: 10px 0 2px; padding: 9px 12px; border-radius: 12px; cursor: pointer; text-align: left;
   border: 1px solid color-mix(in srgb, var(--gold) 50%, var(--card)); background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 16%, var(--card)), var(--panel)); color: var(--text); font: 600 13px var(--f-texte, system-ui); }
 .rappel-cof span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rappel-cof b { color: var(--gold); }
@@ -3504,6 +3510,24 @@ document.addEventListener('click', e => {
   box.classList.add('on');
 });
 
+/* Bandeau « Mise à jour » (Théo, 24/11 : « savoir quand j'ouvre que je suis passé en nouvelle mise à jour ») : 3,5 s en haut de l'écran,
+ * seulement quand le numéro de l'app ou du moteur MONTE par rapport à la dernière ouverture sur ce téléphone (rien à la toute première ouverture). */
+const majAnnoncee = { app: false, moteur: false };
+function annonceMiseAJour(s) {
+  const lire = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }, ecrire = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const plusRecent = (n, a) => parseFloat(n) > parseFloat(a);
+  const parts = [];
+  if (!majAnnoncee.app && /^\d/.test(NUMERO_APP)) { majAnnoncee.app = true; const a = lire('versionVue|app');
+    if (a && plusRecent(NUMERO_APP, a)) parts.push('app v' + NUMERO_APP); if (!a || plusRecent(NUMERO_APP, a)) ecrire('versionVue|app', NUMERO_APP); }
+  const mot = String((s && s.reglages && s.reglages.numeroMoteur) || '');
+  if (!majAnnoncee.moteur && /^\d/.test(mot)) { const a = lire('versionVue|moteur');
+    if (!a || plusRecent(mot, a)) { ecrire('versionVue|moteur', mot); if (a) { majAnnoncee.moteur = true; parts.push('moteur v' + mot); } } }
+  if (!parts.length) return;
+  const d = document.createElement('div'); d.className = 'maj-ban'; d.setAttribute('role', 'status');
+  d.textContent = '✨ Mise à jour : ' + parts.join(' · ');
+  document.body.appendChild(d);
+  setTimeout(() => d.classList.add('part'), 3500); setTimeout(() => d.remove(), 4200);
+}
 /* Rappels de la semaine en haut de Quêtes (Théo, 24/11/2026 : « sinon on oublie ») : pacte à proposer ou à sceller, vote du chapitre de la Saga.
  * Chaque rappel disparaît dès que c'est fait ; un appui ouvre le camp (onglet Compagnie). */
 function bandeauRappels(s) {
@@ -6595,6 +6619,7 @@ function glisserXp() {
 }
 function render() {
   if (!state) return;
+  annonceMiseAJour(state);
   if (ongletAffiche !== onglet) { ongletAffiche = onglet; document.querySelectorAll('.float').forEach(x => x.remove()); } // un gain ne flotte pas sur l'onglet suivant
   annonceBossAFaire();
   annonceAventureAFaire();
