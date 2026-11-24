@@ -28,7 +28,7 @@ Téléphone                                        Google
 **Le moteur** (Google Apps Script relié à la Google Sheet : règles du jeu, sauvegardes, appels à Claude et à intervals.icu ;
 `Boss.js` pour les combats, `Armurerie.js` pour les saisons, coffres et cosmétiques)
 est rangé avec les moteurs des autres applis dans le dépôt **privé** `theoperion/app_scripts`, dossier `compagnie-de-l-aube/`.
-L'audit de novembre 2026 y est aussi : `audits/compagnie-2026-11.md`.
+L'historique (audit de novembre 2026, ancienne fiche) est dans son dossier `archives/`.
 
 Les clés secrètes (Claude, intervals.icu) et l'e-mail du rappel ne sont **jamais** dans un dépôt :
 ils sont dans Apps Script → Paramètres du projet → Propriétés du script.
@@ -49,9 +49,4 @@ La mise en ligne garde toujours la même adresse : rien à changer dans `config.
 
 ## Reprendre le travail (nouvelle session Claude)
 
-Lire d'abord `compagnie-de-l-aube/REPRISE.md` dans le dépôt privé `theoperion/app_scripts` : où est quoi, comment livrer, pièges connus, état actuel.
-
-## Suivi du chantier
-
-Le mode d'emploi, les checklists et le journal des modifications sont dans le document Claude
-« Compagnie de l'Aube — Mode d'emploi du chantier ».
+Lire d'abord `compagnie-de-l-aube/CLAUDE.md` dans le dépôt privé `theoperion/app_scripts` : où est quoi, comment livrer, pièges connus, état actuel.

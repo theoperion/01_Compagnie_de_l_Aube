@@ -3,7 +3,7 @@
 - Projet : « La Compagnie de l'Aube », app d'habitudes façon jeu de rôle pour deux héros (le joueur et son compagnon d'armes ; ne jamais écrire le vrai prénom du compagnon dans ce dépôt public). Tout en **français**.
 - Code : app dans `/home/user/01_Compagnie_de_l_Aube` (`index.html` = toute l'app, `carnet.html`, `config.js`, `sw.js`) ;
   moteur dans `/home/user/app_scripts/compagnie-de-l-aube` (`Code.js`, `Boss.js`, `Armurerie.js`, `tests/`).
-  Lire d'abord `app_scripts/compagnie-de-l-aube/REPRISE.md` (architecture, règles du jeu, pièges connus).
+  Lire d'abord `app_scripts/compagnie-de-l-aube/CLAUDE.md` (architecture, règles du jeu, pièges connus).
 - Le Conseil **ne modifie rien** : il lit, teste, simule, et rend un avis argumenté. Les corrections sont faites ensuite, avec l'accord du joueur.
 - Chaque constat : où (fichier:ligne), quoi, scénario concret qui casse, gravité (bloquant / important / mineur), correction suggérée.
 - La Saison 1 et ses boss sont **secrets** jusqu'au 1er janvier : ne rien proposer qui les dévoile.
