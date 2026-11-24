@@ -201,7 +201,7 @@ window.demo = (() => {
   const arm = { saison: { id: 'pre', nom: 'Pré-saison · le Rodage', paliers: 15, palier: 4, xp: 2180, cout: 500, dansPalier: 180, prochaine: { coffre: 'rare' } },
     possede: ['cape_rouge', 'bandeau', 're_clairiere', 're_campement', 'fa_dragon', 'sc_givre', 'sc_aube'], eclats: 120, ouverts: 0, joursActifs: 15, recordSerie: 23,
     coffres: [{ source: 'palier|4', type: 'commun', origine: 'Palier 4' }, { source: 'boss|2026-11-12|La Liche du Scroll', type: 'rare', origine: 'La Liche du Scroll' }] };
-  const ornDemo = {};
+  const ornDemo = { familier: 'fa_dragon' }; // le Dragon de l'Aube porté : les contrôles d'écran le dessinent (série 23 j → Jeune dragon)
   Object.keys(demo).forEach(k => { const f = demo[k]; if (typeof f !== 'function') return;
     demo[k] = function () { const r = f.apply(this, arguments); if (r && r.habitudes && r.heros) { r.trophees = [{ date: '2026-11-12', nom: 'La Liche du Scroll', visuel: 'liche', type: 'semaine', trophee: 'Écran brisé', xp: 300 }, { date: '2026-11-08', nom: 'Le Golem de la Flemme', visuel: 'golem', type: 'semaine', trophee: 'Cœur de pierre', xp: 200 }, { date: '2026-10-31', nom: 'La Procrastination', visuel: 'procrastination', type: 'mois', trophee: 'Sablier brisé', xp: 500 }]; r.catalogueCosm = CAT; r.armurerie = JSON.parse(JSON.stringify(arm)); if (r.reglages) r.reglages.ornements = Object.assign({}, r.reglages.ornements, ornDemo); } return r; }; });
   /* Un boss de la semaine et un du mois (boss du Rodage, déjà publics), même forme que le moteur (Code.js, état d'un combat) :

@@ -3067,7 +3067,7 @@ function ouvrirBilanRodage(B, revoir) {
   const comp = (lui && ((s.compagnons || []).find(c => c.nom === lui.heros) || (s.compagnons || [])[0])) || {};
   // les héros tels qu'ils étaient à la fin du Rodage (leur niveau de 2026), à la lueur du feu de camp
   const dess = (h, id, estMoi) => { const cl = classeDe({ classe: { nom: h.classe } });
-    return orner(cl.dessin(palierDe(Number(h.niveau) || 1, cl), id, lookDe(estMoi ? s.look : comp.look)), estMoi ? Object.assign({ _jours: joursDe(s), _serie: serieDe(s) }, ornementsDe(s)) : (comp.ornements || {}), id); };
+    return orner(cl.dessin(palierDe(Number(h.niveau) || 1, cl), id, lookDe(estMoi ? s.look : comp.look)), estMoi ? ornAvecSerie(s) : ornCompagnon(comp), id); };
   const cM = couleurClasse(moi.classe), cL = lui ? couleurClasse(lui.classe) : '';
   const C = B.compagnie || {}, P = B.periode || {};
   const jp0 = h => (h && h.jourPhare) || {};
@@ -3485,7 +3485,9 @@ const cosmPossede = (id, s) => !!(((s || state || {}).armurerie || {}).possede |
 function couleurPano(id) { const m = /^(?:cape|tete|aura)_(.+)$/.exec(id || ''); return m && typeof COSM_COUL[m[1]] === 'string' ? COSM_COUL[m[1]] : null; }
 /** Stade du familier : œuf, petit, jeune, adulte (jours avec au moins une quête faite) */
 const stadeFamilier = j => (j == null ? 1 : j < 7 ? 0 : j < 30 ? 1 : j < 90 ? 2 : 3);
-const serieDe = s => (s && s.armurerie ? s.armurerie.recordSerie : s && s.recordSerie);
+// serieDe : la série qui fixe la forme du familier (record, ou plancher de départ du moteur 6.29) ; recordDe : le vrai record, seul affiché
+const serieDe = s => { const a = s && s.armurerie ? s.armurerie : s; return a ? (a.formeSerie != null ? a.formeSerie : a.recordSerie) : undefined; };
+const recordDe = s => (s && s.armurerie ? s.armurerie.recordSerie : s && s.recordSerie);
 const SEUILS_DRAGON = [10, 21, 45, 90], FORMES_DRAGON = ['Œuf', 'Dragonnet', 'Jeune dragon', 'Dragon de l\'Aube', 'Dragon Ancien'];
 // familiers qui évoluent avec la meilleure série, en 5 formes (Théo, 24/11 : « pour l'ensemble des familiers ») ; les saisons ajoutent les leurs (saison1.js)
 const FORMES_SERIE = { fa_dragon: FORMES_DRAGON };
@@ -3501,11 +3503,11 @@ function infoFamilier(s, orn) {
   const id = ((orn || ornementsDe(s)) || {}).familier; if (!/^fa_/.test(id || '') || joursDe(s) == null) return null;
   const dragon = !!FORMES_SERIE[id] && serieDe(s) != null, SE = dragon ? SEUILS_DRAGON : SEUILS_FAM, j = Number(dragon ? serieDe(s) : joursDe(s)) || 0;
   const st = dragon ? stadeFamilierDe(id, joursDe(s), j) : stadeFamilier(j), x = cosmItem(id, s) || cosmItem(id, state) /* fiche du compagnon : pas de catalogue */, bas = st ? SE[st - 1] : 0, haut = SE[st];
-  return { id, nom: x ? x.nom : 'Familier', moi: s === state, st, dragon, stade: dragon ? FORMES_SERIE[id][st] : STADES_FAM[st], j, reste: haut ? haut - j : 0, pct: haut ? Math.round(100 * (j - bas) / (haut - bas)) : 100 };
+  return { id, nom: x ? x.nom : 'Familier', moi: s === state, st, dragon, stade: dragon ? FORMES_SERIE[id][st] : STADES_FAM[st], j, rec: dragon ? Number(recordDe(s)) || 0 : j, haut, reste: haut ? Math.max(0, haut - j) : 0, pct: !haut ? 100 : dragon ? Math.min(100, Math.round(100 * (Number(recordDe(s)) || 0) / haut)) : Math.round(100 * (j - bas) / (haut - bas)) };
 }
 function ligneFamilier(f) {
   if (!f) return '';
-  return `<div class="vit-fam"><span>${f.dragon ? `<b>${esc(f.stade)}</b>` : `${esc(f.nom)} · <b>${esc(f.stade.toLowerCase())}</b>`}</span><br><small>${f.dragon ? (f.reste ? `série record : ${f.j} j · encore ${f.reste} j ${f.st ? 'pour évoluer' : 'pour éclore'}` : 'Dragon Ancien : sa forme ultime') : f.reste ? `encore ${f.reste} jour${f.reste > 1 ? 's' : ''} avec une quête faite pour qu'il ${f.st ? 'grandisse' : 'éclose'}` : 'adulte : il a fini de grandir'}</small><i aria-hidden="true"><em style="width:${f.pct}%"></em></i></div>`;
+  return `<div class="vit-fam"><span>${f.dragon ? `<b>${esc(f.stade)}</b>` : `${esc(f.nom)} · <b>${esc(f.stade.toLowerCase())}</b>`}</span><br><small>${f.dragon ? (f.haut ? `${f.st ? 'évolue' : 'éclot'} à ta première série de ${f.haut} jours · ton record : ${f.rec} j` : `${esc(f.stade)} : sa forme ultime, il ne changera plus`) : f.reste ? `encore ${f.reste} jour${f.reste > 1 ? 's' : ''} avec une quête faite pour qu'il ${f.st ? 'grandisse' : 'éclose'}` : 'adulte : il a fini de grandir'}</small><i aria-hidden="true"><em style="width:${f.pct}%"></em></i></div>`;
 }
 function famGrandiAFaire() {
   const s = state, f = s && infoFamilier(s); if (!f) return;
@@ -3515,7 +3517,7 @@ function famGrandiAFaire() {
   if (f.st <= Number(av)) return;
   if (document.body.classList.contains('bloque') || document.querySelector('[id$="Ov"].on, .boss-win')) return; // un autre écran : au prochain passage
   try { localStorage.setItem(k, String(f.st)); } catch (e) {}
-  const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : voici ' + f.stade + '\u00a0!' : 'Ton familier évolue : ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
+  const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : voici ton ' + f.stade + '\u00a0!' : f.st === 4 ? 'Ton familier atteint sa forme ultime : ' + f.stade + '\u00a0!' : 'Ton familier évolue : voici ton ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
   if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) { toast((f.st === 1 ? '🐣 ' : '✨ ') + txt); return; }
   const ov = document.createElement('div'); ov.id = 'famOv'; ov.className = 'fam-ov on'; document.body.classList.add('bloque');
   ov.innerHTML = `<div class="fam-box"><div class="fam-sc"><svg class="fam-a" viewBox="0 0 100 100" aria-hidden="true">${familierAube(f.id, Math.min(Number(av) || 0, 4))}</svg><svg class="fam-b" viewBox="0 0 100 100" aria-hidden="true">${familierAube(f.id, f.st)}</svg></div><p>${esc(txt)}</p><small>toucher pour fermer</small></div>`;
@@ -3776,7 +3778,10 @@ const FAMILIERS_AUBE = {
 };
 /* Dragon de l'Aube v2 (24/11 nuit, Théo : « orange, avec des flammes, un truc qui envoie ») : 5 formes selon la meilleure série.
  * viewBox 0 0 100 100, sol à y = 94. Dégradés à id fixes (dessins identiques : un doublon d'id ne change rien). */
-function dragonAube(st) {
+// chaque dessin a ses propres ids de dégradés (deux dragons sur un écran : plus de dégradé partagé, avocat 24/11)
+let nDragon = 0;
+function dragonAube(st) { const u = 'd' + (++nDragon % 1000); return dragonAube0(st).replace(/\b(dg[CVAKFHB])\b/g, '$1' + u); }
+function dragonAube0(st) {
   const O = { c1: '#ff8a3c', c2: '#d9380f', c3: '#7a1606', trait: '#2e0a02', ventre1: '#ffd77a', ventre2: '#b86a1a', corne1: '#ffe7a8', corne2: '#6a3a10', aile1: '#5a0e06', aile2: '#ff6a1a', oeil: '#fff36a' };
   const defs = `<defs>
     <linearGradient id="dgC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${O.c1}"/><stop offset=".55" stop-color="${O.c2}"/><stop offset="1" stop-color="${O.c3}"/></linearGradient>
@@ -3784,6 +3789,7 @@ function dragonAube(st) {
     <linearGradient id="dgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${O.aile2}"/><stop offset=".35" stop-color="#a8200a"/><stop offset="1" stop-color="${O.aile1}"/></linearGradient>
     <linearGradient id="dgK" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${O.corne2}"/><stop offset="1" stop-color="${O.corne1}"/></linearGradient>
     <radialGradient id="dgF" cx="50%" cy="80%" r="70%"><stop offset="0" stop-color="#fffbe0"/><stop offset=".35" stop-color="#ffe14a"/><stop offset=".7" stop-color="#ff8a1a"/><stop offset="1" stop-color="#e0300a"/></radialGradient>
+    <linearGradient id="dgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0502a"/><stop offset=".6" stop-color="#b8200c"/><stop offset="1" stop-color="#5e0c04"/></linearGradient>
     <radialGradient id="dgH" cx="50%" cy="50%" r="50%"><stop offset=".5" stop-color="#ffb347" stop-opacity=".45"/><stop offset="1" stop-color="#ff4d1a" stop-opacity="0"/></radialGradient></defs>`;
   const flamme = (x, y, k, cls) => `<path class="${cls || 'orn-flamme'}" transform="translate(${x} ${y}) scale(${k})" d="M0 0 C-6 -4 -7 -12 -2 -18 C-2 -13 1 -12 2 -15 C2 -20 0 -24 3 -28 C6 -22 10 -16 8 -8 C10 -10 10 -13 9 -15 C14 -9 10 0 0 0 Z" fill="url(#dgF)" stroke="#a8200a" stroke-width=".6"/>`;
   const oeilBebe = (x, y, r) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 1.15}" fill="#fff"/><ellipse cx="${x + r * .12}" cy="${y + r * .12}" rx="${r * .66}" ry="${r * .8}" fill="#3a1204"/><ellipse cx="${x + r * .12}" cy="${y + r * .2}" rx="${r * .4}" ry="${r * .5}" fill="#ff8a1a" opacity=".55"/><circle cx="${x - r * .25}" cy="${y - r * .4}" r="${r * .32}" fill="#fff"/>`;
@@ -3812,9 +3818,9 @@ function dragonAube(st) {
       ${cornes}</g>`;
   const cornesJeune = `<path d="M42 18 Q37 9 31 6 Q38 7 46 15 Z M51 15 Q50 6 46 1 Q55 5 56 14 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".8"/>`;
   const cornesAube = `<path d="M41 18 Q32 6 21 4 Q33 2 46 14 Z M50 14 Q49 3 41 -4 Q55 -1 56 13 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".9"/><path d="M28 6 l3 2 M35 5 l2 3 M46 0 l1 3" stroke="${O.corne2}" stroke-width=".8"/>`;
-  const cornesAncien = `<path d="M41 18 Q30 4 17 1 Q31 -2 46 13 Z M49 14 Q48 1 39 -7 Q55 -4 56 13 Z M57 15 Q62 4 60 -4 Q67 4 62 16 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".9"/><path d="M43 14 L46 8 L49 12 L52 7 L55 12" stroke="#ffe14a" stroke-width="1.6" fill="none" stroke-linejoin="round"/>`;
+  const cornesAncien = `<path d="M38 22 Q24 18 12 24 Q22 12 41 17 Z M41 18 Q30 4 17 1 Q31 -2 46 13 Z M49 14 Q48 1 39 -7 Q55 -4 56 13 Z M57 15 Q62 4 60 -4 Q67 4 62 16 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".9"/><path d="M22 5 l3 3 M31 -1 l2 3 M44 -3 l1 3 M18 20 l3 1" stroke="${O.corne2}" stroke-width=".8"/><path d="M43 14 L46 8 L49 12 L52 7 L55 12" stroke="#ffe14a" stroke-width="1.6" fill="none" stroke-linejoin="round"/>`;
   // aile large : bord d'attaque jusqu'à la pointe, 4 doigts, membrane festonnée entre les doigts, reflet de braise sur le bord
-  const aile = (cote, k, bords) => `<g transform="translate(50 50) scale(${cote * k} ${k}) translate(-50 -50)"><g class="orn-aile">
+  const aile = (cote, k, bords, rot) => `<g transform="translate(50 50) scale(${cote * k} ${k}) rotate(${rot || 0}) translate(-50 -50)"><g class="orn-aile">
       <path d="M46 55 C40 41 27 23 3 6 Q11 21 6 31 Q17 30 17 41 Q28 37 31 49 Q40 46 46 57 Z" fill="url(#dgA)" stroke="${bords || O.trait}" stroke-width="1.5" stroke-linejoin="round"/>
       <path d="M45 52 L3 6 M44 52 L6 31 M44 53 L17 41 M45 54 L31 49" stroke="${O.trait}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
       <path d="M45 52 L3 6 M44 52 L6 31 M44 53 L17 41" stroke="#ff9a4a" stroke-width=".5" fill="none" opacity=".7"/>
@@ -3827,18 +3833,19 @@ function dragonAube(st) {
       ${[[42, 52], [56, 56], [46, 72], [58, 76], [40, 82], [52, 86]].map(([x, y]) => `<path d="M${x - 4} ${y} q4 3 8 0" stroke="${O.trait}" stroke-opacity=".45" stroke-width="1" fill="none"/>`).join('')}
       <path d="M38 46 q6 -8 14 -6" stroke="#ffc768" stroke-width="1.6" fill="none" opacity=".7"/>
       <path class="orn-runes" d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5 M48 63 l-2 7 l3 4" stroke="#ffe14a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/></g></g>`;
-  if (st === 1) // Dragonnet : bébé tout rond, coquille sur la tête, flammèche au bout de la queue, pas d'ailes
+  if (st === 1) // Dragonnet : bébé tout rond rouge braise, ventre bronze, houppette de flamme sur la tête, bout de coquille, moignons d'ailes
     return `<g class="drg drg1">${defs}${ombre}
-      <path d="M64 86 C80 90 86 78 78 72 C73 69 70 75 74 77" stroke="${O.trait}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M64 86 C80 90 86 78 78 72 C73 69 70 75 74 77" stroke="url(#dgC)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M74 77 l-4 3 l1 -6 z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".6"/>
-      <ellipse cx="50" cy="78" rx="19" ry="16" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.6"/>
-      <ellipse cx="50" cy="81" rx="11" ry="11" fill="url(#dgV)"/>${ecailles(50, 74, 4, 3.4)}
+      <path d="M64 86 C80 90 86 78 78 72 C73 69 70 75 74 77" stroke="${O.trait}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M64 86 C80 90 86 78 78 72 C73 69 70 75 74 77" stroke="url(#dgB)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M74 77 l-4 3 l1 -6 z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".6"/>
+      <ellipse cx="50" cy="78" rx="19" ry="16" fill="url(#dgB)" stroke="${O.trait}" stroke-width="1.6"/>
+      <ellipse cx="50" cy="81" rx="11" ry="11" fill="#c9823a" stroke="#7a3a08" stroke-width=".6"/>${ecailles(50, 74, 4, 3.4)}
       <path d="M33 70 q-7 -1 -8 -8 q6 1 9 5 z M67 70 q7 -1 8 -8 q-6 1 -9 5 z" fill="url(#dgA)" stroke="${O.trait}" stroke-width="1"/>
-      <ellipse cx="40" cy="92" rx="6.5" ry="3.4" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.2"/><ellipse cx="60" cy="92" rx="6.5" ry="3.4" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.2"/>
-      <circle cx="50" cy="50" r="17.5" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.6"/><path d="M38 42 q8 -8 18 -6" stroke="#ffd08a" stroke-width="1.4" fill="none" opacity=".7"/>
-      <ellipse cx="50" cy="58" rx="9.5" ry="6.2" fill="url(#dgV)"/><circle cx="46.5" cy="57.5" r="1" fill="${O.trait}"/><circle cx="53.5" cy="57.5" r="1" fill="${O.trait}"/>
+      <ellipse cx="40" cy="92" rx="6.5" ry="3.4" fill="url(#dgB)" stroke="${O.trait}" stroke-width="1.2"/><ellipse cx="60" cy="92" rx="6.5" ry="3.4" fill="url(#dgB)" stroke="${O.trait}" stroke-width="1.2"/>
+      <circle cx="50" cy="50" r="17.5" fill="url(#dgB)" stroke="${O.trait}" stroke-width="1.6"/><path d="M38 42 q8 -8 18 -6" stroke="#ffd08a" stroke-width="1.4" fill="none" opacity=".7"/>
+      <ellipse cx="50" cy="58" rx="9.5" ry="6.2" fill="#d9965a"/><circle cx="46.5" cy="57.5" r="1" fill="${O.trait}"/><circle cx="53.5" cy="57.5" r="1" fill="${O.trait}"/>
       ${oeilBebe(42.5, 48, 4.6)}${oeilBebe(57.5, 48, 4.6)}<ellipse cx="36" cy="55" rx="3" ry="1.8" fill="#ff5a3a" opacity=".35"/><ellipse cx="64" cy="55" rx="3" ry="1.8" fill="#ff5a3a" opacity=".35"/>
       <path d="M44 62 q6 3.5 12 0" stroke="${O.trait}" stroke-width="1.1" fill="none" stroke-linecap="round"/><g class="orn-souffle" fill="#cfc6c0" opacity=".7"><circle cx="44" cy="52" r="1.4"/><circle cx="42" cy="49.5" r="1"/><circle cx="56" cy="52" r="1.4"/><circle cx="58" cy="49.5" r="1"/></g>
       <path d="M38 40 l-2.4 -5 l5.4 3 z M62 40 l2.4 -5 l-5.4 3 z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".6"/>
+      <g class="orn-flamme"><path transform="translate(50 30) scale(.9)" d="M0 0 C-6 -4 -7 -12 -2 -18 C-2 -13 1 -12 2 -15 C2 -20 0 -24 3 -28 C6 -22 10 -16 8 -8 C10 -10 10 -13 9 -15 C14 -9 10 0 0 0 Z" fill="url(#dgF)" stroke="#a8200a" stroke-width=".6"/></g>
       <path d="M35 37 L38 30 L42 34 L46 27 L50 32 L54 26 L58 32 L62 29 L65 36 Q50 31 35 37 Z" fill="#fff8ea" stroke="#b99f7a" stroke-width="1"/><path d="M40 33 l2 -1 M52 30 l2 1" stroke="#d9c4a2" stroke-width=".7"/></g>`;
   if (st === 2) // Jeune dragon : assis, ailes repliées, petites cornes, épines, flamme de queue
     return `<g class="drg drg2">${defs}${ombre}${queue(5.5, 88, 66, .6)}
@@ -3856,11 +3863,11 @@ function dragonAube(st) {
       ${pointsDos([[44, 43], [41, 51], [37, 59], [35, 67]], 1.1)}
       ${tete(24, 1, cornesAube, true)}
       <g class="orn-souffle"><path d="M72 26 C78 22 84 26 88 22 C86 28 80 30 74 29 Z" fill="url(#dgF)" opacity=".9"/><circle cx="90" cy="22" r="1.6" fill="#ffe14a"/><circle cx="93" cy="26" r="1" fill="#ffb347"/></g></g>`;
-  if (st >= 4) // Dragon Ancien (forme ultime) : plus massif, veines de lave qui pulsent, couronne de cornes, ailes bordées de feu, halo de braise
+  if (st >= 4) // Dragon Ancien (forme ultime) : plus massif, ailes immenses grandes ouvertes à l horizontale, couronne de 4 cornes, veines de lave, halo de braise
     return `<g class="drg drg4">${defs}
       <circle class="orn-halo" cx="50" cy="50" r="48" fill="url(#dgH)"/>
       ${[[12, 84], [88, 80], [20, 30], [82, 26]].map(([x, y], i) => `<circle class="orn-runes" cx="${x}" cy="${y}" r="${1.2 + i % 2 * .6}" fill="#ffe14a"/>`).join('')}
-      ${ombre}${aile(1, 1.12, '#ffe14a')}${aile(-1, 1.12, '#ffe14a')}
+      ${ombre}${aile(1, 1.3, '#ffe14a', -14)}${aile(-1, 1.3, '#ffe14a', -14)}
       ${queue(7.5, 95, 60, 1)}
       ${assis(1.16, true)}
       <path d="M48 49 Q45 36 50 27" stroke="${O.trait}" stroke-width="12.5" fill="none" stroke-linecap="round"/><path d="M48 49 Q45 36 50 27" stroke="url(#dgC)" stroke-width="10.5" fill="none" stroke-linecap="round"/>
@@ -3948,8 +3955,10 @@ function familierAube(id, stade) {
   return corps[stade];
 }
 function familierAubeSvg(id, stade, grand) {
-  const k = grand ? [0.46, 0.7, 0.78, 0.88, 0.96][stade] : [0.42, 0.56, 0.66, 0.76, 0.84][stade];
-  return `<g transform="translate(${grand ? -6 : 2} ${246 - 94 * k}) scale(${k})"><g class="orn orn-fam"><ellipse cx="50" cy="94" rx="24" ry="4" fill="#000" opacity=".35"/>${familierAube(id, stade)}</g></g>`;
+  const k = grand ? [0.46, 0.7, 0.78, 0.86, 0.84][stade] : [0.42, 0.56, 0.66, 0.72, 0.7][stade];
+  // grandes formes (ailes ouvertes) : poussées vers l'extérieur sans sortir du cadre, pour ne pas cacher le héros (avocat du diable, 24/11)
+  const x = (grand ? [-6, -6, -6, -22, -10] : [2, 2, 2, -6, 8])[stade];
+  return `<g transform="translate(${x} ${246 - 94 * k}) scale(${k})"><g class="orn orn-fam"><ellipse cx="50" cy="94" rx="24" ry="4" fill="#000" opacity=".35"/>${familierAube(id, stade)}</g></g>`;
 }
 /* Montures (vitrine) : la bête de profil, tête à gauche, sabots vers y = 242. Le héros est mis EN SELLE par orner() :
  * data-selle="x y échelle" donne l'assise ; ce qui suit le repère <!--selle--> (tapis, flanc) est dessiné par-dessus le cavalier.
@@ -4273,7 +4282,7 @@ function plateauHTML(s) {
       <g transform="translate(28 95)"><rect x="-${nom.length * 3.3 + 6}" y="-9" width="${nom.length * 6.6 + 12}" height="15" rx="7.5" fill="${coul}" stroke="#fff" stroke-width="1"/><text y="2.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff">${esc(nom)}</text></g></g></g>`; };
   const comp = (s.compagnons || [])[0];
   const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
-  const lui = comp && comp.palierSaison != null ? pion(orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'plc', lookDe(comp.look)), comp.ornements || {}, 'plc'), comp.palierSaison, 22, 'lui', nomCompagnon(comp), '#3a6ad8') : '';
+  const lui = comp && comp.palierSaison != null ? pion(orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'plc', lookDe(comp.look)), ornCompagnon(comp), 'plc'), comp.palierSaison, 22, 'lui', nomCompagnon(comp), '#3a6ad8') : '';
   const moi = pion(avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'plm', s), plateauDepart != null ? plateauDepart : S.palier, -8, 'moi', 'Toi', '#c8902a');
   return `<div class="plateau"><div class="pl-tete"><b>🗺 ${s1 ? 'Le chemin de la Saison 1' : 'Le chemin du Rodage'}${livretReduit() ? ' <button class="regles-mini" data-regles="0" aria-label="Livret des règles">? Règles</button>' : ''}</b><span>${S.palier} / ${N}${comp && comp.palierSaison != null ? ` · ${esc(nomCompagnon(comp))} : ${comp.palierSaison}` : ''}</span></div>
     <div class="pl-legende"><span><i style="background:#4a8ae8"></i>objet</span><span><i style="background:#f2c94c"></i>gros lot</span><span><i style="background:#e84a5a"></i>coffre</span><span><i style="background:#5ac86a"></i>éclats</span></div>
@@ -4325,7 +4334,7 @@ function ouvrirRoute() {
   const S = s.armurerie.saison, D = DECORS_ROUTE[S.id] || DECORS_ROUTE.pre, E = etapesParcours(s), N = S.paliers;
   const moiZ = Math.min(N, S.palier + (S.cout ? S.dansPalier / S.cout : 0)), comp = (s.compagnons || [])[0];
   const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
-  const lui = comp && comp.palierSaison != null ? { z: Math.min(N, Number(comp.palierSaison) || 0), svg: orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'rvc', lookDe(comp.look)), comp.ornements || {}, 'rvc'), nom: nomCompagnon(comp), coul: '#3a6ad8' } : null;
+  const lui = comp && comp.palierSaison != null ? { z: Math.min(N, Number(comp.palierSaison) || 0), svg: orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'rvc', lookDe(comp.look)), ornCompagnon(comp), 'rvc'), nom: nomCompagnon(comp), coul: '#3a6ad8' } : null;
   const moi = { z: moiZ, svg: avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'rvm', s), nom: 'Toi', coul: '#c8902a' };
   routeCam = Math.max(0, moiZ - 1.2);
   const ov = document.createElement('div'); ov.id = 'routeOv'; ov.className = 'rv-ov on'; document.body.classList.add('bloque'); routeEl = ov;
@@ -4474,7 +4483,7 @@ function parcoursHTML(s) {
       <g transform="translate(26 ${Y(26).toFixed(1)})"><path d="M0 0 V-14 l9 3.5 l-9 3.5" class="ph-drapeau"/></g>
       ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>${esc(nomCompagnon(comp))}</title></circle>` : ''}
     </svg>
-    <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>${routeAllumee() && xa != null ? `<span class="ph-lui" style="left:${(xa / 360 * 100).toFixed(1)}%">${orner(classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }).dessin(palierDe(Number(comp.niveau) || 1, classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } })), 'phl', lookDe(comp.look)), comp.ornements || {}, 'phl')}</span>` : ''}
+    <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>${routeAllumee() && xa != null ? `<span class="ph-lui" style="left:${(xa / 360 * 100).toFixed(1)}%">${orner(classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }).dessin(palierDe(Number(comp.niveau) || 1, classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } })), 'phl', lookDe(comp.look)), ornCompagnon(comp), 'phl')}</span>` : ''}
     <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button>${routeAllumee() ? '<button class="ph-regles" data-route="1" aria-label="Voir la route"><span aria-hidden="true">🛤️</span> La route</button>' : ''}<em>${S.palier}<small> / ${N}</small></em></span>`;
   const suite = E.filter(e => !e.fait).slice(0, 6), fin = E[N - 1];
   const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${parcoursEtape === e.n ? 'choisi' : ''}" data-etape="${e.n}" aria-expanded="${parcoursEtape === e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
@@ -4992,6 +5001,9 @@ function effetCoupDeGrace() {
 }
 
 function ornementsDe(s) { return (s && (s.ornements || (s.reglages && s.reglages.ornements))) || {}; }
+// ornements + jours actifs et série record (forme du familier qui évolue) : pour soi (state) ou pour une fiche de compagnon
+const ornAvecSerie = s => Object.assign({ _jours: joursDe(s), _serie: serieDe(s) }, ornementsDe(s));
+const ornCompagnon = c => Object.assign({ _jours: joursDe(c), _serie: serieDe(c) }, (c && c.ornements) || {});
 function ornementDebloque(s, o) { try { return !!o.ok(s); } catch (e) { return false; } }
 /** Ajoute les ornements équipés au dessin du personnage (cadre 200 × 260, pieds vers y = 242). */
 function orner(svg, orn, id, grand) {
@@ -7318,7 +7330,7 @@ function vueCompagnonDetail(c) {
   const pv = Math.max(0, Math.min(100, c.pv / (c.pvMax || 100) * 100));
   return `<div class="comp-detail">
     <button class="lien retour" data-retour="1">‹ La Compagnie</button>
-    <div class="comp moi"><div class="comp-av" data-vitrine-comp="1" role="button" aria-label="Voir en grand">${orner(cl.dessin(pal, 'cd', lookDe(c.look)), c.ornements, 'cd')}</div>
+    <div class="comp moi"><div class="comp-av" data-vitrine-comp="1" role="button" aria-label="Voir en grand">${orner(cl.dessin(pal, 'cd', lookDe(c.look)), ornCompagnon(c), 'cd')}</div>
       <div class="comp-txt"><b>${esc(c.heros)}</b><span class="tt">${[c.titre, 'niveau ' + c.niveau, (c.classe || {}).nom].filter(Boolean).map(esc).join(' · ')}</span>
         <div class="bar pv"><i style="width:${pv}%"></i></div><span>${c.pv} PV · ${Math.round(Number(c.xpTotale)).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP${c.d20 ? ` · 🎲 ${c.d20.de} (${esc(c.d20.titre)})` : ''}</span></div></div>
     <div class="section"><h2>Aujourd'hui</h2><span>${auj.filter(h => h.jour.fait).length}/${auj.length}</span></div>
@@ -7378,7 +7390,7 @@ function avantMatchAFaire(s) {
     if (document.body.classList.contains('bloque') || !!document.querySelector('.boss-win') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #coffreOv, .rc-ov')].some(el => el.classList.contains('on'))) { setTimeout(essayer, 2000); return; }
     try { localStorage.setItem(k, '1'); } catch (e) {}
     const moi = { nom: s.heros, classe: (s.classe || {}).nom, look: s.look, niveau: s.niveau, moi: true };
-    const dess = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
+    const dess = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornAvecSerie(s) : ornCompagnon(c), id); };
     const B = (s.boss || {}).semaine;
     const ov = document.createElement('div'); ov.className = 'am-ov on'; ov.setAttribute('role', 'dialog');
     ov.innerHTML = `<div class="am-scene"><div class="am-h g" style="--c:${couleurClasse(moi.classe)}">${dess(moi, 'amg')}<b>Toi</b></div>
@@ -7425,7 +7437,7 @@ const nbFr = n => Math.round(Number(n) || 0).toLocaleString('fr-FR').replace(/�
 function cfuDonnees(s, moi, lui) {
   const B = (s.boss || {}).semaine, bossOk = B && B.statut !== 'À venir';
   const dg = n => Math.round(Number(((B || {}).degats || {})[n]) || 0);
-  const dessin = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornementsDe(s) : (c.ornements || {}), id); };
+  const dessin = (c, id) => { const cl = classeDe({ classe: { nom: c.classe } }); return orner(cl.dessin(palierDe(Number(c.niveau) || 1, cl), id, lookDe(c.look)), c.moi ? ornAvecSerie(s) : ornCompagnon(c), id); };
   const a = Number(moi.xpSemaine) || 0, b = Number(lui.xpSemaine) || 0, meneur = a === b ? '' : a > b ? 'g' : 'd';
   const ecart = a === b ? '' : a < b ? `Plus que <b>${nbFr(b - a)} XP</b> pour prendre la couronne` : `${esc(nomCompagnon(lui))} est à <b>${nbFr(a - b)} XP</b> de la couronne`;
   const prenom = c => esc(c.moi ? (String(c.nom || '').split(' ')[0] || 'Toi') : nomCompagnon(c));
@@ -7490,7 +7502,7 @@ function vueCompagnie(s, faits, total) {
     const cl = classeDe({ classe: { nom: c.classe } }), pal = palierDe(Number(c.niveau) || 1, cl);
     const pv = Math.max(0, Math.min(100, (Number(c.pv) || 0) / (s.pvMax || 100) * 100));
     return `<div class="comp ${c.moi ? 'moi' : ''}" ${c.moi ? '' : `data-voir="${esc(c.nom)}" role="button"`}>
-      <div class="comp-av" ${c.moi ? 'data-vitrine="1"' : `data-vitrine-nom="${esc(c.nom)}"`} role="button" aria-label="Voir en grand">${orner(cl.dessin(pal, 'c' + esc(c.nom).replace(/\W/g, ''), lookDe(c.look)), c.moi ? ornementsDe(state) : c.ornements, 'c' + esc(c.nom))}<span class="loupe">⤢</span></div>
+      <div class="comp-av" ${c.moi ? 'data-vitrine="1"' : `data-vitrine-nom="${esc(c.nom)}"`} role="button" aria-label="Voir en grand">${orner(cl.dessin(pal, 'c' + esc(c.nom).replace(/\W/g, ''), lookDe(c.look)), c.moi ? ornAvecSerie(state) : ornCompagnon(c), 'c' + esc(c.nom))}<span class="loupe">⤢</span></div>
       <div class="comp-txt">
         <b>${esc(c.nom)}${c.moi ? ' · toi' : ''}</b>
         <span class="tt">${esc(c.titre || '')} · niveau ${c.niveau || 1} · ${esc(c.classe || '')}</span>
@@ -7892,7 +7904,7 @@ function evolution(niveau, titre, nouveauTitre, avant) {
 function cinematiqueEvolution(pal, revoir, apres) {
   const CL = classeDe(), p = CL.paliers[pal], av = CL.paliers[pal - 1];
   const vieux = av ? orner(CL.dessin(pal - 1, 'cev0', lookDe(state && state.look)), null, 'cev0') : '';
-  const neuf = orner(CL.dessin(pal, 'cev1', lookDe(state && state.look)), ornementsDe(state), 'cev1');
+  const neuf = orner(CL.dessin(pal, 'cev1', lookDe(state && state.look)), ornAvecSerie(state), 'cev1');
   const runes = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ';
   const parts = Array.from({ length: 26 }, (_, i) => `<i style="--a:${(i * 360 / 26).toFixed(0)}deg;--d:${(i % 5) * .08}s"></i>`).join('');
   const el = document.createElement('div');
