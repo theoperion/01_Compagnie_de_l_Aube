@@ -4693,7 +4693,7 @@ function orner(svg, orn, id, grand) {
   const k0 = svg.indexOf('</defs>'), i0 = k0 >= 0 ? k0 + 7 : svg.indexOf('>') + 1, j0 = svg.lastIndexOf('</svg>');
   const haut = svg.slice(0, i0), corps = svg.slice(i0, j0), fin = svg.slice(j0);
   const solS = sol ? `<g class="orn orn-sol"${grand ? ' transform="translate(100 243) scale(1.18) translate(-100 -243)"' : ''}>${sol(id)}</g>` : '';
-  const avant = (fam ? `<g transform="${grand ? 'translate(170 238) scale(1.05) translate(-40 -232)' : 'translate(118 0)'}"><g class="orn orn-fam">${fam(id)}</g></g>` : '')
+  const avant = (fam ? `<g transform="${grand ? `translate(${mage ? 170 : 162} 238) scale(1.05) translate(-40 -232)` : `translate(${mage ? 118 : 110} 0)`}"><g class="orn orn-fam">${fam(id)}</g></g>` : '')
     + (emb ? `<g${grand ? ` transform="${orn.monture ? 'translate(190 34) scale(1.5)' : 'translate(100 -24) scale(2.4)'} translate(-42 -54)"` : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
   // Armurerie : aura et cape derrière le héros ; devant de la cape, couronne (posée sur la tête ou le bord du chapeau) et familier de l'Aube devant
   // Voleur (plus mince, épaules sous la capuche) : cape resserrée et rentrée sous la capuche, ourlet au même niveau (Théo, 24/11 : « mal ajustée »)
@@ -4705,7 +4705,8 @@ function orner(svg, orn, id, grand) {
     const [y, k] = mage ? (pal <= 1 ? [56, .8] : pal >= 8 ? [43, .82] : [51, 1]) : (pal <= 1 ? [55, .8] : [46, .92]); // Voleur : posée sur la capuche (elle flottait ~5 px au-dessus)
     couronne = `<g class="orn-suit-tete"><g transform="translate(100 ${y}) scale(${k}) translate(-100 ${-y})">${teteSvg(orn.tete, y, mage && pal >= 2 && pal <= 7)}</g></g>`;
   }
-  const famAube = /^fa_/.test(orn.familier || '') ? familierAubeSvg(orn.familier, stadeFamilier(orn._jours), grand) : '';
+  // Voleur plus mince : le familier de l'Aube se rapproche de 8 (avocat, 24/11 : « tous les cosmétiques »)
+  const famAube = /^fa_/.test(orn.familier || '') ? `<g transform="translate(${mage ? 0 : 8} 0)">${familierAubeSvg(orn.familier, stadeFamilier(orn._jours), grand)}</g>` : '';
   let heros;
   if (grand && orn.monture) {
     // EN SELLE : le héros (coupé aux hanches) est réduit et assis sur la bête ; le tapis de selle et sa jambe passent devant
