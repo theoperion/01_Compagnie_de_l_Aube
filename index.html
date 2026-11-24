@@ -4150,9 +4150,9 @@ document.addEventListener('click', e => { // le compteur d'éclats ouvre la bout
 function contenuCoffre(type, s) {
   const A = s.armurerie, sa = A.saison.id, a = {}; (A.possede || []).forEach(id => { a[id] = 1; });
   const w = POIDS_COF[type] || POIDS_COF.rare, tot = w.reduce((x, y) => x + y, 0);
-  const dispo = rar => cosmListe(s).filter(x => x.butin && x.rarete === rar && !a[x.id] && (x.saison || 'pre') === sa);
+  const dispo = rar => cosmListe(s).filter(x => x.butin && !x.horsCoffre && x.rarete === rar && !a[x.id] && (x.saison || 'pre') === sa);
   const regles = sa === 's1' || (sa === 'pre' && String(s.today || '') >= COFFRES_S1_RODAGE);
-  const existe = rar => cosmListe(s).some(x => x.butin && x.rarete === rar && (x.saison || 'pre') === sa);
+  const existe = rar => cosmListe(s).some(x => x.butin && !x.horsCoffre && x.rarete === rar && (x.saison || 'pre') === sa);
   if (type === 'legendaire' && regles && dispo('legendaire').length) return [{ r: 'legendaire', pct: 100, liste: dispo('legendaire'), existe: true, regles, monte: false }]; // gardien : 100 % légendaire tant qu'il en reste
   return RARETES_COF.map((r, k) => ({ r, pct: Math.round(w[k] / tot * 100), liste: dispo(r), existe: existe(r), regles, monte: regles && k < 2 && RARETES_COF.slice(k + 1, 3).some(r2 => dispo(r2).length) })).filter(x => x.pct > 0);
 }
@@ -4548,7 +4548,7 @@ function tirerCoffreLocal(c, s) {
   const w = POIDS_COF[type] || POIDS_COF.rare, tot = w.reduce((x, y) => x + y, 0);
   let r = hashCof(graine + '|r') % tot, k = 0; while (r >= w[k]) { r -= w[k]; k++; }
   const rarete = RARETES_COF[k], sa = c.saison || 'pre';
-  const dispo = rar => cosmListe(s).filter(x => x.butin && x.rarete === rar && !a[x.id] && (x.saison || 'pre') === sa);
+  const dispo = rar => cosmListe(s).filter(x => x.butin && !x.horsCoffre && x.rarete === rar && !a[x.id] && (x.saison || 'pre') === sa);
   let pool = dispo(rarete);
   // Saison 1 (et Rodage dès le 01/12) : coffre légendaire = un légendaire s'il en reste ; rareté épuisée → un cran au-dessus, jusqu'à épique (comme le moteur)
   const regles = sa === 's1' || (sa === 'pre' && String(s.today || '') >= COFFRES_S1_RODAGE);
