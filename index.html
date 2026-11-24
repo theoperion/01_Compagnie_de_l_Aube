@@ -2608,7 +2608,7 @@ function magicien(st, id) {
       <path d="M${tx},${pointe} q8,4 10,12" stroke="${C.robeOmbre}" stroke-width="4" stroke-linecap="round" fill="none"/>`;
   }
   // Couronne de lumière (100)
-  if (st >= 7) s += `<path d="M84,62 l5,-12 l6,8 l5,-14 l5,14 l6,-8 l5,12z" fill="#ffe9a0" stroke="${C.or}" stroke-width="1"/>`;
+  if (st >= 7) s += `<path class="m-couronne" d="M84,62 l5,-12 l6,8 l5,-14 l5,14 l6,-8 l5,12z" fill="#ffe9a0" stroke="${C.or}" stroke-width="1"/>`;
   s += '</g>'; // fin h-tete
 
   // Grimoire flottant (35+)
@@ -4766,7 +4766,7 @@ function orner(svg, orn, id, grand) {
   const k0 = svg.indexOf('</defs>'), i0 = k0 >= 0 ? k0 + 7 : svg.indexOf('>') + 1, j0 = svg.lastIndexOf('</svg>');
   const haut = svg.slice(0, i0), fin = svg.slice(j0);
   // Magicien couronné (couronne de lumière, fin de progression) : une coiffe la remplace au lieu de s'empiler dessus (galerie du 24/11)
-  const corps = orn.tete && mage ? svg.slice(i0, j0).replace(/<path d="M84,62 l5,-12 l6,8 l5,-14 l5,14 l6,-8 l5,12z"[^>]*\/>/, '') : svg.slice(i0, j0);
+  const corps = orn.tete && mage ? svg.slice(i0, j0).replace(/<path class="m-couronne"[^>]*\/>/, '') : svg.slice(i0, j0);
   const solS = sol ? `<g class="orn orn-sol"${grand ? ' transform="translate(100 243) scale(1.18) translate(-100 -243)"' : ''}>${sol(id)}</g>` : '';
   const avant = (fam ? `<g transform="${grand ? `translate(${mage ? 170 : 162} 238) scale(1.05) translate(-40 -232)` : `translate(${mage ? 118 : 110} 0)`}"><g class="orn orn-fam">${fam(id)}</g></g>` : '')
     + (emb ? `<g${grand ? ` transform="${orn.monture ? 'translate(190 34) scale(1.5)' : 'translate(100 -24) scale(2.4)'} translate(-42 -54)"` : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
