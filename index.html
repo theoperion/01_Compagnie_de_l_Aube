@@ -1052,7 +1052,7 @@
     background: radial-gradient(circle at 50% 32%, #4a1418, #14080c 55%, #050307 82%); animation: bwFondM 11.6s ease-out both; }
   @keyframes bwFond { 0% { background-color: #000; } 60% { box-shadow: inset 0 0 120px rgba(200,40,30,.45); } 75% { box-shadow: inset 0 0 160px rgba(255,210,120,.35); } 100% { box-shadow: inset 0 0 60px rgba(242,165,65,.2); } }
   @keyframes bwFondM { 0% { background-color: #000; } 8% { box-shadow: inset 0 0 200px rgba(0,0,0,.9); } 33% { box-shadow: inset 0 0 150px rgba(220,30,30,.55); } 60% { box-shadow: inset 0 0 190px rgba(255,60,40,.5); } 66% { box-shadow: inset 0 0 220px rgba(255,220,140,.5); } 85% { box-shadow: inset 0 0 120px rgba(242,190,80,.4); } 100% { box-shadow: inset 0 0 70px rgba(242,165,65,.25); } }
-  .bw-passer { position: absolute; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 3; background: rgba(0,0,0,.35); color: var(--muted); border: 1px solid var(--line); border-radius: 20px; min-height: 40px; padding: 10px 16px; font: 600 13px var(--f-texte); }
+  .bw-passer { position: absolute; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 4; background: rgba(0,0,0,.35); color: var(--muted); border: 1px solid var(--line); border-radius: 20px; min-height: 40px; padding: 10px 16px; font: 600 13px var(--f-texte); }
   .boss-win.fin .bw-passer { display: none; }
   .bw-box { width: min(360px, 92vw); }
   .bw-scene { position: relative; height: 420px; margin: 0 auto 6px; }
@@ -1150,7 +1150,7 @@
   .bw-coup.c3 { font-size: 22px; color: #ffe08a; animation: bwCoup 1.1s calc(var(--t3) + .22s) ease-out; }
   .bw-coup.c4 { font-size: 20px; color: #fff; text-shadow: 0 0 12px #ff2a1a, 0 0 4px #8a0a0a, 0 2px 0 #4a0808; animation: bwCoup .85s var(--tr) ease-out; }
   /* Victoire (critique) : les coups s'affichent sous le boss, le coup final au-dessus ; pas de cadre vide pendant l'animation */
-  .bw-coup.c1, .bw-coup.c2 { top: 198px; } .bw-coup.c3 { top: 0; } .bw-coup.c4 { top: 198px; }
+  .bw-coup.c1, .bw-coup.c2 { top: 198px; } .bw-coup.c3 { top: 0; } .bw-coup.c4 { top: 173px; }
   .boss-win.anim:not(.fin) .bw-txt { visibility: hidden; }
   .boss-win.anim:not(.fin) .bw-box { background: none !important; border-color: transparent !important; box-shadow: none !important; }
   .boss-win.anim:not(.fin) .bw-scene { margin-top: 22vh; }
@@ -1206,7 +1206,8 @@
   .boss-win.anim.saute .bw-p, .boss-win.anim.saute .bw-slash, .boss-win.anim.saute .bw-flash, .boss-win.anim.saute .bw-coup, .boss-win.anim.saute .bw-rayons,
   .boss-win.anim.saute .bw-gerbe, .boss-win.anim.saute .bw-onde, .boss-win.anim.saute .bw-noir, .boss-win.anim.saute .bw-griffes, .boss-win.anim.saute .bw-carton { display: none; }
   .boss-win.anim.saute .bw-hi, .boss-win.anim.saute .bw-scene, .boss-win.anim.saute .bw-cam, .boss-win.anim.saute { animation: none; }
-  .boss-win.anim.saute .bw-tampon, .boss-win.anim.saute .bw-relique, .boss-win.anim.saute .bw-flaque, .boss-win.anim.saute .bw-tache { animation: none; opacity: 1; transform: none; }
+  .boss-win.anim.saute .bw-tampon, .boss-win.anim.saute .bw-relique { animation: none; opacity: 1; transform: none; }
+  .boss-win.fin .bw-flaque, .boss-win.fin .bw-tache { animation: none; opacity: 0; } /* avocat : la flaque n'a de sens que pendant la chute */
   .boss-win.anim.saute .bw-relique svg { animation: none; }
   @media (prefers-reduced-motion: reduce) { .bw-svg svg, .bc-av.hit svg { animation: none; } }
   .pliable .pl-t { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--l, 4); overflow: hidden; margin-bottom: 0; }
