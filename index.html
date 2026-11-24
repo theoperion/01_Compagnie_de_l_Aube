@@ -3752,84 +3752,104 @@ const FAMILIERS_AUBE = {
   fa_chouette: ['#f3e3b0', '#8a6a4a', '#5a4430', '#cfb18a'],
   fa_renard: ['#ffd0a8', '#e8742c', '#5a2a10', '#fff'], fa_golem: ['#dcd6e8', '#8a7e9a', '#3a3446', '#7fe3ff']
 };
-/* Dragon de l'Aube : 5 formes selon la meilleure série (Théo, 24/11 : « des évolutions notables, qui donnent envie de faire les séries »). viewBox 0 0 100 100, sol à y = 94. c = [ventre clair, corps, contour sombre, aile]. */
-function dragonAube(st, c) {
-  const C = { ventre: '#efe3ff', corps: c[1], sombre: c[2], aile: c[3], or: '#f2c94c', orS: '#8a5a10', oeil: '#ffd27a' };
-  const oeil = (x, y, r, col) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 1.1}" fill="#fff"/><ellipse cx="${x + r * .15}" cy="${y + r * .1}" rx="${r * .62}" ry="${r * .75}" fill="${col || '#2a1846'}"/><circle cx="${x - r * .25}" cy="${y - r * .35}" r="${r * .3}" fill="#fff"/>`;
-  const oeilFente = (x, y, r) => `<ellipse cx="${x}" cy="${y}" rx="${r * 1.2}" ry="${r * .8}" fill="${C.oeil}" stroke="${C.sombre}" stroke-width=".8"/><ellipse cx="${x}" cy="${y}" rx="${r * .3}" ry="${r * .75}" fill="#2a1104"/>`;
-  const ecailles = (x0, y0, n, r) => Array.from({ length: n }, (_, i) => `<path d="M${x0 - r} ${y0 + i * r * 1.3} q${r} ${r * .9} ${r * 2} 0" stroke="${C.sombre}" stroke-opacity=".35" stroke-width=".8" fill="none"/>`).join('');
-  const assis = (k, armure) => `<g transform="translate(50 93) scale(${k}) translate(-50 -93)">
-      <ellipse cx="63" cy="79" rx="14" ry="12.5" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.6"/>
-      <path d="M57 92 q10 1 16 -1 q2 -3 -2 -4 q-7 1 -14 2 z" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.4" stroke-linejoin="round"/>
-      <path d="M70 92 l2 -2 M73 91 l2 -2" stroke="${C.sombre}" stroke-width="1" stroke-linecap="round"/>
-      <path d="M38 90 Q33 72 41 59 Q47 50 55 52 Q64 56 63 70 Q62 82 56 91 Z" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.7" stroke-linejoin="round"/>
-      ${armure ? `<path d="M42 88 Q38 72 44 62 Q48 56 53 58 Q59 62 57 74 Q55 84 51 88 Z" fill="${C.or}" stroke="${C.orS}" stroke-width="1"/>${Array.from({ length: 5 }, (_, i) => `<path d="M43 ${64 + i * 5} q6 3 12 0" stroke="${C.orS}" stroke-width=".9" fill="none"/>`).join('')}`
-        : `<path d="M42 88 Q38 72 44 62 Q48 56 53 58 Q59 62 57 74 Q55 84 51 88 Z" fill="${C.ventre}"/>${ecailles(49, 64, 5, 3.4)}`}
-      <path d="M45 70 Q41 80 42 90" stroke="${C.sombre}" stroke-width="5.6" fill="none" stroke-linecap="round"/><path d="M45 70 Q41 80 42 90" stroke="${C.corps}" stroke-width="3.8" fill="none" stroke-linecap="round"/>
-      <path d="M53 71 Q52 81 52 90" stroke="${C.sombre}" stroke-width="5.6" fill="none" stroke-linecap="round"/><path d="M53 71 Q52 81 52 90" stroke="${C.corps}" stroke-width="3.8" fill="none" stroke-linecap="round"/>
-      ${[38.5, 41.5, 44.5, 48.5, 51.5, 54.5].map(x => `<path d="M${x} 92.6 l1.4 -2.6 l1.4 2.6 z" fill="#f3e9d4" stroke="${C.sombre}" stroke-width=".5"/>`).join('')}</g>`;
-  if (st === 1) // Dragonnet : assis, grosse tête, coquille sur la tête, pas d'ailes (juste deux moignons), queue enroulée
-    return `<g class="drg drg1">
-      <path d="M66 86 C80 88 84 76 76 72 C72 70 70 76 74 77" stroke="${C.sombre}" stroke-width="6.5" fill="none" stroke-linecap="round"/><path d="M66 86 C80 88 84 76 76 72 C72 70 70 76 74 77" stroke="${C.corps}" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-      <ellipse cx="50" cy="78" rx="19" ry="16" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.6"/>
-      <ellipse cx="50" cy="81" rx="11" ry="11" fill="${C.ventre}"/>${ecailles(50, 74, 4, 3.4)}
-      <path d="M32 72 q-6 -2 -6 -8 q5 1 8 5 z M68 72 q6 -2 6 -8 q-5 1 -8 5 z" fill="${C.aile}" stroke="${C.sombre}" stroke-width="1"/>
-      <ellipse cx="40" cy="92" rx="6" ry="3.4" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.2"/><ellipse cx="60" cy="92" rx="6" ry="3.4" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.2"/>
-      <circle cx="50" cy="50" r="17" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.6"/>
-      <ellipse cx="50" cy="58" rx="9" ry="6" fill="${C.ventre}"/><circle cx="46.5" cy="58" r="1" fill="${C.sombre}"/><circle cx="53.5" cy="58" r="1" fill="${C.sombre}"/>
-      ${oeil(43, 48, 4.4)}${oeil(57, 48, 4.4)}
-      <path d="M38 40 l-2 -5 l5 3 z M62 40 l2 -5 l-5 3 z" fill="${C.or}" stroke="${C.orS}" stroke-width=".6"/>
-      <path d="M36 36 L39 30 L43 34 L47 28 L51 33 L55 27 L58 33 L62 30 L64 36 Q50 31 36 36 Z" fill="#fbf3e2" stroke="#b9a98a" stroke-width="1"/>
-      <path d="M44 62 q6 3 12 0" stroke="${C.sombre}" stroke-width="1" fill="none" stroke-linecap="round"/></g>`;
-  if (st === 2) // Jeune : debout de trois quarts, cou plus long, ailes repliées, petites cornes, crête, queue à pointe
-    return `<g class="drg drg2">
-      <path d="M62 84 C78 90 92 82 90 68" stroke="${C.sombre}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M62 84 C78 90 92 82 90 68" stroke="${C.corps}" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M90 68 l-5 -6 l9 1 z" fill="${C.aile}" stroke="${C.sombre}" stroke-width="1"/>
-      <path class="orn-aile" d="M34 62 C22 52 20 36 30 30 C30 42 36 48 44 52 Z" fill="${C.aile}" stroke="${C.sombre}" stroke-width="1.3"/>
-      <path d="M30 30 l-1 10 M30 30 l4 12" stroke="${C.sombre}" stroke-width=".8" opacity=".6"/>
+/* Dragon de l'Aube v2 (24/11 nuit, Théo : « orange, avec des flammes, un truc qui envoie ») : 5 formes selon la meilleure série.
+ * viewBox 0 0 100 100, sol à y = 94. Dégradés à id fixes (dessins identiques : un doublon d'id ne change rien). */
+function dragonAube(st) {
+  const O = { c1: '#ff8a3c', c2: '#d9380f', c3: '#7a1606', trait: '#2e0a02', ventre1: '#ffd77a', ventre2: '#b86a1a', corne1: '#ffe7a8', corne2: '#6a3a10', aile1: '#5a0e06', aile2: '#ff6a1a', oeil: '#fff36a' };
+  const defs = `<defs>
+    <linearGradient id="dgC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${O.c1}"/><stop offset=".55" stop-color="${O.c2}"/><stop offset="1" stop-color="${O.c3}"/></linearGradient>
+    <linearGradient id="dgV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${O.ventre1}"/><stop offset="1" stop-color="${O.ventre2}"/></linearGradient>
+    <linearGradient id="dgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${O.aile2}"/><stop offset=".35" stop-color="#a8200a"/><stop offset="1" stop-color="${O.aile1}"/></linearGradient>
+    <linearGradient id="dgK" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${O.corne2}"/><stop offset="1" stop-color="${O.corne1}"/></linearGradient>
+    <radialGradient id="dgF" cx="50%" cy="80%" r="70%"><stop offset="0" stop-color="#fffbe0"/><stop offset=".35" stop-color="#ffe14a"/><stop offset=".7" stop-color="#ff8a1a"/><stop offset="1" stop-color="#e0300a"/></radialGradient>
+    <radialGradient id="dgH" cx="50%" cy="50%" r="50%"><stop offset=".5" stop-color="#ffb347" stop-opacity=".45"/><stop offset="1" stop-color="#ff4d1a" stop-opacity="0"/></radialGradient></defs>`;
+  const flamme = (x, y, k, cls) => `<path class="${cls || 'orn-flamme'}" transform="translate(${x} ${y}) scale(${k})" d="M0 0 C-6 -4 -7 -12 -2 -18 C-2 -13 1 -12 2 -15 C2 -20 0 -24 3 -28 C6 -22 10 -16 8 -8 C10 -10 10 -13 9 -15 C14 -9 10 0 0 0 Z" fill="url(#dgF)" stroke="#a8200a" stroke-width=".6"/>`;
+  const oeilBebe = (x, y, r) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 1.15}" fill="#fff"/><ellipse cx="${x + r * .12}" cy="${y + r * .12}" rx="${r * .66}" ry="${r * .8}" fill="#3a1204"/><ellipse cx="${x + r * .12}" cy="${y + r * .2}" rx="${r * .4}" ry="${r * .5}" fill="#ff8a1a" opacity=".55"/><circle cx="${x - r * .25}" cy="${y - r * .4}" r="${r * .32}" fill="#fff"/>`;
+  const oeilFeu = (x, y, r) => `<path d="M${x - r * 1.5} ${y + r * .2} Q${x} ${y - r * 1.3} ${x + r * 1.5} ${y - r * .3} Q${x} ${y + r * .9} ${x - r * 1.5} ${y + r * .2} Z" fill="${O.oeil}" stroke="${O.trait}" stroke-width=".8"/><ellipse cx="${x + r * .1}" cy="${y - r * .1}" rx="${r * .28}" ry="${r * .7}" fill="#2a0a02"/><circle cx="${x - r * .5}" cy="${y - r * .35}" r="${r * .22}" fill="#fff"/>`;
+  const ecailles = (x0, y0, n, r) => Array.from({ length: n }, (_, i) => `<path d="M${x0 - r} ${y0 + i * r * 1.25} q${r} ${r * .9} ${r * 2} 0" stroke="#7a3a08" stroke-opacity=".75" stroke-width="1" fill="none"/>`).join('');
+  const pointsDos = (pts, k) => pts.map(([x, y]) => `<path d="M${x} ${y} l${-4 * k} ${-1.5 * k} l${2.4 * k} ${3.6 * k} z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".5"/>`).join('');
+  // corps assis commun (cuisse, torse penché, pattes avant griffues) ; lave : fêlures de lave sur le corps (Ancien)
+  const assis = (k, lave) => `<g transform="translate(50 93) scale(${k}) translate(-50 -93)">
+      <ellipse cx="63" cy="79" rx="14.5" ry="13" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.6"/>
+      <path d="M58 79 q6 -6 12 -2" stroke="#ffd08a" stroke-width="1.2" fill="none" opacity=".6"/>
+      <path d="M56 92 q10 1 17 -1 q2 -3 -2 -4 q-7 1 -15 2 z" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M69 92.2 l2 -3 l1 3 M73 91.6 l2 -3 l1 3" fill="${O.corne1}" stroke="${O.trait}" stroke-width=".5"/>
+      <path d="M38 90 Q32 72 41 58 Q47 49 55 51 Q65 55 64 70 Q63 82 56 91 Z" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M42 88 Q38 72 44 61 Q48 55 53 57 Q60 61 58 74 Q56 84 51 88 Z" fill="url(#dgV)" stroke="#c97a1a" stroke-width=".8"/>${ecailles(49, 63, 6, 3.3)}
+      ${lave ? `<g class="orn-runes" stroke="#ffe14a" stroke-width="1.1" fill="none" stroke-linecap="round"><path d="M58 70 l4 3 l-1 5 l3 3 M62 84 l3 -2 l2 3 M37 66 l2 4 l-2 4"/></g>` : ''}
+      <path d="M45 69 Q40 80 41 90" stroke="${O.trait}" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M45 69 Q40 80 41 90" stroke="url(#dgC)" stroke-width="4.2" fill="none" stroke-linecap="round"/>
+      <path d="M54 70 Q53 81 53 90" stroke="${O.trait}" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M54 70 Q53 81 53 90" stroke="url(#dgC)" stroke-width="4.2" fill="none" stroke-linecap="round"/>
+      ${[37.5, 40.5, 43.5, 49.5, 52.5, 55.5].map(x => `<path d="M${x} 92.8 l1.5 -3 l1.5 3 z" fill="${O.corne1}" stroke="${O.trait}" stroke-width=".5"/>`).join('')}</g>`;
+  const queue = (larg, x2, y2, k) => `<path d="M60 86 C78 94 ${x2 - 2} ${y2 + 22} ${x2} ${y2}" stroke="${O.trait}" stroke-width="${larg + 2}" fill="none" stroke-linecap="round"/><path d="M60 86 C78 94 ${x2 - 2} ${y2 + 22} ${x2} ${y2}" stroke="url(#dgC)" stroke-width="${larg}" fill="none" stroke-linecap="round"/><path transform="translate(${x2} ${y2}) scale(${k || .8})" d="M0 2 L-6 -2 L0 -14 L6 -2 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".8" stroke-linejoin="round"/>`;
+  const tete = (y, k, cornes, crete) => `<g transform="translate(50 ${y}) scale(${k}) translate(-50 -24)">
+      ${crete ? `<g class="orn-flamme">${[[38, 26, 1.1], [36, 34, .9], [38, 18, .9]].map(([x, yy, kk]) => `<path transform="translate(${x} ${yy}) scale(${kk}) rotate(-60)" d="M0 0 C-6 -4 -7 -12 -2 -18 C-1 -13 2 -12 3 -15 C4 -9 8 -4 0 0 Z" fill="url(#dgF)" stroke="#a8200a" stroke-width=".5"/>`).join('')}</g>` : ''}
+      <path d="M37 28 Q38 15 51 14 Q62 14 65 22 Q72 24 72 30 Q64 35 55 34 Q42 36 37 28 Z" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M55 32 Q63 32 71 29" stroke="${O.trait}" stroke-width="1" fill="none"/><path d="M58 34.5 l1.4 2 l1.2 -2 M63 34 l1.3 1.8 l1 -1.9" fill="${O.corne1}" stroke="${O.trait}" stroke-width=".4"/>
+      <ellipse cx="68" cy="26" rx="1.2" ry=".8" fill="${O.trait}"/><path d="M40 22 q6 -5 14 -2" stroke="#ffd08a" stroke-width="1.2" fill="none" opacity=".7"/>
+      ${oeilFeu(50, 23, 3.4)}
+      ${cornes}</g>`;
+  const cornesJeune = `<path d="M42 18 Q37 9 31 6 Q38 7 46 15 Z M51 15 Q50 6 46 1 Q55 5 56 14 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".8"/>`;
+  const cornesAube = `<path d="M41 18 Q32 6 21 4 Q33 2 46 14 Z M50 14 Q49 3 41 -4 Q55 -1 56 13 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".9"/><path d="M28 6 l3 2 M35 5 l2 3 M46 0 l1 3" stroke="${O.corne2}" stroke-width=".8"/>`;
+  const cornesAncien = `<path d="M41 18 Q30 4 17 1 Q31 -2 46 13 Z M49 14 Q48 1 39 -7 Q55 -4 56 13 Z M57 15 Q62 4 60 -4 Q67 4 62 16 Z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".9"/><path d="M43 14 L46 8 L49 12 L52 7 L55 12" stroke="#ffe14a" stroke-width="1.6" fill="none" stroke-linejoin="round"/>`;
+  // aile large : bord d'attaque jusqu'à la pointe, 4 doigts, membrane festonnée entre les doigts, reflet de braise sur le bord
+  const aile = (cote, k, bords) => `<g transform="translate(50 50) scale(${cote * k} ${k}) translate(-50 -50)"><g class="orn-aile">
+      <path d="M46 55 C40 41 27 23 3 6 Q11 21 6 31 Q17 30 17 41 Q28 37 31 49 Q40 46 46 57 Z" fill="url(#dgA)" stroke="${bords || O.trait}" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M45 52 L3 6 M44 52 L6 31 M44 53 L17 41 M45 54 L31 49" stroke="${O.trait}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <path d="M45 52 L3 6 M44 52 L6 31 M44 53 L17 41" stroke="#ff9a4a" stroke-width=".5" fill="none" opacity=".7"/>
+      <path d="M46 55 C40 41 27 23 3 6" stroke="#ffb347" stroke-width="1.1" fill="none" opacity=".85"/>
+      <path d="M8 13 l-3 -3 M3 6 l-2 -2.6" stroke="${O.corne1}" stroke-width="1.4" stroke-linecap="round"/></g></g>`;
+  const ombre = `<ellipse cx="50" cy="94" rx="24" ry="3.2" fill="#000" opacity=".28"/>`;
+  if (st <= 0) // Œuf de braise : coquille sombre écaillée, fêlures de lave qui pulsent, petite chaleur au sol
+    return `<g class="drg drg0">${defs}${ombre}<ellipse class="orn-runes" cx="50" cy="90" rx="16" ry="3" fill="#ff8a1a" opacity=".4"/>
+      <g class="orn-oeuf"><ellipse cx="50" cy="66" rx="20" ry="26" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.8"/>
+      ${[[42, 52], [56, 56], [46, 72], [58, 76], [40, 82], [52, 86]].map(([x, y]) => `<path d="M${x - 4} ${y} q4 3 8 0" stroke="${O.trait}" stroke-opacity=".45" stroke-width="1" fill="none"/>`).join('')}
+      <path d="M38 46 q6 -8 14 -6" stroke="#ffc768" stroke-width="1.6" fill="none" opacity=".7"/>
+      <path class="orn-runes" d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5 M48 63 l-2 7 l3 4" stroke="#ffe14a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/></g></g>`;
+  if (st === 1) // Dragonnet : bébé tout rond, coquille sur la tête, flammèche au bout de la queue, pas d'ailes
+    return `<g class="drg drg1">${defs}${ombre}
+      <path d="M64 86 C80 90 86 78 78 72 C73 69 70 75 74 77" stroke="${O.trait}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M64 86 C80 90 86 78 78 72 C73 69 70 75 74 77" stroke="url(#dgC)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M74 77 l-4 3 l1 -6 z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".6"/>
+      <ellipse cx="50" cy="78" rx="19" ry="16" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.6"/>
+      <ellipse cx="50" cy="81" rx="11" ry="11" fill="url(#dgV)"/>${ecailles(50, 74, 4, 3.4)}
+      <path d="M33 70 q-7 -1 -8 -8 q6 1 9 5 z M67 70 q7 -1 8 -8 q-6 1 -9 5 z" fill="url(#dgA)" stroke="${O.trait}" stroke-width="1"/>
+      <ellipse cx="40" cy="92" rx="6.5" ry="3.4" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.2"/><ellipse cx="60" cy="92" rx="6.5" ry="3.4" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.2"/>
+      <circle cx="50" cy="50" r="17.5" fill="url(#dgC)" stroke="${O.trait}" stroke-width="1.6"/><path d="M38 42 q8 -8 18 -6" stroke="#ffd08a" stroke-width="1.4" fill="none" opacity=".7"/>
+      <ellipse cx="50" cy="58" rx="9.5" ry="6.2" fill="url(#dgV)"/><circle cx="46.5" cy="57.5" r="1" fill="${O.trait}"/><circle cx="53.5" cy="57.5" r="1" fill="${O.trait}"/>
+      ${oeilBebe(42.5, 48, 4.6)}${oeilBebe(57.5, 48, 4.6)}<ellipse cx="36" cy="55" rx="3" ry="1.8" fill="#ff5a3a" opacity=".35"/><ellipse cx="64" cy="55" rx="3" ry="1.8" fill="#ff5a3a" opacity=".35"/>
+      <path d="M44 62 q6 3.5 12 0" stroke="${O.trait}" stroke-width="1.1" fill="none" stroke-linecap="round"/><g class="orn-souffle" fill="#cfc6c0" opacity=".7"><circle cx="44" cy="52" r="1.4"/><circle cx="42" cy="49.5" r="1"/><circle cx="56" cy="52" r="1.4"/><circle cx="58" cy="49.5" r="1"/></g>
+      <path d="M38 40 l-2.4 -5 l5.4 3 z M62 40 l2.4 -5 l-5.4 3 z" fill="url(#dgK)" stroke="${O.trait}" stroke-width=".6"/>
+      <path d="M35 37 L38 30 L42 34 L46 27 L50 32 L54 26 L58 32 L62 29 L65 36 Q50 31 35 37 Z" fill="#fff8ea" stroke="#b99f7a" stroke-width="1"/><path d="M40 33 l2 -1 M52 30 l2 1" stroke="#d9c4a2" stroke-width=".7"/></g>`;
+  if (st === 2) // Jeune dragon : assis, ailes repliées, petites cornes, épines, flamme de queue
+    return `<g class="drg drg2">${defs}${ombre}${queue(5.5, 88, 66, .6)}
+      ${aile(1, .62)}
       ${assis(1, false)}
-      <path d="M46 58 Q44 46 48 40" stroke="${C.sombre}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M46 58 Q44 46 48 40" stroke="${C.corps}" stroke-width="8" fill="none" stroke-linecap="round"/>
-      ${[[42, 50], [38, 58], [37, 66]].map(([x, y]) => `<path d="M${x} ${y} l-4 -2 l1 4 z" fill="${C.or}" stroke="${C.orS}" stroke-width=".5"/>`).join('')}
-      <path d="M36 36 Q38 24 50 24 Q60 24 62 32 Q66 34 66 38 Q60 42 52 42 Q40 44 36 36 Z" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M52 40 Q60 40 65 37" stroke="${C.sombre}" stroke-width="1" fill="none"/><circle cx="62" cy="34" r=".9" fill="${C.sombre}"/>
-      ${oeilFente(48, 32, 3.2)}
-      <path d="M42 26 Q38 18 34 16 Q40 18 45 24 Z M50 24 Q50 16 47 12 Q53 16 54 23 Z" fill="${C.or}" stroke="${C.orS}" stroke-width=".7"/></g>`;
-  if (st === 3) // Dragon de l'Aube : ailes déployées (animées), grandes cornes, crête d'or, souffle de lumière
-    return `<g class="drg drg3">
-      <path class="orn-aile" d="M42 54 C26 40 8 40 2 22 C12 28 18 26 22 20 C24 28 30 30 34 26 C34 36 40 42 46 46 Z" fill="${C.aile}" stroke="${C.sombre}" stroke-width="1.4" stroke-linejoin="round"/>
-      <path class="orn-aile" d="M58 54 C74 40 92 40 98 22 C88 28 82 26 78 20 C76 28 70 30 66 26 C66 36 60 42 54 46 Z" fill="${C.aile}" stroke="${C.sombre}" stroke-width="1.4" stroke-linejoin="round"/>
-      <path d="M22 20 L38 48 M34 26 L42 50 M78 20 L62 48 M66 26 L58 50" stroke="${C.sombre}" stroke-width=".9" opacity=".55"/>
-      <path d="M60 86 C80 94 96 84 94 66" stroke="${C.sombre}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M60 86 C80 94 96 84 94 66" stroke="${C.corps}" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path class="orn-flamme" d="M94 66 q-6 -6 -2 -14 q2 6 6 6 q2 -6 -1 -10 q8 6 3 16 z" fill="${C.or}" stroke="${C.orS}" stroke-width=".7"/>
+      <path d="M46 57 Q44 46 48 39" stroke="${O.trait}" stroke-width="10.5" fill="none" stroke-linecap="round"/><path d="M46 57 Q44 46 48 39" stroke="url(#dgC)" stroke-width="8.5" fill="none" stroke-linecap="round"/>
+      ${pointsDos([[43, 48], [40, 56], [38, 64]], .9)}
+      ${tete(30, .92, cornesJeune, false)}</g>`;
+  if (st === 3) // Dragon de l'Aube : ailes de feu déployées, crinière de flammes, grandes cornes, flamme de queue, souffle
+    return `<g class="drg drg3">${defs}${ombre}
+      ${aile(1, 1)}${aile(-1, 1)}
+      ${queue(6.5, 92, 62, .8)}
       ${assis(1.08, false)}
-      <path d="M48 52 Q46 40 50 32" stroke="${C.sombre}" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M48 52 Q46 40 50 32" stroke="${C.corps}" stroke-width="9" fill="none" stroke-linecap="round"/>
-      ${[[44, 42], [41, 50], [37, 58], [35, 66]].map(([x, y], i) => `<path d="M${x} ${y} l-${4 + i % 2} -3 l2 5 z" fill="${C.or}" stroke="${C.orS}" stroke-width=".5"/>`).join('')}
-      <path d="M38 28 Q40 16 52 16 Q62 16 64 24 Q70 26 70 31 Q62 35 54 35 Q42 37 38 28 Z" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.7" stroke-linejoin="round"/>
-      <path d="M54 33 Q62 33 69 30" stroke="${C.sombre}" stroke-width="1" fill="none"/><circle cx="66" cy="27" r="1" fill="${C.sombre}"/>
-      <g class="orn-souffle"><circle cx="76" cy="30" r="3" fill="#fff3c4" opacity=".9"/><circle cx="82" cy="28" r="2" fill="#ffe08a" opacity=".7"/><circle cx="87" cy="27" r="1.3" fill="#ffd27a" opacity=".5"/></g>
-      ${oeilFente(50, 24, 3.4)}
-      <path d="M42 19 Q34 8 26 6 Q36 6 46 16 Z M51 16 Q50 6 44 0 Q54 4 56 15 Z" fill="${C.or}" stroke="${C.orS}" stroke-width=".8"/></g>`;
-  // 4 : Dragon Ancien : plus massif, plastron d'écailles d'or, runes qui brillent, couronne de cornes, aura
-  return `<g class="drg drg4">
-    <circle class="orn-halo" cx="50" cy="52" r="46" fill="none" stroke="${C.or}" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="2 5"/>
-    <path class="orn-aile" d="M40 54 C22 38 4 40 0 16 C10 22 16 20 20 12 C22 22 28 24 32 18 C34 30 38 38 46 44 Z" fill="${C.aile}" stroke="${C.or}" stroke-width="1.5" stroke-linejoin="round"/>
-    <path class="orn-aile" d="M60 54 C78 38 96 40 100 16 C90 22 84 20 80 12 C78 22 72 24 68 18 C66 30 62 38 54 44 Z" fill="${C.aile}" stroke="${C.or}" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M20 12 L38 46 M32 18 L42 48 M80 12 L62 46 M68 18 L58 48" stroke="${C.sombre}" stroke-width="1" opacity=".55"/>
-    <path d="M58 88 C80 98 98 86 96 64" stroke="${C.sombre}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M58 88 C80 98 98 86 96 64" stroke="${C.corps}" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path class="orn-flamme" d="M96 64 q-7 -7 -2 -16 q2 7 7 7 q3 -7 -1 -12 q10 7 3 19 z" fill="#ffe08a" stroke="${C.orS}" stroke-width=".7"/>
-    ${assis(1.16, true)}
-    <g class="orn-runes" fill="none" stroke="#9fe4ff" stroke-width="1.1" stroke-linecap="round"><path d="M61 74 l3 -4 l3 4 M58 82 h6 M62 86 v-3"/></g>
-    <path d="M48 48 Q46 36 50 28" stroke="${C.sombre}" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M48 48 Q46 36 50 28" stroke="${C.corps}" stroke-width="10" fill="none" stroke-linecap="round"/>
-    <path d="M38 24 Q40 12 52 12 Q62 12 64 20 Q71 22 71 28 Q62 32 54 32 Q42 34 38 24 Z" fill="${C.corps}" stroke="${C.sombre}" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="M54 30 Q62 30 70 27" stroke="${C.sombre}" stroke-width="1" fill="none"/><circle cx="67" cy="24" r="1" fill="${C.sombre}"/>
-    <g class="orn-souffle"><circle cx="78" cy="27" r="3.4" fill="#fff3c4" opacity=".9"/><circle cx="85" cy="25" r="2.3" fill="#ffe08a" opacity=".7"/><circle cx="91" cy="24" r="1.5" fill="#ffd27a" opacity=".5"/></g>
-    <ellipse cx="50" cy="20" rx="4" ry="2.8" fill="#9fe4ff" stroke="${C.sombre}" stroke-width=".8"/><ellipse cx="50" cy="20" rx="1.1" ry="2.4" fill="#0a2a3a"/>
-    <path d="M40 16 Q30 4 20 2 Q32 1 44 12 Z M49 12 Q48 2 40 -4 Q52 -1 54 11 Z M56 13 Q60 4 58 -3 Q64 4 60 14 Z" fill="${C.or}" stroke="${C.orS}" stroke-width=".9"/>
-    <path d="M44 14 L47 9 L50 13 L53 9 L56 14" stroke="${C.or}" stroke-width="1.6" fill="none" stroke-linejoin="round"/></g>`;
+      <path d="M48 52 Q45 40 50 31" stroke="${O.trait}" stroke-width="11.5" fill="none" stroke-linecap="round"/><path d="M48 52 Q45 40 50 31" stroke="url(#dgC)" stroke-width="9.5" fill="none" stroke-linecap="round"/>
+      ${pointsDos([[44, 43], [41, 51], [37, 59], [35, 67]], 1.1)}
+      ${tete(24, 1, cornesAube, true)}
+      <g class="orn-souffle"><path d="M72 26 C78 22 84 26 88 22 C86 28 80 30 74 29 Z" fill="url(#dgF)" opacity=".9"/><circle cx="90" cy="22" r="1.6" fill="#ffe14a"/><circle cx="93" cy="26" r="1" fill="#ffb347"/></g></g>`;
+  if (st >= 4) // Dragon Ancien (forme ultime) : plus massif, veines de lave qui pulsent, couronne de cornes, ailes bordées de feu, halo de braise
+    return `<g class="drg drg4">${defs}
+      <circle class="orn-halo" cx="50" cy="50" r="48" fill="url(#dgH)"/>
+      ${[[12, 84], [88, 80], [20, 30], [82, 26]].map(([x, y], i) => `<circle class="orn-runes" cx="${x}" cy="${y}" r="${1.2 + i % 2 * .6}" fill="#ffe14a"/>`).join('')}
+      ${ombre}${aile(1, 1.12, '#ffe14a')}${aile(-1, 1.12, '#ffe14a')}
+      ${queue(7.5, 95, 60, 1)}
+      ${assis(1.16, true)}
+      <path d="M48 49 Q45 36 50 27" stroke="${O.trait}" stroke-width="12.5" fill="none" stroke-linecap="round"/><path d="M48 49 Q45 36 50 27" stroke="url(#dgC)" stroke-width="10.5" fill="none" stroke-linecap="round"/>
+      ${pointsDos([[44, 39], [41, 47], [37, 55], [34, 63], [33, 71]], 1.25)}
+      ${tete(20, 1.06, cornesAncien, true)}
+      <g class="orn-souffle"><path d="M74 21 C82 15 90 21 97 15 C95 24 86 27 77 25 Z" fill="url(#dgF)"/><path d="M78 22 C84 19 89 21 93 18" stroke="#fffbe0" stroke-width="1" fill="none"/></g></g>`;
+  return '';
 }
 function familierAube(id, stade) {
   const c = FAMILIERS_AUBE[id] || FAMILIERS_AUBE.fa_dragon;
-  if (id === 'fa_dragon' && stade >= 1) return dragonAube(Math.min(4, stade), c); // 5 formes : œuf, dragonnet, jeune, Dragon de l'Aube, Ancien
+  if (id === 'fa_dragon') return dragonAube(Math.min(4, Math.max(0, stade))); // 5 formes : œuf de braise, dragonnet, jeune, Dragon de l'Aube, Ancien (rouge et feu, Théo 24/11)
   if (stade > 3) stade = 3; // les autres familiers ont 4 stades
   if (stade <= 0) return `<g class="orn-oeuf"><ellipse cx="50" cy="66" rx="20" ry="26" fill="${c[0]}" stroke="${c[2]}" stroke-width="2"/><path class="orn-fente" d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5" stroke="#fff3c4" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" fill="none"/><path d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5" stroke="${c[2]}" stroke-width="2" fill="none"/><circle cx="44" cy="74" r="3" fill="${c[1]}"/><circle cx="57" cy="56" r="2.5" fill="${c[1]}"/></g>`;
   const yeux = (y, k) => `<circle cx="${50 - 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 + 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 - 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/><circle cx="${50 + 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/>`;
