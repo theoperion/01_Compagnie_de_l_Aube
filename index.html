@@ -5441,11 +5441,11 @@ window.carteBoss = function (b, s) {
   if (!b) return '';
   const mois = b.type === 'mois', vaincu = b.statut === 'Vaincu', enfui = b.statut === 'Enfui', c = bossChiffres(b, s), enCours = b.statut === 'En cours';
   const aura = BOSS_AURA[b.visuel] || '255,120,90';
-  const sousInutile = mois ? `<span>jusqu'au ${dateCourte(b.fin)}</span>` : `<span class="et">${etoiles(b.rang)}</span><span>rang ${b.rang}${b.stade > 1 ? ' · stade ' + (ROMAIN[b.stade] || b.stade) : ''}</span>`;
+  const sousInutile = mois ? `<span>jusqu'au ${dateCourte(b.fin)}</span>` : `<span class="et">${etoiles(b.rang)}</span><span>rang ${b.rang}${false && b.stade > 1 ? ' · stade ' + (ROMAIN[b.stade] || b.stade) : ''}</span>`;
   const scene = `<div class="bf-scene" style="--aura-c:${aura}">
       <div class="bc-av" id="bossAv-${b.type}" data-boss-vue="${b.type}" role="button" aria-label="${vaincu ? 'Revoir la victoire' : 'Ouvrir la fiche du boss'}" style="--aura-c:${aura}">${bossSvg(b.visuel, b.type, b)}${vaincu ? '' : '<i class="bf-info" aria-hidden="true">i</i>'}</div>
       ${vaincu ? '<span class="bf-bande">Vaincu</span>' : enfui ? '<span class="bf-bande">Enfui</span>' : ''}
-      <div class="bf-id"><span class="bf-ruban">${mois ? '🌑 Boss du mois' : '⚔ Boss de la semaine'}</span><b>${nomBoss(b)}</b>${b.stade > 1 ? `<span class="bk-et">Stade ${ROMAIN[b.stade] || b.stade}</span>` : ''}${bkEtats(b, vaincu)}</div>
+      <div class="bf-id"><span class="bf-ruban">${mois ? '🌑 Boss du mois' : '⚔ Boss de la semaine'}</span><b>${nomBoss(b)}</b>${false && b.stade > 1 ? `<span class="bk-et">Stade ${ROMAIN[b.stade] || b.stade}</span>` : ''}${bkEtats(b, vaincu)}</div>
     </div>`;
   const plaques = `<div class="bf-plaques"><span class="f" title="Sa faiblesse"><small>Faible</small>${esc(b.faible)}</span><span title="Il résiste à"><small>Résiste</small>${esc(b.resiste)}</span><button class="x" data-bf-butin="${esc(`Récompense : +${nbF(b.xp)} XP pour toi${mois ? ' et une relique (+1 joker le mois prochain)' : ''}.`)}" aria-label="Récompense">🎁 +${nbF(b.xp)} XP${mois ? ' ✦' : ''}</button></div>`;
   const coups = `<div class="bf-coups"><div class="bk-ch"><span>${c.tot ? `Vos coups : <b>${nbF(c.tot)}</b>` : 'Aucun coup porté : à vous !'}</span>${lienCourt(b, s)}</div>${c.tot ? barreCoups(c, s) : ''}</div>`;
