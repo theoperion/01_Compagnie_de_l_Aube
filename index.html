@@ -125,6 +125,7 @@
   .card.done .name { color: var(--muted); }
   .sceau { position: absolute; right: 44px; top: 50%; width: 38px; height: 38px; margin-top: -19px; transform: rotate(-14deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,.55)); pointer-events: none; }
   .sceau svg { width: 100%; height: 100%; display: block; }
+  .card.done .body { padding-right: 44px; } /* place du sceau : un nom long ne passe plus dessous (avocat, 24/11) */
   .sceau.tombe { animation: sceauTombe .7s cubic-bezier(.3,1.4,.5,1) both; }
 
   @keyframes sceauTombe { 0% { transform: translateY(-40px) rotate(-200deg) scale(1.8); opacity: 0; } 60% { opacity: 1; transform: translateY(2px) rotate(-10deg) scale(.92); } 80% { transform: rotate(-16deg) scale(1.06); } 100% { transform: rotate(-14deg) scale(1); } }
@@ -3490,6 +3491,7 @@ document.addEventListener('click', e => {
  * Chaque rappel disparaît dès que c'est fait ; un appui ouvre le camp (onglet Compagnie). */
 function bandeauRappels(s) {
   const R = [], C = s.camp, P = C && C.pacte, m = s.mj;
+  if (!(s.compagnons || []).length) return ''; // en solo, l'onglet Compagnie n'existe pas
   if (C && !P && (C.modeles || []).length) R.push(['🤝', '<b>Pacte de la semaine</b> : à proposer']);
   else if (P && !P.accepte && P.par !== s.heros) R.push(['🤝', '<b>Un pacte t\'attend</b> : scelle-le']);
   if (m && m.pret && m.monVote == null) R.push(['📜', `<b>Chapitre ${esc(String(m.numero || ''))}</b> : choisis la suite`]);
@@ -4687,7 +4689,9 @@ function orner(svg, orn, id, grand) {
   const avant = (fam ? `<g transform="${grand ? 'translate(170 238) scale(1.05) translate(-40 -232)' : 'translate(118 0)'}"><g class="orn orn-fam">${fam(id)}</g></g>` : '')
     + (emb ? `<g${grand ? ` transform="${orn.monture ? 'translate(190 34) scale(1.5)' : 'translate(100 -24) scale(2.4)'} translate(-42 -54)"` : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
   // Armurerie : aura et cape derrière le héros ; devant de la cape, couronne (posée sur la tête ou le bord du chapeau) et familier de l'Aube devant
-  const auraS = orn.aura ? auraSvg(orn.aura, 'au' + id) : '', capeS = orn.cape ? capeSvg(orn.cape, 'ca' + id) : '', capeAv = orn.cape ? capeDevantSvg(orn.cape, 'ca' + id) : '';
+  // Voleur (plus mince, épaules sous la capuche) : cape resserrée et rentrée sous la capuche, ourlet au même niveau (Théo, 24/11 : « mal ajustée »)
+  const ajusteCape = s => s && !mage ? `<g transform="translate(100 250) scale(.82 .93) translate(-100 -250)">${s}</g>` : s;
+  const auraS = orn.aura ? auraSvg(orn.aura, 'au' + id) : '', capeS = ajusteCape(orn.cape ? capeSvg(orn.cape, 'ca' + id) : ''), capeAv = ajusteCape(orn.cape ? capeDevantSvg(orn.cape, 'ca' + id) : '');
   let couronne = '';
   if (orn.tete) {
     // [y du bandeau, échelle] : chapeau du Magicien (paliers 2 à 7), tête nue, capuche du Voleur
@@ -6495,7 +6499,7 @@ function carteAnnexe(a) {
     <div class="icon">${ICONES[a.carac] || '⭐'}</div>
     <div class="body">
       <div class="name">${esc(a.sous || a.nom)}</div>
-      <div class="meta">${info}${a.jour.fait > 1 ? ` · <b class="ok-t">×${a.jour.fait} aujourd'hui</b>` : ''}${a.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(a.nom)}</div>
+      <div class="meta">${info}${a.jour.fait > 1 ? ` · <b class="ok-t" style="white-space:nowrap">×${a.jour.fait} aujourd'hui</b>` : ''}${a.categorie === 'Pro' ? ' · <span class="pro">Pro</span>' : ''}${sortSur(a.nom)}</div>
       ${gains(a)}
     </div>
     ${a.jour.fait ? '' : `<div class="right">${chipJour(a.jour)}</div>`}
