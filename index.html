@@ -2361,6 +2361,10 @@ html[class] small.epu-p, html[class] .hxc .joker { padding: 0 7px !important; } 
 .orn-t.cosm .orn-b { padding: 16px 6px 6px; } .orn-t.cosm .orn-b b { font-size: 10px; line-height: 1.15; }
 .tr-niche { padding: 8px 6px 6px; }
 .bf-plaques button.x { padding: 3px 9px; }
+/* Zones de toucher de 40 px sans changer le dessin (trouvé par le contrôle de l'onglet Combat, 24/11/2026) */
+.bf-plaques button.x, .bf-coup { position: relative; }
+.bf-plaques button.x::after { content: ''; position: absolute; inset: -8px -2px; }
+.bf-coup::after { content: ''; position: absolute; inset: -3px 0; }
 .ph-c { padding: 8px 6px 7px; } @media (max-width: 380px) { .ph-c small { font-size: 9.5px; } .pt-nom small { display: none; } }
 .capa .lv, .evo .lv, .lv { white-space: nowrap; }
 </style>
