@@ -1106,9 +1106,13 @@
   .boss-win.anim:not(.fin) .bw-scene { margin-top: 22vh; }
   @keyframes bwCoup { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, -6px) scale(1.15); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
   /* Riposte du boss du mois : trois griffures rouges vers les héros */
+  /* griffures de la riposte aux couleurs de la famille du boss, pas en rouge (Théo, 24/11) ; or par défaut */
+  .mort-feu .bw-griffes { --g1: #ff8a2a; --g2: #ffe0a0; --g3: rgba(255,140,50,.85); } .mort-pierre .bw-griffes { --g1: #d8833a; --g2: #ffe2b8; --g3: rgba(230,140,60,.8); }
+  .mort-ombre .bw-griffes { --g1: #9a70e0; --g2: #ecdcff; --g3: rgba(160,110,255,.85); } .mort-eau .bw-griffes { --g1: #4ab4e0; --g2: #e6f8ff; --g3: rgba(110,200,255,.85); }
+  .mort-nature .bw-griffes { --g1: #5ab85a; --g2: #e0ffc8; --g3: rgba(120,220,110,.8); }
   .bw-griffes { position: absolute; left: 50%; top: 250px; width: 0; height: 0; z-index: 3; pointer-events: none; }
   .bw-griffes i { position: absolute; left: -110px; top: calc(var(--k) * 22px - 22px); width: 220px; height: 6px; border-radius: 6px; opacity: 0; transform: rotate(-14deg) scaleX(0);
-    background: linear-gradient(90deg, transparent, #ff3a2a 25%, #ffb0a0 50%, #ff3a2a 75%, transparent); box-shadow: 0 0 14px rgba(255,40,30,.9); animation: bwGriffe .55s calc(var(--tr) + .12s + var(--k) * .05s) ease-out; }
+    background: linear-gradient(90deg, transparent, var(--g1, #e8b040) 25%, var(--g2, #fff3c4) 50%, var(--g1, #e8b040) 75%, transparent); box-shadow: 0 0 14px var(--g3, rgba(255,200,90,.85)); animation: bwGriffe .55s calc(var(--tr) + .12s + var(--k) * .05s) ease-out; }
   @keyframes bwGriffe { 0% { opacity: 1; transform: rotate(-14deg) scaleX(0); } 45% { opacity: 1; transform: rotate(-14deg) scaleX(1); } 100% { opacity: 0; transform: rotate(-14deg) scaleX(1.05); } }
   .bw-p { position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -4px; border-radius: 2px; opacity: 0; animation: bwP 1.4s calc(var(--tm) - .2s) ease-out forwards; }
   @keyframes bwP { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--r)) scale(.4); } }
@@ -3479,8 +3483,8 @@ function capeDevantSvg(id, p) {
   const arr = Array.isArray(COSM_COUL[id]), c0 = arr ? COSM_COUL[id][0] : (couleurPano(id) || '#a83838');
   const rar = rareteCosm(id), riche = rar === 'epique' || rar === 'legendaire', or = riche ? '#e8c35a' : '#b08a52';
   const gemme = lumC(c0) > .55 ? mixC(c0, '#000', .45) : mixC(c0, '#fff', .25);
-  return `<g class="orn-cape-av"><path d="M88 101 Q76 100 70 106 Q64 113 64 124 Q70 116 77 113 Q84 107 92 105 Z M112 101 Q124 100 130 106 Q136 113 136 124 Q130 116 123 113 Q116 107 108 105 Z" fill="${c0}" stroke="#000" stroke-opacity=".35" stroke-width=".8"/>
-    <path d="M70 107 Q66 113 65 121 M130 107 Q134 113 135 121" stroke="${mixC(c0, '#fff', .5)}" stroke-opacity=".6" stroke-width="1.2" fill="none"/>
+  // pans sur les épaules retirés (Théo, 24/11 : « on dirait qu'elle sort du personnage », mage comme voleur) : restent les agrafes qui tiennent la cape
+  return `<g class="orn-cape-av">
     ${riche ? `<path d="M91 104 Q100 109 109 104" stroke="${or}" stroke-width="1.2" fill="none"/>` : ''}
     <circle cx="91" cy="104" r="${riche ? 3.4 : 3}" fill="${or}" stroke="#3a2a10" stroke-width=".7"/><circle cx="109" cy="104" r="${riche ? 3.4 : 3}" fill="${or}" stroke="#3a2a10" stroke-width=".7"/>
     ${riche ? `<circle cx="91" cy="104" r="1.5" fill="${gemme}"/><circle cx="109" cy="104" r="1.5" fill="${gemme}"/>` : ''}
@@ -4734,7 +4738,8 @@ function orner(svg, orn, id, grand) {
     + (emb ? `<g${grand ? ` transform="${orn.monture ? 'translate(190 34) scale(1.5)' : 'translate(100 -24) scale(2.4)'} translate(-42 -54)"` : ''}><g class="orn orn-emb">${emb(id)}</g></g>` : '');
   // Armurerie : aura et cape derrière le héros ; devant de la cape, couronne (posée sur la tête ou le bord du chapeau) et familier de l'Aube devant
   // Voleur (plus mince, épaules sous la capuche) : cape resserrée et rentrée sous la capuche, ourlet au même niveau (Théo, 24/11 : « mal ajustée »)
-  const ajusteCape = s => s && !mage ? `<g transform="translate(100 250) scale(.82 .93) translate(-100 -250)">${s}</g>` : s;
+  // Magicien : cape un peu resserrée aussi (Théo, 24/11 : elle s'évasait en grand triangle)
+  const ajusteCape = s => !s ? s : `<g transform="translate(100 250) scale(${mage ? '.9 .97' : '.82 .93'}) translate(-100 -250)">${s}</g>`;
   const auraS = orn.aura ? auraSvg(orn.aura, 'au' + id) : '', capeS = ajusteCape(orn.cape ? capeSvg(orn.cape, 'ca' + id) : ''), capeAv = ajusteCape(orn.cape ? capeDevantSvg(orn.cape, 'ca' + id) : '');
   let couronne = '';
   if (orn.tete) {
