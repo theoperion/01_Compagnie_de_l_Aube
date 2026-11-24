@@ -1714,86 +1714,67 @@ html.th-olympe .jour::after { content:''; position:absolute; right:64px; top:8px
   @keyframes olyScint { from { opacity: .35; } to { opacity: 1; } }
   body.calme.th-olympe::before, html.th-olympe body.calme::before { animation: none; } @media (prefers-reduced-motion: reduce) { html.th-olympe body::before { animation: none; } } /* grille, critère 4 : mode calme = 0 animation */
   /* ===== Thème « Épopée arcanique » ===== */
-html.th-epopee { font-synthesis: none; font-variant-numeric: lining-nums; }
-html.th-epopee, html.th-epopee body { background:#0d0a0b !important; }
-html.th-epopee body { background:
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .38 0 0 0 0 .3 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23c)' opacity='.10'/%3E%3C/svg%3E") 0 0/300px,
-  radial-gradient(80% 30% at 50% 0%, rgba(162,116,255,.16), transparent 70%),
-  radial-gradient(120% 60% at 50% 110%, rgba(110,50,30,.18), transparent 70%), #0d0a0b !important; }
-html.th-epopee body.h-aube::before, html.th-epopee body.h-soir::before { display:none; }
-html.th-epopee .hx-med { background: radial-gradient(80% 80% at 50% 30%, #3b2a44, #120c12);
-  box-shadow: 0 0 0 2px #0d0a0b, 0 0 0 4px #b8904a, 0 0 0 5px #5a4320, 0 0 0 7px rgba(162,116,255,.0), 0 0 22px rgba(162,116,255,.45); }
-html.th-epopee header.hx::before { content:''; position:absolute; left:-6px; top:8px; width:70px; height:70px; pointer-events:none; border-radius:50%;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 70'%3E%3Cg fill='none' stroke='%23b8a0ff' stroke-width='1.2' stroke-linecap='round'%3E%3Cpath d='M35 1 v4 M35 65 v4 M1 35 h4 M65 35 h4 M11 11 l3 3 M56 56 l3 3 M59 11 l-3 3 M11 59 l3 -3'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat; filter: drop-shadow(0 0 4px #a274ff); }
-html.th-epopee .hx-lvl { font-family:'Alegreya SC'; font-weight:900; font-size:44px; color:#f1d48e; text-shadow: 0 2px 0 #5a3d14, 0 0 18px rgba(212,172,94,.35); }
-html.th-epopee .hero-name { font-family:'Alegreya SC'; font-weight:800; letter-spacing:.02em; }
-html.th-epopee .hx-txt .hero-name { font-size:21px; }
-html.th-epopee .hx-btn, html.th-epopee .engrenage { background:#1a1314 !important; border:1px solid #4a3a28 !important; color:#e6cf9c !important; }
-html.th-epopee .jour, html.th-epopee .duel, html.th-epopee .boss-card { --fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cg fill='none' stroke='%23d4ac5e' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M2 28 V8 Q2 2 8 2 H28'/%3E%3Cpath d='M6 22 Q6 6 22 6' opacity='.7'/%3E%3Cpath d='M9 13 q4 -4 9 -3 M13 9 q-1 5 -4 8' opacity='.8'/%3E%3C/g%3E%3Ccircle cx='8.5' cy='8.5' r='1.6' fill='%23d4ac5e'/%3E%3C/svg%3E"); }
-html.th-epopee .jour { border-radius:6px; border:1px solid #5a4528;
-  background: var(--fil) 3px 3px/30px no-repeat, var(--fil) right 3px top 3px/30px no-repeat, var(--fil) 3px bottom 3px/30px no-repeat, var(--fil) right 3px bottom 3px/30px no-repeat,
-    radial-gradient(100% 120% at 100% 0%, rgba(162,116,255,.16), transparent 55%), linear-gradient(180deg, #221a17, #18120f); }
-html.th-epopee .jour, html.th-epopee .duel, html.th-epopee .boss-card { position:relative; }
-
-html.th-epopee .jour-d20 svg { filter: drop-shadow(0 0 10px rgba(162,116,255,.7)); }
 
 
-html.th-epopee .jour-sub b, html.th-epopee .dl-v b { font-family:'Alegreya SC'; font-weight:900; }
-html.th-epopee .t { transform:none; height:7px !important; border-radius:1px !important; background:#2a201b !important; box-shadow: inset 0 0 0 1px #4a3a28; }
-html.th-epopee .t > i { background: linear-gradient(90deg, #9c7330, #f1d48e) !important; }
-html.th-epopee .t.pv > i { background: linear-gradient(90deg, #7a1a1d, #d0483b) !important; }
-html.th-epopee .sous-onglets { border-radius:6px; background:#141010; border-color:#3b2e25; }
-html.th-epopee .sous-onglets button { font-family:'Alegreya SC'; font-weight:700; font-size:16px; }
-html.th-epopee .sous-onglets button.on { background: linear-gradient(180deg, #2a2019, #1e1713); color:#f1d48e; box-shadow: inset 0 0 0 1px #8a6a36; border-radius:4px; }
-html.th-epopee .section h2 { font-family:'Alegreya SC'; font-weight:800; font-style:normal; font-size:22px; color:#f1e2c0; display:flex; align-items:center; gap:9px; white-space:nowrap; }
-html.th-epopee .section h2::before { content:''; width:16px; height:22px; flex:none;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 22'%3E%3Cpath d='M8 1 V21 M8 6 L14 1 M8 6 L2 1 M8 13 L14 18 M8 13 L2 18' stroke='%23c7b3ff' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;
-  filter: drop-shadow(0 0 4px #a274ff) drop-shadow(0 0 8px #7d4dff); }
-html.th-epopee .section h2::after { content:''; height:1px; width:22px; background: linear-gradient(90deg, #d4ac5e, transparent); }
-html.th-epopee .section span { font-style:italic; }
-html.th-epopee .card { border-radius:8px; background: linear-gradient(180deg, #1e1716, #181213); border:1px solid #3b2e25; box-shadow: inset 0 0 0 3px #181213, inset 0 0 0 4px rgba(212,172,94,.10); }
-html.th-epopee .card.annexe { border-left:1px solid #3b2e25; box-shadow: inset 3px 0 0 #8a6a36, inset 0 0 0 4px rgba(212,172,94,.10); }
-html.th-epopee .card.done { border-style:solid; border-color: rgba(162,116,255,.55);
-  background: radial-gradient(70% 160% at 85% 50%, rgba(162,116,255,.20), transparent 60%), #1a1520;
-  box-shadow: inset 0 0 0 3px #1a1520, inset 0 0 0 4px rgba(199,179,255,.18), 0 0 20px rgba(162,116,255,.18); }
-html.th-epopee .card.done .name { color:#bfb3d6; }
-html.th-epopee .name { font-family:'Source Sans 3'; font-weight:800; font-size:17px; }
-html.th-epopee .icon { background:#261c1a; border-radius:8px; box-shadow: inset 0 0 0 1px #4a3a28; transform: rotate(45deg) scale(.86); }
-html.th-epopee .icon > * { transform: rotate(-45deg); display:inline-block; }
-html.th-epopee .card.done .icon { background:#2a2040; box-shadow: inset 0 0 0 1px #7d5cd6, 0 0 10px rgba(162,116,255,.4); }
-html.th-epopee .sceau { filter: hue-rotate(275deg) saturate(1.3) drop-shadow(0 4px 6px rgba(0,0,0,.6)) drop-shadow(0 0 8px rgba(162,116,255,.55)); }
-html.th-epopee .gains .g { border-radius:4px; background:#1f1817; border-color:#3e3026; }
-html.th-epopee .streak { color:#f0a24a; }
-html.th-epopee .bar { background:#2a201b; }
-html.th-epopee .epic { background: linear-gradient(135deg, #22183a, #1b1415); border:1px solid #4a3a7a; }
-html.th-epopee .tabs { background: rgba(13,10,11,.96); border-top:1px solid #3b2e25; box-shadow: 0 -1px 0 rgba(212,172,94,.08); }
-html.th-epopee .tabs button { font-family:'Alegreya SC'; font-weight:700; font-size:13px; letter-spacing:.04em; text-transform:none; }
-html.th-epopee .tabs button.on { color:#f1d48e; }
-html.th-epopee .tabs button.on span svg { filter: drop-shadow(0 0 6px rgba(162,116,255,.8)); }
-html.th-epopee .tabs button.on::before { background:#a274ff; box-shadow: 0 0 10px #a274ff; width:28px; }
-html.th-epopee .duel { border-radius:6px; border:1px solid #5a4528;
-  background: var(--fil) 3px 3px/30px no-repeat, var(--fil) right 3px top 3px/30px no-repeat,
-   radial-gradient(60% 70% at 22% 35%, rgba(124,141,255,.20), transparent 70%), radial-gradient(60% 70% at 78% 35%, rgba(63,201,161,.16), transparent 70%), linear-gradient(180deg, #201816, #161112); }
-html.th-epopee .dl-niche { border-radius:50% 50% 4px 4px; background: radial-gradient(70% 60% at 50% 40%, color-mix(in srgb, var(--c) 32%, transparent), transparent 75%), #120d10 !important;
-  box-shadow: inset 0 0 0 2px #8a6a36, inset 0 0 0 4px #120d10, inset 0 0 0 5px var(--c), 0 0 24px color-mix(in srgb, var(--c) 30%, transparent) !important; }
-html.th-epopee .dl-vs { font-family:'Alegreya SC'; font-weight:900; font-style:normal; font-size:30px; color:#c7b3ff; text-shadow: 0 0 12px #a274ff, 0 0 2px #fff; }
-html.th-epopee .dl-noms b { font-family:'Alegreya SC'; font-weight:900; font-size:19px; text-transform:none; }
-html.th-epopee .dl-l i { transform:none; border-radius:1px; }
-html.th-epopee .comp { background:#1b1415 !important; border:1px solid #3b2e25 !important; border-radius:8px !important; }
-html.th-epopee .comp.moi { border-color:#8a6a36 !important; }
-html.th-epopee .comp-txt b { font-family:'Alegreya SC'; font-weight:800; font-size:18px; }
-html.th-epopee .boss-card { border-radius:6px; border:1px solid #6a2a24 !important;
-  background: var(--fil) 3px 3px/30px no-repeat, var(--fil) right 3px top 3px/30px no-repeat,
-   radial-gradient(80% 70% at 18% 25%, rgba(208,72,59,.22), transparent 60%), linear-gradient(180deg, #23171a, #161112) !important; }
-html.th-epopee .boss-card b { font-family:'Alegreya SC'; }
-html.th-epopee .bar.boss, html.th-epopee .bar.split { background:#2a201b !important; border-radius:1px !important; }
-html.th-epopee .bar.boss i { background: linear-gradient(90deg, #7a1a1d, #d0483b) !important; }
-html.th-epopee .empty { border-color:#4a3a28; border-radius:6px; font-style:italic; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /* runes qui luisent et cercle arcanique autour du d20 */
-  html.th-epopee .section h2::before { animation: runeLuit 3.2s ease-in-out infinite; }
   @keyframes runeLuit { 0%, 100% { filter: drop-shadow(0 0 2px rgba(162,116,255,.4)); opacity: .8; } 50% { filter: drop-shadow(0 0 8px rgba(162,116,255,.95)); opacity: 1; } }
-  html.th-epopee .jour-d20 { position: relative; }
-  html.th-epopee .jour-d20:not(.fait)::before { content: ''; position: absolute; left: 50%; top: 20px; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%; border: 1px dashed rgba(162,116,255,.7); box-shadow: 0 0 14px rgba(162,116,255,.35); animation: runeTourne 20s linear infinite; }
   /* ===== Thème « Arène » ===== */
 
   /* rayures qui défilent et liseré néon */
@@ -1805,15 +1786,12 @@ html.th-epopee .empty { border-color:#4a3a28; border-radius:6px; font-style:ital
 
   /* boutons qui rebondissent et dé qui sautille */
   /* plateau : clair de lune pour les thèmes de nuit */
-  html.ygg .pl-cadre, html.th-olympe .pl-cadre, html.th-epopee .pl-cadre { position: relative; }
-  html.ygg .pl-cadre > svg, html.th-olympe .pl-cadre > svg, html.th-epopee .pl-cadre > svg { filter: brightness(.85) saturate(.9) hue-rotate(-12deg); }
+  html.ygg .pl-cadre, html.th-olympe .pl-cadre { position: relative; }
+  html.ygg .pl-cadre > svg, html.th-olympe .pl-cadre > svg { filter: brightness(.85) saturate(.9) hue-rotate(-12deg); }
   html.ygg .pl-cadre::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
     background: radial-gradient(60% 30% at 70% 0%, rgba(99,230,173,.18), transparent 70%), linear-gradient(180deg, rgba(20,60,90,.28), rgba(8,17,23,.18)); }
 
   /* repères de section propres à Taverne (chope) et Aube d'origine (petit astre violet) */
-  html.th-taverne .section h2 { display: flex; align-items: center; gap: 8px; }
-  html.th-taverne .section h2::before { content: ''; width: 18px; height: 20px; flex: none;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 20'%3E%3Cpath d='M2 5h10v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z' fill='%23f2a541'/%3E%3Cpath d='M12 8h2.5a2 2 0 0 1 0 6H12' fill='none' stroke='%23f2a541' stroke-width='1.8'/%3E%3Cpath d='M1.5 5a2.5 2.5 0 0 1 3-3 3.2 3.2 0 0 1 5.5 0 2.4 2.4 0 0 1 2.5 3' fill='%23fff6e0'/%3E%3C/svg%3E") center/contain no-repeat; }
   html.ygg .jour-d20:not(.fait)::before { display: none; } /* cercle du d20 retiré (jugé raté par le conseil) */
 
   /* Corrections du critique (19/11) : onglets qui tiennent, troncatures, boutons posés au bon endroit */
@@ -1827,7 +1805,6 @@ html.th-epopee .empty { border-color:#4a3a28; border-radius:6px; font-style:ital
   #app { overflow-x: clip; } /* filet : aucun débordement ne pourra plus cacher la barre fixe */
   @media (max-width: 370px) { .sous-onglets button { letter-spacing: .02em !important; padding-left: 4px; padding-right: 4px; } }
   html.ygg .sous-onglets button { font-size: 13px; letter-spacing: .05em; }
-  html.th-epopee .sous-onglets button { font-size: 15px; }
   html.ygg .sous-onglets button { font-size: 15px; letter-spacing: .03em; } html[class].ygg .tabs button { font-size: 13.5px; } html[class].th-olympe .tabs button { font-size: 12px; } html.th-olympe .sous-onglets button { font-size: 15px; } /* le joueur (20/11) : onglets un peu plus grands */
   .hero-perso .loupe { right: auto; left: 10px; }
 
@@ -2047,8 +2024,8 @@ body.calme .lien *, body.calme .lien em, body.calme .dp-emp, body.calme .dp-plus
 /* 1. Nom du héros entier dans l'en-tête, même à 360 px */
 .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 20px); }
 html.ygg .hx-txt .hero-name, html.th-olympe .hx-txt .hero-name { font-size: clamp(13px, 4.4vw, 17px); letter-spacing: 0; }
-html.th-epopee .hx-txt .hero-name { font-size: clamp(14px, 5.2vw, 21px); letter-spacing: 0; }
-@media (max-width: 380px) { html.ygg .hx-txt .hero-name { font-size: 14px; } html.th-olympe .hx-txt .hero-name { font-size: 13.5px; } html.th-epopee .hx-txt .hero-name { font-size: 17px; } html.th-taverne .hx-txt .hero-name { font-size: 17px; } }
+
+@media (max-width: 380px) { html.ygg .hx-txt .hero-name { font-size: 14px; } html.th-olympe .hx-txt .hero-name { font-size: 13.5px; }   }
 /* 2. Petits écrans (360 × 640) : carte du jour et sous-onglets plus compacts, la première quête remonte */
 @media (max-height: 700px) {
   :root .jour { padding: 8px 10px 8px 12px; margin-top: 8px; }
@@ -2152,8 +2129,7 @@ html[class] .hxc .hx-med svg[aria-label^="Voleur"] { width: 126px; top: -28px; }
 /* décors du thème posés sur le contour du médaillon */
 html.th-olympe .hxc-m::before { content: ''; position: absolute; left: -7px; top: -5px; width: 62px; height: 60px; pointer-events: none; z-index: 1;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 76 74'%3E%3Cg fill='%23e0b866'%3E%3Cg id='b'%3E%3Cellipse cx='9' cy='50' rx='1.7' ry='4.6' transform='rotate(-30 9 50)'/%3E%3Cellipse cx='5.5' cy='40' rx='1.6' ry='4.4' transform='rotate(-10 5.5 40)'/%3E%3Cellipse cx='5' cy='29' rx='1.5' ry='4.2' transform='rotate(10 5 29)'/%3E%3Cellipse cx='8' cy='19' rx='1.4' ry='3.8' transform='rotate(30 8 19)'/%3E%3Cellipse cx='15' cy='59' rx='1.6' ry='4.2' transform='rotate(-55 15 59)'/%3E%3C/g%3E%3Cuse href='%23b' transform='translate(76 0) scale(-1 1)'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat; filter: drop-shadow(0 0 3px rgba(224,184,102,.35)); }
-html.th-epopee .hxc-m::before { content: ''; position: absolute; inset: -6px; pointer-events: none; z-index: 1;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%23b8a0ff' stroke-width='1.3' stroke-dasharray='0.1 4.6' stroke-linecap='round'/%3E%3Cg fill='%23d9c8ff'%3E%3Cpath d='M32 0l1.3 2.7 2.7 1.3-2.7 1.3L32 8l-1.3-2.7L28 4l2.7-1.3z'/%3E%3Cpath d='M60 32l1.3 2.7 2.7 1.3-2.7 1.3L60 40l-1.3-2.7L56 36l2.7-1.3z' transform='translate(0 -4)'/%3E%3Cpath d='M4 32l1.3 2.7 2.7 1.3-2.7 1.3L4 40l-1.3-2.7L0 36l2.7-1.3z' transform='translate(0 -4)'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat; filter: drop-shadow(0 0 3px #a274ff); }
+
 .hxc-l1 { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 6px; row-gap: 40px; padding-top: 2px; min-width: 0; max-height: 21px; overflow: hidden; } /* le titre passe à la ligne… cachée : il s'affiche en entier ou pas du tout */
 .hxc-l1.long { max-height: none; }  /* nom très long : 2 lignes possibles, titre lisible sur la fiche */
 html[class] .hxc .hero-name { flex: 0 1 auto; min-width: 0; font-size: clamp(12.5px, calc(24px - var(--nl) * .5px), 16.5px); line-height: 1.1; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
@@ -2223,8 +2199,8 @@ html:not(.ygg):not(.th-olympe):not(.th-epopee) .cfu .dl-l i { animation-name: cf
 .cfu-tot::after { content: ''; position: absolute; inset: 0; pointer-events: none; transform: translateX(-100%);
   background: linear-gradient(100deg, transparent 35%, color-mix(in srgb, var(--xp2) 18%, transparent) 50%, transparent 65%); animation: cfuLuit 7s ease-in-out 1.2s infinite; }
 html.ygg .cfu-tot b, html.ygg .cfu-pv em b { font-family: var(--f-texte); font-style: normal; font-weight: 700; }
-html.th-olympe .cfu-tot b { font-family: Cinzel; font-style: normal; font-weight: 800; } html.th-epopee .cfu-tot b { font-family: 'Alegreya SC'; font-style: normal; }
-html.th-epopee .cfu-tot { margin: 10px -12px -10px; border-top-color: #5a4528; }
+html.th-olympe .cfu-tot b { font-family: Cinzel; font-style: normal; font-weight: 800; } 
+
 @keyframes cfuRemplir { from { transform: scaleX(0); } }
 @keyframes cfuRemplirSkew { from { transform: skewX(-14deg) scaleX(0); } to { transform: skewX(-14deg) scaleX(1); } }
 @keyframes cfuPip { from { transform: rotate(45deg) scale(0); } to { transform: rotate(45deg) scale(1); } }
@@ -2318,8 +2294,8 @@ html[class] .hxa .hx-btn { height: 24px !important; } html[class] .hxa .hx-btn s
 .hxa .hxd svg { width: 32px; height: 32px; }
 .hxa .hxd small { position: absolute; right: -4px; bottom: -3px; padding: 0 3px; border-radius: 5px; background: var(--card); line-height: 12px; }
 .hxa .hxd:not(.fait) small { right: 50%; transform: translateX(50%); bottom: -5px; font-size: 8px; padding: 0 4px; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); }
-html.ygg .hxa .hxd:not(.fait)::before, html.th-epopee .hxa .hxd:not(.fait)::before { top: 16px; width: 40px; height: 40px; margin: -20px 0 0 -20px; }
-html.th-epopee .hxa .hxd svg { filter: drop-shadow(0 0 4px rgba(162,116,255,.6)); } /* halo resserré : ne passe plus sur les PV */
+html.ygg .hxa .hxd:not(.fait)::before { top: 16px; width: 40px; height: 40px; margin: -20px 0 0 -20px; }
+ /* halo resserré : ne passe plus sur les PV */
 .cfa-cl .cfa-ti { font-style: italic; color: var(--gold); }
 /* Cibles tactiles d'au moins 44 px sur la plaque et la Compagnie, sans changer le dessin (zone invisible autour du bouton) */
 html[class] .hxc .hx-btn { position: relative !important; inset: auto !important; } /* relative sans décalage (l'engrenage garde sa place) */
@@ -5235,7 +5211,7 @@ const css = `
   background: radial-gradient(40% 140% at 0% 50%, rgba(var(--aura-c), .22), transparent 70%), linear-gradient(180deg, #2a1414, var(--panel)); }
 .bfm .bm-av { position: static; flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; } .bfm .bm-av svg { width: 30px; height: 30px; }
 .bfm > strong { flex: 1 1 auto; min-width: 0; font: 700 13px/1.2 var(--f-recit); color: #ff9b8a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-html.th-olympe .bfm > strong, html.th-epopee .bfm > strong { font-size: 12px; letter-spacing: 0; } /* petites capitales plus larges : le nom tient à 360 px */
+html.th-olympe .bfm > strong { font-size: 12px; letter-spacing: 0; } /* petites capitales plus larges : le nom tient à 360 px */
 .bfm .bk-vie.bfm-vie { position: absolute; left: 42px; right: 10px; bottom: 5px; height: 4px; margin: 0; border-radius: 3px; } /* liseré de vie : le nom garde toute la ligne */
 .boss-mini.bfm:has(.bfm-vie) { padding-bottom: 9px; }
 .bfm-p, .bfm-j { flex: none; font: 600 11.5px var(--f-texte); color: var(--muted); white-space: nowrap; } .bfm-p { color: var(--text); }
