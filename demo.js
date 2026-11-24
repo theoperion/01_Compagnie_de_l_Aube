@@ -183,6 +183,33 @@ window.demo = (() => {
   const ornDemo = {};
   Object.keys(demo).forEach(k => { const f = demo[k]; if (typeof f !== 'function') return;
     demo[k] = function () { const r = f.apply(this, arguments); if (r && r.habitudes && r.heros) { r.trophees = [{ date: '2026-11-12', nom: 'La Liche du Scroll', visuel: 'liche', type: 'semaine', trophee: 'Écran brisé', xp: 300 }, { date: '2026-11-08', nom: 'Le Golem de la Flemme', visuel: 'golem', type: 'semaine', trophee: 'Cœur de pierre', xp: 200 }, { date: '2026-10-31', nom: 'La Procrastination', visuel: 'procrastination', type: 'mois', trophee: 'Sablier brisé', xp: 500 }]; r.catalogueCosm = CAT; r.armurerie = JSON.parse(JSON.stringify(arm)); if (r.reglages) r.reglages.ornements = Object.assign({}, r.reglages.ornements, ornDemo); } return r; }; });
+  /* Un boss de la semaine et un du mois (boss du Rodage, déjà publics), même forme que le moteur (Code.js, état d'un combat) :
+   * l'onglet Combat existe ainsi en mode aperçu, et le script de publication le contrôle comme les autres (24/11/2026). */
+  const jIso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const bossDemo = r => {
+    const n = new Date(), lun = new Date(n.getFullYear(), n.getMonth(), n.getDate() - (n.getDay() + 6) % 7), plus = k => jIso(new Date(lun.getFullYear(), lun.getMonth(), lun.getDate() + k));
+    const moi = r.heros, lui = ((demo.getHeros() || []).find(h => h.nom !== moi) || {}).nom || 'ton compagnon d\'armes';
+    const auj = jIso(n), dem = jIso(new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1));
+    const coups = [{ date: auj, heros: moi, quete: 'Lire 20 pages', type: 'coup', valeur: 312, faible: true, resiste: false },
+      { date: auj, heros: lui, quete: 'Course à pied', type: 'coup', valeur: 268, faible: false, resiste: false },
+      { date: plus(0), heros: lui, quete: 'Sommeil', type: 'riposte', valeur: 180 },
+      { date: plus(0), heros: moi, quete: 'Anglais', type: 'coup', valeur: 205, faible: false, resiste: true }];
+    const semaine = { coups, type: 'semaine', nom: 'La Liche du Scroll', rang: 1, faible: 'Intelligence', resiste: 'Sagesse', debut: plus(0), fin: plus(6),
+      pvMax: 3200, pv: 1420, riposte: 180, degats: { [moi]: 1030, [lui]: 930 }, statut: 'En cours', vaincuLe: '', xp: 600, visuel: 'liche',
+      incarne: 'Le défilement sans fin', description: 'Elle se nourrit des minutes perdues à faire défiler l\'écran.', conseil: 'Pose le téléphone, ouvre un livre.', trophee: '',
+      nouvellesRegles: true, stade: 1, nomStade: 'La Liche du Scroll', teinte: 0, attribut: '', phase: 'normal', sbire: null, enhardi: '', coupDuJour: null,
+      coupDemain: { date: dem, capacite: 'malediction', nom: 'Malédiction', icone: '💀', annonce: 'La Liche du Scroll prépare une malédiction pour demain.', contre: 'Brisez-la : ' + moi + ' fait une quête de Intelligence.', cible: moi, carac: 'Sagesse', remede: 'Intelligence', faible: 'Intelligence' },
+      capacites: [{ id: 'malediction', nom: 'Malédiction', icone: '💀' }, { id: 'sbire', nom: 'Sbire', icone: '👹' }] };
+    const m1 = jIso(new Date(n.getFullYear(), n.getMonth(), 1)), mFin = jIso(new Date(n.getFullYear(), n.getMonth() + 1, 0));
+    const mois = { coups: coups.slice(0, 2), type: 'mois', nom: 'La Procrastination', rang: 0, faible: 'Endurance', resiste: 'Charisme', debut: m1, fin: mFin,
+      pvMax: 14000, pv: 9800, riposte: 540, degats: { [moi]: 2300, [lui]: 1900 }, statut: 'En cours', vaincuLe: '', xp: 2000, visuel: 'procrastination',
+      incarne: 'Le « je le ferai demain »', description: 'Plus on la repousse, plus elle grandit.', conseil: 'Commence par cinq minutes.', trophee: '',
+      nouvellesRegles: true, stade: 1, nomStade: 'La Procrastination', teinte: 0, attribut: '', phase: 'normal', sbire: null, enhardi: '', coupDuJour: null, coupDemain: null,
+      capacites: [{ id: 'bouclier', nom: 'Bouclier', icone: '🔰' }, { id: 'vol', nom: 'Vol de joker', icone: '🃏' }, { id: 'malediction', nom: 'Malédiction', icone: '💀' }] };
+    return { semaine, mois };
+  };
+  Object.keys(demo).forEach(k => { const f = demo[k]; if (typeof f !== 'function' || k === 'getHeros') return;
+    demo[k] = function () { const r = f.apply(this, arguments); if (r && r.habitudes && r.heros && !r.boss) r.boss = bossDemo(r); return r; }; });
   demo.equiperOrnement = (slot, id) => { ornDemo[slot] = id || ''; return demo.getState(); };
   demo.ouvrirCoffre = src => { const c = arm.coffres.shift(); const item = ['tr_petales', 'cape_procrastination', 'fa_loup'][arm.ouverts++ % 3];
     if (!arm.possede.includes(item)) arm.possede.push(item); const e = demo.getState(); e.coffreOuvert = { source: src, type: c ? c.type : 'rare', origine: c ? c.origine : '', item, eclats: 0 }; return e; };
