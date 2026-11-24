@@ -4168,7 +4168,7 @@ function etapesParcours(s) {
     const gros = n === N || !!(it && (it.rarete === 'legendaire' || it.rarete === 'epique')) || r.coffre === 'legendaire';
     const type = it ? 'objet' : r.coffre ? 'coffre' : 'eclats';
     const nom = it ? (it.nom || r.item) : r.coffre ? 'Coffre ' + (RARETE_NOM[r.coffre] || '').toLowerCase() : (r.eclats || 0) + ' éclats';
-    return { n, r, it, type, gros, nom, fait: n <= S.palier, proch: n === S.palier + 1, reste: n <= S.palier ? 0 : (n - S.palier) * S.cout - S.dansPalier };
+    return { n, r, it, type, gros, nom, fait: n <= S.palier, proch: n === S.palier + 1, reste: n <= S.palier ? 0 : Math.max(1, Math.ceil((n - S.palier) * S.cout - S.dansPalier)) }; // jamais « encore 0 XP » tant que le palier n'est pas atteint (Théo, 24/11)
   });
 }
 /* Vignette dessinée de la récompense (objet réel, coffre de sa rareté, éclat) : plus d'émojis sur le chemin */
@@ -4336,7 +4336,7 @@ document.addEventListener('click', e => {
   const c = e.target.closest('[data-case]'); if (!c || !state || !state.armurerie) return;
   const n = Number(c.dataset.case), S = state.armurerie.saison, CC = state.catalogueCosm || {}, CH = (CC.chemins && CC.chemins[S.id]) || CC.chemin || CHEMIN_APP;
   const r = CH[n] || { eclats: 20 }, box = document.getElementById('info-case');
-  if (box) { box.innerHTML = `<b>Palier ${n}</b> · ${esc(recompenseTexte(r))}${r.item2 ? ' + ' + esc((cosmItem(r.item2) || {}).nom || '') : ''} · ${n <= S.palier ? '✓ gagné' : `encore ${((n - S.palier) * S.cout - S.dansPalier).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP`}`; box.classList.add('on'); }
+  if (box) { box.innerHTML = `<b>Palier ${n}</b> · ${esc(recompenseTexte(r))}${r.item2 ? ' + ' + esc((cosmItem(r.item2) || {}).nom || '') : ''} · ${n <= S.palier ? '✓ gagné' : `encore ${Math.max(1, Math.ceil((n - S.palier) * S.cout - S.dansPalier)).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP`}`; box.classList.add('on'); }
 });
 /* --- Salle des trophées : un mur de pierre, une niche par boss vaincu (bronze = semaine, or = mois). Toucher = revoir la victoire --- */
 function salleTrophees(s) {
