@@ -133,15 +133,16 @@
   .fu-boss { position: absolute; left: 50%; top: 8px; width: 150px; margin-left: -75px; opacity: .55; filter: saturate(.6); }
   .fu-boss svg { width: 100%; height: auto; display: block; }
   .fu-brume { position: absolute; left: 0; right: 0; bottom: 0; height: 90px; background: radial-gradient(ellipse 50% 45% at 50% 85%, rgba(170,180,210,.38), transparent); opacity: .6; }
-  .fu-poussiere i { position: absolute; left: calc(50% + var(--k) * 9px - 30px); bottom: 18px; width: 12px; height: 12px; border-radius: 50%; background: rgba(200,190,170,.5); opacity: 0; }
+  .fu-poussiere i { position: absolute; left: calc(50% + var(--x) - 30px); bottom: var(--y); width: var(--w); height: var(--w); border-radius: 50%; background: radial-gradient(circle, rgba(210,200,180,.55), transparent 70%); opacity: 0; }
   .fu-t { font: 700 21px var(--f-titre); color: #c9c4d8; margin: 4px 0 0; }
   .fu-s { margin: 0 0 12px; max-width: 320px; font-size: 14px; color: var(--muted); }
   .fu-ok { min-height: 44px; min-width: 160px; }
-  #fuiteOv.anim .fu-boss { opacity: 1; filter: none; animation: fuRegard .7s ease-in-out, fuFile 1.2s .7s cubic-bezier(.55,0,.85,.35) forwards; }
+  #fuiteOv.anim .fu-boss { opacity: 1; filter: none; animation: fuRegard .7s ease-in-out, fuFile 1.2s .7s cubic-bezier(.4,0,.7,.6) forwards; }
+  #fuiteOv.anim .fu-boss svg * { animation-play-state: running; } #fuiteOv .fu-fini svg * { animation-play-state: paused !important; }
   #fuiteOv.anim .fu-brume { animation: fuBrume 1.9s ease-out forwards; }
   #fuiteOv.anim .fu-poussiere i { animation: fuPoussiere .9s calc(.75s + var(--k) * .08s) ease-out forwards; }
   #fuiteOv.anim .fu-t, #fuiteOv.anim .fu-s, #fuiteOv.anim .fu-ok { opacity: 0; animation: fuTexte .5s 1.5s ease-out forwards; }
-  @keyframes fuRegard { 0%, 100% { transform: none; } 30% { transform: translateX(-4px) rotate(-5deg); } 60% { transform: translateX(3px) rotate(4deg); } }
+  @keyframes fuRegard { 0%, 100% { transform: none; } 25% { transform: rotate(-6deg); } 45%, 70% { transform: scaleX(-1) translateX(4px); } 85% { transform: rotate(3deg); } }
   @keyframes fuFile { 0% { transform: none; opacity: 1; } 100% { transform: translate(150px, -14px) scale(.45); opacity: 0; } }
   @keyframes fuBrume { from { opacity: .2; transform: translateX(-30px); } to { opacity: .9; transform: none; } }
   @keyframes fuPoussiere { 0% { opacity: .8; transform: none; } 100% { opacity: 0; transform: translate(-26px, -18px) scale(2.2); } }
@@ -5628,8 +5629,12 @@ function recapAFaire() {
   const prec = j === 0, cle = 'recapVu|' + (prec ? s.bilan.precedente && s.bilan.precedente.lundi : s.bilan.semaine.lundi);
   if (!(j === 6 && h >= 18) && !prec) return;
   if (prec && !(s.bilan.precedente && s.bilan.precedente.faits)) return;
-  try { if (localStorage.getItem(cle)) return; localStorage.setItem(cle, '1'); } catch (e) { return; }
-  setTimeout(() => { if (!document.body.classList.contains('bloque')) ouvrirRecap(prec); }, 2500);
+  try { if (localStorage.getItem(cle)) return; } catch (e) { return; }
+  if (recapPrevu) return; recapPrevu = true;
+  // réessaie tant qu'un autre écran est ouvert (ex. la fuite d'un boss le lundi) ; « vu » seulement quand il s'ouvre (ergonome, 24/11)
+  const essayer = () => { if (document.body.classList.contains('bloque') || document.querySelector('.lvl-ov, .cine')) { setTimeout(essayer, 2000); return; }
+    try { if (localStorage.getItem(cle)) return; localStorage.setItem(cle, '1'); } catch (e) { return; } ouvrirRecap(prec); };
+  setTimeout(essayer, 2500);
 }
 /* Affichette « Nouveau : l'Aventure » : une fois par téléphone, puis 7 jours dans les Nouvelles */
 const AVENTURE_NOUVELLE_JUSQUA = '2026-11-25';
@@ -5741,40 +5746,44 @@ let annonceBossPrevue = false, recapPrevu = false;
 const lireLS = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
 const ecrireLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 function memoBossEnCours(s) {
-  ['semaine', 'mois'].forEach(ty => { const b = s && s.boss && s.boss[ty]; if (b && b.statut === 'En cours' && b.debut)
-    ecrireLS('bossEnCours|' + ty, { nom: b.nom, visuel: b.visuel, debut: b.debut, stade: b.stade, teinte: b.teinte, attribut: b.attribut }); });
+  ['semaine', 'mois'].forEach(ty => { const b = s && s.boss && s.boss[ty]; if (!b || b.statut !== 'En cours' || !b.debut) return;
+    if (b.enhardi && !lireLS('fuiteVue|' + ty + '|' + b.debut)) return; // une fuite reste à montrer : on garde l'ancien boss en mémoire
+    ecrireLS('bossEnCours|' + ty, { nom: b.nom, visuel: b.visuel, debut: b.debut, fin: b.fin, stade: b.stade, teinte: b.teinte, attribut: b.attribut }); });
 }
 let fuitePrevue = false;
 function fuiteAFaire(s) {
   if (fuitePrevue || !s || !s.boss) return;
   const ty = ['semaine', 'mois'].find(x => { const b = s.boss[x]; return b && b.enhardi && b.debut && !lireLS('fuiteVue|' + x + '|' + b.debut); });
   if (!ty) return;
-  const b = s.boss[ty], avant = lireLS('bossEnCours|' + ty);
-  ecrireLS('fuiteVue|' + ty + '|' + b.debut, 1);
-  if (!avant || !avant.debut || avant.debut >= b.debut || avant.nom === b.nom) return; // pas vu l'ancien sur ce téléphone : rien à rejouer
+  const b = s.boss[ty], avant = lireLS('bossEnCours|' + ty), veille = isoPlus(b.debut, -1);
+  // rien à rejouer : ancien boss jamais vu sur ce téléphone, ou pas celui juste avant (un boss sauté), ou le 01/01 (le Grand Recommencement passe d'abord)
+  if (!avant || !avant.debut || avant.debut >= b.debut || avant.nom === b.nom || (avant.fin && avant.fin < veille) || b.debut === '2027-01-01') { ecrireLS('fuiteVue|' + ty + '|' + b.debut, 1); return; }
   fuitePrevue = true;
   const essayer = () => {
-    const occupe = document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, .boss-win, #bossVue, #recoOv, #bilanOv, #ouvertureOv')].some(el => el.classList.contains('on')) || document.querySelector('.lvl-ov');
+    const occupe = document.body.classList.contains('bloque') || [...document.querySelectorAll('#d20ov, #bossVue, #recoOv, #bilanOv, #ouvertureOv, #recapOv, #coffreOv')].some(el => el.classList.contains('on'))
+      || document.querySelector('.lvl-ov, .cine, .boss-win, .am-ov'); // une victoire (.boss-win) passe d'abord (avocat, 24/11)
     if (occupe) { setTimeout(essayer, 1500); return; }
-    jouerFuite(avant, b);
+    ecrireLS('fuiteVue|' + ty + '|' + b.debut, 1); jouerFuite(avant, b);
   };
   setTimeout(essayer, 1200);
 }
 function jouerFuite(avant, b) {
   let ov = document.getElementById('fuiteOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'fuiteOv'; ov.setAttribute('role', 'dialog'); document.body.appendChild(ov); }
-  const fem = /^(La |Une )|^L'(Hydre|Harpie|Ombre)/.test(avant.nom || '');
-  const fem2 = /^(La |Une )|^L'(Hydre|Harpie)/.test(b.nom || '');
-  const suite = `${esc(b.nom)} arrive blessé${fem2 ? 'e' : ''} par la poursuite (−5 % PV)${b.enhardi === 'fuite' ? `, mais rancuni${fem2 ? 'ère' : 'er'} : ${fem2 ? 'elle' : 'il'} vous maudit 2 jours.` : '.'}`;
+  // phrases neutres, sans accord (aucun nom de boss écrit ici : les noms de la Saison 1 restent secrets)
+  const suite = `La poursuite coûte 5&nbsp;% de ses PV à ${esc(b.nom)}${b.enhardi === 'fuite' ? ' ; sa rancune vous maudit 2 jours.' : '.'}`;
   const anime = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   ov.className = anime ? 'anim' : '';
   ov.innerHTML = `<div class="fu-scene" aria-hidden="true"><i class="fu-brume"></i><div class="fu-boss">${bossSvg(avant.visuel, 'fuite', avant)}</div>
-      <div class="fu-poussiere">${Array.from({ length: 7 }, (_, i) => `<i style="--k:${i}"></i>`).join('')}</div></div>
-    <h3 class="fu-t">💨 ${esc(avant.nom)} s'est enfui${fem ? 'e' : ''} !</h3><p class="fu-s">${suite}</p>
+      <div class="fu-poussiere">${[[0, 16, 14], [10, 22, 9], [18, 14, 18], [30, 20, 11], [38, 12, 20], [50, 24, 8], [58, 16, 15]].map(([x, y, w], i) => `<i style="--k:${i};--x:${x}px;--y:${y}px;--w:${w}px"></i>`).join('')}</div></div>
+    <h3 class="fu-t">💨 ${esc(avant.nom)} a pris la fuite !</h3><p class="fu-s">${suite}</p>
     <button class="btn or fu-ok" data-fuite-ok="1">Continuer</button>`;
   ov.classList.add('on'); document.body.classList.add('bloque');
+  if (anime) setTimeout(() => { const f = ov.querySelector('.fu-boss'); if (f) f.classList.add('fu-fini'); }, 2000); // le boss est parti : son dessin s'arrête (ergonome)
 }
-document.addEventListener('click', e => { if (!e.target.closest('[data-fuite-ok]')) return; const ov = document.getElementById('fuiteOv'); if (ov) ov.classList.remove('on'); document.body.classList.remove('bloque'); });
+document.addEventListener('click', e => { if (!e.target.closest('[data-fuite-ok]')) return; const ov = document.getElementById('fuiteOv'); if (ov) ov.classList.remove('on');
+  if (![...document.querySelectorAll('#d20ov, #bossVue, #recoOv, #bilanOv, #ouvertureOv, #recapOv, #coffreOv')].some(el => el.classList.contains('on'))) document.body.classList.remove('bloque');
+  fuitePrevue = false; fuiteAFaire(state); memoBossEnCours(state); }); // une 2e fuite le même jour (semaine + mois) passe ensuite
 
 document.addEventListener('click', e => { if (e.target.closest('[data-annonce-boss]')) ouvrirAnnonceBoss(); });
 function ouvrirEncouragement() {
@@ -7968,6 +7977,7 @@ window.addEventListener('popstate', () => {
   if (ouvert('recapOv')) { fermerRecap(); return ok(); }
   if (ouvert('coffreOv')) { ouvert('coffreOv').classList.remove('on'); document.body.classList.remove('bloque'); render(); return ok(); }
   if (ouvert('bossVue')) { ouvert('bossVue').classList.remove('on'); document.body.classList.remove('bloque'); return ok(); }
+  if (ouvert('fuiteOv')) { ouvert('fuiteOv').classList.remove('on'); document.body.classList.remove('bloque'); return ok(); } // retour du téléphone : ferme la scène de fuite (ergonome)
   if (ouvert('vitrine')) { fermerVitrine(); return ok(); }
   if (ouvert('d20ov')) { fermerD20(); return ok(); }
   if (ouvert('sheet') || ouvert('sheetPal')) { fermerMenu(); return ok(); }
