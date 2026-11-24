@@ -3465,7 +3465,7 @@ const stadeFamilier = j => (j == null ? 1 : j < 7 ? 0 : j < 30 ? 1 : j < 90 ? 2 
 const STADES_FAM = ['Œuf', 'Petit', 'Jeune', 'Adulte'], SEUILS_FAM = [7, 30, 90]; // mêmes seuils que stadeFamilier
 function infoFamilier(s, orn) {
   const id = ((orn || ornementsDe(s)) || {}).familier; if (!/^fa_/.test(id || '') || joursDe(s) == null) return null;
-  const j = Number(joursDe(s)) || 0, st = stadeFamilier(j), x = cosmItem(id, s) || cosmItem(id, state), // fiche du compagnon : pas de catalogue bas = st ? SEUILS_FAM[st - 1] : 0, haut = SEUILS_FAM[st];
+  const j = Number(joursDe(s)) || 0, st = stadeFamilier(j), x = cosmItem(id, s) || cosmItem(id, state) /* fiche du compagnon : pas de catalogue */, bas = st ? SEUILS_FAM[st - 1] : 0, haut = SEUILS_FAM[st];
   return { id, nom: x ? x.nom : 'Familier', moi: s === state, st, stade: STADES_FAM[st], j, reste: haut ? haut - j : 0, pct: haut ? Math.round(100 * (j - bas) / (haut - bas)) : 100 };
 }
 function ligneFamilier(f) {
