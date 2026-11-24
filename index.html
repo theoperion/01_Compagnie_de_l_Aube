@@ -6599,7 +6599,7 @@ function render() {
   const ordre = h => (h.type === 'Routine' ? 0 : 1);
   const duJour = habs.filter(h => (h.aFaire && !s.vacances) || touche(h)).sort((a, b) => ordre(a) - ordre(b));
   const plusTard = habs.filter(h => !(h.aFaire && !s.vacances) && !touche(h));
-  const annexes = s.annexes.filter(garde).sort((a, b) => (a.destin ? 1 : 0) - (b.destin ? 1 : 0)); // quête du destin (Claude) en dernier : tes annexes d'abord
+  const annexes = s.annexes.filter(a => garde(a) && !(a.destin && !a.jour.fait)); // Quête du destin retirée (Théo, 24/11 : redondante) ; une déjà faite aujourd'hui reste visible pour pouvoir l'annuler
   const epiques = s.objectifs.filter(garde);
   const faits = duJour.filter(h => h.jour.fait).length;
   const dimanche = indexJour(s.today) === 6;
