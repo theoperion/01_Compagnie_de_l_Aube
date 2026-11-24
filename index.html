@@ -1035,7 +1035,7 @@
   .coup.riposte .val { color: #8fd6a0; } .coup.riposte .quoi { color: var(--muted); }
   .tabs i.pvb { background: #8f2b24; }
   .faible { color: var(--gold); font-weight: 700; } .resiste { color: var(--muted); }
-  .boss-win { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; text-align: center; padding: 20px;
+  .boss-win { position: fixed; inset: 0; z-index: 30; display: grid; place-items: safe center; overflow-y: auto; overscroll-behavior: contain; text-align: center; padding: 20px;
     background: radial-gradient(circle, rgba(70,52,16,.97), rgba(10,8,14,.98) 70%); animation: fadeIn .3s; }
   .boss-win h3 { font: 800 30px var(--f-titre); color: var(--gold); margin: 6px 0; letter-spacing: .04em; text-shadow: 0 0 18px rgba(242,165,65,.45); } .boss-win p { margin: 4px 0; }
   .bw-svg { width: 160px; margin: 0 auto; } .bw-svg svg { width: 100%; height: auto; animation: crumble 1.8s forwards; }
@@ -1048,31 +1048,32 @@
      Les mêmes scènes servent à « Revoir la victoire » (fiche du boss, salle des trophées). Mode calme / prefers-reduced-motion : écran fixe sans animation. */
   .boss-win.anim { --t1: 1.3s; --t2: 2.2s; --tc: 2.95s; --t3: 3.6s; --tm: 3.9s; --tv: 5.2s; --dm: 1.8s;
     background: radial-gradient(circle at 50% 35%, #3c1e14, #120b10 55%, #07050a 80%); animation: bwFond 6s ease-out both; }
-  .boss-win.anim.mois { --t1: 2.1s; --t2: 2.8s; --tr: 3.55s; --t1b: 4.45s; --t2b: 4.95s; --tc: 5.6s; --t3: 6.5s; --tm: 6.85s; --trel: 8.6s; --tv: 9.7s; --dm: 2.6s;
-    background: radial-gradient(circle at 50% 32%, #4a1418, #14080c 55%, #050307 82%); animation: bwFondM 11s ease-out both; }
+  .boss-win.anim.mois { --t1: 2.7s; --t2: 3.4s; --tr: 4.15s; --t1b: 5.05s; --t2b: 5.55s; --tc: 6.2s; --t3: 7.1s; --tm: 7.45s; --trel: 9.2s; --tv: 10.3s; --dm: 2.6s;
+    background: radial-gradient(circle at 50% 32%, #4a1418, #14080c 55%, #050307 82%); animation: bwFondM 11.6s ease-out both; }
   @keyframes bwFond { 0% { background-color: #000; } 60% { box-shadow: inset 0 0 120px rgba(200,40,30,.45); } 75% { box-shadow: inset 0 0 160px rgba(255,210,120,.35); } 100% { box-shadow: inset 0 0 60px rgba(242,165,65,.2); } }
   @keyframes bwFondM { 0% { background-color: #000; } 8% { box-shadow: inset 0 0 200px rgba(0,0,0,.9); } 33% { box-shadow: inset 0 0 150px rgba(220,30,30,.55); } 60% { box-shadow: inset 0 0 190px rgba(255,60,40,.5); } 66% { box-shadow: inset 0 0 220px rgba(255,220,140,.5); } 85% { box-shadow: inset 0 0 120px rgba(242,190,80,.4); } 100% { box-shadow: inset 0 0 70px rgba(242,165,65,.25); } }
-  .bw-passer { position: absolute; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 3; background: rgba(0,0,0,.35); color: var(--muted); border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px; font: 600 12px var(--f-texte); }
+  .bw-passer { position: absolute; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 3; background: rgba(0,0,0,.35); color: var(--muted); border: 1px solid var(--line); border-radius: 20px; min-height: 40px; padding: 10px 16px; font: 600 13px var(--f-texte); }
   .boss-win.fin .bw-passer { display: none; }
   .bw-box { width: min(360px, 92vw); }
   .bw-scene { position: relative; height: 420px; margin: 0 auto 6px; }
+  .boss-win.fin .bw-scene { height: min(420px, 50vh); transition: height .6s; }
   .bw-cam { position: absolute; inset: 0; }
   .boss-win.anim .bw-cam { animation: bwZoom 1.5s calc(var(--t3) - .4s) ease-in-out, bwSecousse .55s var(--t3); }
-  .boss-win.anim.mois .bw-cam { animation: bwSecousse .6s .95s, bwSecousse .45s var(--tr), bwZoom 1.8s calc(var(--t3) - .5s) ease-in-out, bwSecousse .7s var(--t3), bwSecousse .4s calc(var(--tm) + .9s); }
+  .boss-win.anim.mois .bw-cam { animation: bwSecousse .6s 1.65s, bwSecousse .45s var(--tr), bwZoom 1.8s calc(var(--t3) - .5s) ease-in-out, bwSecousse .7s var(--t3), bwSecousse .4s calc(var(--tm) + .9s); }
   @keyframes bwSecousse { 10%,50%,90% { transform: translate(-7px, 3px); } 30%,70% { transform: translate(7px, -4px); } }
   @keyframes bwZoom { 0% { transform: none; } 30%,55% { transform: scale(1.14) translateY(26px); } 100% { transform: none; } }
-  .bw-nom { position: absolute; left: 0; right: 0; top: -4px; font: 800 17px var(--f-titre); letter-spacing: .12em; color: #ff9a80; text-transform: uppercase; text-shadow: 0 0 14px rgba(255,80,50,.7); animation: bwNom .6s .15s ease-out both, bwNomFin .3s calc(var(--t3) - .05s) forwards; }
-  .mois .bw-nom { animation-delay: 1.3s, calc(var(--t3) - .05s); }
+  .bw-nom { position: absolute; left: -8px; right: -8px; top: -4px; font: 800 clamp(12px, 4.2vw, 17px) var(--f-titre); white-space: nowrap; letter-spacing: .1em; color: #ff9a80; text-transform: uppercase; text-shadow: 0 0 14px rgba(255,80,50,.7); animation: bwNom .6s .15s ease-out both, bwNomFin .3s calc(var(--t3) - .05s) forwards; }
+  .mois .bw-nom { animation-delay: 1.5s, calc(var(--t3) - .05s); }
   @keyframes bwNom { from { opacity: 0; transform: translateY(-14px); letter-spacing: .5em; } }
   @keyframes bwNomFin { to { opacity: 0; transform: scale(.9); } }
   .bw-vie { position: absolute; left: 50%; top: 22px; width: 150px; margin-left: -75px; height: 7px; border-radius: 4px; background: rgba(255,255,255,.12); overflow: hidden; animation: bwNom .5s .3s both, bwNomFin .3s calc(var(--t3) + .05s) forwards; }
-  .mois .bw-vie { width: 190px; margin-left: -95px; height: 9px; animation-delay: 1.45s, calc(var(--t3) + .05s); }
+  .mois .bw-vie { width: 190px; margin-left: -95px; height: 9px; animation-delay: 1.65s, calc(var(--t3) + .05s); }
   .bw-vie i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff5a3c, #ffb347); border-radius: 4px; transform-origin: 0 50%;
     animation: bwVb .25s var(--t1) forwards, bwVd .25s var(--t2) forwards, bwV0 .3s var(--t3) forwards; }
   .mois .bw-vie i { background: linear-gradient(90deg, #c8102e, #ff6a3c); animation: bwVa .25s var(--t1) forwards, bwVb .25s var(--t2) forwards, bwVc .25s var(--t1b) forwards, bwVd .25s var(--t2b) forwards, bwV0 .3s var(--t3) forwards; }
   @keyframes bwVa { to { transform: scaleX(.78); } } @keyframes bwVb { to { transform: scaleX(.55); } } @keyframes bwVc { to { transform: scaleX(.34); } }
   @keyframes bwVd { to { transform: scaleX(.14); } } @keyframes bwV0 { to { transform: scaleX(0); } }
-  .bw-carton { position: absolute; left: -10px; right: -10px; top: 150px; z-index: 2; opacity: 0; pointer-events: none; animation: bwCarton 1.9s .05s ease-out forwards; }
+  .bw-carton { position: absolute; left: -10px; right: -10px; top: 150px; z-index: 2; opacity: 0; pointer-events: none; animation: bwCarton 1.6s .05s ease-out forwards; }
   .bw-carton b { display: block; font: 800 34px var(--f-titre); letter-spacing: .16em; color: #ffd27a; text-shadow: 0 0 24px rgba(255,90,40,.9), 0 3px 0 #4a0d0d; }
   .bw-carton span { display: block; font: 700 12px var(--f-titre); letter-spacing: .4em; color: #ff9a80; text-transform: uppercase; margin-top: 4px; }
   @keyframes bwCarton { 0% { opacity: 0; transform: scale(1.6); } 18%,70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.94) translateY(-10px); } }
@@ -1082,7 +1083,7 @@
   .bw-bi svg { width: 100%; height: auto; display: block; }
   .bw-bi { animation: bwIn .6s ease-out both, bwMenace 1s .6s ease-in-out, bwHit .32s var(--t1), bwHit .32s var(--t2), bwChancelle .65s var(--tc) ease-in-out forwards,
     bwHitFort .4s var(--t3), var(--mortA, bwMort) var(--dm) var(--tm) forwards; }
-  .mois .bw-bi { animation: bwIn .9s .2s ease-out both, bwRugit 1s .9s ease-in-out, bwHit .32s var(--t1), bwHit .32s var(--t2), bwRiposte .6s var(--tr) ease-in-out,
+  .mois .bw-bi { animation: bwIn .7s 1.35s ease-out both, bwRugit 1s 1.6s ease-in-out, bwHit .32s var(--t1), bwHit .32s var(--t2), bwRiposte .6s var(--tr) ease-in-out,
     bwHit .32s var(--t1b), bwHit .32s var(--t2b), bwGenoux .7s var(--tc) ease-in forwards, bwHitFort .4s var(--t3), var(--mortA, bwMort) var(--dm) var(--tm) forwards; }
   .boss-win.mort-eau { --mortA: bwCoule; } .boss-win.mort-ombre { --mortA: bwFumee; } .boss-win.mort-pierre { --mortA: bwEffondre; } .boss-win.mort-feu { --mortA: bwExplose; } .boss-win.mort-nature { --mortA: bwEnvole; }
   @keyframes bwIn { from { opacity: 0; transform: scale(.7) translateY(-20px); } }
@@ -1139,7 +1140,7 @@
   .bw-onde { position: absolute; left: 50%; top: 46%; width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%; z-index: 2; opacity: 0; pointer-events: none;
     border: 3px solid rgba(255,226,140,.95); box-shadow: 0 0 18px rgba(255,200,90,.8), inset 0 0 14px rgba(255,200,90,.6); animation: bwOnde .8s var(--t3) ease-out; }
   .bw-onde.o2 { animation: bwOnde 1s calc(var(--t3) + .14s) ease-out; border-color: rgba(255,120,80,.8); }
-  .mois .bw-onde.o0 { animation: bwOnde .9s 1.05s ease-out; border-color: rgba(255,60,40,.9); box-shadow: 0 0 22px rgba(255,40,30,.8); }
+  .mois .bw-onde.o0 { animation: bwOnde .9s 1.75s ease-out; border-color: rgba(255,60,40,.9); box-shadow: 0 0 22px rgba(255,40,30,.8); }
   @keyframes bwOnde { 0% { opacity: 1; transform: scale(.2); } 100% { opacity: 0; transform: scale(4.2); } }
   .bw-noir { position: absolute; inset: -100vh -100vw; z-index: 2; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 35%, transparent 18%, rgba(0,0,0,.82) 58%); animation: bwNoir .55s calc(var(--t3) - .5s) ease-in; }
   @keyframes bwNoir { 0% { opacity: 0; } 80% { opacity: 1; } 100% { opacity: 0; } }
@@ -1147,7 +1148,7 @@
   .bw-coup.c1 { animation: bwCoup 1s var(--t1) ease-out; } .bw-coup.c2 { animation: bwCoup 1s var(--t2) ease-out; }
   .mois .bw-coup.c1 { animation: bwCoup .9s var(--t1) ease-out, bwCoup .9s var(--t1b) ease-out; } .mois .bw-coup.c2 { animation: bwCoup .9s var(--t2) ease-out, bwCoup .9s var(--t2b) ease-out; }
   .bw-coup.c3 { font-size: 22px; color: #ffe08a; animation: bwCoup 1.1s calc(var(--t3) + .22s) ease-out; }
-  .bw-coup.c4 { font-size: 20px; color: #ff6a5a; text-shadow: 0 0 14px #ff2a1a, 0 2px 0 #4a0808; animation: bwCoup .85s var(--tr) ease-out; }
+  .bw-coup.c4 { font-size: 20px; color: #fff; text-shadow: 0 0 12px #ff2a1a, 0 0 4px #8a0a0a, 0 2px 0 #4a0808; animation: bwCoup .85s var(--tr) ease-out; }
   /* Victoire (critique) : les coups s'affichent sous le boss, le coup final au-dessus ; pas de cadre vide pendant l'animation */
   .bw-coup.c1, .bw-coup.c2 { top: 198px; } .bw-coup.c3 { top: 0; } .bw-coup.c4 { top: 198px; }
   .boss-win.anim:not(.fin) .bw-txt { visibility: hidden; }
@@ -1170,10 +1171,11 @@
   .bw-h svg { width: 100%; height: auto; display: block; }
   .bw-h small { display: block; font: 700 12px var(--f-titre); color: var(--gold); letter-spacing: .05em; margin-top: 2px; }
   .bw-h.g { left: 0; } .bw-h.d { right: 0; }
+  .boss-win.anim .bw-h small { animation: fadeIn .4s .5s both; } .boss-win.anim.mois .bw-h small { animation-delay: 2s; } .boss-win.anim.saute .bw-h small { animation: none; }
   .bw-h.g .bw-hi { animation: bwEntreeG .6s .4s ease-out both, bwFrappeG .55s calc(var(--t1) - .25s) ease-in-out, bwAssautG .6s calc(var(--t3) - .3s) ease-in-out, bwJoie .8s calc(var(--tv) - .6s) ease-in-out 2; }
   .bw-h.d .bw-hi { animation: bwEntreeD .6s .6s ease-out both, bwFrappeD .55s calc(var(--t2) - .25s) ease-in-out, bwAssautD .6s calc(var(--t3) - .3s) ease-in-out, bwJoie .8s calc(var(--tv) - .5s) ease-in-out 2; }
-  .mois .bw-h.g .bw-hi { animation: bwEntreeG .6s 1.6s ease-out both, bwFrappeG .55s calc(var(--t1) - .25s) ease-in-out, bwRecul .6s calc(var(--tr) + .15s) ease-out, bwFrappeG .5s calc(var(--t1b) - .25s) ease-in-out, bwAssautG .6s calc(var(--t3) - .3s) ease-in-out, bwJoie .8s calc(var(--tv) - .6s) ease-in-out 2; }
-  .mois .bw-h.d .bw-hi { animation: bwEntreeD .6s 1.75s ease-out both, bwFrappeD .55s calc(var(--t2) - .25s) ease-in-out, bwReculD .6s calc(var(--tr) + .15s) ease-out, bwFrappeD .5s calc(var(--t2b) - .25s) ease-in-out, bwAssautD .6s calc(var(--t3) - .3s) ease-in-out, bwJoie .8s calc(var(--tv) - .5s) ease-in-out 2; }
+  .mois .bw-h.g .bw-hi { animation: bwEntreeG .6s 1.9s ease-out both, bwFrappeG .55s calc(var(--t1) - .25s) ease-in-out, bwRecul .6s calc(var(--tr) + .15s) ease-out, bwFrappeG .5s calc(var(--t1b) - .25s) ease-in-out, bwAssautG .6s calc(var(--t3) - .3s) ease-in-out, bwJoie .8s calc(var(--tv) - .6s) ease-in-out 2; }
+  .mois .bw-h.d .bw-hi { animation: bwEntreeD .6s 2.05s ease-out both, bwFrappeD .55s calc(var(--t2) - .25s) ease-in-out, bwReculD .6s calc(var(--tr) + .15s) ease-out, bwFrappeD .5s calc(var(--t2b) - .25s) ease-in-out, bwAssautD .6s calc(var(--t3) - .3s) ease-in-out, bwJoie .8s calc(var(--tv) - .5s) ease-in-out 2; }
   @keyframes bwEntreeG { from { opacity: 0; transform: translateX(-120px); } }
   @keyframes bwEntreeD { from { opacity: 0; transform: translateX(120px); } }
   @keyframes bwFrappeG { 50% { transform: translate(55px, -90px) rotate(8deg) scale(1.05); } }
@@ -7570,7 +7572,7 @@ function bossVaincu(b, revoir) {
     <g transform="translate(50 62)">${Array.from({ length: 8 }, (_, i) => `<path d="M0 -44 L5 -34 L-5 -34 Z" fill="#f2c14e" transform="rotate(${i * 45})"/>`).join('')}
     <circle r="33" fill="url(#bwRelOr)" stroke="#7a5210" stroke-width="2.5"/><circle r="24" fill="none" stroke="#7a5210" stroke-width="1.6" stroke-dasharray="2 3"/>
     <path d="M0 -17 L14 0 L0 17 L-14 0 Z" fill="url(#bwRelGemme)" stroke="#3a0610" stroke-width="1.5"/><path d="M-5 -6 L0 -12 L4 -6 Z" fill="#fff" opacity=".7"/></g></svg>
-    <small>🏆 ${esc(b.trophee || 'Relique du mois')}</small></div>`;
+    <small>Relique du mois</small></div>`;
   const el = document.createElement('div');
   el.className = 'boss-win mort-' + mort + (mois ? ' mois' : ' semaine') + (anim ? ' anim' : ' fin');
   el.innerHTML = `${anim ? '<button class="bw-passer" data-bw-passer="1">Passer ›</button>' : ''}<div class="bw-box">
@@ -7599,9 +7601,9 @@ function bossVaincu(b, revoir) {
   document.body.appendChild(el);
   const minuteurs = []; el._minuteurs = minuteurs;
   if (anim) {
-    const T = mois ? { t1: 2100, t2: 2800, t3: 6500, fin: 11000 } : { t1: 1300, t2: 2200, t3: 3600, fin: 6600 };
+    const T = mois ? { t1: 2700, t2: 3400, t3: 7100, fin: 11600 } : { t1: 1300, t2: 2200, t3: 3600, fin: 6600 };
     const vibs = [[T.t1, [70]], [T.t2, [70]], [T.t3, [160, 40, 240]], [T.t3 + 1150, [40, 30, 40]]]
-      .concat(mois ? [[950, [120, 60, 120]], [3550, [220]], [4450, [60]], [4950, [60]], [8600, [30, 40, 30, 40, 90]]] : []);
+      .concat(mois ? [[1650, [120, 60, 120]], [4150, [220]], [5050, [60]], [5550, [60]], [9200, [30, 40, 30, 40, 90]]] : []);
     vibs.forEach(([t, v]) => minuteurs.push(setTimeout(() => vib(v), t)));
     minuteurs.push(setTimeout(() => el.classList.add('fin'), T.fin));
     minuteurs.push(setTimeout(effetCoupDeGrace, T.t3 - 50));
