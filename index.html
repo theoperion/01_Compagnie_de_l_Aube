@@ -333,7 +333,7 @@
   .vit-fam { text-align: center; margin: 4px 0 0; font-size: 12.5px; color: var(--muted); } .vit-fam b { color: var(--gold); font-weight: 600; }
   .vit-fam small { font-size: 12px; } .vit-fam i { display: block; width: 150px; height: 5px; margin: 5px auto 0; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; } .vit-fam em { display: block; height: 100%; border-radius: 3px; background: var(--gold); }
   .fam-ov { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; background: rgba(5,8,16,.9); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); } /* texte lisible sur n'importe quel écran (ergonome, 24/11) */ .fam-box { text-align: center; color: #fff; padding: 0 24px; }
-  .fam-sc { position: relative; width: 150px; height: 150px; margin: 0 auto; } .fam-sc svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .fam-sc { position: relative; width: 190px; height: 150px; margin: 0 auto; } .fam-sc svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .fam-a { animation: famSecoue .9s ease-in-out both, famPart .35s .9s ease-in forwards; } .fam-b { opacity: 0; transform: scale(.4); animation: famPop .5s 1.05s cubic-bezier(.3,1.6,.5,1) forwards; }
   .fam-sc::after { content: ''; position: absolute; inset: 18%; border-radius: 50%; border: 2px solid var(--gold); opacity: 0; animation: famOnde .7s 1.05s ease-out; }
   .fam-box p { margin: 10px 0 0; font: 600 17px var(--f-recit); color: var(--gold); opacity: 0; animation: famTxt .4s 1.3s forwards; } .fam-box small { display: block; margin-top: 6px; color: #b9c0d0; font-size: 12px; }
@@ -3520,7 +3520,7 @@ function famGrandiAFaire() {
   const txt = f.dragon ? (f.st === 1 ? 'L\'œuf a éclos : voici ton ' + f.stade + '\u00a0!' : f.st === 4 ? 'Ton familier atteint sa forme ultime : ' + f.stade + '\u00a0!' : 'Ton familier évolue : voici ton ' + f.stade + '\u00a0!') : 'Ton ' + f.nom + ' a grandi : ' + (f.st === 1 ? 'il est sorti de son\u00a0œuf\u00a0!' : f.st === 3 ? 'il est adulte\u00a0!' : 'il est ' + f.stade.toLowerCase() + '\u00a0!');
   if (!confort().animations || matchMedia('(prefers-reduced-motion: reduce)').matches) { toast((f.st === 1 ? '🐣 ' : '✨ ') + txt); return; }
   const ov = document.createElement('div'); ov.id = 'famOv'; ov.className = 'fam-ov on'; document.body.classList.add('bloque');
-  ov.innerHTML = `<div class="fam-box"><div class="fam-sc"><svg class="fam-a" viewBox="0 0 100 100" aria-hidden="true">${familierAube(f.id, Math.min(Number(av) || 0, 4))}</svg><svg class="fam-b" viewBox="0 0 100 100" aria-hidden="true">${familierAube(f.id, f.st)}</svg></div><p>${esc(txt)}</p><small>toucher pour fermer</small></div>`;
+  ov.innerHTML = `<div class="fam-box"><div class="fam-sc"><svg class="fam-a" viewBox="-28 -24 156 124" aria-hidden="true">${familierAube(f.id, Math.min(Number(av) || 0, 4))}</svg><svg class="fam-b" viewBox="-28 -24 156 124" aria-hidden="true">${familierAube(f.id, f.st)}</svg></div><p>${esc(txt)}</p><small>toucher pour fermer</small></div>`;
   document.body.appendChild(ov); vib([20, 40, 60]);
   const fin = () => { if (!ov.isConnected) return; ov.remove(); document.body.classList.remove('bloque'); };
   ov.addEventListener('click', fin); setTimeout(fin, 3400);
@@ -3876,10 +3876,150 @@ function dragonAube0(st) {
       <g class="orn-souffle"><path d="M74 21 C82 15 90 21 97 15 C95 24 86 27 77 25 Z" fill="url(#dgF)"/><path d="M78 22 C84 19 89 21 93 18" stroke="#fffbe0" stroke-width="1" fill="none"/></g></g>`;
   return '';
 }
+/* Familiers à 5 formes selon la série (Théo 24/11 : « pour l'ensemble des familiers ») : œuf à leur thème, bébé, jeune, adulte, forme ultime.
+ * Formes 2 et 3 : les dessins d'avant (jeune, adulte) ; 0, 1 et 4 : nouveaux. viewBox 0 0 100 100, sol à y = 92-94. */
+const FORMES_FAMILIERS = {
+  fa_renard: ['Œuf de cendre', 'Renardeau', 'Jeune renard', 'Renard des braises', 'Renard-Soleil'],
+  fa_loup: ['Œuf de givre', 'Louveteau', 'Jeune loup', 'Loup des neiges', 'Loup du Blizzard'],
+  fa_chouette: ['Œuf d\'étoiles', 'Petit duvet', 'Jeune chouette', 'Chouette astrale', 'Grand-Duc des constellations'],
+  fa_golem: ['Pierre-cœur', 'Caillou éveillé', 'Petit golem', 'Golem runique', 'Colosse de cristal']
+};
+function oeufTheme(fond, fonce, trait, deco, lueur) {
+  return `<ellipse cx="50" cy="91" rx="15" ry="2.6" fill="${lueur}" opacity=".35"/><g class="orn-oeuf"><ellipse cx="50" cy="66" rx="20" ry="26" fill="${fond}" stroke="${trait}" stroke-width="1.8"/>
+    <path d="M50 40 C64 41 70 56 69 70 C67 84 58 92 50 92 C60 84 63 70 60 58 C58 48 55 43 50 40 Z" fill="${fonce}" opacity=".45"/>
+    <path d="M38 48 q6 -8 14 -6" stroke="#fff" stroke-width="1.6" fill="none" opacity=".55"/>${deco}</g>`;
+}
+const oeilChibi = (x, y, r, iris) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 1.15}" fill="#fff"/><ellipse cx="${x + r * .1}" cy="${y + r * .12}" rx="${r * .68}" ry="${r * .82}" fill="#1a1028"/><ellipse cx="${x + r * .1}" cy="${y + r * .3}" rx="${r * .42}" ry="${r * .45}" fill="${iris}" opacity=".6"/><circle cx="${x - r * .25}" cy="${y - r * .38}" r="${r * .32}" fill="#fff"/><circle cx="${x + r * .3}" cy="${y + r * .35}" r="${r * .14}" fill="#fff"/>`;
+const joues = (y, c) => `<ellipse cx="36" cy="${y}" rx="3.2" ry="1.9" fill="${c}" opacity=".4"/><ellipse cx="64" cy="${y}" rx="3.2" ry="1.9" fill="${c}" opacity=".4"/>`;
+
+let nFam = 0;
+function familierCinq(id, st, ancien) { const u = 'f' + (++nFam % 1000); return familierCinq0(id, st, ancien).replace(/\b(fx(?:Sol|Aur))\b/g, '$1' + u); }
+function familierCinq0(id, st, ancien) {
+  // ancien(stade 1..3) : dessin d'avant
+  if (id === 'fa_renard') {
+    const S = '#5a2a10';
+    if (st <= 0) return oeufTheme('#8a5a3a', '#3a1a0a', '#2a1208', `<path class="orn-runes" d="M37 64 l6 -4 l4 5 l5 -6 l5 5 l6 -4 M47 64 l-2 8 l4 4 M58 74 l3 6" stroke="#ff9a3c" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>${[[42, 52], [58, 82], [62, 54]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.6" fill="#ffb347" opacity=".8"/>`).join('')}`, '#ff8a3c');
+    if (st === 1) return `<g>
+      <path d="M60 88 C76 92 84 82 80 70 C78 66 74 66 73 70 C75 78 70 82 58 82 Z" fill="#e8742c" stroke="${S}" stroke-width="1"/><path d="M80 70 C82 66 80 62 77 61 C77 64 75 66 74 68 Z" fill="#fff3e6" stroke="${S}" stroke-width=".7"/><circle class="orn-runes" cx="78" cy="64" r="1.8" fill="#ff8a3c"/>
+      <ellipse cx="50" cy="80" rx="15" ry="12" fill="#e8742c" stroke="${S}" stroke-width="1.2"/><ellipse cx="50" cy="83" rx="8" ry="8" fill="#fff"/>
+      <ellipse cx="42" cy="91" rx="5" ry="2.8" fill="#3a1a0a"/><ellipse cx="58" cy="91" rx="5" ry="2.8" fill="#3a1a0a"/>
+      <path d="M31 46 L22 14 L46 34 Z M69 46 L78 14 L54 34 Z" fill="#e8742c" stroke="${S}" stroke-width="1.1" stroke-linejoin="round"/><path d="M33 40 L27 22 L42 34 Z M67 40 L73 22 L58 34 Z" fill="#ffd0a8"/><path d="M22 14 L24 24 L29 19 Z M78 14 L76 24 L71 19 Z" fill="#2a1208"/>
+      <circle cx="50" cy="52" r="20" fill="#e8742c" stroke="${S}" stroke-width="1.3"/>
+      <path d="M30 54 Q40 58 46 66 Q50 70 54 66 Q60 58 70 54 Q66 72 50 72 Q34 72 30 54 Z" fill="#fff"/>
+      ${oeilChibi(42, 49, 4.4, '#ffb347')}${oeilChibi(58, 49, 4.4, '#ffb347')}${joues(58, '#ff5a3a')}
+      <ellipse cx="50" cy="60" rx="2.6" ry="1.9" fill="#1a0a05"/><path d="M47 63 q3 2 6 0" stroke="#1a0a05" stroke-width=".9" fill="none" stroke-linecap="round"/>
+      <path d="M50 33 C52 36 52 39 50 41 C48 39 48 36 50 33 Z" fill="#ffb347"/></g>`;
+    if (st >= 4) { // Renard-Soleil : soleil levant derrière lui, trois grandes queues de feu en éventail, front marqué d'or, pelage clair
+      const queueFeu = (rot) => `<g transform="rotate(${rot} 56 84)"><path d="M56 84 C74 86 84 66 80 40 C79 34 73 33 72 38 C74 56 70 70 54 76 Z" fill="#f08a3c" stroke="${S}" stroke-width="1"/><path d="M60 80 C72 78 78 62 76 46" stroke="#ffc07a" stroke-width="1.4" fill="none"/><g class="flam"><path d="M80 42 C92 30 88 12 74 2 C77 14 70 16 67 12 C62 24 66 36 80 42 Z" fill="#ff8a3c" stroke="#c84a1a" stroke-width=".8"/><path d="M79 40 C86 30 83 20 75 12 C75 22 71 24 70 22 C68 30 71 36 79 40 Z" fill="#ffe27a"/></g></g>`;
+      return `<g><defs><radialGradient id="fxSol"><stop offset=".55" stop-color="#fff3b0" stop-opacity=".9"/><stop offset=".75" stop-color="#ffc75a" stop-opacity=".55"/><stop offset="1" stop-color="#ff8a3c" stop-opacity="0"/></radialGradient></defs>
+        <g class="orn-halo"><circle cx="50" cy="30" r="34" fill="url(#fxSol)"/>${Array.from({ length: 16 }, (_, i) => { const a = (i * 22.5 - 90) * Math.PI / 180; return `<path d="M${(50 + Math.cos(a) * 30).toFixed(1)} ${(30 + Math.sin(a) * 30).toFixed(1)} L${(50 + Math.cos(a) * (i % 2 ? 40 : 46)).toFixed(1)} ${(30 + Math.sin(a) * (i % 2 ? 40 : 46)).toFixed(1)}" stroke="#ffd27a" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>`; }).join('')}</g>
+        ${queueFeu(-52)}<g transform="translate(100 0) scale(-1 1)">${queueFeu(-8)}</g>
+        <g transform="translate(50 92) scale(.97) translate(-50 -92)">${ancien(2)}
+          <g transform="translate(50 92) scale(1.3) translate(-50 -92)"><path d="M50 27 l3 5 l-3 6 l-3 -6 z" fill="#fff3b0" stroke="#c88a1a" stroke-width=".6"/><path d="M41 50 q-3 4 -1 8 M59 50 q3 4 1 8" stroke="#ffd27a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g></g></g>`;
+    }
+    return ancien(st);
+  }
+  if (id === 'fa_loup') {
+    const T = '#4a5468';
+    if (st <= 0) return oeufTheme('#e8f2fa', '#9fb6cc', '#5a6a80', `<path class="orn-runes" d="M38 62 l6 -5 l5 6 l6 -7 l5 6 l5 -4" stroke="#7fd4ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>${[[44, 76], [58, 52]].map(([x, y]) => `<g stroke="#9fe4ff" stroke-width="1.1" stroke-linecap="round"><path d="M${x - 4} ${y} h8 M${x} ${y - 4} v8 M${x - 3} ${y - 3} l6 6 M${x + 3} ${y - 3} l-6 6"/></g>`).join('')}`, '#9fe4ff');
+    if (st === 1) return `<g>
+      <path d="M62 88 C76 90 82 80 78 72 C76 76 70 80 60 81 Z" fill="#7f8ea2" stroke="${T}" stroke-width="1"/><path d="M78 72 C80 75 80 78 79 80 C78 77 77 75 76 74 Z" fill="#fff"/>
+      <ellipse cx="50" cy="80" rx="16" ry="12" fill="#b8c4d2" stroke="${T}" stroke-width="1.2"/><path d="M42 72 L45 80 L48 75 L50 84 L52 75 L55 80 L58 72 Q50 69 42 72 Z" fill="#fff"/>
+      <ellipse cx="41" cy="91" rx="5.5" ry="3" fill="#e8eef4" stroke="${T}" stroke-width=".9"/><ellipse cx="59" cy="91" rx="5.5" ry="3" fill="#e8eef4" stroke="${T}" stroke-width=".9"/>
+      <path d="M31 44 C24 34 26 24 32 22 C38 26 40 34 40 40 Z M69 44 C76 34 74 24 68 22 C62 26 60 34 60 40 Z" fill="#7f8ea2" stroke="${T}" stroke-width="1.1"/><path d="M33 38 C30 32 31 27 33 26 C36 29 37 33 37 37 Z M67 38 C70 32 69 27 67 26 C64 29 63 33 63 37 Z" fill="#e8b8c0"/>
+      <circle cx="50" cy="52" r="20" fill="#b8c4d2" stroke="${T}" stroke-width="1.3"/>
+      <path d="M33 46 Q42 40 47 48 L50 54 L53 48 Q58 40 67 46 Q64 36 50 35 Q36 36 33 46 Z" fill="#7f8ea2"/>
+      <ellipse cx="50" cy="62" rx="10" ry="7.5" fill="#fff"/>
+      ${oeilChibi(42, 50, 4.4, '#ffd27a')}${oeilChibi(58, 50, 4.4, '#ffd27a')}${joues(60, '#e88a9a')}
+      <ellipse cx="50" cy="58.5" rx="3" ry="2.1" fill="#1a1028"/><path d="M50 60.5 v2 M47 63.5 q3 2.2 6 0" stroke="#1a1028" stroke-width=".9" fill="none" stroke-linecap="round"/></g>`;
+    if (st >= 4) { // Loup du Blizzard : aurore boréale derrière, couronne de glace au-dessus de la tête, collier de givre, yeux de glace, souffle et flocons
+      const L = (x) => `<g transform="translate(50 92) scale(1.36) translate(-50 -92)">${x}</g>`;
+      return `<g><defs><linearGradient id="fxAur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5affc8" stop-opacity="0"/><stop offset=".3" stop-color="#5affc8" stop-opacity=".55"/><stop offset=".7" stop-color="#7f9bff" stop-opacity=".55"/><stop offset="1" stop-color="#c07fff" stop-opacity="0"/></linearGradient></defs>
+        <g class="orn-halo"><path d="M-10 30 C10 0 30 20 50 -6 C70 -26 86 6 110 -10 L110 4 C86 20 70 -10 50 12 C30 36 10 14 -10 44 Z" fill="url(#fxAur)"/><path d="M-6 56 C16 34 34 52 52 34 C72 14 88 36 108 24 L108 34 C88 46 72 26 52 44 C34 62 16 46 -6 66 Z" fill="url(#fxAur)" opacity=".7"/></g>
+        <g transform="translate(50 92) scale(1.046) translate(-50 -92)">${ancien(3)}</g>
+        ${L(`<g fill="#cdeeff" stroke="#5aa8d8" stroke-width=".6" stroke-linejoin="round"><path d="M41 25 l2 -9 l2 9 z M45.5 24 l2 -12 l2 12 z M50 23 l2.2 -15 l2.2 15 z" transform="translate(-2.2 0)"/><path d="M54.5 24 l2 -12 l2 12 z M59 25 l2 -9 l2 9 z" transform="translate(-2.2 0)"/></g>
+          <path d="M38 60 l3 4 l2 -3 l3 5 l2 -4 l2 5 l2 -5 l2 4 l2 -5 l3 3 l3 -4" stroke="#bfeeff" stroke-width="1.8" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+          <g class="orn-runes"><ellipse cx="42.5" cy="39.5" rx="3.4" ry="3" fill="#7fe3ff"/><ellipse cx="57.5" cy="39.5" rx="3.4" ry="3" fill="#7fe3ff"/><circle cx="43" cy="39.5" r="1.4" fill="#0a2a4a"/><circle cx="57" cy="39.5" r="1.4" fill="#0a2a4a"/></g>
+          <g class="orn-souffle" fill="#e8f6ff" opacity=".8"><circle cx="58" cy="54" r="1.4"/><circle cx="62" cy="52" r="1.1"/><circle cx="65" cy="50" r=".8"/></g>`)}
+        ${[[4, 30], [94, 50], [8, 74], [96, 84], [86, 6]].map(([x, y], i) => `<g class="orn-etinc" style="animation-delay:${(i * .5).toFixed(1)}s" stroke="#fff" stroke-width="1" stroke-linecap="round"><path d="M${x - 3} ${y} h6 M${x} ${y - 3} v6 M${x - 2} ${y - 2} l4 4 M${x + 2} ${y - 2} l-4 4"/></g>`).join('')}</g>`;
+    }
+    return ancien(st);
+  }
+  if (id === 'fa_chouette') {
+    const B = '#8a6a4a', F = '#5a4430', P = '#cfb18a', T = '#3a2a1a';
+    // jeune et adulte redessinés (l'ancien dessin était trop simple) : chouette de face, aigrettes, grands yeux d'or, ailes repliées, serres
+    const chouette = (k, astrale, ultime) => `<g transform="translate(50 92) scale(${k}) translate(-50 -92)">
+      <path d="M31 84 C20 74 20 56 30 48 C33 60 36 72 40 84 Z M69 84 C80 74 80 56 70 48 C67 60 64 72 60 84 Z" fill="${F}" stroke="${T}" stroke-width="1"/>
+      ${astrale ? `<g fill="#fff3b0">${[[27, 60], [25, 68], [29, 74], [73, 60], [75, 68], [71, 74]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".9"/>`).join('')}</g><path d="M27 60 L25 68 L29 74 M73 60 L75 68 L71 74" stroke="#fff3b0" stroke-width=".4" fill="none" opacity=".7"/>` : ''}
+      <path d="M32 82 C28 66 32 50 50 46 C68 50 72 66 68 82 C62 90 38 90 32 82 Z" fill="${B}" stroke="${T}" stroke-width="1.2"/>
+      <path d="M40 60 C38 70 40 80 50 84 C60 80 62 70 60 60 Q50 56 40 60 Z" fill="${P}"/>${[0, 1, 2].map(i => `<path d="M${44 + (i % 2) * 2} ${64 + i * 6} q2 2 4 0 M${50 + (i % 2) * 2} ${66 + i * 6} q2 2 4 0" stroke="${F}" stroke-width=".9" fill="none"/>`).join('')}
+      <path d="M41 89 l-2 3 M43 89 v3.4 M45 89 l2 3 M55 89 l-2 3 M57 89 v3.4 M59 89 l2 3" stroke="#d4ad3c" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M31 32 L28 14 L41 26 Z M69 32 L72 14 L59 26 Z" fill="${F}" stroke="${T}" stroke-width="1" stroke-linejoin="round"/>
+      <path d="M28 38 C28 26 38 20 50 20 C62 20 72 26 72 38 C72 50 62 56 50 56 C38 56 28 50 28 38 Z" fill="${B}" stroke="${T}" stroke-width="1.2"/>
+      <path d="M31 38 C31 30 36 27 42 27 C47 27 50 31 50 36 C50 31 53 27 58 27 C64 27 69 30 69 38 C69 46 62 49 58 49 C54 49 50 46 50 42 C50 46 46 49 42 49 C38 49 31 46 31 38 Z" fill="${P}" stroke="${F}" stroke-width=".8"/>
+      <circle cx="41" cy="38" r="7" fill="${ultime ? '#bfe8ff' : '#f2c94c'}" stroke="${T}" stroke-width=".8"/><circle cx="59" cy="38" r="7" fill="${ultime ? '#bfe8ff' : '#f2c94c'}" stroke="${T}" stroke-width=".8"/>
+      <circle cx="41" cy="38" r="3.6" fill="#1a1028"/><circle cx="59" cy="38" r="3.6" fill="#1a1028"/><circle cx="39.8" cy="36.6" r="1.3" fill="#fff"/><circle cx="57.8" cy="36.6" r="1.3" fill="#fff"/>
+      <path d="M48 43 l2 5 l2 -5 z" fill="#d4ad3c" stroke="${T}" stroke-width=".5"/>
+      ${astrale ? `<path d="M50 22 l1.2 2.6 l2.8 .3 l-2.1 1.9 l.6 2.8 l-2.5 -1.4 l-2.5 1.4 l.6 -2.8 l-2.1 -1.9 l2.8 -.3 z" fill="#fff3b0" stroke="#c8a23c" stroke-width=".4"/>` : ''}</g>`;
+    if (st <= 0) return oeufTheme('#2a2a5a', '#0e0e2a', '#0a0a1e', `${[[42, 54, 1.6], [56, 62, 2], [46, 76, 1.3], [58, 82, 1.1], [38, 66, 1], [60, 50, 1]].map(([x, y, r], i) => `<circle class="${i % 2 ? 'orn-runes' : ''}" cx="${x}" cy="${y}" r="${r}" fill="#fff3b0"/>`).join('')}<path d="M42 54 L56 62 L46 76 L58 82" stroke="#fff3b0" stroke-width=".6" fill="none" opacity=".6"/>`, '#7f9bff');
+    if (st === 1) return `<g>
+      <circle cx="50" cy="66" r="25" fill="#e8dcc4" stroke="${T}" stroke-width="1.2"/>
+      ${Array.from({ length: 14 }, (_, i) => { const a = i / 14 * Math.PI * 2; return `<circle cx="${(50 + Math.cos(a) * 24).toFixed(1)}" cy="${(66 + Math.sin(a) * 24).toFixed(1)}" r="3.2" fill="#e8dcc4"/>`; }).join('')}
+      <path d="M30 62 C22 66 24 76 30 78 Z M70 62 C78 66 76 76 70 78 Z" fill="#cfb18a" stroke="${T}" stroke-width=".9"/>
+      <ellipse cx="50" cy="78" rx="11" ry="9" fill="#fff6e6"/>
+      <path d="M40 46 q-2 -6 2 -9 q1 4 4 6 z M60 46 q2 -6 -2 -9 q-1 4 -4 6 z" fill="#e8dcc4" stroke="${T}" stroke-width=".7"/>
+      <circle cx="41" cy="60" r="8.5" fill="#fff6e6" stroke="#cfb18a"/><circle cx="59" cy="60" r="8.5" fill="#fff6e6" stroke="#cfb18a"/>
+      ${oeilChibi(41, 60, 5.4, '#f2c94c')}${oeilChibi(59, 60, 5.4, '#f2c94c')}
+      <path d="M48 67 l2 4 l2 -4 z" fill="#d4ad3c"/>${joues(70, '#e88a9a')}
+      <path d="M43 92 v-3 M46 92 v-3 M54 92 v-3 M57 92 v-3" stroke="#d4ad3c" stroke-width="1.6" stroke-linecap="round"/></g>`;
+    if (st === 2) return chouette(1, false);
+    if (st === 3) return chouette(1.2, true);
+    // Grand-Duc des constellations : grandes ailes ouvertes en ciel étoilé, croissant de lune derrière, yeux de lune
+    const plume = (x, y, a, L, c) => `<path transform="translate(${x} ${y}) rotate(${a})" d="M0 0 C-3 -${L * .4} -2.4 -${L * .85} 0 -${L} C2.4 -${L * .85} 3 -${L * .4} 0 0 Z" fill="${c}" stroke="#0a0a1e" stroke-width=".7"/>`;
+    const aileC = (sg) => `<g transform="translate(50 0) scale(${sg} 1) translate(-50 0)">${[0, 1, 2, 3, 4, 5, 6].map(i => plume(36 - i * 1.2, 66 + i * 2.2, -78 + i * 12, 30 - i * 1.6, i % 2 ? '#2a3a7a' : '#1e2a5a')).join('')}
+      <path d="M38 52 C28 46 16 46 8 52 C18 54 26 58 34 66 Z" fill="#3a4a8a" stroke="#0a0a1e" stroke-width=".8"/><path d="M38 52 C28 46 16 46 8 52" stroke="#c8a23c" stroke-width="1.1" fill="none"/>
+      ${[[14, 56], [10, 66], [16, 74], [24, 70]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.1" fill="#fff3b0"/>`).join('')}<path d="M14 56 L10 66 L16 74 L24 70" stroke="#fff3b0" stroke-width=".5" fill="none" opacity=".8"/></g>`;
+    return `<g><path class="orn-halo" d="M84 -14 A22 22 0 1 0 104 16 A17 17 0 1 1 84 -14 Z" fill="#fff3b0" opacity=".8"/>
+      <g transform="translate(50 70) scale(1.32 1.25) translate(-50 -70)">${aileC(1)}${aileC(-1)}</g>
+      ${chouette(1.15, true, true)}
+      <g fill="#fff3b0">${[[2, 10], [20, -8], [96, 60], [6, 86], [92, 88]].map(([x, y], i) => `<path class="orn-etinc" style="animation-delay:${(i * .4).toFixed(1)}s" d="M${x} ${y - 3} l.9 2.1 l2.1 .9 l-2.1 .9 l-.9 2.1 l-.9 -2.1 l-2.1 -.9 l2.1 -.9 z"/>`).join('')}</g></g>`;
+  }
+  if (id === 'fa_golem') {
+    const T = '#2a2436';
+    if (st <= 0) return `<ellipse cx="50" cy="91" rx="16" ry="2.6" fill="#7fe3ff" opacity=".3"/><g class="orn-oeuf"><path d="M32 88 C26 74 30 52 44 44 C56 38 70 48 70 64 C72 78 66 90 54 92 C44 93 36 92 32 88 Z" fill="#8a7e9a" stroke="${T}" stroke-width="1.6"/>
+      <path d="M58 46 C68 54 70 70 66 84 C62 90 56 92 52 92 C62 82 64 66 58 46 Z" fill="#000" opacity=".18"/><path d="M38 60 l5 4 M60 78 l-4 -3 M40 80 l4 -2" stroke="${T}" stroke-width="1" fill="none"/>
+      <path d="M42 50 q6 -6 12 -4" stroke="#c8bed8" stroke-width="1.5" fill="none" opacity=".6"/><path d="M36 86 q6 -4 12 -1 q-6 3 -12 1z" fill="#6aa04a"/>
+      <g class="orn-runes"><circle cx="50" cy="68" r="8" fill="#7fe3ff" opacity=".25"/><path d="M50 61 L55 68 L50 75 L45 68 Z M50 61 v-5 M50 75 v5 M45 68 h-5 M55 68 h5" fill="#7fe3ff" stroke="#7fe3ff" stroke-width="1.2" stroke-linecap="round"/></g></g>`;
+    if (st === 1) return `<g><ellipse cx="50" cy="72" rx="26" ry="20" fill="#7fe3ff" opacity=".08"/>
+      <path d="M28 88 C24 76 28 60 42 55 C54 51 70 56 73 70 C76 82 70 91 58 92 C46 93 32 93 28 88 Z" fill="#8a7e9a" stroke="${T}" stroke-width="1.4"/>
+      <path d="M28 88 C27 82 28 78 30 76 C40 82 62 82 72 74 C74 82 70 90 58 92 C46 93 32 93 28 88 Z" fill="#000" opacity=".15"/>
+      <path d="M36 62 q6 -5 12 -4" stroke="#c8bed8" stroke-width="1.4" fill="none" opacity=".6"/><path d="M40 57 q5 -5 12 -3 q5 1 7 5 q-5 -2 -10 -1 q-5 1 -9 -1z" fill="#6aa04a"/><circle cx="56" cy="54" r="1.6" fill="#f7b6c8"/>
+      ${oeilChibi(42, 70, 4.6, '#7fe3ff')}${oeilChibi(58, 70, 4.6, '#7fe3ff')}${joues(78, '#f7b6c8')}
+      <path d="M46 79 q4 2.6 8 0" stroke="${T}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <g class="orn-runes"><path d="M50 84 L52.5 87.5 L50 91 L47.5 87.5 Z" fill="#7fe3ff"/></g></g>`;
+    if (st >= 4) { // Colosse de cristal : épaulières et couronne de cristaux, pierres qui flottent en orbite, runes qui brillent
+      const cristal = (x, y, h, r) => `<path transform="rotate(${r} ${x} ${y})" d="M${x - 4} ${y} L${x - 3} ${y - h * .7} L${x} ${y - h} L${x + 3} ${y - h * .7} L${x + 4} ${y} Z" fill="#7fe3ff" stroke="#e8fbff" stroke-width=".7"/><path transform="rotate(${r} ${x} ${y})" d="M${x} ${y - h} L${x} ${y}" stroke="#e8fbff" stroke-width=".5" opacity=".7"/>`;
+      return `<g><circle class="orn-halo" cx="50" cy="56" r="44" fill="#7fe3ff" opacity=".12"/>
+        <g transform="translate(50 92) scale(1.08) translate(-50 -92)">${ancien(3)}
+          ${cristal(20, 60, 18, -30)}${cristal(26, 58, 12, -10)}${cristal(80, 60, 18, 30)}${cristal(74, 58, 12, 10)}
+          ${cristal(40, 20, 10, -20)}${cristal(50, 16, 16, 0)}${cristal(60, 20, 10, 20)}
+          <g class="orn-runes" stroke="#7fe3ff" stroke-width="1.4" fill="none" stroke-linecap="round"><path d="M38 60 l4 6 l-2 5 M64 60 l-4 4 M45 82 l3 -4 l4 2"/></g></g>
+        <g class="orn-flotte">${[[10, 40, 5], [90, 36, 4], [14, 74, 3.5], [88, 70, 4.5]].map(([x, y, r]) => `<path d="M${x - r} ${y} L${x - r * .4} ${y - r} L${x + r * .7} ${y - r * .6} L${x + r} ${y + r * .3} L${x} ${y + r} Z" fill="#8a7e9a" stroke="${T}" stroke-width=".8"/><circle cx="${x}" cy="${y}" r="${r * .3}" fill="#7fe3ff"/>`).join('')}</g></g>`;
+    }
+    return ancien(st);
+  }
+  return ancien(Math.min(3, st));
+}
+Object.assign(FORMES_SERIE, FORMES_FAMILIERS); // tous les familiers évoluent avec la série (mêmes seuils que le dragon : 10/21/45/90 j)
 function familierAube(id, stade) {
-  const c = FAMILIERS_AUBE[id] || FAMILIERS_AUBE.fa_dragon;
   if (id === 'fa_dragon') return dragonAube(Math.min(4, Math.max(0, stade))); // 5 formes : œuf de braise, dragonnet, jeune, Dragon de l'Aube, Ancien (rouge et feu, Théo 24/11)
-  if (stade > 3) stade = 3; // les autres familiers ont 4 stades
+  if (FORMES_FAMILIERS[id]) return familierCinq(id, Math.min(4, Math.max(0, Number(stade) || 0)), st => familierAube4(id, st));
+  return familierAube4(id, stade);
+}
+/* dessins d'avant (4 stades) : jeune et adulte des familiers à 5 formes, et familiers sans 5 formes */
+function familierAube4(id, stade) {
+  const c = FAMILIERS_AUBE[id] || FAMILIERS_AUBE.fa_dragon;
+  if (stade > 3) stade = 3;
   if (stade <= 0) return `<g class="orn-oeuf"><ellipse cx="50" cy="66" rx="20" ry="26" fill="${c[0]}" stroke="${c[2]}" stroke-width="2"/><path class="orn-fente" d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5" stroke="#fff3c4" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" fill="none"/><path d="M36 62 l6 -5 l5 6 l6 -7 l5 6 l6 -5" stroke="${c[2]}" stroke-width="2" fill="none"/><circle cx="44" cy="74" r="3" fill="${c[1]}"/><circle cx="57" cy="56" r="2.5" fill="${c[1]}"/></g>`;
   const yeux = (y, k) => `<circle cx="${50 - 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 + 5 * k}" cy="${y}" r="${2.8 * k}" fill="#fff"/><circle cx="${50 - 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/><circle cx="${50 + 5 * k}" cy="${y}" r="${1.4 * k}" fill="#1a1028"/>`;
   if (id === 'fa_renard') {
@@ -3955,9 +4095,9 @@ function familierAube(id, stade) {
   return corps[stade];
 }
 function familierAubeSvg(id, stade, grand) {
-  const k = grand ? [0.46, 0.7, 0.78, 0.86, 0.84][stade] : [0.42, 0.56, 0.66, 0.72, 0.7][stade];
+  const k = id === 'fa_dragon' ? (grand ? [0.46, 0.7, 0.78, 0.86, 0.84][stade] : [0.42, 0.56, 0.66, 0.72, 0.7][stade]) : (grand ? [0.46, 0.7, 0.78, 0.84, 0.84][stade] : [0.42, 0.56, 0.62, 0.66, 0.66][stade]);
   // grandes formes (ailes ouvertes) : poussées vers l'extérieur sans sortir du cadre, pour ne pas cacher le héros (avocat du diable, 24/11)
-  const x = (grand ? [-6, -6, -6, -22, -10] : [2, 2, 2, -6, 8])[stade];
+  const x = id === 'fa_dragon' ? (grand ? [-6, -6, -6, -22, -10] : [2, 2, 2, -6, 8])[stade] : grand ? -6 : 2; // les ailes du dragon demandent leur propre place
   return `<g transform="translate(${x} ${246 - 94 * k}) scale(${k})"><g class="orn orn-fam"><ellipse cx="50" cy="94" rx="24" ry="4" fill="#000" opacity=".35"/>${familierAube(id, stade)}</g></g>`;
 }
 /* Montures (vitrine) : la bête de profil, tête à gauche, sabots vers y = 242. Le héros est mis EN SELLE par orner() :
@@ -4664,11 +4804,11 @@ function rgSchema(k) {
   /* ---------- 5. Ce qui se gagne autrement : les vrais dessins ---------- */
   if (n === 4) {
     const carte = (ic, t, d, c) => `<div class="rg-carte ${c || ''}"><span class="ph-v">${ic}</span><b>${t}</b><small>${d}</small></div>`;
-    const dragon = (st, w) => `<svg viewBox="0 0 100 100" width="${w}" height="${w}" aria-hidden="true">${familierAube('fa_dragon', st)}</svg>`;
+    const dragon = (st, w) => `<svg viewBox="${st >= 3 ? '-28 -24 156 124' : '0 -6 100 106'}" width="${w}" height="${w}" aria-hidden="true">${familierAube('fa_dragon', st)}</svg>`;
     const crois = `<div class="rg-crois">${[[1, 28, '10 j'], [2, 34, '21 j'], [3, 42, '45 j'], [4, 50, '90 j']].map(([st, w, j], k) => (k ? rgFleche('d') : '') + `<span class="${k === 3 ? 'rg-bond' : ''}">${dragon(st, w)}<small>${j}</small></span>`).join('')}</div>`;
     return `<div class="rg-sch"><div class="rg-g">
       ${carte(rgCosm('re_campement', 'repaire'), 'Repaire', 'niveaux 10, 20, 35, 50')}${carte(rgCosm('mo_destrier', 'monture'), 'Monture', 'niveaux 25 et 50')}
-      <div class="rg-carte or large"><b>Familier : le Dragon de l'Aube</b><small>une série de 7 jours l'apporte ; ta meilleure série le fait évoluer</small>${crois}</div>
+      <div class="rg-carte or large"><b>Familier : le Dragon de l'Aube</b><small>une série de 7 jours l'apporte ; ta meilleure série le fait évoluer (comme tous les familiers)</small>${crois}</div>
       ${carte(rgTrophee(28), 'Trophée', 'chaque boss vaincu')}${carte(`<svg viewBox="0 0 30 30" width="28" height="28" aria-hidden="true"><circle cx="15" cy="15" r="9" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-dasharray="2 3"/>${rgEtinc(15, 15, 6, 'var(--gold)')}</svg>`, 'Ornements', 'niveau, séries, titres')}
     </div></div>`;
   }
