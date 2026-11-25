@@ -7070,7 +7070,7 @@ function carteEcho(s) {
   if (!E.boss) return `<div class="carte-echo"><div class="ec-t"><b>🌫️ Écho du Rodage</b><span>${quand}</span></div>
     <div class="ec-b">${port(c, 'g')}<div><b>${esc(c.nom)}</b> revient ce week-end${E.impose ? ` (${E.date && E.date.slice(5) === '04-01' ? 'poisson d\'avril' : 'Halloween'} oblige)` : ''}.<br><span class="muted">Faible à ${esc(c.faible || '')} · ${E.recompense || 60} éclats chacun s'il tombe.</span></div></div></div>`;
   const pct = c.pvMax ? Math.max(0, Math.min(100, c.pv / c.pvMax * 100)) : 0, fini = !!c.vaincuLe;
-  return `<div class="carte-echo ${fini ? 'vaincu' : ''}"><div class="ec-t"><b>🌫️ Écho · ${esc(c.nom)}</b><span>${fini ? '✓ vaincu' : 'jusqu\'à dimanche minuit'}</span></div>
+  return `<div class="carte-echo ${fini ? 'vaincu' : ''}"><div class="ec-t"><b>🌫️ Écho · ${esc(c.nom)}</b><span>${fini ? '✓ vaincu' : E.fini ? 'il s\'est dissipé dans la brume · une quête oubliée du week-end compte encore 7 jours' : 'jusqu\'à dimanche minuit'}</span></div>
     <div class="ec-b">${port(c, 'g')}<div class="ec-v"><div class="bar"><i style="width:${pct}%"></i></div>
       <span class="muted">${fini ? `+${E.recompense || 60} éclats chacun` : `${nbF(c.pv)} / ${nbF(c.pvMax)} PV · faible à ${esc(c.faible)} · résiste à ${esc(c.resiste)}`}</span></div></div></div>`;
 }
