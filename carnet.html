@@ -643,7 +643,7 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
 .rd-l{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
 .rd{display:grid;justify-items:center;gap:3px}.rd b{font-size:.75rem;color:var(--muted)}
 .rd-o{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;border:2px solid var(--line2);color:#1a1230}
-.rd.plein .rd-o{background:var(--gold);border-color:var(--gold)} .rd.rate .rd-o{border-color:var(--bad);border-style:dashed} .rd.repos .rd-o{border:0;width:8px;height:8px;margin:13px 0;background:var(--line2)}
+.rd.plein .rd-o{background:var(--gold);border-color:var(--gold)} .rd.glisse .rd-o{border-color:var(--gold);border-style:dashed} .rd.rate .rd-o{border-color:var(--bad);border-style:dashed} .rd.repos .rd-o{border:0;width:8px;height:8px;margin:13px 0;background:var(--line2)}
 .rd.auj .rd-o,.rd.ajd .rd-o{box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 45%,transparent)} .rd.ajd b{color:var(--gold)}
 .rd-p{display:flex;gap:4px;min-height:10px}.rd-p i{width:10px;height:10px;border-radius:50%;border:2px solid transparent;box-sizing:border-box}
 .rd-leg{display:flex;gap:12px;justify-content:center;margin-top:8px}.rd-leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
@@ -3033,11 +3033,12 @@ function marquer(it,rpe){
 const COUL={run:"var(--run)",str:"var(--str)",en:"var(--en)"};
 function rondsSemaine(){
   const mon=mondayOf(todayISO()),t=todayISO();let fait=0,tot=0;
+  const encore=new Set(aRattraper(prevusDu(t).some(x=>x.k!=="en")).map(x=>x.key)), S=sautes();
   const j=LETTRES.map((L,i)=>{const d=addDays(mon,i),P=prevusDu(d),n=P.filter(estFait).length;fait+=n;tot+=P.length;
-    const etat=!P.length?"repos":n===P.length?"plein":d<t?"rate":d===t?"auj":"prevu";
+    const manque=P.filter(x=>!estFait(x)), etat=!P.length?"repos":n===P.length?"plein":d<t?(manque.every(x=>encore.has(x.key))?"glisse":"rate"):d===t?"auj":"prevu";
     return `<div class="rd ${etat}${d===t?" ajd":""}" aria-label="${DAYS[i]} : ${!P.length?"repos":n+" sur "+P.length}"><span class="rd-o">${n===P.length&&P.length?"✓":""}</span><span class="rd-p">${P.map(x=>`<i style="${estFait(x)?"background":"border-color"}:${COUL[x.k]}"></i>`).join("")}</span><b>${L}</b></div>`}).join("");
   return `<div class="card rds"><div class="row" style="justify-content:space-between"><span class="kicker">Ta semaine</span><span class="small mono">${fait} / ${tot} séances</span></div><div class="rd-l">${j}</div>
-    <div class="rd-leg small muted"><span><i style="background:var(--run)"></i>course</span><span><i style="background:var(--str)"></i>renfo</span><span><i style="background:var(--en)"></i>anglais</span></div></div>`;
+    <div class="rd-leg small muted"><span><i style="border:1.5px dashed var(--gold);box-sizing:border-box"></i>à rattraper</span><span><i style="background:var(--run)"></i>course</span><span><i style="background:var(--str)"></i>renfo</span><span><i style="background:var(--en)"></i>anglais</span></div></div>`;
 }
 let menuOuvert=null;
 /* « Aussi aujourd'hui » : une ligne compacte (~56 px), un bouton, le reste dans « ⋯ » (ergonome 25/11 : tout doit tenir à 360 × 640) */
@@ -3101,7 +3102,8 @@ function renderAuj(){
 function segs(n,f){return `<div class="pg-segs">${Array.from({length:n},(_,i)=>`<i style="--f:${Math.max(0,Math.min(1,f(i)))}"></i>`).join("")}</div>`}
 function renderProg(){
   const p=$("#p-prog"); if(!p)return; const t=todayISO(), W=weeksPlan(), wi=curWeekIdx(), S=strWeeks();
-  const runFaites=W.reduce((a,w)=>a+w.s.filter(s=>state.run.logs[s.key]).length,0), runPrevues=W.reduce((a,w)=>a+w.s.filter(s=>s.date<=t&&(state.run.logs[s.key]||s.tag!=="Qualité"||s.date===t)).length,0); // séance dure ratée : pas rattrapée, donc pas « en retard »
+  const runFaites=W.reduce((a,w)=>a+w.s.filter(s=>state.run.logs[s.key]).length,0), runPrevues=W.reduce((a,w)=>a+w.s.filter(s=>s.date<=t).length,0),
+    duresRatees=W.reduce((a,w)=>a+w.s.filter(s=>s.tag==="Qualité"&&s.date<t&&!state.run.logs[s.key]).length,0); // ratées pour de bon : on ne les rattrape pas (avocat 25/11 : à dire, pas à cacher)
   const faciles=Object.entries(state.run.logs).filter(([k,l])=>l.allure&&l.date>=addDays(t,-28)&&!W.some(w=>w.s.some(s=>s.key===k&&s.tag==="Qualité"))).map(([k,l])=>l.allure);
   const allure=faciles.length?mmss(faciles.reduce((a,b)=>a+b,0)/faciles.length):"";
   const strF=S.filter(x=>state.str.logs[x.key]).length, strP=S.filter(x=>x.date<=t).length;
@@ -3112,7 +3114,7 @@ function renderProg(){
   <div class="card pg" style="--c:var(--run)"><span class="kicker">Course · plan 10 km</span>
     <h2>${wi<0?`Départ le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${wi+1} sur ${W.length}`}</h2>
     ${segs(W.length,i=>W[i].s.filter(s=>state.run.logs[s.key]).length/3)}
-    <p>${runPrevues?`${runFaites} sortie${runFaites>1?"s":""} sur ${runPrevues} prévue${runPrevues>1?"s":""} : ${ph(runFaites,runPrevues)}`:"Aucune sortie prévue pour l'instant."}${allure?`<br>Allure moyenne des sorties faciles (4 sem.) : <b>${allure} /km</b>. Si elle baisse, tu progresses.`:""}</p></div>
+    <p>${runPrevues?`${runFaites} sortie${runFaites>1?"s":""} sur ${runPrevues} prévue${runPrevues>1?"s":""}${runFaites>=runPrevues?" : à l'heure ✓":(runPrevues-runFaites-duresRatees>0?` · ${runPrevues-runFaites-duresRatees} à rattraper`:"")+(duresRatees?` · ${duresRatees} séance${duresRatees>1?"s":""} dure${duresRatees>1?"s":""} ratée${duresRatees>1?"s":""}`:"")}`:"Aucune sortie prévue pour l'instant."}${allure?`<br>Allure moyenne des sorties faciles (4 sem.) : <b>${allure} /km</b>. Si elle baisse, tu progresses.`:""}</p></div>
   <div class="card pg" style="--c:var(--str)"><span class="kicker">Renfo · la forge</span>
     <h2>${strF} séance${strF>1?"s":""} sur ${S.length}</h2>${segs(S.length,i=>state.str.logs[S[i].key]?1:0)}
     <p>${strP?`${ph(strF,strP)} · chaque séance forge une pièce d'armure.`:"Première séance le "+frDate(S[0]?.date||t)+"."}</p></div>
