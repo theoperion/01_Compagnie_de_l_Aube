@@ -787,7 +787,9 @@
   @keyframes rcPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
   .regles-mini { margin-left: 6px; padding: 2px 8px; border-radius: 99px; border: 1px solid #f2a541; background: color-mix(in srgb, var(--gold) 10%, var(--card)); color: var(--gold); font: 700 11px var(--f-texte); cursor: pointer; vertical-align: 2px; }
 
-  .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 10px; margin: -10px; }
+  .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 10px; margin: -10px; min-height: 40px; }
+  .orn-q::after { content: ''; position: absolute; inset: -8px; } /* « i » et « ? » : zone de toucher de 40 px (ergonome 25/11) */
+  .gr-plus { justify-content: center; color: var(--gold); border-style: dashed; }
   #reglesOv { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(8,6,12,.88); padding: 16px; }
   #reglesOv.on { display: grid; }
   .rg-livre { position: relative; width: min(100%, 440px); height: min(calc(100dvh - 40px), 760px); max-height: none; display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; padding: 18px 18px 0; border-radius: 18px;
@@ -4312,7 +4314,7 @@ let marchandOuvert = false;
 /* Garde-robe : on choisit un emplacement, puis on ne voit que ses objets (cosmétiques de la saison + petits ornements) */
 const GARDE_ROBE = [['cape', '🧥', 'Cape'], ['tete', '👑', 'Couronne'], ['aura', '✨', 'Aura'], ['familier', '🐉', 'Familier'], ['poche', '🦉', 'De poche'], ['monture', '🐎', 'Monture'],
   ['repaire', '🏰', 'Repaire'], ['trainee', '💫', 'Traînée'], ['victoire', '⚡', 'Coup final'], ['sceau', '🏵️', 'Sceau'], ['embleme', '⭐', 'Emblème'], ['sol', '🌸', 'Sol'], ['lueur', '🌟', 'Lueur']];
-let slotGarde = 'cape';
+let slotGarde = 'cape', grTout = false; // grTout : toutes les catégories (Théo 25/11 / ergonome : n'afficher d'abord que celles où l'on a un objet)
 /* Nouveaux objets (Théo, 25/11 : « une petite coche rouge sur l'armurerie quand j'ai de nouveaux objets ») : ce que tu possèdes et n'as pas encore vu dans la garde-robe.
  * Première fois : tout ce que tu as déjà compte comme vu (pas de pastille pour l'existant). Vus à l'ouverture de l'armurerie ; « Nouveau » reste affiché jusqu'à sa fermeture. */
 const cleCosmVus = () => 'cosmVus|' + (herosActif || '');
@@ -4337,7 +4339,9 @@ function blocArmurerie() {
   const petits = slot => slot === 'poche' ? ORNEMENTS.filter(o => o.slot === 'familier' && ornementDebloque(s, o)) : slot === 'familier' ? [] : ORNEMENTS.filter(o => o.slot === slot);
   const compte = slot => [objets(slot).filter(x => cosmPossede(x.id)).length + petits(slot).filter(o => ornementDebloque(s, o)).length, objets(slot).length + petits(slot).length];
   const neufs = nouveauxVitrine || [];
-  const onglets = GARDE_ROBE.map(([id, ic, nom]) => { const [a, t] = compte(id); const nf = neufs.some(n => objets(id).some(x => x.id === n)); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''} ${nf ? 'a-neuf' : ''}" data-garde="${id}" title="${nom} · ${a} / ${t} gagnés" aria-label="${nom} : ${a} sur ${t} gagnés"><span aria-hidden="true">${ic}</span><b>${nom}</b></button>` : ''; }).join('');
+  const montre = ([id]) => grTout || id === slotGarde || compte(id)[0] > 0 || (id === 'sceau'); // le sceau de base est toujours là
+  const cachees = GARDE_ROBE.filter(g => !montre(g) && compte(g[0])[1]).length;
+  const onglets = GARDE_ROBE.filter(montre).map(([id, ic, nom]) => { const [a, t] = compte(id); const nf = neufs.some(n => objets(id).some(x => x.id === n)); return t ? `<button class="gr-b ${slotGarde === id ? 'on' : ''} ${nf ? 'a-neuf' : ''}" data-garde="${id}" title="${nom} · ${a} / ${t} gagnés" aria-label="${nom} : ${a} sur ${t} gagnés"><span aria-hidden="true">${ic}</span><b>${nom}</b></button>` : ''; }).join('');
   const E = GARDE_ROBE.find(g => g[0] === slotGarde) || GARDE_ROBE[0];
   // le sceau de base (celui du thème) reste choisissable : le toucher retire le sceau porté (Théo, 25/11)
   const sceauBase = E[0] === 'sceau' ? `<div class="orn-t ${orn.sceau ? '' : 'eq'}"><button class="orn-b" data-orn="sceau|" aria-label="Sceau de base"><span class="orn-ic"><span class="ap-sc">${sceauSvg({ classe: s.classe })}</span></span><b>De base</b></button></div>` : '';
@@ -4349,16 +4353,15 @@ function blocArmurerie() {
     return `<div class="orn-t ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : o.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(o.nom)}"><span class="orn-ic">${miniOrnement(o)}</span><b>${esc(o.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}</button>
       ${ok ? `<button class="orn-q info" data-orn-info="${o.id}" aria-label="À propos de cet objet">i</button>` : `<button class="orn-q" data-orn-info="${o.id}" aria-label="Comment le gagner">?</button>`}</div>`; }).join('');
   const prix = ((s.catalogueCosm || {}).prix) || {};
-  const marchand = marchandOuvert ? `<div class="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id).sort((a, b) => (a.prix || prix[a.rarete] || 0) - (b.prix || prix[b.rarete] || 0)).map(x =>
+  const marchand = true ? `<div class="marchand" id="marchand">${liste.filter(x => x.butin && !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id).sort((a, b) => (a.prix || prix[a.rarete] || 0) - (b.prix || prix[b.rarete] || 0)).map(x =>
     `<div class="mar-l r-${x.rarete}"><span class="orn-ic">${apercuCosm(x)}</span><div><b>${esc(x.nom)}</b><small>${RARETE_NOM[x.rarete]}</small></div><button class="btn mini ${A.eclats >= (x.prix || prix[x.rarete] || 0) ? 'or' : ''}" data-acheter="${x.id}">✦ ${x.prix || prix[x.rarete] || '?'}</button></div>`).join('') || '<p class="muted">Tu as déjà tout !</p>'}</div>` : '';
   return `<div id="armurerie"><div class="section"><h2>Garde-robe</h2><button class="lien-regles" data-regles="garde">📖 Comment ça marche ?</button></div>
-    <div class="gr-onglets">${onglets}</div>
+    <div class="gr-onglets">${onglets}${cachees ? `<button class="gr-b gr-plus" data-gr-tout="1" aria-label="Voir les ${cachees} autres emplacements">＋ ${cachees} autre${cachees > 1 ? 's' : ''}</button>` : grTout ? '<button class="gr-b gr-plus" data-gr-tout="0">− Moins</button>' : ''}</div>
     <div class="orn-info" id="info-cosm"></div><div class="orn-info" id="info-${E[0]}"></div>
     <div class="orn-liste gr-liste">${tuilesCosm}${tuilesOrn}</div>
     ${caches ? `<p class="muted" style="font-size:12px;margin:-4px 2px 10px">✦ + ${caches} objets à découvrir dans les saisons à venir</p>` : ''}
     ${blocSouvenirs(s)}
     <div class="section"><h2>Marchand</h2><span>✦ ${A.eclats} éclats</span></div>
-    <div class="sa-b"><button class="btn mini" data-marchand="1">${marchandOuvert ? 'Fermer' : 'Ouvrir'} la boutique</button></div>
     ${marchand}
     ${A.saison.id === 'pre' ? apercuSaison1() : ''}</div>`;
 }
@@ -4747,7 +4750,7 @@ document.addEventListener('click', e => { // toucher ailleurs referme le détail
 document.addEventListener('click', e => { // le compteur d'éclats ouvre la boutique du marchand
   if (!e.target.closest('[data-marchand-go]')) return;
   marchandOuvert = true; ouvrirVitrine();
-  requestAnimationFrame(() => { const m = document.querySelector('#vitrine [data-marchand]'); if (m) m.scrollIntoView({ block: 'center' }); });
+  requestAnimationFrame(() => { const m = document.querySelector('#vitrine #marchand'); if (m) m.scrollIntoView({ block: 'start' }); });
 });
 /* Ce qu'un coffre du chemin peut contenir AUJOURD'HUI : mêmes poids et mêmes règles que tirerCoffreLocal (Armurerie.js),
  * objets du catalogue de la SAISON COURANTE seulement (au Rodage : rien d'autre que le Rodage), encore non possédés. */
@@ -5401,6 +5404,7 @@ document.addEventListener('click', e => {
   }
   const gr = e.target.closest('[data-garde]'); if (gr) { slotGarde = gr.dataset.garde; dessinerVitrine(); return; }
   if (e.target.closest('[data-marchand]')) { marchandOuvert = !marchandOuvert; dessinerVitrine(); return; }
+  const gt = e.target.closest('[data-gr-tout]'); if (gt) { grTout = gt.dataset.grTout === '1'; dessinerVitrine(); return; }
   const ach = e.target.closest('[data-acheter]');
   if (ach) {
     const x = cosmItem(ach.dataset.acheter), prix = x && (x.prix || ((state.catalogueCosm || {}).prix || {})[x.rarete]); // prix propre (Soleil de l'Aube : 400)
@@ -6554,7 +6558,7 @@ function dessinerVitrine() {
     <p class="vit-aide">Incline-le du doigt · touche-le pour le saluer</p>
     ${moi && state.armurerie ? `<div class="vit-acts">${(state.armurerie.coffres || []).length ? `<button class="btn or vit-coffre" data-coffre="1">🎁 Ouvrir un coffre <b>${state.armurerie.coffres.length}</b></button>` : ''}<button class="btn vit-ancre" data-vit-garde="1">🧥 Garde-robe ↓</button></div>` : ''}
     ${moi && state.armurerie && state.armurerie.saison ? `<button class="vit-chemin" data-vit-chemin="1"><span>⚜ Palier <b>${state.armurerie.saison.palier}</b> / ${state.armurerie.saison.paliers}</span><em>${prochaineVitrine()}</em></button>` : ''}
-    <div class="section"><h2>Évolutions</h2><span>${pal + 1} / ${cl.paliers.length} formes · ${moi ? 'touche pour revoir' : ''}</span></div>
+    <div class="section"><h2>Évolutions</h2><span style="margin-right:48px">${pal + 1} / ${cl.paliers.length} formes</span></div>
     <div class="evo-rang">${evos}</div>
     ${moi ? blocArmurerie() : ''}
 
