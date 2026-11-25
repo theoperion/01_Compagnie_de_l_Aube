@@ -802,6 +802,10 @@
 
   .lien-regles { background: none; border: 0; color: var(--gold); font: 600 12px var(--f-texte); cursor: pointer; padding: 10px; margin: -10px; min-height: 40px; }
   .orn-q::after { content: ''; position: absolute; inset: -8px; } /* « i » et « ? » : zone de toucher de 40 px (ergonome 25/11) */
+  .bf-l { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; } .bf-f { display: grid; justify-items: center; gap: 1px; text-align: center; }
+  .bf-f svg { width: 100%; max-width: 64px; aspect-ratio: 1; } .bf-f b { font-size: 10.5px; line-height: 1.15; } .bf-f small { font-size: 10px; color: var(--muted); }
+  .bf-f.ombre svg { filter: brightness(0) invert(1) opacity(.22); } .bf-f.ombre svg * { animation: none !important; }
+  .mar-reste { margin: -4px 2px 10px; font-size: 13px; color: var(--muted); } .mar-reste b { color: var(--text); }
   .gr-plus { justify-content: center; color: var(--gold); border-style: dashed; }
   #reglesOv { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(8,6,12,.88); padding: 16px; }
   #reglesOv.on { display: grid; }
@@ -1762,7 +1766,7 @@ html.ygg .empty { border-color:#24404f; }
   /* aurores qui ondulent lentement en haut de l'écran */
   html.ygg body::before { content: ''; display: block !important; position: fixed; inset: -40px -20% auto; height: 300px; pointer-events: none; z-index: -1; opacity: .75;
     background: radial-gradient(30% 40% at 25% 30%, rgba(99,230,173,.28), transparent 70%), radial-gradient(28% 36% at 60% 20%, rgba(85,227,194,.22), transparent 70%), radial-gradient(24% 34% at 85% 35%, rgba(169,139,255,.24), transparent 70%);
-    filter: blur(8px); animation: aurore 18s ease-in-out 2 alternate both; }
+    filter: blur(8px); animation: aurore 40s ease-in-out infinite alternate both; } /* Théo, 25/11 : les aurores ondulent tout le temps, très lentement (avant : 2 allers-retours) */
   @keyframes aurore { 0% { transform: translateX(-6%) skewX(-6deg); opacity: .55; } 50% { opacity: .85; } 100% { transform: translateX(6%) skewX(6deg); opacity: .65; } }
   /* quelques flocons qui tombent doucement */
   .flocons { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
@@ -4380,6 +4384,8 @@ function blocArmurerie() {
     ${caches ? `<p class="muted" style="font-size:12px;margin:-4px 2px 10px">✦ + ${caches} objets à découvrir dans les saisons à venir</p>` : ''}
     ${blocSouvenirs(s)}
     <div class="section"><h2>Marchand</h2><span>✦ ${A.eclats} éclats</span></div>
+    ${(() => { const reste = liste.filter(x => !cosmPossede(x.id) && (x.saison || 'pre') === A.saison.id), achat = reste.filter(x => x.butin).length, chemin = reste.length - achat;
+      return reste.length ? `<p class="mar-reste">Encore <b>${reste.length}</b> objet${reste.length > 1 ? 's' : ''} à gagner cette saison : <b>${achat}</b> ici ou dans les coffres${chemin ? `, <b>${chemin}</b> seulement sur le chemin` : ''}.</p>` : '<p class="mar-reste">✓ Tu as tous les objets de la saison.</p>'; })()}
     ${marchand}
     ${A.saison.id === 'pre' ? apercuSaison1() : ''}</div>`;
 }
@@ -5222,6 +5228,9 @@ const REGLES_PAGES = [ // refait le 25/11 (Théo : « retravailler les règles �
     p: ['Jusqu\'à 13 emplacements, de la cape au sceau. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.',
       'Les petits ornements (familier de poche, sol, emblème, lueur) se gagnent tout seuls avec ton niveau, tes séries et tes titres.',
       'Un <b>point rouge</b> sur l\'Armurerie = un nouvel objet à voir. Ton compagnon d\'armes voit ce que tu portes.'] },
+  { t: 'Ton familier', id: 'familier', get s() { return bestiaireFamilier(); },
+    p: ['Ton familier grandit avec ta <b>meilleure série</b> (des jours d\'affilée sur une même quête) : 5 formes, à 10, 21, 45 et 90 jours. Il ne recule jamais.',
+      'Les formes en ombre t\'attendent encore. Chaque saison a son familier.'] },
   { t: 'Les talents', id: 'talents', s: `<div class="rg-sch"><div class="tal-ech"><span class="def">8<small>défaut</small></span><i>→</i><span>12<small>I</small></span><i>→</i><span>15<small>II</small></span><i>→</i><span class="or">18<small>III</small></span></div></div>`,
     get p() { const T = TALENTS_APP, l = (c, x) => `<b>${c} · ${T[c].nom}</b> : ${x}.`;
       return ['Chaque caractéristique cache un talent : il s\'éveille à <b>12</b> (I), grandit à <b>15</b> (II), culmine à <b>18</b> (III).',
@@ -5237,6 +5246,14 @@ const REGLES_PAGES = [ // refait le 25/11 (Théo : « retravailler les règles �
         s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 arrive le 1er janvier. Tout le reste est un secret.']
         .concat(s1 ? [] : ['<b>⚠ Ouvre tes coffres et dépense tes éclats avant le 31 décembre : ils disparaissent avec le Rodage.</b>']); } }
 ];
+/* Bestiaire du familier (Théo, 25/11) : ses 5 formes, dessinées si atteintes, en ombre sinon (avec la série qui les débloque) */
+function bestiaireFamilier() {
+  const s = (typeof state !== 'undefined' && state) || {}, orn = (typeof ornementsDe === 'function' && s.armurerie ? ornementsDe(s) : {}) || {};
+  const ids = Object.keys(FORMES_SERIE), id = ids.indexOf(orn.familier) >= 0 ? orn.familier : ids.filter(k => cosmPossede(k)).pop() || ids[0];
+  const a = !!s.armurerie && cosmPossede(id), st = a ? stadeFamilierDe(id, joursDe(s), serieDe(s)) : -1, noms = FORMES_SERIE[id] || [];
+  return `<div class="rg-sch"><div class="bf-l">${noms.map((n, i) => `<div class="bf-f ${i <= st ? 'ok' : 'ombre'}"><svg viewBox="0 0 100 100" aria-hidden="true">${familierAube(id, i)}</svg>
+    <b>${i <= st ? esc(n) : '?'}</b><small>${i ? 'série ' + SEUILS_DRAGON[i - 1] + ' j' : a ? 'adopté' : 'à gagner'}</small></div>`).join('')}</div></div>`;
+}
 let pageRegles = 0, livretRangeAuRetour = false;
 function livretReduit() { try { return localStorage.getItem('livretReduit') === '1'; } catch (e) { return false; } }
 document.addEventListener('click', e => {
