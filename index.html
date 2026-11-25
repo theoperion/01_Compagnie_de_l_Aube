@@ -309,7 +309,8 @@
   #vitrine.on { display: block; animation: vitIn .25s ease-out; }
   @keyframes vitIn { from { opacity: 0; } to { opacity: 1; } }
   .vit-box { max-width: 460px; margin: 0 auto; padding: 18px 16px 40px; position: relative; }
-  .vit-x { position: sticky; top: 0; float: right; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
+  #armurerie > .section:first-child { padding-right: 52px; }
+  .vit-x { position: sticky; top: 0; float: right; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
   /* La route en perspective (maquette, éteinte par défaut) */
   .rv-2d { position: absolute; right: 12px; top: calc(max(10px, env(safe-area-inset-top)) + 52px); z-index: 2001; min-height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,.5); background: rgba(10,14,30,.72); color: #fff; font: 700 13px var(--f-texte); }
   .rv-ov { position: fixed; inset: 0; z-index: 70; overflow: hidden; background: #0f1a36; touch-action: none; }
@@ -325,8 +326,8 @@
   .rv-pierre b { font: 800 14px var(--f-texte); color: #1c1828; }
   .rv-borne.fait .rv-pierre::after { content: '✓'; position: absolute; margin: -34px 0 0 34px; width: 18px; height: 18px; border-radius: 50%; background: #1e6a2a; color: #fff; font: 700 12px/18px var(--f-texte); text-align: center; }
   .rv-heros { display: grid; justify-items: center; } .rv-heros svg { width: 74px; height: 96px; }
-  .rv-heros span { margin-top: -2px; padding: 1px 9px; border-radius: 9px; border: 1px solid #fff; color: #fff; font: 800 11px var(--f-texte); }
-  .rv-tete { position: absolute; left: 16px; right: 64px; top: max(14px, env(safe-area-inset-top)); color: #fff; text-shadow: 0 1px 3px #000; z-index: 2000; }
+  .rv-heros span { transform-origin: 50% 0; min-width: 30px; text-align: center; margin-top: -2px; padding: 1px 9px; border-radius: 9px; border: 1px solid #fff; color: #fff; font: 800 11px var(--f-texte); }
+  .rv-tete { position: absolute; left: 16px; right: 100px; top: max(14px, env(safe-area-inset-top)); color: #fff; text-shadow: 0 1px 3px #000; z-index: 2000; }
   .rv-tete b { display: block; font: 700 20px var(--f-titre); color: var(--gold); } .rv-tete span { font-size: 13px; }
   .rv-x { position: absolute; right: 12px; top: max(10px, env(safe-area-inset-top)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); background: rgba(10,14,30,.7); color: #fff; font-size: 18px; z-index: 2000; }
   .rv-aide { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 22px 0 max(12px, env(safe-area-inset-bottom)); text-align: center; color: #fff; font-size: 13px; text-shadow: 0 1px 3px #000; z-index: 2000; background: linear-gradient(transparent, rgba(8,12,24,.75)); pointer-events: none; }
@@ -1037,10 +1038,11 @@
   .coup .val { font-weight: 800; color: #ff8b7a; font-variant-numeric: tabular-nums; }
   .coup.riposte .val { color: #8fd6a0; } .coup.riposte .quoi { color: var(--muted); }
   .tabs i.pvb { background: #8f2b24; }
-  i.pastille { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #e5383b; box-shadow: 0 0 0 2px var(--bg, #0e1220); margin-left: 5px; vertical-align: 6px; }
+  html[class] .tabs button i.pastille { background: #c9302c; min-width: 0; width: 10px; height: 10px; padding: 0; top: 6px; left: calc(50% + 12px); right: auto; }
+  i.pastille { display: inline-block; width: 9px; height: 9px; padding: 0; border-radius: 50%; background: #c9302c; box-shadow: 0 0 0 2px var(--bg, #0e1220); margin-left: 5px; vertical-align: 6px; }
   .tabs button { position: relative; } .tabs i.pastille { position: absolute; top: 4px; right: calc(50% - 20px); margin: 0; }
-  .orn-b i.neuf { position: absolute; top: 3px; left: 3px; font: 700 9px/1 var(--f-texte, sans-serif); font-style: normal; color: #fff; background: #e5383b; border-radius: 6px; padding: 2px 4px; }
-  .gr-b.a-neuf { position: relative; } .gr-b.a-neuf::after { content: ''; position: absolute; top: 3px; right: 3px; width: 8px; height: 8px; border-radius: 50%; background: #e5383b; }
+  .orn-b i.neuf { position: absolute; top: 3px; left: 3px; font: 700 10px/1 var(--f-texte, sans-serif); font-style: normal; color: #fff; background: #c9302c; border-radius: 6px; padding: 2px 4px; }
+  .gr-b.a-neuf { position: relative; } .gr-b.a-neuf::after { content: ''; position: absolute; top: 3px; right: 3px; width: 8px; height: 8px; border-radius: 50%; background: #c9302c; }
   .faible { color: var(--gold); font-weight: 700; } .resiste { color: var(--muted); }
   .boss-win { position: fixed; inset: 0; z-index: 30; display: grid; place-items: safe center; overflow-y: auto; overscroll-behavior: contain; text-align: center; padding: 20px;
     background: radial-gradient(circle, rgba(70,52,16,.97), rgba(10,8,14,.98) 70%); animation: fadeIn .3s; }
@@ -4476,7 +4478,7 @@ function vignetteEtape(e, w) {
   if (e.type === 'coffre') return coffreSvg(e.r.coffre).replace('width="128" height="107"', `width="${w || 30}" height="${Math.round((w || 30) * .84)}"`);
   return ECLAT_SVG(w ? Math.round(w * .75) : 22);
 }
-/* ---------- La route en perspective (maquette du 24/11 nuit, ÉTEINTE par défaut : localStorage « chemin3d » = « 1 » pour l'allumer) ----------
+/* ---------- La route en perspective (maquette du 24/11 nuit, allumée depuis le 25/11 (Vue 2D / Vue 3D) : localStorage « chemin3d » = « 1 » pour l'allumer) ----------
  * Théo, 24/11 : « quand on clique sur la piste, j'aimerais que ça s'affiche en 3D ; on voit même pas les deux personnages ; le décor doit être lié à la saison ».
  * Plein écran : ciel et horizon de la saison (DECORS_ROUTE, la Saison 1 ajoute le sien dans saison1.js), route qui serpente vers le château,
  * une borne de pierre par palier avec sa vraie récompense, les deux héros à leur place ; on glisse le doigt pour avancer ou reculer. */
@@ -4514,7 +4516,7 @@ function ouvrirRoute() {
   const clComp = comp ? classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }) : null;
   const lui = comp && comp.palierSaison != null ? { z: Math.min(N, Number(comp.palierSaison) || 0), svg: orner(clComp.dessin(palierDe(Number(comp.niveau) || 1, clComp), 'rvc', lookDe(comp.look)), ornCompagnon(comp), 'rvc'), nom: nomCompagnon(comp), coul: '#3a6ad8' } : null;
   const moi = { z: moiZ, svg: avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'rvm', s), nom: 'Toi', coul: '#c8902a' };
-  routeCam = Math.max(0, moiZ - 1.2);
+  routeCam = Math.max(0, Math.min(moiZ, lui ? lui.z : moiZ) - .6); // les deux héros devant la caméra (ergonome 25/11 : « Toi » était minuscule)
   const ov = document.createElement('div'); ov.id = 'routeOv'; ov.className = 'rv-ov on'; document.body.classList.add('bloque'); routeEl = ov;
   const prochE = E.find(e => !e.fait);
   ov.innerHTML = `<svg class="rv-fond" aria-hidden="true"></svg><div class="rv-objets"></div>
@@ -4564,6 +4566,7 @@ function ouvrirRoute() {
     items.concat(deco).forEach(it => { const P = proj(it.z, it.cote), vis = P.p > -.35 && P.p < 16;
       it.el.style.display = vis ? '' : 'none'; if (!vis) return;
       it.el.style.transform = `translate(${P.x.toFixed(1)}px, ${P.y.toFixed(1)}px) translate(-50%, -100%) scale(${(P.f * (it.deco ? 1.2 : it.heros ? 1.25 : 1)).toFixed(3)})`;
+      if (it.heros) { const k = P.f * 1.25, lab = it.el.querySelector('span'); if (lab) lab.style.transform = `scale(${Math.min(3, 1 / Math.max(.2, k)).toFixed(2)})`; } // étiquette lisible à toute distance
       it.el.style.zIndex = String(1000 - Math.round(P.p * 10)); it.el.style.opacity = P.p > 12 ? String(Math.max(0, (16 - P.p) / 4)) : ''; });
   };
   dessiner();
@@ -4575,9 +4578,10 @@ function ouvrirRoute() {
   ov.addEventListener('touchend', () => { y0 = null; });
   ov.addEventListener('wheel', e => { y0 = 0; c0 = routeCam; bouge(-e.deltaY); y0 = null; }, { passive: true });
   ov.addEventListener('click', e => { if (e.target.closest('[data-route-fermer]')) fermerRoute(); });
-  addEventListener('resize', dessiner);
+  addEventListener('resize', dessiner); routeRedim = dessiner;
 }
-function fermerRoute() { const ov = document.getElementById('routeOv'); if (ov) ov.remove(); routeEl = null; document.body.classList.remove('bloque'); }
+let routeRedim = null;
+function fermerRoute() { if (routeRedim) { removeEventListener('resize', routeRedim); routeRedim = null; } const ov = document.getElementById('routeOv'); if (ov) ov.remove(); routeEl = null; document.body.classList.remove('bloque'); }
 document.addEventListener('click', e => { if (e.target.closest('[data-route]')) ouvrirRoute(); });
 let parcoursTout = false, parcoursEtape = 0, parcoursObjets = false; // « Tout le chemin » ; palier dont on montre le détail (0 = aucun) ; vignettes du coffre dépliées
 let parcoursAnim = ''; // 'corps' | 'detail' : n'anime que ce qui vient de s'ouvrir (gardien : sinon chaque render() fait clignoter et sauter la grille)
@@ -4675,7 +4679,7 @@ function parcoursHTML(s) {
       ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>${esc(nomCompagnon(comp))}</title></circle>` : ''}
     </svg>
     <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>${routeAllumee() && xa != null ? `<span class="ph-lui" style="left:${(xa / 360 * 100).toFixed(1)}%">${orner(classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }).dessin(palierDe(Number(comp.niveau) || 1, classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } })), 'phl', lookDe(comp.look)), ornCompagnon(comp), 'phl')}</span>` : ''}
-    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button>${routeAllumee() ? '<button class="ph-regles" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">🛤️</span> Vue 3D</button>' : ''}<em>${S.palier}<small> / ${N}</small></em></span>`;
+    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button>${routeAllumee() ? '<button class="ph-regles" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">⛰️</span> Vue 3D</button>' : ''}<em>${S.palier}<small> / ${N}</small></em></span>`;
   const suite = E.filter(e => !e.fait).slice(0, 6), fin = E[N - 1];
   const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${parcoursEtape === e.n ? 'choisi' : ''}" data-etape="${e.n}" aria-expanded="${parcoursEtape === e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
   const choisi = parcoursEtape ? E[parcoursEtape - 1] : null, dansGrille = choisi && (suite.includes(choisi) || choisi === fin);
@@ -4937,7 +4941,7 @@ const REGLES_PAGES = [
     p: ['Tu fais tes quêtes. Tout le reste en découle.', '<b>Astuce</b> : glisse le doigt vers la gauche ou la droite pour passer d\'un onglet à l\'autre.', 'L\'XP te fait avancer sur le <b>chemin du Rodage</b> : 15 paliers jusqu\'au château de l\'Aube.', 'Chaque palier donne un objet, un <b>coffre</b> ou des <b>éclats</b>. Tu portes tes trésors dans ta <b>garde-robe</b>.'] },
   { t: 'Le chemin', get s() { return rgSchema('chemin'); },
     p: ['Un palier = <b>750 XP</b>, la moitié d\'une semaine parfaite : environ <b>2 paliers par semaine</b>.', 'Annexes, boss vaincus et défis comptent aussi : ils te font aller plus vite.', '<b>Épuisé</b>, ton XP ne vaut que <b>×0,85</b>. Soigne-toi : le chemin repart.',
-      'Toi et ton compagnon d\'armes avancez au même pas sur la semaine, même avec des quêtes différentes.', 'Touche une étape : sa récompense et l\'XP qui manque. <b>Tout le chemin</b> déroule tous les paliers.'] },
+      'Toi et ton compagnon d\'armes avancez au même pas sur la semaine, même avec des quêtes différentes.', 'Touche une étape : sa récompense et l\'XP qui manque. <b>Tout le chemin</b> déroule tous les paliers.', 'Touche <b>Vue 3D</b> pour marcher sur ta route ; un <b>point rouge</b> sur l\'Armurerie = un nouvel objet à voir.'] },
   { t: 'Les coffres', get s() { return rgSchema('coffres'); },
     get p() { const s = (typeof state !== 'undefined' && state) || {}, sa = ((s.armurerie || {}).saison || {}).id, avant = sa !== 's1' && String(s.today || '') < COFFRES_S1_RODAGE;
       return ['<b>Coffre (N)</b> sous le chemin. Le chiffre rouge sur « Aventure » les compte.', 'Touche une case coffre : ses chances par rareté. <b>Voir les objets</b> : ce qu\'il te reste à gagner.',
