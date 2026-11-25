@@ -63,6 +63,12 @@ window.demo = (() => {
     texte: 'La Compagnie atteint un gué noyé de brume. Une voix propose un passage sûr, contre une promesse. Il faut choisir avant la nuit.',
     choix: [{ texte: 'Accepter la promesse et traverser', effet: 'tout', effetTexte: 'XP ×1,1 sur toutes les quêtes' }, { texte: 'Chercher un autre passage', effet: 'joker', effetTexte: '+1 joker cette semaine' }],
     monVote: voteDemo == null ? undefined : voteDemo, votes: voteDemo == null ? {} : { [moiDemo()]: voteDemo }, decision: null, parMJ: false, destin: null, rebond: null, rebondPossible: false };
+  /* Scores de l'aperçu : répartition de classe (15 · 14 · 13 · 12 · 10 · 10 · 8, favorites d'abord) + 1 point par tranche de XP, comme le Sheet ;
+   * talents à 12/15/18 et défaut à 8, comme le moteur (TALENTS_ de Boss.js, dates fictives : éveillés il y a un mois) */
+  const scoresDemo = fav => { const ordre = [fav.fav1, fav.fav2].concat(['Endurance', 'Volonté', 'Agilité', 'Sagesse', 'Intelligence', 'Charisme', 'Force'].filter(c => c !== fav.fav1 && c !== fav.fav2)), base = [15, 14, 13, 12, 10, 10, 8];
+    return Object.keys(stats).map(n => ({ nom: n, xp: stats[n], score: Math.min(20, base[ordre.indexOf(n)] + Math.floor(stats[n] / seuil)) })); };
+  const talentsDemo = st => ({ liste: st.map(x => { const n = x.score >= 18 ? 3 : x.score >= 15 ? 2 : x.score >= 12 ? 1 : 0;
+    return n ? { carac: x.nom, nom: TALENTS_APP[x.nom].nom, niveau: n, depuis: ilYa(30) } : x.score <= 8 ? { carac: x.nom, nom: TALENTS_APP[x.nom].defaut.nom, niveau: 0, defaut: true, depuis: ilYa(30) } : null; }).filter(Boolean), surmontes: [] });
   function etat() {
     const niv = Math.max(1, Math.floor(Math.pow(xp / a, 1 / k)));
     const bas = niv === 1 ? 0 : a * Math.pow(niv, k), haut = a * Math.pow(niv + 1, k);
@@ -80,25 +86,29 @@ window.demo = (() => {
         : h.derniere === 'Jamais' || ecartJours(h.derniere, today) >= h.tousLes);
     });
     regDemo.vacances.forEach(v => { v.enCours = v.debut <= today && (!v.fin || today <= v.fin); });
+    const classeD = location.hash === '#voleur' || herosActif === 'Kael' ? { nom: 'Roublard assassin', fav1: 'Volonté', fav2: 'Charisme', bonus: 1.1 }
+      : { nom: 'Magicien', fav1: 'Intelligence', fav2: 'Sagesse', bonus: 1.1, epiques: 1.2 };
+    const statsD = scoresDemo(classeD), talD = talentsDemo(statsD), tD = c => talentDe({ talents: talD }, c);
+    const malusD = tD('Endurance').talent ? TALENTS_APP.Endurance.valeurs[tD('Endurance').talent - 1] : tD('Endurance').defaut ? 0.8 : 0.85;
+    const penD = tD('Volonté').talent ? Math.floor(10 * (10 - tD('Volonté').talent) / 10) : tD('Volonté').defaut ? 11 : 10;
     return { today, heros: location.hash === '#duo' ? (herosActif || 'Theron Corvane') : 'Ton nom de héros', titre, niveau: niv, xpTotale: xp, xpSuivant: Math.round(haut - xp),
       progression: Math.max(0, Math.min(1, (xp - bas) / (haut - bas))), pv, pvMax: 100,
-      etat: pv <= 0 ? 'À terre' : pv >= 40 ? 'En forme' : 'Épuisé (XP ×0,85)', xpParPoint: seuil,
-      stats: Object.keys(stats).map(n => ({ nom: n, xp: stats[n], score: Math.min(20, 8 + Math.floor(stats[n] / seuil)) })),
+      etat: pv <= 0 ? 'À terre' : pv >= 40 ? 'En forme' : 'Épuisé (XP ×' + String(malusD).replace('.', ',') + ')', xpParPoint: seuil,
+      stats: statsD, talents: talD, encouragement: encouragementApp({ talents: talD }), malusSansTalent: 0.85,
       habitudes: JSON.parse(JSON.stringify(habs)),
       annexes: JSON.parse(JSON.stringify(annexes.filter(x => x.repetable || x.fois === 0 || x.jour.fait))),
       objectifs: JSON.parse(JSON.stringify(objectifs)),
       vacances: vacDemo || regDemo.vacances.some(v => v.enCours) ? { depuis: today } : null,
       reglages: JSON.parse(JSON.stringify(regDemo)), sheetUrl: 'https://docs.google.com/spreadsheets/',
-      regles: { rend: [1, 0.5, 0.25], soinHab: 5, soinAnnexe: 10, pen: 10, xpMult: 1 },
-      classe: location.hash === '#voleur' || herosActif === 'Kael' ? { nom: 'Roublard assassin', fav1: 'Volonté', fav2: 'Charisme', bonus: 1.1 }
-        : { nom: 'Magicien', fav1: 'Intelligence', fav2: 'Sagesse', bonus: 1.1, epiques: 1.2 },
+      regles: { rend: [1, 0.5, 0.25], soinHab: 5, soinAnnexe: 10, pen: penD, penSansTalent: 10, xpMult: 1 },
+      classe: classeD,
       look: herosActif === 'Kael' ? '#c99a74,#2b1d14,#3d6e9e' : '',
       compagnie: location.hash === '#duo' ? [{ nom: 'Theron Corvane', classe: 'Magicien' }, { nom: 'Kael', classe: 'Voleur assassin' }] : [{ nom: 'Ton nom de héros', classe: 'Magicien' }],
       compagnons: location.hash !== '#duo' ? [] : [herosActif === 'Kael'
         ? { nom: 'Theron Corvane', classe: 'Magicien', look: '', niveau: 14, titre: 'le Vagabond', palierSaison: 5, pv: 85, faitsAujourdhui: 2, quetesDuJour: 4, xpSemaine: 1240 }
         : { nom: 'Kael', classe: 'Voleur assassin', look: '#c99a74,#2b1d14,#3d6e9e', niveau: 9, titre: "l'Aventurier", palierSaison: 3, pv: 70, faitsAujourdhui: 0, quetesDuJour: 3, xpSemaine: 860 }],
       camp: campDemo(), mj: mjDemo(),
-      jokersRestants: jokers, jokersParSemaine: 1, nouveauxBonus: nouveaux.splice(0), seuilEpuise: 40, malus: 0.85, arc: null, // ×0,85 : même valeur que le moteur (migration du 19/11/2026)
+      jokersRestants: jokers, jokersParSemaine: 1, nouveauxBonus: nouveaux.splice(0), seuilEpuise: 40, malus: malusD, arc: null, // ×0,85 (moteur, migration du 19/11/2026), Endurci / Souffle court compris
       d20: d20Demo, capacites: capaDemo(),
       bilan: { semaine: { lundi, dimanche: ilYa((now.getDay() + 6) % 7 - 6), xp: Math.round(xp - 1220), faits: 7 + log.filter(l => l.statut === 'Fait').length,
           rates: rates, jokers: 1 - jokers, bonus: 2, aJour: 2, total: 4 },
@@ -180,7 +190,7 @@ window.demo = (() => {
         const o = objectifs.find(o => o.habitude === nom); if (o) o.faites++;
         if (q.serie !== undefined) { q.serieNb++; q.serie = q.serieNb; q.record = Math.max(q.record || 0, q.serie); if (q.nom === 'Maîtrise de la Langue Ancienne' && q.serie === 4) { nouveaux.push({ titre: '🔥 Série 7 jours', texte: q.nom + ' · 4 validations d\'affilée · +75 XP' }); xp += 75; } }
         log.push({ nom, statut, g });
-      } else if (statut === 'Raté') { q.jour.rate++; rates++; pvDemo -= 10; log.push({ nom, statut }); }
+      } else if (statut === 'Raté') { q.jour.rate++; rates++; pvDemo -= etat().regles.pen; log.push({ nom, statut }); }
       else { if (jokers <= 0) throw new Error('Plus de joker cette semaine'); jokers--; q.jour.repos++; log.push({ nom, statut }); }
       return etat();
     },

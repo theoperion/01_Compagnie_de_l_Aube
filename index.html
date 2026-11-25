@@ -1485,6 +1485,13 @@
   .th-pal { display: flex; gap: 3px; } .th-pal i { width: 12px; height: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,.15); }
   details.titres > summary.voir-tout { list-style: none; cursor: pointer; text-align: center; font-size: 12.5px; color: var(--gold); padding: 8px 0 2px; }
   details.titres > summary.voir-tout::-webkit-details-marker { display: none; }
+  .tal { padding: 9px 0; border-bottom: 1px solid var(--line); } .tal:last-of-type { border-bottom: 0; }
+  .tal-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14px; }
+  .tal-niv { font-family: var(--f-titre); font-weight: 800; font-size: 13px; color: var(--gold); white-space: nowrap; } .tal.def .tal-niv { color: #e07a6f; font-weight: 700; }
+  .tal-eff { font-size: 12.5px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+  .tal-ech { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+  .tal-ech span { display: grid; place-items: center; min-width: 48px; padding: 6px 4px; border: 1px solid var(--line); border-radius: 10px; font-weight: 800; font-size: 16px; color: var(--text); }
+  .tal-ech span.or { border-color: var(--gold); color: var(--gold); } .tal-ech span.def { color: #e07a6f; } .tal-ech small { font-size: 11px; font-weight: 600; color: var(--muted); } .tal-ech i { font-style: normal; color: var(--muted); }
   .stat-note { font-size: 12px; color: var(--muted); padding: 10px 0 6px; line-height: 1.5; }
   /* Caractéristiques */
   details { margin-top: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 4px 14px; }
@@ -5005,12 +5012,77 @@ function rgSchema(k) {
   }
   return '';
 }
+/* ---------- Talents et défauts des caractéristiques (Théo et maître du jeu, 25/11/2026) ----------
+ * Mêmes valeurs que TALENTS_ du moteur (Boss.js) : tests/talents.test.js les compare. Le moteur envoie state.talents = { liste: [{ carac, nom, niveau, defaut, depuis }], surmontes: [...] }. */
+const TALENTS_APP = {
+  Force:        { nom: 'Coup puissant', valeurs: [0.10, 0.20, 0.30], defaut: { nom: 'Bras lourds', valeur: -0.10 } },
+  Endurance:    { nom: 'Endurci', valeurs: [0.90, 0.95, 1], defaut: { nom: 'Souffle court', valeur: 0.80 } },
+  'Agilité':    { nom: 'Pas de côté', valeurs: [0.05, 0.10, 0.15], defaut: { nom: 'Pataud', valeur: 0.05 } },
+  Intelligence: { nom: 'Esprit vif', valeurs: [1, 2, 3], defaut: { nom: 'Distrait', valeur: -1 }, plafond: 5 },
+  Sagesse:      { nom: 'Clairvoyance', valeurs: [0.05, 0.10, 0.15], defaut: { nom: 'Impatient', valeur: -0.05 } },
+  'Volonté':    { nom: 'Tête dure', valeurs: [1, 2, 3], defaut: { nom: 'Fragile', valeur: 1 } },
+  Charisme:     { nom: 'Meneur', valeurs: [15, 20, 25], soi: [5, 10, 15], base: 10, defaut: { nom: 'Solitaire', valeur: 0.03 } }
+};
+const pctT = x => Math.round(Math.abs(x) * 100) + ' %', virT = x => String(x).replace('.', ',');
+/** Talent ou défaut actif d'une caractéristique : { talent: 0..3, defaut } (comme talentsAu_ du moteur, pour aujourd'hui). */
+function talentDe(s, carac) { const t = (((s && s.talents) || {}).liste || []).find(x => x.carac === carac); return t ? { talent: t.defaut ? 0 : Number(t.niveau) || 0, defaut: !!t.defaut } : { talent: 0, defaut: false }; }
+/** Bonus du d20 : modificateur de la carac favorite + Esprit vif (+1/2/3) ou Distrait (−1), plafonné à +5 (= bonusD20B_ du moteur). */
+function bonusD20App(mod, x) { const I = TALENTS_APP.Intelligence, t = x && x.talent ? I.valeurs[x.talent - 1] : x && x.defaut ? I.defaut.valeur : 0; return Math.min(I.plafond, (Number(mod) || 0) + t); }
+/** XP de l'encouragement : { autre, soi } (moteur : encouragementB_ ; il l'envoie dans state.encouragement). */
+function encouragementApp(s) { if (s && s.encouragement && s.encouragement.autre) return s.encouragement; const C = TALENTS_APP.Charisme, x = talentDe(s, 'Charisme'); return x.talent ? { autre: C.valeurs[x.talent - 1], soi: C.soi[x.talent - 1] } : { autre: C.base, soi: 0 }; }
+/** L'effet d'un talent ou d'un défaut, en une ligne (chiffres du jour : PV d'un raté, malus Épuisé). */
+function effetTalent(s, t) {
+  const T = TALENTS_APP[t.carac], n = Number(t.niveau) || 0, R = (s && s.regles) || {}, pen0 = Number(R.penSansTalent || R.pen) || 0, pen = Number(R.pen) || 0;
+  if (!T) return '';
+  if (t.defaut) return {
+    Force: `ta 1re quête d'un jour de coup spécial frappe le boss ${pctT(T.defaut.valeur)} de moins`,
+    Endurance: `Épuisé, ton XP vaut ×${virT(s && s.malus || T.defaut.valeur)}`,
+    'Agilité': `tes ratés soignent le boss ${pctT(T.defaut.valeur)} de plus`,
+    Intelligence: `−1 à ton d20`,
+    Sagesse: `${pctT(T.defaut.valeur)} d'XP en moins sur les annexes (pas sur l'entraînement)`,
+    'Volonté': pen0 ? `un raté te coûte ${pen} PV au lieu de ${pen0}` : `un raté te coûte 10 % de PV en plus`,
+    Charisme: `en Lien d'armes, tes coups font ×1,03 au lieu de ×1,05`
+  }[t.carac];
+  const v = T.valeurs[n - 1], e = encouragementApp(s);
+  return {
+    Force: `ta 1re quête d'un jour de coup spécial frappe le boss +${pctT(v)}`,
+    Endurance: v >= 1 ? `Épuisé, ton XP n'est plus freinée (×1)` : `Épuisé, ton XP vaut ×${virT(v)} au lieu de ×${virT((s && s.malusSansTalent) || 0.85)}`,
+    'Agilité': `tes ratés soignent le boss ${pctT(v)} de moins`,
+    Intelligence: `+${v} à ton d20 (bonus total plafonné à +5)`,
+    Sagesse: `+${pctT(v)} d'XP sur les annexes, entraînement compris`,
+    'Volonté': pen0 ? `un raté te coûte ${pen} PV au lieu de ${pen0}` : `un raté te coûte ${n * 10} % de PV en moins`,
+    Charisme: `ton encouragement donne ${e.autre} XP à ton compagnon et ${e.soi} XP à toi`
+  }[t.carac];
+}
+/** Bloc de la fiche Héros, sous les caractéristiques : chaque talent ou défaut actif, son niveau et son effet. */
+function talentsHtml(s) {
+  const L = ((s && s.talents) || {}).liste || [];
+  if (!L.length) return '';
+  return `<div class="section"><h2>Talents</h2><span>12 · 15 · 18</span></div><div class="panel tal-liste">${L.map(t => `<div class="tal ${t.defaut ? 'def' : ''}">
+      <div class="tal-top"><span>${ICONES[t.carac] || ''} <b>${esc(t.nom)}</b></span><span class="tal-niv">${t.defaut ? 'défaut' : esc(t.carac) + ' ' + ROMAIN[t.niveau]}</span></div>
+      <div class="tal-eff">${esc(effetTalent(s, t))}</div></div>`).join('')}
+    <div class="stat-note">${L.some(t => t.defaut) ? 'Un défaut disparaît au premier point gagné : ton entraînement de la semaine le vise. ' : ''}Un talent compte à partir du jour où il s'éveille, et il reste le 1er janvier.</div></div>`;
+}
+/** Petit moment, une fois : « Talent éveillé : … » / « Défaut surmonté : … » (rien la toute première fois, sauf ce qui vient d'arriver). */
+let talentsVusLe = '';
+function talentsAFaire() {
+  const s = state; if (!s || !s.talents || talentsVusLe === s.today) return;
+  if (document.body.classList.contains('bloque') || document.querySelector('.lvl-ov, .cine, .boss-win')) return; // un autre écran : au prochain passage
+  const k = 'talentsVus|' + (herosActif || ''); let vus = null;
+  try { vus = JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return; }
+  const recent = d => d && plusJours(d, 7) >= s.today, cles = [], neufs = [];
+  (s.talents.liste || []).forEach(t => { if (t.defaut) return; const c = t.carac + '|' + t.niveau; cles.push(c); if ((!vus || !vus.includes(c)) && recent(t.depuis)) neufs.push('Talent éveillé : ' + t.nom + ' ' + ROMAIN[t.niveau]); });
+  (s.talents.surmontes || []).forEach(t => { const c = t.carac + '|leve'; cles.push(c); if ((!vus || !vus.includes(c)) && recent(t.leve)) neufs.push('Défaut surmonté : ' + t.nom); });
+  talentsVusLe = s.today;
+  try { localStorage.setItem(k, JSON.stringify(Array.from(new Set((vus || []).concat(cles))))); } catch (e) {}
+  if (neufs.length) { vib([20, 40, 60]); toast('✦ ' + neufs.join(' · ') + ' (fiche Héros)', 'ok'); }
+}
 const REGLES_PAGES = [
   { t: 'L\'Aventure d\'un coup d\'œil', get s() { return rgSchema('aventure'); },
     p: ['Tu fais tes quêtes. Tout le reste en découle.', '<b>Astuce</b> : glisse le doigt vers la gauche ou la droite pour passer d\'un onglet à l\'autre.', 'L\'XP te fait avancer sur le <b>chemin du Rodage</b> : 15 paliers jusqu\'au château de l\'Aube.', 'Chaque palier donne un objet, un <b>coffre</b> ou des <b>éclats</b>. Tu portes tes trésors dans ta <b>garde-robe</b>.'] },
   { t: 'Le chemin', get s() { return rgSchema('chemin'); },
-    p: ['Un palier = <b>750 XP</b>, la moitié d\'une semaine parfaite : environ <b>2 paliers par semaine</b>.', 'Annexes, boss vaincus et défis comptent aussi : ils te font aller plus vite.', '<b>Épuisé</b>, ton XP ne vaut que <b>×0,85</b>. Soigne-toi : le chemin repart.',
-      'Toi et ton compagnon d\'armes avancez au même pas sur la semaine, même avec des quêtes différentes.', 'Touche une étape : sa récompense et l\'XP qui manque. <b>Tout le chemin</b> déroule tous les paliers.', 'Touche <b>Vue 3D</b> pour marcher sur ta route ; un <b>point rouge</b> sur l\'Armurerie = un nouvel objet à voir.', 'Chaque semaine, un <b>entraînement</b> travaille ta caractéristique la plus faible : une quête annexe, une fois du lundi au dimanche, qui donne en plus <b>1 000 XP</b> à cette caractéristique.'] },
+    get p() { return ['Un palier = <b>750 XP</b>, la moitié d\'une semaine parfaite : environ <b>2 paliers par semaine</b>.', 'Annexes, boss vaincus et défis comptent aussi : ils te font aller plus vite.', '<b>Épuisé</b>, ton XP ne vaut que <b>×' + virT(((typeof state !== 'undefined' && state) || {}).malus || 0.85) + '</b>. Soigne-toi : le chemin repart.',
+      'Toi et ton compagnon d\'armes avancez au même pas sur la semaine, même avec des quêtes différentes.', 'Touche une étape : sa récompense et l\'XP qui manque. <b>Tout le chemin</b> déroule tous les paliers.', 'Touche <b>Vue 3D</b> pour marcher sur ta route ; un <b>point rouge</b> sur l\'Armurerie = un nouvel objet à voir.', 'Chaque semaine, un <b>entraînement</b> travaille ta caractéristique la plus faible : une quête annexe, une fois du lundi au dimanche, qui donne en plus <b>1 000 XP</b> à cette caractéristique.']; } },
   { t: 'Les coffres', get s() { return rgSchema('coffres'); },
     get p() { const s = (typeof state !== 'undefined' && state) || {}, sa = ((s.armurerie || {}).saison || {}).id, avant = sa !== 's1' && String(s.today || '') < COFFRES_S1_RODAGE;
       return ['<b>Coffre (N)</b> sous le chemin. Le chiffre rouge sur « Aventure » les compte.', 'Touche une case coffre : ses chances par rareté. <b>Voir les objets</b> : ce qu\'il te reste à gagner.',
@@ -5026,6 +5098,16 @@ const REGLES_PAGES = [
     p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
       '<b>Défi de l\'Avent</b>, du 7 au 13 décembre : un nombre de quêtes à atteindre à deux. Réussi, chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
       '<b>Pacte et Saga</b>, chaque semaine au camp : l\'un propose un pacte, l\'autre le scelle ; tenu jusqu\'à dimanche, il rapporte <b>+150 XP</b> chacun le lundi. Votez aussi la suite du chapitre : le choix gagnant (le Maître du Jeu tranche mercredi en cas de désaccord) vous bénit jusqu\'à dimanche. Un rappel reste en haut de Quêtes tant que c\'est à toi d\'agir.'] },
+  { t: 'Les talents', id: 'talents', s: `<div class="rg-sch"><div class="tal-ech"><span class="def">8<small>défaut</small></span><i>→</i><span>12<small>I</small></span><i>→</i><span>15<small>II</small></span><i>→</i><span class="or">18<small>III</small></span></div></div>`,
+    get p() { const T = TALENTS_APP, l = (c, x) => `<b>${c} · ${T[c].nom}</b> : ${x}.`;
+      return ['Chaque semaine, ton <b>entraînement</b> vise ta caractéristique la plus faible : <b>+1 000 XP</b> à cette caractéristique.',
+        'Chaque caractéristique cache un talent : il s\'éveille à <b>12</b> (I), grandit à <b>15</b> (II), culmine à <b>18</b> (III).',
+        l('Force', 'ta 1re quête d\'un jour de coup spécial frappe le boss +10 / 20 / 30 %'), l('Endurance', 'Épuisé, ton XP vaut ×0,90 / 0,95 / 1'),
+        l('Agilité', 'tes ratés soignent le boss 5 / 10 / 15 % de moins'), l('Intelligence', '+1 / 2 / 3 à ton d20 (bonus total plafonné à +5)'),
+        l('Sagesse', '+5 / 10 / 15 % d\'XP sur les annexes, entraînement compris'), l('Volonté', 'un raté te coûte 10 / 20 / 30 % de PV en moins (arrondi en ta faveur)'),
+        l('Charisme', 'ton encouragement donne 15 / 20 / 25 XP à ton compagnon et 5 / 10 / 15 XP à toi'),
+        'Une caractéristique à <b>8</b> a un défaut (Bras lourds, Souffle court, Pataud, Distrait, Impatient, Fragile, Solitaire) ; ton entraînement de la semaine la vise : au premier point gagné, le défaut disparaît.',
+        'Un talent compte à partir du jour où il s\'éveille. Le 1er janvier, il reste.']; } },
   { t: 'Les saisons', get s() { return rgSchema('saisons'); },
     get p() { const s1 = (((typeof state !== 'undefined' && state && state.armurerie) || {}).saison || {}).id === 's1'; // pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage
       return ['Chaque saison a <b>son chemin</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau). Les objets du Rodage s\'en vont avec lui, sauf ton <b>Dragon de l\'Aube</b>, qui te suit.', 'Tes <b>trophées</b> et tes <b>titres</b> restent, souvenirs du Rodage.',
@@ -6313,7 +6395,7 @@ function ouvrirEncouragement() {
   const C = state.camp; if (!C) return;
   const el = document.getElementById('sheetPal');
   el.innerHTML = `<h3>Encourager la Compagnie</h3>
-    <p class="muted" style="font-size:13px;margin:0 0 4px">Une fois par jour. Ton compagnon le verra à sa prochaine ouverture (+10 XP de moral).</p>
+    <p class="muted" style="font-size:13px;margin:0 0 4px">Une fois par jour. Ton compagnon le verra à sa prochaine ouverture (+${encouragementApp(s).autre} XP de moral${encouragementApp(s).soi ? `, et +${encouragementApp(s).soi} XP pour toi : Meneur` : ''}).</p>
     ${C.messages.map(m => `<button data-msg="${esc(m)}">${esc(m)}</button>`).join('')}
     <input id="encLibre" maxlength="120" placeholder="Ou ton propre mot…" style="width:100%;margin-top:8px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit">
     <button data-msg="_">Envoyer mon mot</button>
@@ -7051,15 +7133,15 @@ function ouvrirD20() {
   const s = state, ov = document.getElementById('d20ov');
   const carac = (s.classe && s.classe.fav1) || '';
   const deja = s.d20;
-  const stC = (s.stats || []).find(x => x.nom === carac), modC = stC ? Math.floor((Number(stC.score) - 10) / 2) : 0;
+  const stC = (s.stats || []).find(x => x.nom === carac), modC0 = stC ? Math.floor((Number(stC.score) - 10) / 2) : 0, modC = bonusD20App(modC0, talentDe(s, 'Intelligence')), tI = modC - modC0;
   ov.innerHTML = `<div class="d20-box">
       <h2>🎲 Le d20 du jour</h2>
-      <p class="d20-sub">Bonus ${carac ? (/^[AEIOUÉ]/i.test(carac) ? 'd\'' : 'de ') + esc(carac) : 'de caractéristique'} : <b>${modC >= 0 ? '+' : '−'}${Math.abs(modC)}</b></p>
+      <p class="d20-sub">Bonus ${carac ? (/^[AEIOUÉ]/i.test(carac) ? 'd\'' : 'de ') + esc(carac) : 'de caractéristique'} : <b>${modC >= 0 ? '+' : '−'}${Math.abs(modC)}</b>${tI ? ` <small>(dont ${talentDe(s, 'Intelligence').defaut ? 'Distrait' : 'Esprit vif'} ${tI > 0 ? '+' : '−'}${Math.abs(tI)})</small>` : ''}</p>
       <div id="d20zone">${d20Svg(deja ? deja.de : '?', deja ? (deja.de === 20 ? 'crit' : deja.de === 1 ? 'fumble' : '') : '')}</div>
       <div class="d20-res" id="d20res">${deja ? resultatD20Html(deja) : ''}</div>
       <button class="btn or plein" id="d20go">${deja ? 'À l\'aventure !' : 'Lancer le dé'}</button>
       ${deja ? '' : '<button class="d20-later" id="d20later">Plus tard</button>'}
-      <details class="d20-table"><summary>Comment ça marche</summary>Un jet par jour, plus ton bonus de caractéristique (comme en D&D : 8-9 → −1, 10-11 → +0, 12-13 → +1, 14-15 → +2…). Le résultat multiplie l'XP de toutes tes quêtes du jour.<br>1 naturel : échec critique ×0,8 · 2-9 : ×1 · 10-17 : ×1,1<br>18 et plus : ×1,25 · 20 naturel : coup critique ×1,5</details>
+      <details class="d20-table"><summary>Comment ça marche</summary>Un jet par jour, plus ton bonus de caractéristique (comme en D&D : 8-9 → −1, 10-11 → +0, 12-13 → +1, 14-15 → +2…), plus Esprit vif (Intelligence 12 / 15 / 18 : +1 / 2 / 3) ou Distrait (Intelligence 8 : −1) ; bonus total plafonné à +5. Le résultat multiplie l'XP de toutes tes quêtes du jour.<br>1 naturel : échec critique ×0,8 · 2-9 : ×1 · 10-17 : ×1,1<br>18 et plus : ×1,25 · 20 naturel : coup critique ×1,5</details>
     </div>`;
   ov.classList.add('on');
 }
@@ -7075,7 +7157,7 @@ function fermerD20() { document.getElementById('d20ov').classList.remove('on'); 
 function d20Local(s, d1, d2) {
   const carac = (s.classe && s.classe.fav1) || '';
   const st = (s.stats || []).find(x => x.nom === carac);
-  const mod = st ? Math.floor((Number(st.score) - 10) / 2) : 0;
+  const modCarac = st ? Math.floor((Number(st.score) - 10) / 2) : 0, mod = bonusD20App(modCarac, talentDe(s, 'Intelligence')); // Esprit vif / Distrait, plafond +5 (= jetD20_ du moteur)
   const E = s.evenement && s.evenement.actuel, B = beneditionActive(s);
   const avantage = !!((E && E.effet && E.effet.type === 'avantage') || (B && B.type === 'avantage'));
   const de = avantage ? Math.max(d1, d2) : d1, total = de + mod;
@@ -7084,7 +7166,7 @@ function d20Local(s, d1, d2) {
     : total >= 18 ? { mult: 1.25, titre: 'Inspiration héroïque', texte: 'XP ×1,25 sur toutes tes quêtes du jour.' }
     : total >= 10 ? { mult: 1.1, titre: 'Bon présage', texte: 'XP ×1,1 sur toutes tes quêtes du jour.' }
     : { mult: 1, titre: 'Journée ordinaire', texte: 'Ni bonus ni malus : aujourd\'hui, c\'est toi qui fais la différence.' };
-  return Object.assign({ de, mod, carac, total, avantage: avantage ? [d1, d2] : null }, r);
+  return Object.assign({ de, mod, talent: mod - modCarac, carac, total, avantage: avantage ? [d1, d2] : null }, r);
 }
 function afficherD20(d) {
   const zone = document.getElementById('d20zone'), res = document.getElementById('d20res');
@@ -7303,7 +7385,7 @@ function render() {
   annonceAventureAFaire();
   if (state.today < '2027-01-01') try { localStorage.setItem('niveauRodage', String(state.niveau || '')); } catch (e) {} // niveau atteint au Rodage
   if (typeof recommencementAFaire === 'function') recommencementAFaire();
-  bilanRodageAFaire(); defiFeteAFaire(); souvenirAFaire(); lienAFaire(); empreinteAFaire(); eclatsRetroAFaire(); victoiresEnAttenteAFaire(); famGrandiAFaire();
+  bilanRodageAFaire(); defiFeteAFaire(); souvenirAFaire(); lienAFaire(); empreinteAFaire(); eclatsRetroAFaire(); victoiresEnAttenteAFaire(); famGrandiAFaire(); talentsAFaire();
   try { veilleeArmes(new Date().getHours()); } catch (e) {}
   ouvertureSaisonAFaire();
   if (!recapPrevu) { recapPrevu = true; recapAFaire(); }
@@ -7441,6 +7523,7 @@ function render() {
     <div class="section"><h2>Caractéristiques</h2><span>score · bonus au d20</span></div>
     <div class="panel">${statsHtml}
       <div class="stat-note">Chaque quête donne 100 % de son XP à sa carac. principale et 50 % en plus à la secondaire. Les scores de départ viennent de ta classe et de tes caractéristiques favorites (15 · 14 · 13 · 12 · 10 · 10 · 8, comme une répartition de D&D), puis +1 tous les ${Number(s.xpParPoint).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP, jusqu'à 20.</div></div>
+    ${talentsHtml(s)}
 ` : `
     <div class="hero-card">
       <div class="hero-perso" data-vitrine="1" role="button" aria-label="Voir ton personnage en grand"><span class="perso-fond">${repaireSvg(repaireDe(s), 'hf')}</span>${avatar(pal, 'h', s)}<span class="loupe">⤢ Vitrine</span></div>
@@ -7610,7 +7693,7 @@ function vueCompagnonDetail(c) {
     <div class="panel">${ann.map(a => ligne(a, `<span class="wk">${a.jour.fait ? '✓ aujourd\'hui' : a.fois + ' fois'}</span>`)).join('')}</div>` : ''}
     ${c.objectifs.length ? `<div class="section"><h2>Quêtes épiques</h2><span>progression</span></div><div class="list">${c.objectifs.map(carteEpique).join('')}</div>` : ''}
     ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span><span><span class="streak">🔥 ${h.serie}</span><span class="muted"> · record&nbsp;${h.record || 0}</span></span></div>`).join('')}</div>` : ''}
-    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}
+    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}${talentsHtml(c)}
     <div class="aide-coop">Lecture seule : chacun valide ses propres quêtes avec sa clé.</div></div>`;
 }
 document.addEventListener('click', e => {
