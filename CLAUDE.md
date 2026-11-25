@@ -11,4 +11,4 @@ App d'habitudes façon jeu de rôle, à deux, installable sur le téléphone : h
 - Publier l'app : modifier `index.html` / `carnet.html`, monter la version dans `config.js`, commiter, puis **uniquement** par `outils/publier-app.sh` du dépôt privé (contrôles bloquants, puis push sur `main`). **Gel des fêtes : rien du 20/12 au 02/01 sans le « oui » de Théo.**
 
 ## Agents (`.claude/agents/`)
-4 agents en lecture seule, définis avec Théo le 24/11 et testés sur une erreur cachée : `maitre-du-jeu`, `gardien-du-code`, `ergonome`, `avocat-du-diable`. Qui relit quoi et règles détaillées : fiche privée, §3.
+5 agents en lecture seule : `maitre-du-jeu`, `gardien-du-code`, `ergonome`, `avocat-du-diable` (définis avec Théo le 24/11) et `directeur-artistique` (25/11, passe avant l'avocat sur les visuels). Qui relit quoi et règles détaillées : fiche privée, §3.
