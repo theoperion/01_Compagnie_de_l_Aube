@@ -5056,7 +5056,7 @@ function effetTalent(s, t) {
 }
 /** Bloc de la fiche Héros, sous les caractéristiques : chaque talent ou défaut actif, son niveau et son effet. */
 // fiche du compagnon : on parle de lui, pas de toi (ergonome, 25/11)
-const enTroisieme = t => String(t).replace(/\bta /g, 'sa ').replace(/\btes /g, 'ses ').replace(/\bton (?!compagnon)/g, 'son ').replace(/\bte coûte/g, 'lui coûte').replace(/\bà ton compagnon/g, 'à son compagnon').replace(/\bà toi\b/g, 'à lui');
+function enTroisieme(t) { return String(t).replace(/\bta /g, 'sa ').replace(/\btes /g, 'ses ').replace(/\bton (?!compagnon)/g, 'son ').replace(/\bte coûte/g, 'lui coûte').replace(/\bà ton compagnon/g, 'à son compagnon').replace(/\bà toi\b/g, 'à lui'); }
 /** Défaut : combien de XP (et d'entraînements) il reste avant le prochain point de cette caractéristique. */
 function resteDefaut(s, carac) { const st = ((s && s.stats) || []).find(x => x.nom === carac), pas = Number(s && s.xpParPoint) || 5000; if (!st) return '';
   const xp = Number(String(st.xp).replace(/\s/g, '')) || 0, reste = pas - (xp % pas); return ` · encore ${reste.toLocaleString('fr-FR')} XP de ${carac} (≈ ${Math.ceil(reste / 1000)} entraînement${Math.ceil(reste / 1000) > 1 ? 's' : ''})`; }
