@@ -2025,6 +2025,16 @@ body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-moti
 
 /* ===== Les Premiers Pas (défi d'ouverture, 01/01 → 10/01) : 3 lignes, deux pas qui avancent, barre commune à deux couleurs ===== */
 .lien.retour { min-height: 40px; padding: 8px 12px 8px 0; margin: 0; } /* fiche du compagnon : retour assez grand pour le doigt (contrôle d'écran 25/11) */
+.carte-echo { margin: 12px 0; padding: 12px; border-radius: 16px; border: 1px dashed color-mix(in srgb, #b8c4e8 55%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, #b8c4e8 10%, var(--card)), var(--panel)); }
+.carte-echo p { margin: 6px 0; font-size: 13.5px; } .ec-t { display: grid; gap: 1px; } .ec-t span { font-size: 12px; color: var(--muted); }
+.ec-choix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.ec-c { position: relative; display: grid; justify-items: center; gap: 2px; padding: 8px 4px; min-height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; cursor: pointer; text-align: center; }
+.ec-c b { font-size: 11.5px; line-height: 1.2; } .ec-c small { font-size: 10.5px; color: var(--muted); } .ec-c.on { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+.ec-lui { font-style: normal; font-size: 10px; font-weight: 700; color: var(--allie); }
+.ec-p { width: 56px; height: 56px; display: block; filter: grayscale(.35) opacity(.9); } .ec-p.g { width: 72px; height: 72px; flex: none; } .ec-p svg { width: 100%; height: 100%; }
+.ec-v .bar { height: 8px; border-radius: 4px; overflow: hidden; background: color-mix(in srgb, var(--text) 12%, transparent); } .ec-v .bar i { display: block; height: 100%; background: linear-gradient(90deg, #8a94c8, #d8dcf4); }
+.ec-b { display: flex; gap: 10px; align-items: center; } .ec-v { flex: 1; display: grid; gap: 6px; } .ec-n { font-size: 11.5px; }
+.carte-echo.vaincu { border-style: solid; border-color: var(--gold); }
 .etoile { display: grid; justify-items: center; margin: 0 0 8px; } .etoile svg { width: min(100%, 300px); height: auto; overflow: visible; }
 .et-a { fill: none; stroke: color-mix(in srgb, var(--text) 16%, transparent); stroke-width: .8; } .et-a.def { stroke: #e0604a; stroke-opacity: .8; stroke-width: 1; stroke-dasharray: 3 3; }
 .et-a.i, .et-a.ii { stroke: color-mix(in srgb, var(--gold) 38%, transparent); } .et-a.iii { stroke: color-mix(in srgb, var(--gold) 70%, transparent); stroke-width: 1.2; }
@@ -3704,6 +3714,8 @@ function bandeauRappels(s) {
   const pacte = C && !P && (C.modeles || []).length ? '<b>Pacte de la semaine</b> : à proposer'
     : P && !P.accepte && P.par !== s.heros ? '<b>Un pacte t\'attend</b> : scelle-le' : '';
   const vote = m && m.pret && m.monVote == null && m.decision == null ? `<b>Chapitre ${esc(String(m.numero || ''))}</b> : choisis la suite` : '';
+  const E = s.echo;
+  if (!pacte && !vote && E && !E.decision && !E.monVote) return `<button class="rappel-cof rappel-camp" data-tab="combat"><span>🌫️ <b>Écho du Rodage</b> : choisis le boss du week-end</span><em>›</em></button>`;
   if (!pacte && !vote) return '';
   // les deux à la fois : une seule ligne (ergonome, 24/11 : garder une quête visible à 360 × 640) ; l'appui mène au pacte
   const txt = pacte && vote ? `🤝 <b>Pacte</b> · 📜 <b>Chapitre ${esc(String(m.numero || ''))}</b> : au camp` : pacte ? '🤝 ' + pacte : '📜 ' + vote;
@@ -5159,7 +5171,7 @@ const REGLES_PAGES = [
     p: ['Jusqu\'à 13 emplacements, de la cape au sceau. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Combattre à deux', get s() { return rgSchema('deux'); },
     p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', 'Un boss de la semaine ne tombe <b>jamais avant mercredi</b> : écrasé plus tôt, il tient à 1 PV.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
-      '<b>Défi de l\'Avent</b>, du 1er au 24 décembre : une case s\'ouvre chaque jour où vous faites <b>tous les deux</b> au moins une quête. Un héros en vacances n\'est pas attendu ce jour-là. <b>18 cases sur 24</b> : chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
+      '<b>Échos du Rodage</b>, dès février : un week-end par mois, un ancien boss revient 48 h. Votez pour lui dans l\'onglet Combat ; vaincu, <b>60 éclats</b> chacun.', '<b>Défi de l\'Avent</b>, du 1er au 24 décembre : une case s\'ouvre chaque jour où vous faites <b>tous les deux</b> au moins une quête. Un héros en vacances n\'est pas attendu ce jour-là. <b>18 cases sur 24</b> : chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
       '<b>Pacte et Saga</b>, chaque semaine au camp : l\'un propose un pacte, l\'autre le scelle ; tenu jusqu\'à dimanche, il rapporte <b>+150 XP</b> chacun le lundi. Votez aussi la suite du chapitre : le choix gagnant (le Maître du Jeu tranche mercredi en cas de désaccord) vous bénit jusqu\'à dimanche. Un rappel reste en haut de Quêtes tant que c\'est à toi d\'agir.'] },
   { t: 'Les talents', id: 'talents', s: `<div class="rg-sch"><div class="tal-ech"><span class="def">8<small>défaut</small></span><i>→</i><span>12<small>I</small></span><i>→</i><span>15<small>II</small></span><i>→</i><span class="or">18<small>III</small></span></div></div>`,
     get p() { const T = TALENTS_APP, l = (c, x) => `<b>${c} · ${T[c].nom}</b> : ${x}.`;
@@ -5693,7 +5705,7 @@ let herosActif = '';
 try { herosActif = localStorage.getItem('heros') || ''; } catch (e) {}
 const ARITE = { ouvrirCoffre: 2, acheterCosmetique: 1, getState: 0, logAction: 3, undoToday: 1, toggleVacances: 0, planifierVacances: 2, supprimerVacances: 1, basculerPause: 1,
   decalerSeance: 3, annulerDecalage: 3, reglerRappel: 1, testerRappel: 0, changerDifficulte: 1, reglerConfort: 1, reglerDevise: 1,
-  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, equiperOrnement: 2, planifierVoyage: 3, annulerVoyage: 2, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1, journalRecent: 1, corrigerJour: 3, retirerSaisie: 2 };
+  getProfil: 0, sauvegarderMaintenant: 0, renommerQuete: 2, choisirTitre: 1, encourager: 1, proposerPacte: 1, accepterPacte: 0, chroniqueSemaine: 0, paroleBoss: 1, motDuCoach: 0, signalerErreurs: 1, saisirHorsLigne: 1, equiperOrnement: 2, planifierVoyage: 3, annulerVoyage: 2, recitEvenement: 0, maitreDuJeu: 0, voterMJ: 1, voterEcho: 1, rebondissement: 0, chapitreEvolution: 1, retrospective: 0, lancerD20: 1, preparerSort: 1, utiliserRestauration: 1, voirCompagnon: 1, journalRecent: 1, corrigerJour: 3, retirerSaisie: 2 };
 function api(fn, ...args) {
   if (fn in ARITE) {
     args = args.slice(0, ARITE[fn]);
@@ -7023,10 +7035,34 @@ function vueCombat(s) {
     <div class="section"><h2>Boss du Crépuscule</h2><span>à abattre ensemble</span></div>
     ${B.semaine || B.mois ? carteBoss(B.semaine, s) + carteBoss(B.mois, s)
       : '<div class="empty">Aucun boss en ce moment : le prochain arrive bientôt.</div>'}
+    ${carteEcho(s)}
     ${B.semaine && B.semaine.statut !== 'À venir' ? `<div class="section"><h2>Journal des coups</h2><span>cette semaine</span></div>
     <div class="panel coups">${coups.length ? coups.map(ligne).join('') : '<div class="muted">Aucun coup porté pour l\'instant. À toi d\'ouvrir le combat !</div>'}</div>` : ''}
     ${B.regles ? regleBoss(s) : ''}`;
 }
+/* ===== Échos du Rodage (Théo, 24/11 ; branchés le 25/11, premier Écho en février 2027) =====
+ * La semaine de l'Écho : vote entre 3 anciens boss (du lundi au jeudi) ; le week-end : petit combat de 48 h en plus du boss de la semaine ;
+ * vaincu = 60 éclats chacun. État envoyé par le moteur : s.echo = { debut, fin, enCours, impose, candidats, votes, monVote, decision, boss }. */
+function carteEcho(s) {
+  const E = s.echo; if (!E || !E.candidats) return '';
+  const quand = `samedi ${dateCourte(E.debut)} et dimanche ${dateCourte(E.fin)}`;
+  const port = (c, cls) => `<span class="ec-p ${cls || ''}">${typeof bossSvg === 'function' ? bossSvg(c.visuel, 'ec' + c.cle) : ''}</span>`;
+  if (!E.decision) {
+    const lui = Object.keys(E.votes || {}).filter(h => h !== s.heros).map(h => E.votes[h])[0];
+    return `<div class="carte-echo"><div class="ec-t"><b>🌫️ Écho du Rodage</b><span>${quand}</span></div>
+      <p>Un ancien boss revient le temps d'un week-end. Choisissez-le ensemble : vaincu, <b>+${E.recompense || 60} éclats chacun</b>.</p>
+      <div class="ec-choix">${E.candidats.map(c => `<button class="ec-c ${E.monVote === c.cle ? 'on' : ''}" data-echo-vote="${esc(c.cle)}" aria-pressed="${E.monVote === c.cle}">${port(c)}<b>${esc(c.nom)}</b><small>faible à ${esc(c.faible)}</small>${lui === c.cle ? '<i class="ec-lui">ton compagnon</i>' : ''}</button>`).join('')}</div>
+      <p class="muted ec-n">${E.monVote ? 'Ton vote est noté. ' : ''}Sans accord jeudi soir, le destin tranche parmi vos choix.</p></div>`;
+  }
+  const c = E.boss || E.candidats.find(x => x.cle === E.decision) || { cle: E.decision, visuel: E.decision, nom: E.decision };
+  if (!E.boss) return `<div class="carte-echo"><div class="ec-t"><b>🌫️ Écho du Rodage</b><span>${quand}</span></div>
+    <div class="ec-b">${port(c, 'g')}<div><b>${esc(c.nom)}</b> revient ce week-end${E.impose ? ` (${E.date && E.date.slice(5) === '04-01' ? 'poisson d\'avril' : 'Halloween'} oblige)` : ''}.<br><span class="muted">Faible à ${esc(c.faible || '')} · ${E.recompense || 60} éclats chacun s'il tombe.</span></div></div></div>`;
+  const pct = c.pvMax ? Math.max(0, Math.min(100, c.pv / c.pvMax * 100)) : 0, fini = !!c.vaincuLe;
+  return `<div class="carte-echo ${fini ? 'vaincu' : ''}"><div class="ec-t"><b>🌫️ Écho · ${esc(c.nom)}</b><span>${fini ? '✓ vaincu' : 'jusqu\'à dimanche minuit'}</span></div>
+    <div class="ec-b">${port(c, 'g')}<div class="ec-v"><div class="bar"><i style="width:${pct}%"></i></div>
+      <span class="muted">${fini ? `+${E.recompense || 60} éclats chacun` : `${nbF(c.pv)} / ${nbF(c.pvMax)} PV · faible à ${esc(c.faible)} · résiste à ${esc(c.resiste)}`}</span></div></div></div>`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-echo-vote]'); if (!b) return; regler('voterEcho', b.dataset.echoVote).then(ok => ok && toast('🌫️ Ton vote pour l\'Écho est noté')); });
 function dateLongueCourte(iso) { return versDate(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }); }
 function isoPlus(iso, n) { const d = versDate(iso); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 /* ---------- Coups spéciaux des boss (nouvelles règles, à partir du 23/11/2026) ---------- */
@@ -8180,6 +8216,7 @@ const EFFETS_REGLAGE = {
   changerDifficulte: (n, v) => { n.reglages.difficulte.niveau = v; },
   choisirTitre: (n, id) => { if (n.titres) n.titres.choisi = id || ''; },
   encourager: n => { if (n.camp) n.camp.encourage = true; },
+  voterEcho: (n, k) => { const E = n.echo; if (!E) return; E.monVote = k; E.votes = Object.assign({}, E.votes, { [n.heros]: k }); },
   voterMJ: (n, i) => { const m = n.mj; if (!m) return; m.monVote = i; m.votes = Object.assign({}, m.votes, { [n.heros]: i });
     const autres = Object.keys(m.votes).filter(k => k !== n.heros); if (autres.length && m.votes[autres[0]] === i) { m.decision = i; m.parMJ = false; } },
   toggleVacances: n => {
