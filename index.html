@@ -674,6 +674,8 @@
   @media (prefers-reduced-motion: reduce) { .pl-case.proch circle:first-child { animation: none; } .pl-pion { transition: none; } }
   /* ===== Parcours, option C « L'Horizon » (v2) : silhouettes teintées par le thème, premier plan éclairci, soleil qui se lève ===== */
   .ph { border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--line)); border-radius: 16px; margin: 10px 0; overflow: hidden; background: var(--panel); }
+  .ph-3d { position: absolute; right: 8px; top: 8px; z-index: 6; min-height: 40px; min-width: 52px; padding: 0 12px; border-radius: 20px; border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+    background: color-mix(in srgb, #0c0f1c 62%, transparent); color: #fff3d6; font: 800 13px var(--f-texte); cursor: pointer; backdrop-filter: blur(3px); box-shadow: 0 2px 8px rgba(0,0,0,.4); } /* Théo, 25/11 : la Vue 3D sur le plan 2D */
   .ph-pano { position: relative; aspect-ratio: 360 / 128;
     background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 85%, #1a2a4a) 0%, color-mix(in srgb, var(--gold) 22%, var(--panel)) 62%, color-mix(in srgb, var(--gold) 38%, var(--panel)) 100%); }
   .ph-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -4844,9 +4846,9 @@ function parcoursHTML(s) {
       ${allieParcours(s) || S.id === 'pre' ? `<div class="ph-pied">${allieParcours(s) ? `<span>${allieParcours(s)}</span>` : ''}${S.id === 'pre' ? '<span>Rodage jusqu\'au 31 déc.</span>' : ''}</div>` : ''}</div>` : '';
   const cof1 = coffres ? coffreSvg((A.coffres[0] || {}).type || 'commun').replace('width="128" height="107"', 'width="20" height="17"') : '';
   return `<section class="parcours ph ${parcoursOuvert ? 'ouvert' : ''}">
-    <div class="ph-pano">${pano}</div>
+    <div class="ph-pano">${pano}${routeAllumee() ? '<button class="ph-3d" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">⛰️</span> 3D</button>' : ''}</div>
     <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · ${xpFr(S.cout - S.dansPalier)} XP</span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
-    <div class="ph-actions">${routeAllumee() ? '<button class="btn mini" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">⛰️</span> Vue 3D</button>' : ''}${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} ›</button></div>
+    <div class="ph-actions">${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} ›</button></div>
     ${corps}
   </section>`;
 }
