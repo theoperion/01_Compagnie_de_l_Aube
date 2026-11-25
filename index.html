@@ -339,7 +339,7 @@
   .rv-tete b { display: block; font: 700 20px var(--f-titre); color: var(--gold); } .rv-tete span { font-size: 13px; }
   .rv-x { position: absolute; right: 12px; top: max(10px, env(safe-area-inset-top)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); background: rgba(10,14,30,.7); color: #fff; font-size: 18px; z-index: 2000; }
   .rv-aide { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 22px 0 max(12px, env(safe-area-inset-bottom)); text-align: center; color: #fff; font-size: 13px; text-shadow: 0 1px 3px #000; z-index: 2000; background: linear-gradient(transparent, rgba(8,12,24,.75)); pointer-events: none; }
-  .ph-nom { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font: 700 9px var(--f-texte); font-style: normal; padding: 0 5px; border-radius: 6px; color: #fff; background: #3a6ad8; white-space: nowrap; } .ph-nom.moi { background: #c8902a; }
+  .ph-nom { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font: 700 9px var(--f-texte); font-style: normal; padding: 0 5px; border-radius: 6px; color: #fff; background: #3a6ad8; white-space: nowrap; } .ph-nom.moi { background: #c8902a; } .ph-nom { font-size: 9px; padding: 0 4px; line-height: 13px; } .ph-lui .ph-nom { top: auto; bottom: 100%; margin-bottom: 1px; }
   .ph-lui { z-index: 0; position: absolute; bottom: auto; width: 26px; transform: translateX(-50%); pointer-events: none; } .ph-lui svg { width: 30px; height: 40px; }
   .vit-fam { text-align: center; margin: 4px 0 0; font-size: 12.5px; color: var(--muted); } .vit-fam b { color: var(--gold); font-weight: 600; }
   .vit-fam small { font-size: 12px; } .vit-fam i { display: block; width: 150px; height: 5px; margin: 5px auto 0; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; } .vit-fam em { display: block; height: 100%; border-radius: 3px; background: var(--gold); }
@@ -4732,7 +4732,7 @@ function parcoursHTML(s) {
   let d = ''; for (let x = 26; x <= 316; x += 5) d += (d ? ' L' : 'M') + x + ' ' + Y(x).toFixed(1);
   const xm = fini ? 300 : X(S.palier + S.dansPalier / S.cout); // chemin fini : le héros se tient devant la porte du château (critique)
   // le soleil : à moitié sous les collines au départ, haut et rayonnant au dernier palier
-  const D0 = DECORS_ROUTE[S.id] || DECORS_ROUTE.pre, sy = 80 - 38 * pct, sx = (D0.astre2D && D0.astre2D.x) || 240, rayons = fini || pct > .5;
+  const D0 = DECORS_ROUTE[S.id] || DECORS_ROUTE.pre, sy = 60 - 10 * pct, sx = (D0.astre2D && D0.astre2D.x) || 240, rayons = fini || pct > .5;
   const dense = N > 20; // à 50 paliers : losanges pour les seuls gros lots, un point pour les coffres épiques, rien pour le reste (la grille dépliée détaille)
   const marques = E.map(e => { const x = X(e.n), y = Y(x);
     if (e.gros) return `<path d="M${x.toFixed(1)} ${(y - 8).toFixed(1)} l5.5 8 l-5.5 8 l-5.5 -8z" class="ph-gros ${e.fait ? 'fait' : ''}"/>`;
