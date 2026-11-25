@@ -2025,12 +2025,12 @@ body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-moti
 
 /* ===== Les Premiers Pas (défi d'ouverture, 01/01 → 10/01) : 3 lignes, deux pas qui avancent, barre commune à deux couleurs ===== */
 .etoile { display: grid; justify-items: center; margin: 0 0 8px; } .etoile svg { width: min(100%, 300px); height: auto; overflow: visible; }
-.et-a { fill: none; stroke: color-mix(in srgb, var(--text) 16%, transparent); stroke-width: .8; } .et-a.def { stroke: color-mix(in srgb, #e0604a 55%, transparent); stroke-dasharray: 3 3; }
-.et-a.i, .et-a.ii, .et-a.iii { stroke: color-mix(in srgb, var(--gold) 38%, transparent); }
+.et-a { fill: none; stroke: color-mix(in srgb, var(--text) 16%, transparent); stroke-width: .8; } .et-a.def { stroke: #e0604a; stroke-opacity: .8; stroke-width: 1; stroke-dasharray: 3 3; }
+.et-a.i, .et-a.ii { stroke: color-mix(in srgb, var(--gold) 38%, transparent); } .et-a.iii { stroke: color-mix(in srgb, var(--gold) 70%, transparent); stroke-width: 1.2; }
 .et-axe { stroke: color-mix(in srgb, var(--text) 10%, transparent); stroke-width: .8; }
 .et-p { fill-opacity: .28; stroke-width: 2; stroke-linejoin: round; } .et-pt { stroke: var(--panel); stroke-width: 1.2; }
 .et-l { font: 800 11px var(--f-texte); fill: var(--muted); } .et-l .et-s { fill: var(--text); } .et-l.faible, .et-l.faible .et-s { fill: #ff9f43; }
-.et-leg { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center; margin: 2px 0 0; font-size: 11px; color: var(--muted); } .et-leg .faible { color: #ff9f43; }
+.et-leg { display: flex; flex-wrap: wrap; gap: 4px 10px; justify-content: center; margin: 2px 0 0; font-size: 10.5px; color: var(--muted); } .et-leg .faible { color: #ff9f43; }
 .et-k { display: inline-block; width: 14px; height: 0; border-top: 1.5px solid color-mix(in srgb, var(--gold) 60%, transparent); vertical-align: middle; margin-right: 4px; } .et-k.def { border-top: 1.5px dashed #e0604a; }
 .defi { display: flex; align-items: center; gap: 10px; width: 100%; margin: 10px 0 4px; padding: 8px 12px 8px 8px; border-radius: 14px; text-align: left; color: var(--text); cursor: pointer; font: inherit;
   border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 8%, var(--card)), var(--panel)); }
@@ -7710,10 +7710,10 @@ function etoileStats(s, coul) {
   return `<div class="etoile"><svg viewBox="0 0 240 240" role="img" aria-label="Caractéristiques : ${L.map(x => x.nom + ' ' + x.score).join(', ')}">
     ${anneau(18, 'iii')}${anneau(15, 'ii')}${anneau(12, 'i')}${anneau(8, 'def')}
     ${L.map((st, i) => { const [x, y] = pt(i, max); return `<line x1="${C}" y1="${C}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="et-axe"/>`; }).join('')}
-    <polygon points="${poly()}" class="et-p" style="fill:${c};stroke:${c}"/>
-    ${L.map((st, i) => { const [x, y] = pt(i, Number(st.score)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" style="fill:${c}" class="et-pt"/>`; }).join('')}
+    <polygon points="${poly()}" class="et-p" style="fill:${c};stroke:${c};filter:drop-shadow(0 0 5px ${c})"/>
+    ${L.map((st, i) => { const [x, y] = pt(i, Number(st.score)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${st.nom === faible ? 4.5 : 3.2}" style="fill:${st.nom === faible ? '#ff9f43' : c}" class="et-pt"/>`; }).join('')}
     ${labels}</svg>
-    <p class="et-leg"><span><i class="et-k i"></i>talents à 12 · 15 · 18</span><span><i class="et-k def"></i>défaut sous 8</span><span class="faible">● à entraîner</span></p></div>`;
+    <p class="et-leg"><span><i class="et-k i"></i>talents 12 · 15 · 18</span><span><i class="et-k def"></i>défaut sous 8</span><span class="faible">● à entraîner</span></p></div>`;
 }
 /* Caractéristiques d'un héros (soi ou compagnon) */
 function statsDe(s) {

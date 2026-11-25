@@ -634,8 +634,8 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
 .aj-repos{border-left-color:var(--gold)} .aj-repos .aj-tag{color:var(--gold)}
 .aj-sous{margin:6px 2px 0;font:800 .72rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .aj-glisse{display:grid} .aj-glisse .lien{justify-self:end;margin-top:-6px}
-.aj-boss:empty{display:none}.aj-boss .enlu-boss{grid-template-columns:70px 1fr;padding:4px 10px 4px 2px;margin:0}.aj-boss .eb-av{transform:scale(.7);transform-origin:center;margin:-16px -12px}
-.aj-bilan{border-left:4px solid var(--gold);display:grid;gap:6px}.aj-bilan p{margin:0;line-height:1.5}.aj-mot{font-style:italic;color:var(--muted)}
+.aj-boss:empty{display:none}.aj-boss .enlu-boss{grid-template-columns:70px 1fr;padding:4px 10px 4px 2px;margin:0;overflow:visible}.aj-boss .eb-av{transform:scale(.7);transform-origin:center;margin:-12px -10px;overflow:visible}
+.aj-bilan{border-left:4px solid var(--gold);display:grid;gap:6px}.aj-bilan p{margin:0;line-height:1.5}.aj-mot{font-style:italic;color:var(--muted)}.aj-score{font:800 1.6rem var(--display,inherit);color:var(--gold)}.aj-score small{font-size:.9rem;color:var(--muted)}.aj-manque{color:#ff9f43}
 .aj-suite{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem}.aj-suite b{color:var(--gold);margin-right:3px}.aj-bilan .lien{justify-self:end}
 .aj-ligne{padding:10px 10px 10px 14px;gap:6px}
 .aj-l{display:flex;align-items:center;gap:8px}.aj-lt{flex:1;min-width:0;display:grid;gap:1px}.aj-lt b{font-size:.98rem;line-height:1.25}.aj-lt small{color:var(--c);font-weight:700;font-size:.74rem}
@@ -3113,7 +3113,7 @@ function bossDuJour(it){
     if(it.k==="run"){const w=it.w,cle=BOSS_SEM[Math.max(0,Math.min(11,w.abs))];if(!cle)return "";
       const done=w.s.filter(s=>state.run.logs[s.key]).length;return window.sceneBoss({cle,id:"run"+w.abs,kicker:"Boss de la semaine",nom:regionOf(w)[1],pv:RUN_PER_WEEK-done,max:RUN_PER_WEEK,sous:"une sortie = un coup"})}
     if(it.k==="str"){const S=strWeeks(),n=S.filter(x=>state.str.logs[x.key]).length;return window.sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:S.length-n,max:S.length,sous:"une séance = un coup"})}
-    const O=state.en.oubli;return O?window.sceneBoss({cle:"oubli",id:"oubli",kicker:"Boss de la mémoire",nom:"L'Oubli",pv:O.hp,max:O.max,sous:"chaque mot retrouvé le blesse"}):"";
+    return ""; // l'Oubli n'est pas montré ici tant qu'il n'est pas redessiné (directeur artistique 25/11 : il se lit comme un fantôme)
   }catch(e){return ""}
 }
 /* ---------- Bilan du dimanche (25/11, idée validée par Théo) : le dimanche et le lundi, 3 lignes sur la semaine + la suivante ---------- */
@@ -3127,10 +3127,11 @@ function bilanSemaine(){
   const allure=(a,b)=>{const v=Object.values(state.run.logs).filter(l=>l.allure&&l.date>=a&&l.date<=b&&!l.travail).map(l=>l.allure);return v.length?v.reduce((x,y)=>x+y,0)/v.length:null};
   const aN=allure(mon,dern), aA=allure(addDays(mon,-7),addDays(mon,-1));
   const minEn=state.en.sessions.filter(x=>x.date>=mon&&x.date<=dern).reduce((a,x)=>a+(Number(x.min)||0),0);
-  const lignes=[`Course ${rf}/${rp}${aN?` · allure facile ${mmss(aN)}/km${aA?` (${aN<aA?"−":"+"}${Math.round(Math.abs(aN-aA))} s)`:""}`:""}`,`Renfo ${sf}/${sp}`,`Anglais ${ef}/${ep}${minEn?` · ${minEn} min`:""}`];
+  const m=(f,p_)=>f<p_?` class="aj-manque"`:"";
+  const lignes=[`<span${m(rf,rp)}>Course ${rf}/${rp}</span>${aN?` · allure facile ${mmss(aN)}/km${aA?` (${aN<aA?"−":"+"}${Math.round(Math.abs(aN-aA))} s)`:""}`:""}`,`<span${m(sf,sp)}>Renfo ${sf}/${sp}</span>`,`<span${m(ef,ep)}>Anglais ${ef}/${ep}</span>${minEn?` · ${minEn} min`:""}`];
   const suite=[];for(let d=nxt;d<=addDays(nxt,6);d=addDays(d,1)){const L=prevusDu(d);if(L.length)suite.push(`<span><b>${LETTRES[dowOf(d)]}</b> ${L.map(x=>x.k==="run"?(x.s.tag==="Qualité"?"dure":x.s.tag==="Sortie longue"?"longue":x.s.tag==="Course"?"10 km !":"facile"):x.k==="str"?"renfo":"anglais").join(" + ")}</span>`)}
   const mot=totP&&tot>=totP?"Semaine parfaite. Rien à ajouter : continue.":totP&&tot>=totP-1?"Presque parfaite : la régularité est là.":totP?"Une semaine en dents de scie : la prochaine se joue sur le premier jour.":"";
-  return `<div class="card aj-bilan"><span class="kicker">Bilan de la semaine · ${tot}/${totP} séances</span>
+  return `<div class="card aj-bilan"><div class="row" style="justify-content:space-between;align-items:baseline"><span class="kicker">Bilan de la semaine</span><span class="aj-score">${tot}<small>/${totP}</small></span></div>
     <p>${lignes.join("<br>")}</p>${mot?`<p class="aj-mot">${mot}</p>`:""}
     ${suite.length?`<p class="aj-sous" style="margin:4px 0 0">La semaine prochaine</p><div class="aj-suite">${suite.join("")}</div>`:""}
     ${dw===0?`<button class="lien" data-bilan-vu="${mon}">Compris, je ferme</button>`:""}</div>`;
