@@ -760,6 +760,16 @@
   .ph-jauge i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 70%, #fff3d6), var(--gold)); }
   .ph-jt { display: flex; justify-content: space-between; gap: 8px; font-size: 11.5px; color: var(--muted); white-space: nowrap; } .ph-jt em { font-style: normal; font-weight: 700; color: var(--text); }
   .ph-proch.fini { justify-content: space-between; }
+  .rec { display: flex; align-items: center; gap: 12px; width: calc(100% - 24px); margin: 10px 12px 0; padding: 8px 10px; border: 0; border-radius: 14px; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+  .rec-med { position: relative; flex: none; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--gold) calc(var(--p) * 1turn), color-mix(in srgb, var(--text) 14%, transparent) 0); }
+  .rec-med > span { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--gold) 22%, var(--card)), var(--panel)); }
+  .rec-med svg { max-width: 34px; max-height: 32px; }
+  .rec-t { flex: 1; min-width: 0; display: grid; gap: 2px; } .rec-t b { font: 700 16px/1.2 var(--f-titre); } .rec-t small { font-size: 13px; color: var(--muted); } .rec-t small strong { font-weight: 800; color: var(--gold); } .rec-a .rec-t > b { font-size: 18px; }
+  .rec-b { justify-content: space-between; gap: 4px; } .rec-c.ici { opacity: 1; } .rec-b .rec-c { display: grid; justify-items: center; gap: 3px; opacity: .55; min-width: 0; flex: 1; } .rec-b .rec-c small { font-size: 11px; text-align: center; line-height: 1.15; } .rec-b .rec-c.ici small { color: var(--gold); font-weight: 800; }
+  .rec-b .rec-i svg { max-width: 30px; max-height: 28px; } .rec-fl { color: var(--muted); font-style: normal; }
+  .rec.rec-c { gap: 10px; } .rec-c .rec-i { flex: none; } .rec-c .rec-i svg { max-width: 30px; max-height: 28px; }
+  .rec-c .rec-t > span:first-child { font-size: 14.5px; } .rec-c .rec-t em { font-style: normal; color: var(--muted); } .rec-c .rec-t strong { font-weight: 800; color: var(--gold); }
+  .rec-bar { display: block; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--text) 12%, transparent); overflow: hidden; } .rec-bar i { display: block; height: 100%; background: linear-gradient(90deg, #d8a83a, #ffe08a); }
   .btn.ph-geste { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 24px); margin: 10px 12px 0; min-height: 52px; border: 0; border-radius: 14px; white-space: nowrap;
     background: linear-gradient(180deg, #ffd27a, #f2a93c); color: #2a1606; font: 800 16px var(--f-texte); box-shadow: 0 3px 0 #9a5a14, 0 0 18px rgba(255,196,107,.3); cursor: pointer; } /* ergonome : le geste principal, doré, pleine largeur */
   .ph-geste:active { transform: translateY(2px); box-shadow: 0 1px 0 #9a5a14; } .ph-geste span { font-size: 19px; line-height: 1; } .ph-geste .pastille { box-shadow: 0 0 0 2px #ffd27a; }
@@ -4819,6 +4829,17 @@ const allieParcours = s => { const c = (s.compagnons || [])[0]; return c && c.pa
  * Le Livret des règles est rangé dans le « ? » de l'en-tête. Aucun émoji : coffres, éclats, épée et objets sont dessinés. */
 const EPEE_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M19.5 2.5 L21.5 4.5 L10 16 L8 14 Z" fill="#dfe4ec" stroke="#5a6070" stroke-width=".8"/><path d="M20 3 L10.6 12.4" stroke="#fff" stroke-width=".8" opacity=".8"/>
   <path d="M5.5 11.5 L12.5 18.5" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round"/><path d="M8.6 15.4 L4.6 19.4" stroke="#6a4424" stroke-width="2.6" stroke-linecap="round"/><circle cx="3.8" cy="20.2" r="1.6" fill="var(--gold)"/></svg>`;
+/* La récompense qui vient (Théo, 25/11 : « prochaine, palier… je trouve assez moche ») : 3 propositions, localStorage « recompVar » = a / b / c */
+function recompHTML(s, P, S, E, fini, ancien) {
+  let v = ''; try { v = localStorage.getItem('recompVar') || ''; } catch (e) {}
+  if (!v || fini || !P) return ancien();
+  const reste = Math.max(0, S.cout - S.dansPalier), p = Math.max(.03, Math.min(1, S.dansPalier / S.cout)), chev = '<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></i>';
+  if (v === 'a') return `<button class="rec rec-a" data-parcours="1"><span class="rec-med" style="--p:${p.toFixed(3)}"><span>${vignetteEtape(P, 34)}</span></span>
+    <span class="rec-t"><b>${esc(P.nom)}</b><small>encore <strong>${xpFr(reste)} XP</strong> avant de l'obtenir</small></span>${chev}</button>`;
+  if (v === 'b') { const L = E.slice(S.palier, S.palier + 4);
+    return `<button class="rec rec-b" data-parcours="1">${L.map((e, k) => `<span class="rec-c ${k ? '' : 'ici'}">${k ? '' : `<span class="rec-med" style="--p:${p.toFixed(3)}">`}<span class="rec-i">${vignetteEtape(e, k ? 26 : 32)}</span>${k ? '' : '</span>'}<small>${k ? esc(NOM_COURT[(e.r || {}).item] || e.nom).split(' ').slice(0, 2).join(' ') : xpFr(reste) + ' XP'}</small></span>`).join('<i class="rec-fl">›</i>')}</button>`; }
+  return `<button class="rec rec-c" data-parcours="1"><span class="rec-i">${vignetteEtape(P, 28)}</span><span class="rec-t"><span>${esc(P.nom)} <em>t'attend dans</em> <strong>${xpFr(reste)} XP</strong></span><span class="rec-bar"><i style="width:${(p * 100).toFixed(1)}%"></i></span></span>${chev}</button>`;
+}
 function parcoursHTML(s) {
   const A = s.armurerie; if (!A || !A.saison) return '';
   const S = A.saison, N = S.paliers, E = etapesParcours(s), P = E[S.palier] || null, fini = S.palier >= N, coffres = (A.coffres || []).length;
@@ -4895,11 +4916,11 @@ function parcoursHTML(s) {
       ${allieParcours(s) || S.id === 'pre' ? `<div class="ph-pied">${allieParcours(s) ? `<span>${allieParcours(s)}</span>` : ''}${S.id === 'pre' ? '<span>Rodage jusqu\'au 31 déc.</span>' : ''}</div>` : ''}</div>` : '';
   return `<section class="parcours ph ${parcoursOuvert ? 'ouvert' : ''}">
     <div class="ph-pano">${pano}${routeAllumee() ? '<button class="ph-3d" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">⛰️</span> 3D</button>' : ''}</div>
-    <button class="ph-ligne ph-proch${fini ? ' fini' : ''}" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 30)}</span><span class="ph-lt"><small>Prochaine récompense · palier ${P.n}</small><b>${esc(P.nom)}</b>
+    ${recompHTML(s, P, S, E, fini, () => `<button class="ph-ligne ph-proch${fini ? ' fini' : ''}" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 30)}</span><span class="ph-lt"><small>Prochaine récompense · palier ${P.n}</small><b>${esc(P.nom)}</b>
       <span class="ph-jauge" role="progressbar" aria-label="XP vers ce palier" aria-valuemin="0" aria-valuemax="${S.cout}" aria-valuenow="${S.dansPalier}"><i style="width:${Math.max(2, Math.min(100, S.dansPalier / S.cout * 100)).toFixed(1)}%"></i></span>
-      <span class="ph-jt"><span>${xpFr(S.dansPalier)} / ${xpFr(S.cout)} XP</span><em>encore ${xpFr(S.cout - S.dansPalier)} XP</em></span></span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
-    ${coffres ? `<button class="btn ph-geste" data-coffre="1"><span aria-hidden="true">🎁</span> Ouvrir mon coffre (${coffres})</button>` : `<button class="btn ph-geste" data-vitrine="1" data-armurerie="1"><span aria-hidden="true">🧥</span> Ma garde-robe${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button>`}
-    <div class="ph-actions">${coffres ? `<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button>` : ''}<button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} éclats ›</button></div>
+      <span class="ph-jt"><span>${xpFr(S.dansPalier)} / ${xpFr(S.cout)} XP</span><em>encore ${xpFr(S.cout - S.dansPalier)} XP</em></span></span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>`)}
+    ${coffres ? `<button class="btn ph-geste" data-coffre="1"><span aria-hidden="true">🎁</span> Ouvrir mon coffre (${coffres})</button>` : ''}
+    <div class="ph-actions"><button class="btn mini" data-vitrine="1" data-armurerie="1"><span aria-hidden="true">🧥</span> Garde-robe${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} éclats ›</button></div>
     ${corps}
   </section>`;
 }
