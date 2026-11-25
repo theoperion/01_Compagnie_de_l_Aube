@@ -810,7 +810,7 @@ const NUMERO_CARNET_APP = (window.COMPAGNIE || {}).NUMERO_CARNET || '?'; // affi
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
-const STR_DAY = 2;               // renfo le mercredi, après la séance dure (0 = lundi ; préparateur physique 25/11 : le jeudi, les courbatures tombaient sur la sortie longue)
+const STR_DAY = 3;               // renfo le jeudi (0 = lundi) ; Théo, 25/11 : on garde ses jours (le préparateur proposait le mercredi)
 const SRS_DAYS = [0,1,3,7,14,30,60];
 const REVIEW_MAX = 12;
 const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
@@ -2212,7 +2212,7 @@ const mmss=sec=>`${Math.floor(sec/60)}:${String(Math.round(sec%60)).padStart(2,"
 /* Allures (25/11) : les allures faciles partent de ton VRAI dernier 10 km (state.run.ref) s'il est plus lent que l'objectif
    (avant : de l'objectif, ~4 % trop vite) ; l'allure 10 km et la VMA restent celles de l'objectif (c'est elles qu'on travaille). */
 function paces(){const f=Number(state.run.facteur)||1;const g0=toSec(state.run.goal)/10, r0=toSec(state.run.ref)/10, r=r0>g0?r0:g0;return {EF:r*1.27*f,SL:r*1.30*f,SEUIL:r*1.06*f,AS10:g0*f,VMA:g0*0.93*f}}
-/* Plan 10 km (refait le 25/11/2026 avec le préparateur physique) : UN seul jour dur (mercredi, la qualité, renfo le même jour),
+/* Plan 10 km (refait le 25/11/2026 avec le préparateur physique) : UNE seule séance de course dure (mercredi, la qualité ; renfo le jeudi),
    lundi toujours facile, samedi sortie longue facile. Avant, la 2e colonne était du seuil 7 semaines sur 12, posé le lundi : 2 jours durs. */
 const PLAN=[
  ["10 × (1' vite / 1' lent) à allure 10 km","40' EF + 4 lignes droites",50],
@@ -2631,7 +2631,7 @@ function forgeCard(S){
   const n=S.filter(w=>state.str.logs[w.key]).length, tot=S.length, hp=tot-n, pieces=FORGE.slice(FORGE.length-tot);
   return `<div class="card"><span class="kicker" style="color:var(--str)">Progression du renfo</span>
     <h2>${n} séance${n>1?"s":""} sur ${tot}</h2>
-    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque mercredi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
+    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque jeudi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
     <div class="foe"><div class="row" style="justify-content:space-between"><b class="foe-name">Gargouille de la Raideur</b><span class="small mono">${hp} / ${tot} PV</span></div><div class="hp"><i style="width:${hp/tot*100}%"></i></div></div>
     <div class="slots">${pieces.map((f,i)=>`<div class="slot ${i<n?"on":""}">${i<n?"✦ ":""}${esc(f)}</div>`).join("")}</div>
   </div>`;
@@ -2662,7 +2662,7 @@ function renderQuestStr(){
   else if(cur.date===t) pill='<span class="pill warn">Aujourd\'hui</span>';
   else if(cur.date<t) pill='<span class="pill bad">À rattraper</span>';
   else pill=`<span class="pill neutral">${frDate(cur.date)}</span>`;
-  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · la forge du mercredi</i></span><span class="big">${esc(cur.phase)}<small class="bsub">~${tlMinutes(cur)} min</small></span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
+  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · la forge du jeudi</i></span><span class="big">${esc(cur.phase)}<small class="bsub">~${tlMinutes(cur)} min</small></span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
 }
 
 /* ---------- Lecteur de séance guidée ---------- */
@@ -2748,7 +2748,7 @@ function renderStr(){
     <div class="tbl"><table><thead><tr><th>Sem.</th><th>Date</th><th>Phase</th><th>Séance</th><th></th></tr></thead><tbody>
     ${S.map((w,i)=>`<tr class="${i===wi?"cur":""}"><td class="mono">${w.n}</td><td>${jourMois(w.date)}</td><td>${esc(w.phase)}${w.light?" (allégée)":""}</td><td class="mono">${w.seance} · ${w.blocs.map(b=>b.tours).join("+")} tours</td><td>${state.str.logs[w.key]?'<span class="pill ok">fait</span>':""}</td></tr>`).join("")}
     </tbody></table></div>
-    <p class="small muted">Le renfo se fait le mercredi, après la séance dure : les efforts restent groupés le même jour, et la sortie longue du samedi arrive après 72 h de récupération.</p>
+    <p class="small muted">Le renfo se fait le jeudi, au lendemain de la séance dure : les jours d'effort restent groupés, et la sortie longue du samedi arrive après 48 h de récupération.</p>
   </div>
   <details class="card"><summary>Le manuel du forgeron : tous les exercices</summary><div class="exgrid" style="margin-top:10px">${Object.keys(EX).map(id=>`<div class="ex"><div class="figbox">${figSVG(id)}</div><b>${esc(EX[id].name)}</b><ul class="small muted">${EX[id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></details>`;
   $("#sgo").onclick=()=>startPlayer(cur);
@@ -2879,7 +2879,7 @@ function renderSet(){
       <label>Jour du seuil / endurance<select id="ds">${opt(D.s)}</select></label>
       <label>Jour de la sortie longue<select id="dl">${opt(D.l)}</select></label>
     </div>
-    <p class="small muted">Conseillé : lundi facile, mercredi séance dure puis renfo, samedi sortie longue. Un seul jour dur par semaine, jamais deux séances dures d'affilée.</p>
+    <p class="small muted">Conseillé : lundi facile, mercredi séance dure, jeudi renfo, samedi sortie longue. Une seule séance de course dure par semaine.</p>
   </div>
   <div class="card"><h2>Anglais</h2>
     <div class="grid2">
@@ -3240,8 +3240,8 @@ forgeCard=function(S){
   const neuve=now-t<2000?n-1:-1;
   return `<div class="card forge"><span class="kicker" style="color:var(--str)">La forge du Veilleur</span>
     <h2>${n} séance${n>1?"s":""} sur ${tot}</h2>
-    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque mercredi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
-    ${sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:tot-n,max:tot,sous:n>=tot?"":"un mercredi = un coup"})}
+    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque jeudi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
+    ${sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:tot-n,max:tot,sous:n>=tot?"":"un jeudi = un coup"})}
     <div class="forge-tete"><b>Armurerie du Veilleur</b><span class="small muted mono">${n} / ${tot} pièces</span></div>
     ${armurerie(pieces,n,neuve)}
   </div>`};
