@@ -637,6 +637,8 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
 .aj-boss:empty{display:none}.aj-boss .enlu-boss{grid-template-columns:70px 1fr;padding:4px 10px 4px 2px;margin:0;overflow:visible}.aj-boss .eb-av{transform:scale(.7);transform-origin:center;margin:-12px -10px;overflow:visible}
 .aj-bilan{border-left:4px solid var(--gold);display:grid;gap:6px}.aj-bilan p{margin:0;line-height:1.5}.aj-mot{font-style:italic;color:var(--muted)}.aj-score{font:800 1.6rem var(--display,inherit);color:var(--gold)}.aj-score small{font-size:.9rem;color:var(--muted)}.aj-manque{color:#ff9f43}
 .aj-suite{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem}.aj-suite b{color:var(--gold);margin-right:3px}.aj-bilan .lien{justify-self:end}
+.en-etapes{margin:4px 0 2px;padding-left:20px;display:grid;gap:4px;font-size:.92rem;line-height:1.35}.en-etapes b{color:var(--en)}
+.en-plus summary{cursor:pointer;font-weight:700;color:var(--muted);min-height:40px;display:flex;align-items:center}.en-plus[open] summary{margin-bottom:8px}
 .aj-ligne{padding:10px 10px 10px 14px;gap:6px}
 .aj-l{display:flex;align-items:center;gap:8px}.aj-lt{flex:1;min-width:0;display:grid;gap:1px}.aj-lt b{font-size:.98rem;line-height:1.25}.aj-lt small{color:var(--c);font-weight:700;font-size:.74rem}
 .aj-b{min-height:44px;flex:none;background:transparent;color:var(--c);border:1.5px solid var(--c);font-weight:800;padding:0 12px}
@@ -1425,6 +1427,21 @@ function pierreRunique(){
       ${runes}
     </svg><span class="small muted">Chaque séance d'anglais grave une rune. 24 runes : la pierre est complète, une nouvelle se dresse.</span></div>`;
 }
+/* Onglet Anglais (Théo, 25/11 : « pour l'anglais je suis complètement perdu » → un seul bouton guidé) : en tête, LA séance du jour
+   expliquée en 3 étapes et un bouton ; tout l'ancien contenu (missions, conversation libre, séries, journal…) replié dessous. */
+function enteteAnglais(){
+  const q=srsQueue().length, conv=prochainEstConv(), E=EPICS.en, fait=epicDone("en"), auj=state.en.sessions.some(x=>x.date===todayISO());
+  const mois=todayISO().slice(0,7), minM=state.en.sessions.filter(x=>x.date.slice(0,7)===mois).reduce((a,x)=>a+(Number(x.min)||0),0);
+  const etapes=[q?`<b>${Math.min(q,30)} mots</b> à revoir (~${Math.max(2,Math.round(Math.min(q,30)/3))} min)`:"<b>Pas de mots</b> à revoir aujourd'hui",
+    conv?`<b>Parler 10 min</b> avec Claude : « ${esc(scenOf(prochainScen()).nom)} »`:`<b>Mission</b> « ${esc(modUnit("travail")[0])} » : écouter, répéter, puis le boss`,
+    "<b>Tes erreurs</b> deviennent des cartes pour la prochaine fois"];
+  return `<div class="card aj aj-grande en-tete" style="--c:var(--en)"><span class="kicker aj-tag"><span>Anglais · parler au travail</span><span class="aj-min">≈ 20 min</span></span>
+    <h2>${auj?"Séance du jour faite ✓":"Ta séance d'anglais"}</h2>
+    <ol class="en-etapes">${etapes.map(x=>`<li>${x}</li>`).join("")}</ol>
+    <div class="aj-act"><button class="btn primary big en" id="enGo">${auj?"Encore une séance":"Commencer"}</button><button class="lien" id="enCourt">Pas le temps : 5 min de mots</button></div>
+    <p class="small muted" style="margin:2px 0 0">${fait} / ${E.goal} séances · ${minM} min d'oral ce mois-ci. Le micro écoute ta voix : parle à voix haute, même avec des fautes.</p></div>
+    <details class="card en-plus"><summary>Tout le contenu (missions au choix, conversation libre, séries, journal…)</summary><div class="en-plus-c"></div></details>`;
+}
 function renderEn(){
   const p=$("#p-en");
   micStop(true); majFocus();
@@ -1463,6 +1480,10 @@ function renderEn(){
   $("#nwAdd").onclick=()=>{const en=$("#nwEn").value.trim(),fr=$("#nwFr").value.trim();if(!en||!fr)return;addWord(en,fr,($("#nwEx").value||"").trim());renderEn()};
   if(a==="series") bindSeriesExtras();
   bindConvCard();
+  const vieux=[...p.childNodes]; p.insertAdjacentHTML("afterbegin",enteteAnglais()); const boite=p.querySelector(".en-plus-c"); vieux.forEach(n=>boite.appendChild(n)); // les boutons gardent leurs gestes (nœuds déplacés, pas recopiés)
+  const it={k:"en",key:"en|"+todayISO(),date:todayISO()};
+  $("#enGo").onclick=()=>{retourAuj=false;commencer(it);retourAuj=false};
+  $("#enCourt").onclick=()=>{commencer(it,true);retourAuj=false};
 }
 const nomMonde=s=>s.mod==="conv"?"Conversation"+(s.scen&&SCENARIOS.find(x=>x.id===s.scen)?" · "+SCENARIOS.find(x=>x.id===s.scen).nom:""):(MODULES[s.mod||"travail"]||{name:s.mod||"?"}).name;
 
@@ -3013,7 +3034,8 @@ function detailIt(it){
   return {tag:"Anglais",t:conv?`Conversation : ${scenOf(prochainScen()).nom}`:`Mission : ${modUnit("travail")[0]}`,
     p:`${q?`D'abord ${q} carte${q>1?"s":""} de vocabulaire (~${Math.max(2,Math.round(q/3))} min), puis `:""}${conv?"une vraie discussion à voix haute avec Claude":"écoute, parole et le boss du chapitre"}.`,min:20};
 }
-const prochainEstConv=()=>{const L=state.en.sessions[state.en.sessions.length-1];return !!L&&L.mod!=="conv"};
+/* Théo, 25/11 : « parler au travail » → la conversation pro à voix haute 2 séances sur 3, la mission Travail (structure du chapitre) la 3e */
+const prochainEstConv=()=>{const L=state.en.sessions.slice(-2);return !(L.length===2&&L.every(x=>x.mod==="conv"))};
 const prochainScen=()=>SCEN_PRO[state.en.sessions.filter(x=>x.mod==="conv").length%SCEN_PRO.length];
 /* Le cœur de l'anglais : l'app choisit (coach d'anglais : « le plus gros frein, c'est le choix ») */
 function anglaisPrincipal(){

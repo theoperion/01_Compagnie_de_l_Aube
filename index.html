@@ -4829,9 +4829,9 @@ const allieParcours = s => { const c = (s.compagnons || [])[0]; return c && c.pa
  * Le Livret des règles est rangé dans le « ? » de l'en-tête. Aucun émoji : coffres, éclats, épée et objets sont dessinés. */
 const EPEE_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M19.5 2.5 L21.5 4.5 L10 16 L8 14 Z" fill="#dfe4ec" stroke="#5a6070" stroke-width=".8"/><path d="M20 3 L10.6 12.4" stroke="#fff" stroke-width=".8" opacity=".8"/>
   <path d="M5.5 11.5 L12.5 18.5" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round"/><path d="M8.6 15.4 L4.6 19.4" stroke="#6a4424" stroke-width="2.6" stroke-linecap="round"/><circle cx="3.8" cy="20.2" r="1.6" fill="var(--gold)"/></svg>`;
-/* La récompense qui vient (Théo, 25/11 : « prochaine, palier… je trouve assez moche ») : 3 propositions, localStorage « recompVar » = a / b / c */
+/* La récompense qui vient (Théo, 25/11 : « prochaine, palier… je trouve assez moche ») : médaillon (A) choisi par Théo ; b / c gardés (localStorage « recompVar ») */
 function recompHTML(s, P, S, E, fini, ancien) {
-  let v = ''; try { v = localStorage.getItem('recompVar') || ''; } catch (e) {}
+  let v = 'a'; try { v = localStorage.getItem('recompVar') || 'a'; } catch (e) {} // Théo, 25/11 : le médaillon (A)
   if (!v || fini || !P) return ancien();
   const reste = Math.max(0, S.cout - S.dansPalier), p = Math.max(.03, Math.min(1, S.dansPalier / S.cout)), chev = '<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></i>';
   if (v === 'a') return `<button class="rec rec-a" data-parcours="1"><span class="rec-med" style="--p:${p.toFixed(3)}"><span>${vignetteEtape(P, 34)}</span></span>
