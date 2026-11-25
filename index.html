@@ -4557,7 +4557,7 @@ function lisieres(proj, cam, N, D, W) {
   for (let z = Math.min(N + 3, cam + 16); z >= cam - .3; z -= .3) {
     const zi = Math.round(z / .3), brume = Math.min(1, Math.max(0, (z - cam) / 15)), coul = melangeHex(F.pres, F.loin, brume * .9);
     let d1 = '', d2 = '';
-    for (const sg of [-1, 1]) for (let k = 0; k < 11; k++) {
+    for (const sg of (F.cotes || [-1, 1])) for (let k = 0; k < 11; k++) {
       const cote = sg * (.95 + k * .38 + hashPl(zi * 13 + k * 7 + (sg > 0 ? 3 : 0)) * .25), P = proj(z, cote);
       if (P.p < -.3 || P.x < -80 || P.x > W + 80) continue;
       const rond = (F.forme === 'mixte' && hashPl(zi + k * 3) > .62) || (F.forme === 'grec' && hashPl(zi + k * 3) > .5), cyp = F.forme === 'cypres' || (F.forme === 'grec' && !rond);
@@ -4620,7 +4620,7 @@ function ouvrirRoute() {
         <linearGradient id="rvBr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.ciel[2]}" stop-opacity="0"/><stop offset=".4" stop-color="${D.ciel[2]}" stop-opacity=".45"/><stop offset="1" stop-color="${D.ciel[2]}" stop-opacity="0"/></linearGradient></defs>
       <rect width="${W}" height="${hz + 2}" fill="url(#rvC)"/>${Array.from({ length: D.nuages ? 18 : 40 }, (_, k) => `<circle cx="${(hashPl(k + 5) * W).toFixed(0)}" cy="${(hashPl(k + 61) * hz * .75).toFixed(0)}" r="${(.6 + hashPl(k + 17) * 1.2).toFixed(1)}" fill="#fff" opacity="${(.35 + hashPl(k + 29) * .6).toFixed(2)}"/>`).join('')}<circle cx="${W * .72}" cy="${hz - (D.nuages ? 110 : 26)}" r="70" fill="url(#rvA)"/>${D.nuages ? Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI; return `<path d="M${(W * .72 + Math.cos(a * 2) * 30).toFixed(0)} ${(hz - 110 - Math.sin(a * 2) * 30).toFixed(0)} L${(W * .72 + Math.cos(a * 2) * 52).toFixed(0)} ${(hz - 110 - Math.sin(a * 2) * 52).toFixed(0)}" stroke="${D.astre}" stroke-width="3" stroke-linecap="round" opacity=".35"/>`; }).join('') : ''}<circle cx="${W * .72}" cy="${hz - (D.nuages ? 110 : 26)}" r="20" fill="${D.astre}"/>
       ${D.nuages ? [[.18, .32, 1], [.5, .2, .8], [.82, .4, 1.1], [.36, .5, .7]].map(([x, y, k]) => `<g transform="translate(${(W * x).toFixed(0)} ${(hz * y).toFixed(0)}) scale(${k})" fill="${D.nuages}" opacity=".55"><ellipse cx="0" cy="0" rx="34" ry="9"/><ellipse cx="-12" cy="-7" rx="14" ry="9"/><ellipse cx="10" cy="-9" rx="17" ry="11"/></g>`).join('') : ''}
-      ${D.monts3 ? [[0, 128, .7], [1, 84, .85], [2, 40, 1]].map(([i, hm, o]) => { const pts = Array.from({ length: 9 }, (_, k) => [W * k / 8, hz - (k % 2 ? hm * (.6 + hashPl(k + i * 9) * .4) : hm * (.2 + hashPl(k + i * 5) * .3))]);
+      ${D.fond ? D.fond({ W, H, hz, proj, cam: routeCam, N }) : ''}${D.fond ? '' : D.monts3 ? [[0, 128, .7], [1, 84, .85], [2, 40, 1]].map(([i, hm, o]) => { const pts = Array.from({ length: 9 }, (_, k) => [W * k / 8, hz - (k % 2 ? hm * (.6 + hashPl(k + i * 9) * .4) : hm * (.2 + hashPl(k + i * 5) * .3))]);
           return `<path d="M0 ${hz + 2} ${pts.map(([x, y]) => `L${x.toFixed(0)} ${y.toFixed(0)}`).join(' ')} L${W} ${hz + 2}Z" fill="${D.monts3[i]}" opacity="${o}"/>` + (i < 2 ? pts.filter((_, k) => k % 2).map(([x, y]) => `<path d="M${(x - 14).toFixed(0)} ${(y + 12).toFixed(0)} L${x.toFixed(0)} ${y.toFixed(0)} L${(x + 14).toFixed(0)} ${(y + 12).toFixed(0)} L${(x + 6).toFixed(0)} ${(y + 9).toFixed(0)} L${x.toFixed(0)} ${(y + 13).toFixed(0)} L${(x - 6).toFixed(0)} ${(y + 9).toFixed(0)}Z" fill="${D.neige}" opacity="${o}"/>`).join('') : ''); }).join('')
         : `<path d="M0 ${hz - 30} L${W * .1} ${hz - 92} L${W * .22} ${hz - 54} L${W * .36} ${hz - 120} L${W * .5} ${hz - 70} L${W * .66} ${hz - 104} L${W * .84} ${hz - 58} L${W} ${hz - 96} V${hz + 2} H0Z" fill="${D.monts}" opacity=".55"/><path d="M0 ${hz} L${W * .12} ${hz - 38} L${W * .26} ${hz - 14} L${W * .42} ${hz - 52} L${W * .58} ${hz - 20} L${W * .8} ${hz - 46} L${W} ${hz - 12} V${hz + 2} H0Z" fill="${D.monts}"/>`}
       <rect y="${hz}" width="${W}" height="${H - hz}" fill="url(#rvS)"/>
@@ -4636,7 +4636,7 @@ function ouvrirRoute() {
           return orn(-.22) + orn(.22) + o; })() : ''}
       <path d="${mil.join(' ')}" stroke="#fff6d8" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
       ${D.foret ? (() => { const P = proj(moi.z, 0); return `<ellipse cx="${P.x.toFixed(0)}" cy="${P.y.toFixed(0)}" rx="${(140 * P.f).toFixed(0)}" ry="${(40 * P.f).toFixed(0)}" fill="url(#rvA)" opacity=".55"/>`; })() : ''}
-      ${lisieres(proj, routeCam, N, D, W)}
+      ${D.solDecor ? D.solDecor({ W, H, hz, proj, cam: routeCam, N }) : ''}${lisieres(proj, routeCam, N, D, W)}${D.devant ? D.devant({ W, H, hz, proj, cam: routeCam, N }) : ''}
       ${D.foret ? `<rect y="${hz - 10}" width="${W}" height="60" fill="url(#rvBr)"/>${Array.from({ length: 5 }, (_, k) => `<path d="M${(W * .72).toFixed(0)} ${(hz - 110).toFixed(0)} L${(W * (.05 + k * .22)).toFixed(0)} ${H} L${(W * (.12 + k * .22)).toFixed(0)} ${H}Z" fill="${D.astre}" opacity=".05"/>`).join('')}` : ''}`;
     // objets : plus loin = plus petit, plus haut, derrière ; cachés hors de la scène
     items.concat(deco).forEach(it => { const P = proj(it.z, it.cote), vis = P.p > -.35 && P.p < 16;
