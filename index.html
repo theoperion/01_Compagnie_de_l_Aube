@@ -5095,7 +5095,7 @@ const REGLES_PAGES = [
   { t: 'La garde-robe', get s() { return rgSchema('garde'); },
     p: ['Jusqu\'à 13 emplacements, de la cape au sceau. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Combattre à deux', get s() { return rgSchema('deux'); },
-    p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
+    p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', 'Un boss de la semaine ne tombe <b>jamais avant mercredi</b> : écrasé plus tôt, il tient à 1 PV.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
       '<b>Défi de l\'Avent</b>, du 7 au 13 décembre : un nombre de quêtes à atteindre à deux. Réussi, chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
       '<b>Pacte et Saga</b>, chaque semaine au camp : l\'un propose un pacte, l\'autre le scelle ; tenu jusqu\'à dimanche, il rapporte <b>+150 XP</b> chacun le lundi. Votez aussi la suite du chapitre : le choix gagnant (le Maître du Jeu tranche mercredi en cas de désaccord) vous bénit jusqu\'à dimanche. Un rappel reste en haut de Quêtes tant que c\'est à toi d\'agir.'] },
   { t: 'Les talents', id: 'talents', s: `<div class="rg-sch"><div class="tal-ech"><span class="def">8<small>défaut</small></span><i>→</i><span>12<small>I</small></span><i>→</i><span>15<small>II</small></span><i>→</i><span class="or">18<small>III</small></span></div></div>`,
@@ -6317,9 +6317,8 @@ document.addEventListener('click', e => {
 const ANNONCE_BOSS = [
   ['🎯', 'Des PV à votre mesure', 'les PV du boss sont calés sur votre vrai rythme des dernières semaines : la victoire se mérite, elle n\'est plus garantie.'],
   ['⚔', 'Des coups spéciaux', 'le mardi et le jeudi (le samedi pour le boss du mois), annoncés la veille. Chacun se contre : la quête qui le brise est marquée « 🗡 brise… » et ouvre une Brèche (+25 % de dégâts).'],
-  ['🔥', 'Enragé puis Aux abois', 'sous 30 % de PV il riposte plus fort ; sous 20 % il tente un dernier recours.'],
+  ['🔥', 'Enragé puis Aux abois', 'sous 30 % de PV il riposte plus fort ; sous 20 % il peut tenter un dernier recours. Un boss de la semaine ne tombe jamais avant mercredi : écrasé plus tôt, il tient à 1 PV.'],
   ['😈', 'S\'il s\'enfuit', 'le boss suivant arrive blessé par la poursuite (−5 % de PV) ; si le fuyard gardait plus de 10 % de ses PV, il maudit la Compagnie les deux premiers jours. Une quête oubliée, saisie dans les 7 jours, frappe encore le boss enfui.'],
-  ['🐉', 'Ils évoluent', 'chaque boss a 3 stades : nouveau nom, nouvelles couleurs, une capacité de plus.']
 ];
 function ouvrirAnnonceBoss() {
   let ov = document.getElementById('bossVue');
