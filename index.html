@@ -4738,19 +4738,43 @@ function parcoursHTML(s) {
     if (dense && !(e.type === 'coffre' && e.r.coffre === 'epique')) return '';
     return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${e.type === 'coffre' ? (dense ? 3 : 4.2) : 3}" class="ph-pt ${e.type} ${e.fait ? 'fait' : ''}"/>`; }).join('');
   const comp = (s.compagnons || [])[0], xa = comp && comp.palierSaison != null ? X(Math.min(N, comp.palierSaison)) : null;
+  // Panorama illustré (25/11, Théo : « la piste 2D c'est une horreur ») : le même monde que la route 3D (DECORS_ROUTE de la saison), vu de côté
+  const D = DECORS_ROUTE[S.id] || DECORS_ROUTE.pre, Fo = D.foret || { pres: '#1e4a2a', pres2: '#2e6a32', loin: '#5a6a8a' }, M3 = D.monts3 || ['#6a6a9a', '#4a5282', '#2e4a5a'];
+  const ciel = D.ciel || ['#1a2350', '#5a4a8a', '#f0a070'], col = D.collines || [D.sol ? D.sol[0] : '#3a7a3e', '#2e6a34'];
+  const crete = (y0, amp, pas, seed) => { let p = `M0 128 L0 ${y0}`; for (let x = 0; x <= 360; x += pas) p += ` L${x} ${(y0 - amp * (.35 + hashPl(x / pas + seed) * .65)).toFixed(1)}`; return p + ' L360 128Z'; };
+  const rangee = (y, h, c, seed, rond) => { let a = '', b = ''; for (let x = -6; x <= 366; x += 9) { const hh = h * (.7 + hashPl(x + seed) * .5), xx = x + hashPl(x + seed * 3) * 5;
+      if (rond && hashPl(x + seed * 7) > .6) b += `M${(xx - hh * .4).toFixed(1)} ${(y - hh * .45).toFixed(1)} a${(hh * .4).toFixed(1)} ${(hh * .38).toFixed(1)} 0 1 1 ${(hh * .8).toFixed(1)} 0 a${(hh * .4).toFixed(1)} ${(hh * .38).toFixed(1)} 0 1 1 ${(-hh * .8).toFixed(1)} 0Z`;
+      else a += `M${xx.toFixed(1)} ${(y - hh).toFixed(1)} L${(xx + hh * .32).toFixed(1)} ${(y - hh * .45).toFixed(1)} L${(xx + hh * .2).toFixed(1)} ${(y - hh * .45).toFixed(1)} L${(xx + hh * .42).toFixed(1)} ${y} L${(xx - hh * .42).toFixed(1)} ${y} L${(xx - hh * .2).toFixed(1)} ${(y - hh * .45).toFixed(1)} L${(xx - hh * .32).toFixed(1)} ${(y - hh * .45).toFixed(1)}Z`; }
+    return `<path d="${a}" fill="${c}"/>${b ? `<path d="${b}" fill="${c}"/>` : ''}`; };
+  const reperes = D.repere ? E.filter((e, k) => k % 2 === 0 && k < N - 1).slice(0, 8).map((e, k) => { const x = X(e.n), y = Y(x) - 7;
+      return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(.2)" class="ph-lieu">${D.repere(k)}</g>`; }).join('') : '';
   const pano = `<svg class="ph-svg" viewBox="0 0 360 128" role="img" aria-label="${titre} : palier ${S.palier} sur ${N}">
       <defs><radialGradient id="phSol"><stop offset="0" stop-color="#fff6d0"/><stop offset=".55" stop-color="#ffd36a"/><stop offset="1" stop-color="#f2a541"/></radialGradient>
-        <radialGradient id="phHalo"><stop offset="0" stop-color="#ffd36a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd36a" stop-opacity="0"/></radialGradient></defs>
-      ${Array.from({ length: 16 }, (_, k) => `<circle cx="${(hashPl(k + 3) * 360).toFixed(0)}" cy="${(4 + hashPl(k + 40) * 44).toFixed(0)}" r="${(.6 + hashPl(k) * .9).toFixed(1)}" class="ph-etoile" style="animation-delay:${(hashPl(k + 9) * 4).toFixed(1)}s"/>`).join('')}
-      <path d="M0 74 L34 54 L60 64 L92 46 L120 62 L150 50 L186 66 L214 52 L244 70 L300 58 L330 66 L360 56 V128 H0Z" class="ph-m1"/>
+        <radialGradient id="phHalo"><stop offset="0" stop-color="#ffd36a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd36a" stop-opacity="0"/></radialGradient>
+        <linearGradient id="phCiel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ciel[0]}"/><stop offset=".65" stop-color="${ciel[1]}"/><stop offset="1" stop-color="${ciel[2]}"/></linearGradient>
+        <linearGradient id="phBrume" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ciel[2]}" stop-opacity="0"/><stop offset="1" stop-color="${ciel[2]}" stop-opacity=".55"/></linearGradient></defs>
+      <rect width="360" height="128" fill="url(#phCiel)"/>
+      ${Array.from({ length: 12 }, (_, k) => `<circle cx="${(hashPl(k + 3) * 360).toFixed(0)}" cy="${(4 + hashPl(k + 40) * 30).toFixed(0)}" r="${(.5 + hashPl(k) * .7).toFixed(1)}" class="ph-etoile" style="animation-delay:${(hashPl(k + 9) * 4).toFixed(1)}s"/>`).join('')}
       <g class="ph-astre"><circle cx="${sx}" cy="${sy.toFixed(1)}" r="40" fill="url(#phHalo)"/>
         ${rayons ? `<g class="ph-rayons" style="transform-origin:${sx}px ${sy.toFixed(1)}px">${Array.from({ length: 12 }, (_, k) => `<path d="M${sx} ${(sy - 17).toFixed(1)} V${(sy - 25).toFixed(1)}" transform="rotate(${k * 30} ${sx} ${sy.toFixed(1)})"/>`).join('')}</g>` : ''}
         <circle cx="${sx}" cy="${sy.toFixed(1)}" r="13" fill="url(#phSol)"/></g>
-      <path d="M0 98 Q40 80 86 92 T176 88 T270 92 T360 84 V128 H0Z" class="ph-m2"/>
-      <g class="ph-arbres">${[12, 58, 120, 186, 226, 300].map((x, k) => `<path d="M${x} ${102 - k % 2 * 4} l6 -18 l6 18z"/>`).join('')}</g>
-      <g class="ph-chateau" transform="translate(338 96)"><path d="M-17 0 V-22 h5 v4 h3 v-4 h5 V-32 l4 -6 l4 6 V-22 h5 v4 h3 v-4 h5 V0Z"/><rect x="-2" y="-26" width="4" height="5" rx="2" class="ph-fenetre"/></g>
-      <path d="${d}" class="ph-route"/><path d="${d}" class="ph-route2"/><path d="${d}" class="ph-fait" pathLength="1" stroke-dasharray="${pct.toFixed(3)} 1"/>
+      ${[[60, 20, .9], [196, 14, .7], [300, 28, .8]].map(([x, y, k]) => `<g transform="translate(${x} ${y}) scale(${k})" fill="${D.nuages || '#f8d8c8'}" opacity=".5"><ellipse rx="22" ry="5"/><ellipse cx="-8" cy="-4" rx="9" ry="5"/><ellipse cx="7" cy="-5" rx="11" ry="6"/></g>`).join('')}
+      ${D.fond2D ? D.fond2D() : `<path d="${crete(70, 24, 30, 1)}" fill="${M3[0]}"/>`}${D.fond2D ? '' : ''}${D.fond2D ? '' : [45, 135, 225, 315].map((x, k) => { const y = 70 - 24 * (.35 + hashPl(x / 30 + 1) * .65); return `<path d="M${x - 8} ${(y + 7).toFixed(1)} L${x} ${y.toFixed(1)} L${x + 8} ${(y + 7).toFixed(1)}Z" fill="${D.neige || '#f4eefa'}" opacity=".85"/>`; }).join('')}
+      ${D.mer ? `<rect y="62" width="360" height="10" fill="${D.mer}"/>` : ''}
+      <path d="${crete(78, 12, 24, 7)}" fill="${M3[1]}"/>
+      <rect y="60" width="360" height="26" fill="url(#phBrume)"/>
+      <path d="M0 84 Q60 72 120 80 T240 78 T360 74 V128 H0Z" fill="${col[0]}"/>
+      ${rangee(84, 12, Fo.loin, 11, true)}
+      <path d="M0 92 Q70 84 150 90 T300 88 T360 86 V128 H0Z" fill="${col[1]}"/>
+      ${rangee(94, 15, Fo.pres2 || Fo.pres, 23, true)}
+      ${D.bout2D ? D.bout2D() : `<g class="ph-chateau" transform="translate(338 96)"><path d="M-17 0 V-22 h5 v4 h3 v-4 h5 V-32 l4 -6 l4 6 V-22 h5 v4 h3 v-4 h5 V0Z"/><rect x="-2" y="-26" width="4" height="5" rx="2" class="ph-fenetre"/></g>`}
+      <path d="M0 104 Q60 98 120 102 T240 100 T360 98 V128 H0Z" fill="${(D.sol || ['#4a8a46', '#1e4a24'])[0]}"/>
+      <path d="${d}" fill="none" stroke="${D.bord || '#5a3a1e'}" stroke-width="10" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${(D.route || ['#d8b07a'])[0]}" stroke-width="7" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="${D.paves || '#b89060'}" stroke-width="7" stroke-dasharray="1.6 4" stroke-linecap="round" opacity=".7"/>
+      <path d="${d}" class="ph-fait" pathLength="1" stroke-dasharray="${pct.toFixed(3)} 1"/>
+      ${reperes}
       ${marques}
+      ${rangee(129, 16, melangeHex(Fo.pres, '#000000', .35), 37, true)}${Array.from({ length: 14 }, (_, k) => { const x = 8 + k * 26 + hashPl(k + 5) * 10, y = 112 + hashPl(k + 7) * 8; return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="1.3" fill="${['#f2c94c', '#e86a9a', '#ffffff'][k % 3]}"/>`; }).join('')}
       <g transform="translate(26 ${Y(26).toFixed(1)})"><path d="M0 0 V-14 l9 3.5 l-9 3.5" class="ph-drapeau"/></g>
       ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>${esc(nomCompagnon(comp))}</title></circle>` : ''}
     </svg>
