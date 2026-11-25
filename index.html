@@ -5169,7 +5169,8 @@ const REGLES_PAGES = [
         l('Sagesse', '+5 / 10 / 15 % d\'XP sur les annexes, entraînement compris'), l('Volonté', 'un raté te coûte 10 / 20 / 30 % de PV en moins (arrondi en ta faveur)'),
         l('Charisme', 'ton encouragement donne 15 / 20 / 25 XP à ton compagnon et 5 / 10 / 15 XP à toi'),
         'Une caractéristique à <b>8</b> a un défaut (Bras lourds, Souffle court, Pataud, Distrait, Impatient, Fragile, Solitaire) ; ton entraînement de la semaine la vise : au premier point gagné, le défaut disparaît.',
-        'Un talent compte à partir du jour où il s\'éveille. Le 1er janvier, il reste.']; } },
+        'Un talent compte à partir du jour où il s\'éveille. Le 1er janvier, il reste.',
+        '🎲 <b>Jet de sauvegarde</b> : à chaque raté, le destin lance un d20 pour toi, avec le bonus de la caractéristique de la quête. <b>10 ou plus</b> : tu ne perds que les trois quarts des PV. <b>20</b> : aucun PV perdu. Un mauvais jet ne coûte jamais plus.']; } },
   { t: 'Les saisons', get s() { return rgSchema('saisons'); },
     get p() { const s1 = (((typeof state !== 'undefined' && state && state.armurerie) || {}).saison || {}).id === 's1'; // pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage
       return ['Chaque saison a <b>son chemin</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau). Les objets du Rodage s\'en vont avec lui, sauf ton <b>Dragon de l\'Aube</b>, qui te suit.', 'Tes <b>trophées</b> et tes <b>titres</b> restent, souvenirs du Rodage.',
