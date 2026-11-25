@@ -3113,7 +3113,7 @@ function bossDuJour(it){
     if(it.k==="run"){const w=it.w,cle=BOSS_SEM[Math.max(0,Math.min(11,w.abs))];if(!cle)return "";
       const done=w.s.filter(s=>state.run.logs[s.key]).length;return window.sceneBoss({cle,id:"run"+w.abs,kicker:"Boss de la semaine",nom:regionOf(w)[1],pv:RUN_PER_WEEK-done,max:RUN_PER_WEEK,sous:"une sortie = un coup"})}
     if(it.k==="str"){const S=strWeeks(),n=S.filter(x=>state.str.logs[x.key]).length;return window.sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:S.length-n,max:S.length,sous:"une séance = un coup"})}
-    return ""; // l'Oubli n'est pas montré ici tant qu'il n'est pas redessiné (directeur artistique 25/11 : il se lit comme un fantôme)
+    const O=state.en.oubli;return O?window.sceneBoss({cle:"oubli",id:"oubli",kicker:"Boss de la mémoire",nom:"L'Oubli",pv:O.hp,max:O.max,sous:"chaque mot retrouvé le blesse"}):""; // redessiné le 25/11 en grimoire qui s'efface
   }catch(e){return ""}
 }
 /* ---------- Bilan du dimanche (25/11, idée validée par Théo) : le dimanche et le lundi, 3 lignes sur la semaine + la suivante ---------- */

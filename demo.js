@@ -122,6 +122,7 @@ window.demo = (() => {
     accepterPacte() { if (pacteDemo) Object.assign(pacteDemo, { accepte: true, scelleLe: today, ok: true, detail: 'en bonne voie' }); return etat(); }, // comme evaluerPacte_ du moteur
     voterMJ(i) { voteDemo = Number(i); return etat(); },
     encourager() { return etat(); },
+    voirCompagnon(nom) { return Object.assign(etat(), { heros: nom, moi: false }); }, // fiche du compagnon (contrôle d'écran, 25/11)
     maitreDuJeu() { return mjDemo(); },
     getHeros() {
       return location.hash === '#duo' ? [{ nom: 'Theron Corvane', classe: 'Magicien', titre: 'le Vagabond', niveau: 12, look: '' },

@@ -565,27 +565,34 @@ const BOSS_DESSINS_2 = {
 
   oubli: p => `
     <defs>
-      <linearGradient id="${p}v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset=".6" stop-color="#dfe3f2" stop-opacity=".7"/><stop offset="1" stop-color="#b9c0dc" stop-opacity=".05"/></linearGradient>
-      <radialGradient id="${p}h" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#ffffff" stop-opacity=".18"/><stop offset=".7" stop-color="#ffffff" stop-opacity=".05"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9d4e4"/><stop offset=".55" stop-color="#c9c4d6"/><stop offset="1" stop-color="#9c96ae"/></linearGradient>
+      <linearGradient id="${p}f" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c9c4d6" stop-opacity="1"/><stop offset=".6" stop-color="#c9c4d6" stop-opacity=".55"/><stop offset="1" stop-color="#c9c4d6" stop-opacity="0"/></linearGradient>
+      <radialGradient id="${p}h" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#e8e4f4" stop-opacity=".2"/><stop offset="1" stop-color="#e8e4f4" stop-opacity="0"/></radialGradient>
     </defs>
-    <circle cx="60" cy="54" r="56" fill="url(#${p}h)"/>
-    <path d="M60 8 Q86 12 90 46 L98 118 q-6 -4 -10 2 q-6 -6 -10 0 q-6 -6 -10 0 q-6 -6 -8 0 q-4 -6 -10 0 q-4 -6 -10 0 q-4 -6 -10 0 q-4 -6 -8 -2 L30 46 Q34 12 60 8z" fill="url(#${p}v)" stroke="#e8ecf8" stroke-width="1"/>
-    <ellipse cx="60" cy="40" rx="15" ry="18" fill="#f4f5fb" stroke="#c8cde0" stroke-width="1"/>
-    <path d="M45 34 q15 -14 30 0" stroke="#c8cde0" stroke-width="1" fill="none"/>
-    <g class="b-oeil"><path d="M51 41 q4 2 8 0 M61 41 q4 2 8 0" stroke="#8a90aa" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
-    <path d="M56 50 q4 2 8 0" stroke="#a0a6c0" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-    <!-- ce que l'Oubli efface : le bas du drap part en pixels, des souvenirs (pages, photo) s'envolent en pâlissant -->
-    ${[[34, 112, 4, .5], [28, 104, 3, .35], [22, 96, 2.4, .25], [40, 122, 3.4, .45], [90, 106, 3.6, .45], [98, 98, 2.6, .3], [104, 90, 2, .2], [82, 122, 3, .4], [60, 126, 2.4, .3]].map(([x, y, s, o]) => `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="#e8ecf8" opacity="${o}"/>`).join('')}
-    <g class="b-volute"><g transform="translate(14 84) rotate(-14)" opacity=".7"><rect width="14" height="17" rx="1.2" fill="#f4f1e6" stroke="#a0a6c0" stroke-width=".8"/><path d="M3 5 h8 M3 8 h7 M3 11 h5" stroke="#8a90aa" stroke-width=".8"/></g>
-      <g transform="translate(6 104) rotate(10)" opacity=".4"><rect width="13" height="11" rx="1" fill="#fff" stroke="#a0a6c0" stroke-width=".8"/><rect x="2" y="2" width="9" height="6" fill="#b9c8e8"/><circle cx="5" cy="5" r="1.4" fill="#f2c94c"/></g>
-      <g transform="translate(22 20) rotate(-24)" opacity=".25"><rect width="11" height="13" rx="1" fill="#f4f1e6" stroke="#a0a6c0" stroke-width=".8"/><path d="M2 4 h7 M2 7 h6" stroke="#8a90aa" stroke-width=".8"/></g></g>
-    <path d="M78 28 q6 6 4 14" stroke="#ffffff" stroke-width="5" fill="none" opacity=".55" stroke-linecap="round"/>
-    ${[[96, 46], [92, 50], [99, 52], [94, 56]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1" fill="#f2a3b8" opacity=".8"/>`).join('')}
-    <g class="b-bras-d"><path d="M86 66 q14 -6 18 -20" stroke="#e8ecf8" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <g transform="translate(100 32) rotate(-25)"><rect width="18" height="10" rx="2" fill="#f2a3b8" stroke="#b0607a" stroke-width="1"/><rect width="7" height="10" rx="2" fill="#7fa8e0" stroke="#4a6aa0" stroke-width="1"/></g></g>
-    <g class="b-volute" font-family="Georgia" font-weight="700" fill="#6a7090">
-      <text x="8" y="70" font-size="9" opacity=".8">L</text><text x="16" y="60" font-size="7" opacity=".55">u</text><text x="10" y="48" font-size="6" opacity=".35">n</text><text x="20" y="40" font-size="5" opacity=".2">d</text></g>
-    <g transform="translate(90 92)"><g class="b-aile-g"><path d="M0 0 q-8 -8 -12 0 q4 6 12 0 q8 -8 12 0 q-4 6 -12 0z" fill="#d8dcf0" opacity=".8"/><path d="M0 -3 v6" stroke="#8a90aa" stroke-width="1"/></g></g>`,
+    <!-- L'Oubli : un vieux grimoire gris dont le côté droit s'efface en poussière ; il gomme ce qu'on a appris (DA 25/11 : plus de drap de fantôme) -->
+    <circle cx="60" cy="62" r="56" fill="url(#${p}h)"/>
+    <ellipse cx="56" cy="122" rx="36" ry="4.5" fill="#000" opacity=".3"/>
+    <path d="M30 22 h48 q6 0 6 6 v86 q0 4 -4 4 h-50 q-6 0 -6 -6 v-84 q0 -6 6 -6z" fill="#f4ecd8" stroke="#4a4458" stroke-width="1.4"/>
+    <path d="M33 26 v88 M37 26 v88" stroke="#d8ccb0" stroke-width=".8"/>
+    <path d="M26 20 h46 q8 0 8 8 v80 q0 6 -6 6 h-48 q-6 0 -6 -6 v-82 q0 -6 6 -6z" fill="url(#${p}c)" stroke="#4a4458" stroke-width="1.6"/>
+    <path d="M26 20 q-6 0 -6 6 v82 q0 6 6 6" fill="none" stroke="#6e6884" stroke-width="5" stroke-linecap="round"/>
+    <path d="M28 30 h44 M28 104 h44" stroke="#8a84a0" stroke-width="1.2" opacity=".8"/>
+    <path d="M30 116 h46 M30 113 h46" stroke="#d8ccb0" stroke-width=".8"/>
+    <path d="M20 40 h6 M20 96 h6" stroke="#4a4458" stroke-width="1.4"/>
+    <path d="M60 114 v12 l3 -3 l3 3 v-12z" fill="#9a2a2a" stroke="#4a4458" stroke-width=".8"/>
+    <rect x="38" y="34" width="28" height="9" rx="2" fill="#e8e2f0" stroke="#4a4458" stroke-width=".9"/>
+    <path d="M42 38.5 h6 M50 38.5 h4 M56 38.5 h7" stroke="#8a84a0" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+    <g class="b-oeil"><path d="M38 62 q6 -4 12 0" stroke="#2e2a3c" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M56 62 q6 -4 12 0" stroke="#2e2a3c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M38 62 q6 3 12 0 M56 62 q6 3 12 0" stroke="#2e2a3c" stroke-width="1.2" fill="none" opacity=".6"/></g>
+    <path d="M45 77 q8 3 16 0" stroke="#4a4458" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M78 22 v90 q0 3 -3 3" stroke="#f4ecd8" stroke-width="3" fill="none" opacity=".35"/>
+    <path d="M74 20 h6 q8 0 8 8 v80 q0 6 -6 6 h-8z" fill="url(#${p}f)"/>
+    ${[[86, 40, 4, .7], [92, 52, 3.4, .55], [98, 64, 3, .4], [104, 46, 2.4, .3], [94, 80, 3.6, .5], [102, 92, 2.6, .35], [108, 74, 2, .22], [90, 102, 3, .45]].map(([x, y, s, o]) => `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="#c9c4d6" opacity="${o}"/>`).join('')}
+    <g class="b-volute">${[[92, 24, -14, .6], [101, 14, 12, .4], [108, 4, -24, .2]].map(([x, y, r, o]) => `<rect x="${x}" y="${y}" width="6" height="8" rx=".6" transform="rotate(${r} ${x + 3} ${y + 4})" fill="#f4ecd8" stroke="#4a4458" stroke-width=".6" opacity="${o}"/>`).join('')}</g>
+    <g class="b-bras-d" style="transform-origin:95% 95%"><path d="M24 70 q-12 4 -14 -10" stroke="#4a4458" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M24 70 q-12 4 -14 -10" stroke="#c9c4d6" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <circle cx="10" cy="60" r="3" fill="#c9c4d6" stroke="#4a4458"/>
+      <g transform="translate(2 52) rotate(-20)"><rect width="16" height="10" rx="2" fill="#f2a3b8" stroke="#8a4a60" stroke-width="1"/><rect width="6" height="10" rx="2" fill="#7fa8e0" stroke="#3a5a90" stroke-width="1"/></g></g>
+    ${[[6, 56], [10, 60], [4, 62]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1" fill="#f2a3b8" opacity=".8"/>`).join('')}`,
 
   fatigue: p => `
     <defs>
