@@ -5059,7 +5059,7 @@ function talentsHtml(s) {
   const L = ((s && s.talents) || {}).liste || [];
   if (!L.length) return '';
   return `<div class="section"><h2>Talents</h2><span>12 · 15 · 18</span></div><div class="panel tal-liste">${L.map(t => `<div class="tal ${t.defaut ? 'def' : ''}">
-      <div class="tal-top"><span>${ICONES[t.carac] || ''} <b>${esc(t.nom)}</b></span><span class="tal-niv">${t.defaut ? 'défaut' : esc(t.carac) + ' ' + ROMAIN[t.niveau]}</span></div>
+      <div class="tal-top"><span>${ICONES[t.carac] || ''} <b>${esc(t.nom)}</b></span><span class="tal-niv">${esc(t.carac) + (t.defaut ? ' · défaut' : ' ' + ROMAIN[t.niveau])}</span></div>
       <div class="tal-eff">${esc(effetTalent(s, t))}</div></div>`).join('')}
     <div class="stat-note">${L.some(t => t.defaut) ? 'Un défaut disparaît au premier point gagné : ton entraînement de la semaine le vise. ' : ''}Un talent compte à partir du jour où il s'éveille, et il reste le 1er janvier.</div></div>`;
 }
