@@ -2024,6 +2024,14 @@ body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-moti
 .bilan-garde small { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bilan-garde em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--gold); flex: none; }
 
 /* ===== Les Premiers Pas (défi d'ouverture, 01/01 → 10/01) : 3 lignes, deux pas qui avancent, barre commune à deux couleurs ===== */
+.etoile { display: grid; justify-items: center; margin: 0 0 8px; } .etoile svg { width: min(100%, 300px); height: auto; overflow: visible; }
+.et-a { fill: none; stroke: color-mix(in srgb, var(--text) 16%, transparent); stroke-width: .8; } .et-a.def { stroke: color-mix(in srgb, #e0604a 55%, transparent); stroke-dasharray: 3 3; }
+.et-a.i, .et-a.ii, .et-a.iii { stroke: color-mix(in srgb, var(--gold) 38%, transparent); }
+.et-axe { stroke: color-mix(in srgb, var(--text) 10%, transparent); stroke-width: .8; }
+.et-p { fill-opacity: .28; stroke-width: 2; stroke-linejoin: round; } .et-pt { stroke: var(--panel); stroke-width: 1.2; }
+.et-l { font: 800 11px var(--f-texte); fill: var(--muted); } .et-l .et-s { fill: var(--text); } .et-l.faible, .et-l.faible .et-s { fill: #ff9f43; }
+.et-leg { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center; margin: 2px 0 0; font-size: 11px; color: var(--muted); } .et-leg .faible { color: #ff9f43; }
+.et-k { display: inline-block; width: 14px; height: 0; border-top: 1.5px solid color-mix(in srgb, var(--gold) 60%, transparent); vertical-align: middle; margin-right: 4px; } .et-k.def { border-top: 1.5px dashed #e0604a; }
 .defi { display: flex; align-items: center; gap: 10px; width: 100%; margin: 10px 0 4px; padding: 8px 12px 8px 8px; border-radius: 14px; text-align: left; color: var(--text); cursor: pointer; font: inherit;
   border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 8%, var(--card)), var(--panel)); }
 .dp-pas { flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--gold) 20%, var(--card)), var(--panel) 80%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 30%, transparent); }
@@ -7579,7 +7587,7 @@ function render() {
     ${calendrierHTML(s)}
     ${blocLegende(s)}
     <div class="section"><h2>Caractéristiques</h2><span>score · bonus au d20</span></div>
-    <div class="panel">${statsHtml}
+    <div class="panel">${etoileStats(s, couleurClasse((s.classe || {}).nom))}${statsHtml}
       <div class="stat-note">Chaque quête donne 100 % de son XP à sa carac. principale et 50 % en plus à la secondaire. Les scores de départ viennent de ta classe et de tes caractéristiques favorites (15 · 14 · 13 · 12 · 10 · 10 · 8, comme une répartition de D&D), puis +1 tous les ${Number(s.xpParPoint).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0')} XP, jusqu'à 20.</div></div>
     ${talentsHtml(s)}
 ` : `
@@ -7688,6 +7696,25 @@ function joursRestantsSemaine() {
   return out;
 }
 
+/* Fiche en étoile (25/11, piste D validée par Théo) : les 7 caractéristiques d'un coup d'œil.
+   Cercles : 8 (défaut en dessous), 12 / 15 / 18 (talents I / II / III) ; la plus faible est marquée (c'est elle qu'on entraîne). */
+function etoileStats(s, coul) {
+  const L = (s && s.stats) || []; if (L.length < 3) return '';
+  const N = L.length, C = 120, R = 82, min = 6, max = 20, r = v => R * Math.max(0, Math.min(1, (v - min) / (max - min)));
+  const pt = (i, v) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N; return [C + Math.cos(a) * r(v), C + Math.sin(a) * r(v)]; };
+  const poly = v => L.map((st, i) => pt(i, v === undefined ? Number(st.score) : v).map(x => x.toFixed(1)).join(',')).join(' ');
+  const faible = L.reduce((a, b) => Number(b.score) < Number(a.score) ? b : a, L[0]).nom, c = coul || 'var(--gold)';
+  const anneau = (v, cls) => `<polygon points="${poly(v)}" class="et-a ${cls}"/>`;
+  const labels = L.map((st, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N, x = C + Math.cos(a) * (R + 22), y = C + Math.sin(a) * (R + 18) + 4;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" class="et-l${st.nom === faible ? ' faible' : ''}">${COURT[st.nom] || st.nom} <tspan class="et-s">${st.score}</tspan></text>`; }).join('');
+  return `<div class="etoile"><svg viewBox="0 0 240 240" role="img" aria-label="Caractéristiques : ${L.map(x => x.nom + ' ' + x.score).join(', ')}">
+    ${anneau(18, 'iii')}${anneau(15, 'ii')}${anneau(12, 'i')}${anneau(8, 'def')}
+    ${L.map((st, i) => { const [x, y] = pt(i, max); return `<line x1="${C}" y1="${C}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="et-axe"/>`; }).join('')}
+    <polygon points="${poly()}" class="et-p" style="fill:${c};stroke:${c}"/>
+    ${L.map((st, i) => { const [x, y] = pt(i, Number(st.score)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" style="fill:${c}" class="et-pt"/>`; }).join('')}
+    ${labels}</svg>
+    <p class="et-leg"><span><i class="et-k i"></i>talents à 12 · 15 · 18</span><span><i class="et-k def"></i>défaut sous 8</span><span class="faible">● à entraîner</span></p></div>`;
+}
 /* Caractéristiques d'un héros (soi ou compagnon) */
 function statsDe(s) {
   return (s.stats || []).map(st => {
@@ -7751,7 +7778,7 @@ function vueCompagnonDetail(c) {
     <div class="panel">${ann.map(a => ligne(a, `<span class="wk">${a.jour.fait ? '✓ aujourd\'hui' : a.fois + ' fois'}</span>`)).join('')}</div>` : ''}
     ${c.objectifs.length ? `<div class="section"><h2>Quêtes épiques</h2><span>progression</span></div><div class="list">${c.objectifs.map(carteEpique).join('')}</div>` : ''}
     ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span><span><span class="streak">🔥 ${h.serie}</span><span class="muted"> · record&nbsp;${h.record || 0}</span></span></div>`).join('')}</div>` : ''}
-    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}${talentsHtml(c, true)}
+    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${etoileStats(c, couleurClasse(c.classe && c.classe.nom ? c.classe.nom : c.classe))}${statsDe(c)}</div>` : ''}${talentsHtml(c, true)}
     <div class="aide-coop">Lecture seule : chacun valide ses propres quêtes avec sa clé.</div></div>`;
 }
 document.addEventListener('click', e => {
