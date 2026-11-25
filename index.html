@@ -1003,7 +1003,7 @@
   @keyframes cofSecoue { 0% { transform: rotate(0); } 10% { transform: rotate(-1.5deg); } 20% { transform: rotate(1.5deg); } 32% { transform: rotate(-3deg); } 44% { transform: rotate(3.5deg); }
     56% { transform: translateY(-1px) rotate(-5deg); } 66% { transform: translateY(-1px) rotate(5.5deg); } 76% { transform: translateY(-2px) rotate(-7deg) scale(1.03); } 88% { transform: translateY(-3px) rotate(7.5deg) scale(1.05); } 100% { transform: translateY(-4px) rotate(0) scale(1.06); } }
   @keyframes cofCouv { 0% { transform: rotate(0); } 70% { transform: rotate(38deg); } 100% { transform: rotate(32deg); } }
-  .cof-box.cof-anim > p:first-child { margin-bottom: 14px; } /* le couvercle ouvert ne touche pas l'origine du coffre */
+  .cof-box.cof-anim > p:first-child { margin-bottom: 30px; } /* le couvercle ouvert ne touche pas l'origine du coffre */
   @keyframes cofLum { from { opacity: 0; } to { opacity: .95; } }
   @keyframes cofFaisc { 0% { opacity: 0; transform: scaleY(0); } 100% { opacity: .85; transform: scaleY(1); } }
   @keyframes cofFaiscFin { 0% { opacity: .7; } 100% { opacity: 0; } }
@@ -1015,8 +1015,13 @@
   .cof-box.cof-anim .cof-halo { animation: cofHalo var(--ts) ease-in forwards; }
   .cof-gem { display: flex; gap: 10px; justify-content: center; margin-top: -2px; } .cof-gem i { width: 12px; height: 12px; transform: rotate(45deg); border-radius: 2px; border: 1.5px solid color-mix(in srgb, var(--gc) 60%, #000); background: #2a2430; }
   .cof-gem i.on { background: var(--gc); box-shadow: 0 0 10px var(--gc); } .cof-box.cof-anim .cof-gem i.on { opacity: .25; background: #2a2430; box-shadow: none; animation: cofGem .28s ease-out var(--gd) forwards; }
-  .cof-passer { margin: 6px 0 0; font-size: 11px; opacity: .55; letter-spacing: .04em; }
-  .cof-eclair { position: fixed; inset: 0; pointer-events: none; z-index: 2; background: #fff; opacity: 0; animation: cofEclair .5s ease-out forwards; } .cof-eclair.r-legendaire { background: radial-gradient(circle, #fff6d8, #ffc46b 60%, transparent); animation-duration: .8s; }
+  .cof-passer { margin: 6px 0 0; font-size: 12px; letter-spacing: .04em; color: #c9bba6; }
+  .cof-eclair { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0; animation: cofEclair .45s ease-out forwards; }
+  .cof-eclair.r-legendaire { background: radial-gradient(circle at 50% 28%, #fff6d8 0, #ffc46b 25%, transparent 55%); } .cof-eclair.r-epique { background: radial-gradient(circle at 50% 28%, #f0e6ff, #d0b8ff 25%, transparent 55%); animation-duration: .35s; }
+  .cof-rayons.r-legendaire { background: repeating-conic-gradient(rgba(255,214,120,.35) 0 8deg, transparent 8deg 24deg); -webkit-mask: radial-gradient(circle, #000 30%, transparent 70%); mask: radial-gradient(circle, #000 30%, transparent 70%); animation: cofTourne 14s linear infinite; }
+  @keyframes cofTourne { to { transform: rotate(1turn); } }
+  .cof-box.ouvert.r-legendaire .cof-obj { zoom: 1.4; }
+  .cof-box.ouvert.leve > h3, .cof-box.ouvert.leve > p, .cof-box.ouvert.leve > .btn, .cof-box.ouvert.leve > .cof-liens { animation-delay: calc(var(--tr) * .6); }
   .cof-box.sec { animation: cofSec .5s ease-out; }
   @keyframes cofHalo { 0% { opacity: 0; transform: scale(.5); } 100% { opacity: 1; transform: scale(1.25); } }
   @keyframes cofGem { 0% { opacity: .25; transform: rotate(45deg) scale(.6); background: #2a2430; } 60% { transform: rotate(45deg) scale(1.5); } 100% { opacity: 1; transform: rotate(45deg) scale(1); background: var(--gc); box-shadow: 0 0 10px var(--gc); } }
@@ -5378,7 +5383,7 @@ function ouvrirUnCoffre() {
     const etinc0 = leve ? `<span class="cof-etinc">${Array.from({ length: nE }, (_, i) => `<i style="--a:${depE + i * pasE}deg;--d:${(i % 3) * 60}ms"></i>`).join('')}</span>` : '';
     const eclair = leve && (rar === 'epique' || rar === 'legendaire') ? `<i class="cof-eclair r-${rar}"></i>` : '';
     const etinc = (leve ? '<i class="cof-faisceau fin"></i>' : '') + etinc0; // le faisceau reste sous l'objet, qui s'élève dedans
-    ov.innerHTML = `${eclair}<div class="cof-box ouvert ${leve ? 'leve' : ''} ${leve && rar === 'legendaire' ? 'sec' : ''}" style="--tr:${tR}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
+    ov.innerHTML = `${eclair}<div class="cof-box ouvert r-${rar} ${leve ? 'leve' : ''} ${leve && rar === 'legendaire' ? 'sec' : ''}" style="--tr:${tR}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
       ${x ? `<div class="cof-duo"><div class="cof-obj">${apercuCosm(x)}${etinc}</div>${herosPortant(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p><b class="cof-rar r-${x.rarete}">${RARETE_NOM[x.rarete]}</b> · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>${x.slot === 'sceau' ? '<p class="cof-aide">Porté, il se pose sur chaque quête que tu valides.</p>' : ''}
         <button class="btn or plein" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">${tasEclats()}${etinc}</div><h3><span class="cof-n">${leve ? 0 : o.eclats || 0}</span> éclats</h3><p>${texteEclatsCoffre(o)} : voici des éclats pour le marchand.</p>`}
       ${(state.armurerie.coffres || []).length ? `<div class="cof-liens">${x ? `<button class="cof-lien" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>` : `<button class="btn or plein" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>`}<button class="cof-lien" data-cof-plus-tard="1">Plus tard</button></div>` : `<button class="${x ? 'cof-lien' : 'btn or plein'}" data-cof-fermer="1">Fermer</button>`}</div>`;
