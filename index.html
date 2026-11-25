@@ -1110,6 +1110,8 @@
   .tabs button { position: relative; } .tabs i.pastille { position: absolute; top: 4px; right: calc(50% - 20px); margin: 0; }
   .entr { font-weight: 700; color: var(--gold); } /* entraînement de la semaine : ta caractéristique la plus faible (25/11) */
   .orn-b i.neuf { position: absolute; top: 3px; left: 3px; font: 700 10px/1 var(--f-texte, sans-serif); font-style: normal; color: #fff; background: #c9302c; border-radius: 6px; padding: 2px 4px; }
+  .gr-neufs { margin-left: 6px; font: 800 11px/1 var(--f-texte, sans-serif); font-style: normal; color: #fff; background: #c9302c; border-radius: 8px; padding: 3px 6px; box-shadow: 0 0 0 2px color-mix(in srgb, #c9302c 30%, transparent); }
+  .orn-b i.neuf { animation: neufPulse 1.6s ease-in-out infinite; } @keyframes neufPulse { 50% { transform: scale(1.12); } } body.calme .orn-b i.neuf { animation: none; } @media (prefers-reduced-motion: reduce) { .orn-b i.neuf { animation: none; } }
   .gr-b.a-neuf { position: relative; } .gr-b.a-neuf::after { content: ''; position: absolute; top: 3px; right: 3px; width: 8px; height: 8px; border-radius: 50%; background: #c9302c; }
   .faible { color: var(--gold); font-weight: 700; } .resiste { color: var(--muted); }
   .boss-win { position: fixed; inset: 0; z-index: 30; display: grid; place-items: safe center; overflow-y: auto; overscroll-behavior: contain; text-align: center; padding: 20px;
@@ -4388,7 +4390,7 @@ function blocArmurerie() {
   // le sceau de base (celui du thème) reste choisissable : le toucher retire le sceau porté (Théo, 25/11)
   const sceauBase = E[0] === 'sceau' ? `<div class="orn-t ${orn.sceau ? '' : 'eq'}"><button class="orn-b" data-orn="sceau|" aria-label="Sceau de base"><span class="orn-ic"><span class="ap-sc">${sceauSvg({ classe: s.classe })}</span></span><b>De base</b></button></div>` : '';
   const tuilesCosm = sceauBase + objets(E[0]).map(x => { const ok = cosmPossede(x.id), eq = orn[E[0]] === x.id || (E[0] === 'repaire' && !orn.repaire && repaireDe(s) === x.id);
-    return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
+    return `<div class="orn-t cosm r-${x.rarete} ${eq ? 'eq' : ''} ${ok ? '' : 'lock'}"><button class="orn-b" data-orn="${E[0]}|${eq ? '' : x.id}" data-id="${x.id}" ${ok ? '' : 'data-lock="1"'} aria-label="${esc(x.nom)}">
       <span class="orn-ic">${apercuCosm(x)}</span><b>${esc(NOM_COURT[x.id] || x.nom)}</b>${ok ? '' : '<i class="cad">🔒</i>'}${neufs.indexOf(x.id) >= 0 ? '<i class="neuf">Nouveau</i>' : ''}</button>${ok ? `<button class="orn-q info" data-cosm-info="${x.id}" aria-label="À propos de cet objet">i</button>` : `<button class="orn-q" data-cosm-info="${x.id}" aria-label="Comment l'obtenir">?</button>`}</div>`; }).join('');
   const pocheActuel = orn.poche || (/^fa_/.test(orn.familier || '') ? '' : orn.familier);
   const tuilesOrn = petits(E[0]).map(o => { const ok = ornementDebloque(s, o), eq = E[0] === 'poche' ? pocheActuel === o.id : orn[E[0]] === o.id;
@@ -4920,7 +4922,7 @@ function parcoursHTML(s) {
       <span class="ph-jauge" role="progressbar" aria-label="XP vers ce palier" aria-valuemin="0" aria-valuemax="${S.cout}" aria-valuenow="${S.dansPalier}"><i style="width:${Math.max(2, Math.min(100, S.dansPalier / S.cout * 100)).toFixed(1)}%"></i></span>
       <span class="ph-jt"><span>${xpFr(S.dansPalier)} / ${xpFr(S.cout)} XP</span><em>encore ${xpFr(S.cout - S.dansPalier)} XP</em></span></span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>`)}
     ${coffres ? `<button class="btn ph-geste" data-coffre="1"><span aria-hidden="true">🎁</span> Ouvrir mon coffre (${coffres})</button>` : ''}
-    <div class="ph-actions"><button class="btn mini" data-vitrine="1" data-armurerie="1"><span aria-hidden="true">🧥</span> Garde-robe${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} éclats ›</button></div>
+    <div class="ph-actions"><button class="btn mini" data-vitrine="1" data-armurerie="1"><span aria-hidden="true">🧥</span> Garde-robe${nouveauxCosm(s).length ? `<i class="gr-neufs">${nouveauxCosm(s).length} nouveau${nouveauxCosm(s).length > 1 ? 'x' : ''}</i>` : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} éclats ›</button></div>
     ${corps}
   </section>`;
 }
@@ -6587,13 +6589,16 @@ function ouvrirEncouragement() {
 
 /* ---------- Vitrine : le personnage en grand, animé, qu'on fait tourner du doigt ---------- */
 let vitrineCible = null; // null = moi ; sinon la fiche du compagnon (lecture seule)
+let vitrineVaAuNeuf = false;
 function ouvrirVitrine(comp) {
   vitrineCible = comp || null;
-  if (!comp) { nouveauxVitrine = null; marquerCosmVus(); }
+  if (!comp) { nouveauxVitrine = null; marquerCosmVus();
+    const n0 = (nouveauxVitrine || [])[0], x0 = n0 && cosmItem(n0); if (x0 && x0.slot) { slotGarde = x0.slot; vitrineVaAuNeuf = true; } } // Théo 25/11 : « je ne sais pas où cliquer quand il y a une nouveauté »
   let ov = document.getElementById('vitrine');
   if (!ov) { ov = document.createElement('div'); ov.id = 'vitrine'; document.body.appendChild(ov); }
   dessinerVitrine();
   ov.classList.add('on'); document.body.classList.add('bloque');
+  if (vitrineVaAuNeuf) { vitrineVaAuNeuf = false; requestAnimationFrame(() => { const t = ov.querySelector('.orn-b i.neuf'); if (t) t.closest('.orn-t').scrollIntoView({ block: 'center' }); }); }
 }
 function fermerVitrine() { const ov = document.getElementById('vitrine'); if (ov) ov.classList.remove('on'); vitrineCible = null; marchandOuvert = false; if (nouveauxVitrine && nouveauxVitrine.length) { nouveauxVitrine = null; setTimeout(() => { try { render(); } catch (e) {} }, 0); } else nouveauxVitrine = null; /* la pastille disparaît une fois les objets vus */ document.body.classList.remove('bloque'); if (figAnim) { cancelAnimationFrame(figAnim); figAnim = null; } }
 /* vitrine : la prochaine récompense du chemin en une ligne (« Coffre rare dans 320 XP › ») */
@@ -6680,6 +6685,7 @@ document.addEventListener('click', e => {
     toast(`Niv ${P.n} · ${P.titre} : ${P.desc}${(Number(sv.niveau) || 1) >= P.n ? '' : ' (pas encore atteint)'}`); return;
   }
   const b = e.target.closest('[data-orn]');
+  if (b && nouveauxVitrine && b.dataset.id) { const k = nouveauxVitrine.indexOf(b.dataset.id); if (k >= 0) nouveauxVitrine.splice(k, 1); const t = b.querySelector('i.neuf'); if (t) t.remove(); } // vu : « Nouveau » s'en va tout de suite
   if (b) {
     if (b.dataset.lock) { const q = b.parentNode.querySelector('[data-orn-info], [data-cosm-info]'); if (q) q.click(); return; }
     const [slot, id] = b.dataset.orn.split('|');
@@ -7715,7 +7721,7 @@ function render() {
   }).join('');
   const nbCoffres = ((s.armurerie || {}).coffres || []).length;
   const sousH = `<div class="sous-onglets trois"><button class="${sousHeros === 'perso' ? 'on' : ''}" data-sous-heros="perso"><span class="ic">🛡 </span>Personnage</button>
-      <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure"><span class="ic">🗺 </span>Aventure${nbCoffres ? ` <i class="pastille" aria-label="${nbCoffres} coffre${nbCoffres > 1 ? 's' : ''} à ouvrir">${nbCoffres}</i>` : ''}</button>
+      <button class="${sousHeros === 'aventure' ? 'on' : ''}" data-sous-heros="aventure"><span class="ic">🗺 </span>Aventure${nbCoffres ? ` <i class="pastille" aria-label="${nbCoffres} coffre${nbCoffres > 1 ? 's' : ''} à ouvrir">${nbCoffres}</i>` : nouveauxCosm(s).length ? ' <i class="pastille" aria-label="Nouveaux objets">NEW</i>' : ''}</button>
       <button class="${sousHeros === 'exploits' ? 'on' : ''}" data-sous-heros="exploits"><span class="ic">🏆 </span>Exploits</button></div>`;
   const vueHeros = sousH + (sousHeros === 'aventure' ? `<div class="aventure saison-${(s.armurerie && s.armurerie.saison && s.armurerie.saison.id) || 'pre'}">
     ${parcoursHTML(s)}
