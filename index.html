@@ -339,7 +339,8 @@
   .rv-tete b { display: block; font: 700 20px var(--f-titre); color: var(--gold); } .rv-tete span { font-size: 13px; }
   .rv-x { position: absolute; right: 12px; top: max(10px, env(safe-area-inset-top)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); background: rgba(10,14,30,.7); color: #fff; font-size: 18px; z-index: 2000; }
   .rv-aide { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 22px 0 max(12px, env(safe-area-inset-bottom)); text-align: center; color: #fff; font-size: 13px; text-shadow: 0 1px 3px #000; z-index: 2000; background: linear-gradient(transparent, rgba(8,12,24,.75)); pointer-events: none; }
-  .ph-lui { position: absolute; bottom: 6px; width: 30px; transform: translateX(-50%); pointer-events: none; } .ph-lui svg { width: 30px; height: 40px; }
+  .ph-nom { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font: 700 9px var(--f-texte); font-style: normal; padding: 0 5px; border-radius: 6px; color: #fff; background: #3a6ad8; white-space: nowrap; } .ph-nom.moi { background: #c8902a; }
+  .ph-lui { z-index: 0; position: absolute; bottom: auto; width: 26px; transform: translateX(-50%); pointer-events: none; } .ph-lui svg { width: 30px; height: 40px; }
   .vit-fam { text-align: center; margin: 4px 0 0; font-size: 12.5px; color: var(--muted); } .vit-fam b { color: var(--gold); font-weight: 600; }
   .vit-fam small { font-size: 12px; } .vit-fam i { display: block; width: 150px; height: 5px; margin: 5px auto 0; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; } .vit-fam em { display: block; height: 100%; border-radius: 3px; background: var(--gold); }
   .fam-ov { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; background: rgba(5,8,16,.9); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); } /* texte lisible sur n'importe quel écran (ergonome, 24/11) */ .fam-box { text-align: center; color: #fff; padding: 0 24px; }
@@ -684,11 +685,11 @@
   .ph-fenetre { fill: #ffd36a; animation: phLueur 3s ease-in-out infinite; } @keyframes phLueur { 50% { opacity: .5; } }
   .ph-route { fill: none; stroke: rgba(0,0,0,.35); stroke-width: 9; stroke-linecap: round; }
   .ph-route2 { fill: none; stroke: color-mix(in srgb, var(--text) 55%, transparent); stroke-width: 1.8; stroke-dasharray: 4 5; }
-  .ph-fait { fill: none; stroke: var(--gold); stroke-width: 4.5; stroke-linecap: round; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--gold) 80%, transparent)); }
-  .ph-pt { fill: color-mix(in srgb, var(--panel) 70%, var(--text)); stroke: var(--bg); stroke-width: 1.2; } .ph-pt.coffre { fill: #e8604f; } .ph-pt.fait { fill: var(--gold); }
-  .ph-gros { fill: var(--panel); stroke: var(--gold); stroke-width: 2; } .ph-gros.fait { fill: var(--gold); }
+  .ph-fait { fill: none; stroke: #ffe08a; stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 2px #f2c94c); }
+  .ph-pt { fill: #f4eefa; stroke: #4a3018; stroke-width: 1.2; } .ph-pt.coffre { fill: #e8604f; stroke: #6a1e14; } .ph-pt.fait { fill: #f2c94c; }
+  .ph-gros { fill: #f4eefa; stroke: #4a3018; stroke-width: 1.4; } .ph-gros.fait { fill: #f2c94c; }
   .ph-drapeau { fill: var(--gold); stroke: var(--gold); stroke-width: 1.4; } .ph-allie { fill: var(--allie); stroke: #fff; stroke-width: 1.4; }
-  .ph-toi { position: absolute; bottom: 22%; width: 13%; max-width: 50px; transform: translateX(-50%); animation: phSaute 1.8s ease-in-out infinite; pointer-events: none; }
+  .ph-toi { z-index: 1; position: absolute; bottom: 22%; width: 13%; max-width: 50px; transform: translateX(-50%); animation: phSaute 1.8s ease-in-out infinite; pointer-events: none; }
   @keyframes phSaute { 0%, 100% { transform: translateX(-50%); } 50% { transform: translateX(-50%) translateY(-4px); } }
   .ph-toi svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 3px 2px rgba(0,0,0,.6)); }
   .ph-titre { position: absolute; left: 12px; right: 12px; top: 8px; display: flex; align-items: center; gap: 8px; text-shadow: 0 1px 4px rgba(0,0,0,.85); }
@@ -4731,12 +4732,12 @@ function parcoursHTML(s) {
   let d = ''; for (let x = 26; x <= 316; x += 5) d += (d ? ' L' : 'M') + x + ' ' + Y(x).toFixed(1);
   const xm = fini ? 300 : X(S.palier + S.dansPalier / S.cout); // chemin fini : le héros se tient devant la porte du château (critique)
   // le soleil : à moitié sous les collines au départ, haut et rayonnant au dernier palier
-  const sy = 82 - 62 * pct, sx = 262, rayons = fini || pct > .5;
+  const D0 = DECORS_ROUTE[S.id] || DECORS_ROUTE.pre, sy = 80 - 38 * pct, sx = (D0.astre2D && D0.astre2D.x) || 240, rayons = fini || pct > .5;
   const dense = N > 20; // à 50 paliers : losanges pour les seuls gros lots, un point pour les coffres épiques, rien pour le reste (la grille dépliée détaille)
   const marques = E.map(e => { const x = X(e.n), y = Y(x);
     if (e.gros) return `<path d="M${x.toFixed(1)} ${(y - 8).toFixed(1)} l5.5 8 l-5.5 8 l-5.5 -8z" class="ph-gros ${e.fait ? 'fait' : ''}"/>`;
     if (dense && !(e.type === 'coffre' && e.r.coffre === 'epique')) return '';
-    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${e.type === 'coffre' ? (dense ? 3 : 4.2) : 3}" class="ph-pt ${e.type} ${e.fait ? 'fait' : ''}"/>`; }).join('');
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${e.type === 'coffre' ? (dense ? 3.6 : 5.5) : 4}" class="ph-pt ${e.type} ${e.fait ? 'fait' : ''}"/>`; }).join('');
   const comp = (s.compagnons || [])[0], xa = comp && comp.palierSaison != null ? X(Math.min(N, comp.palierSaison)) : null;
   // Panorama illustré (25/11, Théo : « la piste 2D c'est une horreur ») : le même monde que la route 3D (DECORS_ROUTE de la saison), vu de côté
   const D = DECORS_ROUTE[S.id] || DECORS_ROUTE.pre, Fo = D.foret || { pres: '#1e4a2a', pres2: '#2e6a32', loin: '#5a6a8a' }, M3 = D.monts3 || ['#6a6a9a', '#4a5282', '#2e4a5a'];
@@ -4746,8 +4747,8 @@ function parcoursHTML(s) {
       if (rond && hashPl(x + seed * 7) > .6) b += `M${(xx - hh * .4).toFixed(1)} ${(y - hh * .45).toFixed(1)} a${(hh * .4).toFixed(1)} ${(hh * .38).toFixed(1)} 0 1 1 ${(hh * .8).toFixed(1)} 0 a${(hh * .4).toFixed(1)} ${(hh * .38).toFixed(1)} 0 1 1 ${(-hh * .8).toFixed(1)} 0Z`;
       else a += `M${xx.toFixed(1)} ${(y - hh).toFixed(1)} L${(xx + hh * .32).toFixed(1)} ${(y - hh * .45).toFixed(1)} L${(xx + hh * .2).toFixed(1)} ${(y - hh * .45).toFixed(1)} L${(xx + hh * .42).toFixed(1)} ${y} L${(xx - hh * .42).toFixed(1)} ${y} L${(xx - hh * .2).toFixed(1)} ${(y - hh * .45).toFixed(1)} L${(xx - hh * .32).toFixed(1)} ${(y - hh * .45).toFixed(1)}Z`; }
     return `<path d="${a}" fill="${c}"/>${b ? `<path d="${b}" fill="${c}"/>` : ''}`; };
-  const reperes = D.repere ? E.filter((e, k) => k % 2 === 0 && k < N - 1).slice(0, 8).map((e, k) => { const x = X(e.n), y = Y(x) - 7;
-      return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(.2)" class="ph-lieu">${D.repere(k)}</g>`; }).join('') : '';
+  const reperes = D.repere ? Array.from({ length: 5 }, (_, i) => Math.round((i + .5) * N / 5)).map((n, k) => { const x = X(n + .5), y = Y(x) - 6;
+      return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(.32)" class="ph-lieu">${D.repere(k)}</g>`; }).join('') : '';
   const pano = `<svg class="ph-svg" viewBox="0 0 360 128" role="img" aria-label="${titre} : palier ${S.palier} sur ${N}">
       <defs><radialGradient id="phSol"><stop offset="0" stop-color="#fff6d0"/><stop offset=".55" stop-color="#ffd36a"/><stop offset="1" stop-color="#f2a541"/></radialGradient>
         <radialGradient id="phHalo"><stop offset="0" stop-color="#ffd36a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd36a" stop-opacity="0"/></radialGradient>
@@ -4759,7 +4760,7 @@ function parcoursHTML(s) {
         ${rayons ? `<g class="ph-rayons" style="transform-origin:${sx}px ${sy.toFixed(1)}px">${Array.from({ length: 12 }, (_, k) => `<path d="M${sx} ${(sy - 17).toFixed(1)} V${(sy - 25).toFixed(1)}" transform="rotate(${k * 30} ${sx} ${sy.toFixed(1)})"/>`).join('')}</g>` : ''}
         <circle cx="${sx}" cy="${sy.toFixed(1)}" r="13" fill="url(#phSol)"/></g>
       ${[[60, 20, .9], [196, 14, .7], [300, 28, .8]].map(([x, y, k]) => `<g transform="translate(${x} ${y}) scale(${k})" fill="${D.nuages || '#f8d8c8'}" opacity=".5"><ellipse rx="22" ry="5"/><ellipse cx="-8" cy="-4" rx="9" ry="5"/><ellipse cx="7" cy="-5" rx="11" ry="6"/></g>`).join('')}
-      ${D.fond2D ? D.fond2D() : `<path d="${crete(70, 24, 30, 1)}" fill="${M3[0]}"/>`}${D.fond2D ? '' : ''}${D.fond2D ? '' : [45, 135, 225, 315].map((x, k) => { const y = 70 - 24 * (.35 + hashPl(x / 30 + 1) * .65); return `<path d="M${x - 8} ${(y + 7).toFixed(1)} L${x} ${y.toFixed(1)} L${x + 8} ${(y + 7).toFixed(1)}Z" fill="${D.neige || '#f4eefa'}" opacity=".85"/>`; }).join('')}
+      ${D.fond2D ? D.fond2D() : `<path d="${crete(70, 24, 30, 1)}" fill="${M3[0]}"/>`}${D.fond2D ? '' : ''}${D.fond2D ? '' : (() => { const h = x => 70 - 24 * (.35 + hashPl(x / 30 + 1) * .65); return [60, 90, 120, 150, 180, 210, 240, 270, 300, 330].filter(x => h(x) < h(x - 30) && h(x) < h(x + 30)).map(x => { const y = h(x); return `<path d="M${x - 8} ${(y + 7).toFixed(1)} L${x} ${y.toFixed(1)} L${x + 8} ${(y + 7).toFixed(1)} L${x + 4} ${(y + 5).toFixed(1)} L${x} ${(y + 8).toFixed(1)} L${x - 4} ${(y + 5).toFixed(1)}Z" fill="#f4eefa"/>`; }).join(''); })()}
       ${D.mer ? `<rect y="62" width="360" height="10" fill="${D.mer}"/>` : ''}
       <path d="${crete(78, 12, 24, 7)}" fill="${M3[1]}"/>
       <rect y="60" width="360" height="26" fill="url(#phBrume)"/>
@@ -4767,19 +4768,18 @@ function parcoursHTML(s) {
       ${rangee(84, 12, Fo.loin, 11, true)}
       <path d="M0 92 Q70 84 150 90 T300 88 T360 86 V128 H0Z" fill="${col[1]}"/>
       ${rangee(94, 15, Fo.pres2 || Fo.pres, 23, true)}
-      ${D.bout2D ? D.bout2D() : `<g class="ph-chateau" transform="translate(338 96)"><path d="M-17 0 V-22 h5 v4 h3 v-4 h5 V-32 l4 -6 l4 6 V-22 h5 v4 h3 v-4 h5 V0Z"/><rect x="-2" y="-26" width="4" height="5" rx="2" class="ph-fenetre"/></g>`}
+      ${D.bout2D ? D.bout2D() : `<g transform="translate(338 96) scale(1.15)"><path d="M-17 0 V-22 h5 v4 h3 v-4 h5 V-32 l4 -6 l4 6 V-22 h5 v4 h3 v-4 h5 V0Z" fill="#4a4458" stroke="#2e2838" stroke-width=".8"/><path d="M-17 0 V-22 h5 v4 h3 v-4 h5 V0Z" fill="#a8a2b4"/><path d="M0 -38 V-46 l6 2 l-6 2" fill="#f2c94c" stroke="#5a3a1e" stroke-width=".6"/><rect x="-2" y="-26" width="4" height="5" rx="2" fill="#ffe08a" class="ph-fenetre"/></g>`}
       <path d="M0 104 Q60 98 120 102 T240 100 T360 98 V128 H0Z" fill="${(D.sol || ['#4a8a46', '#1e4a24'])[0]}"/>
+      ${reperes}
       <path d="${d}" fill="none" stroke="${D.bord || '#5a3a1e'}" stroke-width="10" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${(D.route || ['#d8b07a'])[0]}" stroke-width="7" stroke-linecap="round"/>
       <path d="${d}" fill="none" stroke="${D.paves || '#b89060'}" stroke-width="7" stroke-dasharray="1.6 4" stroke-linecap="round" opacity=".7"/>
       <path d="${d}" class="ph-fait" pathLength="1" stroke-dasharray="${pct.toFixed(3)} 1"/>
-      ${reperes}
       ${marques}
       ${rangee(129, 16, melangeHex(Fo.pres, '#000000', .35), 37, true)}${Array.from({ length: 14 }, (_, k) => { const x = 8 + k * 26 + hashPl(k + 5) * 10, y = 112 + hashPl(k + 7) * 8; return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="1.3" fill="${['#f2c94c', '#e86a9a', '#ffffff'][k % 3]}"/>`; }).join('')}
       <g transform="translate(26 ${Y(26).toFixed(1)})"><path d="M0 0 V-14 l9 3.5 l-9 3.5" class="ph-drapeau"/></g>
-      ${xa != null ? `<circle cx="${xa.toFixed(1)}" cy="${(Y(xa) - 3).toFixed(1)}" r="5" class="ph-allie"><title>${esc(nomCompagnon(comp))}</title></circle>` : ''}
-    </svg>
-    <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}</span>${routeAllumee() && xa != null ? `<span class="ph-lui" style="left:${(xa / 360 * 100).toFixed(1)}%">${orner(classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }).dessin(palierDe(Number(comp.niveau) || 1, classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } })), 'phl', lookDe(comp.look)), ornCompagnon(comp), 'phl')}</span>` : ''}
-    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button>${routeAllumee() ? '<button class="ph-regles" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">⛰️</span> Vue 3D</button>' : ''}<em>${S.palier}<small> / ${N}</small></em></span>`;
+          </svg>
+    <span class="ph-toi" style="left:${(xm / 360 * 100).toFixed(1)}%;bottom:${((126 - Y(xm)) / 128 * 100).toFixed(1)}%">${avatar(palierDe(Number(s.niveau) || 1, classeDe(s)), 'phm', s)}<i class="ph-nom moi">Toi</i></span>${routeAllumee() && xa != null ? `<span class="ph-lui" style="left:${((Math.abs(xa - xm) < 14 ? xm - 12 : xa) / 360 * 100).toFixed(1)}%;bottom:${((126 - Y(xa)) / 128 * 100).toFixed(1)}%">${orner(classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } }).dessin(palierDe(Number(comp.niveau) || 1, classeDe({ classe: { nom: comp.classe && comp.classe.nom ? comp.classe.nom : comp.classe } })), 'phl', lookDe(comp.look)), ornCompagnon(comp), 'phl')}<i class="ph-nom">${esc(nomCompagnon(comp))}</i></span>` : ''}
+    <span class="ph-titre"><b>${titre}</b><button class="ph-regles${livretJamaisVu() ? ' nouveau' : ''}" data-regles="0" aria-label="Livret des règles"><span aria-hidden="true">📜</span> Règles</button><em>${S.palier}<small> / ${N}</small></em></span>`;
   const suite = E.filter(e => !e.fait).slice(0, 6), fin = E[N - 1];
   const carte = e => `<button class="ph-c ${e.proch ? 'proch' : ''} ${e.gros ? 'gros' : ''} ${parcoursEtape === e.n ? 'choisi' : ''}" data-etape="${e.n}" aria-expanded="${parcoursEtape === e.n}"><span class="ph-v ${e.it ? 's-' + e.it.slot : ''}">${vignetteEtape(e, 30)}</span><b>${esc(e.nom)}</b><small>Palier ${e.n} · ${xpFr(e.reste)} XP</small></button>`;
   const choisi = parcoursEtape ? E[parcoursEtape - 1] : null, dansGrille = choisi && (suite.includes(choisi) || choisi === fin);
@@ -4801,7 +4801,7 @@ function parcoursHTML(s) {
   return `<section class="parcours ph ${parcoursOuvert ? 'ouvert' : ''}">
     <div class="ph-pano">${pano}</div>
     <button class="ph-ligne" data-parcours="1" aria-expanded="${parcoursOuvert}">${fini ? '<span class="ph-lt"><b>Chemin terminé, bravo !</b></span>' : `<span class="ph-v ph-mini">${vignetteEtape(P, 20)}</span><span class="ph-lt">Prochaine : <b>${esc(P.nom)}</b> · ${xpFr(S.cout - S.dansPalier)} XP</span>`}${'<i class="ph-chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'}</button>
-    <div class="ph-actions">${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} ›</button></div>
+    <div class="ph-actions">${routeAllumee() ? '<button class="btn mini" data-route="1" aria-label="Voir le chemin en 3D"><span aria-hidden="true">⛰️</span> Vue 3D</button>' : ''}${coffres ? `<button class="btn mini or" data-coffre="1"><span class="ph-bi">${cof1}</span>Coffre (${coffres})</button>` : ''}<button class="btn mini" data-vitrine="1" data-armurerie="1"><span class="ph-bi">${EPEE_SVG}</span>Armurerie${nouveauxCosm(s).length ? '<i class="pastille" aria-label="Nouveaux objets"></i>' : ''}</button><button class="btn mini ph-mar" data-marchand-go="1" aria-label="${A.eclats} éclats, ouvrir le marchand">${ECLAT_SVG(13)} ${A.eclats} ›</button></div>
     ${corps}
   </section>`;
 }
