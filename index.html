@@ -2035,6 +2035,12 @@ body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-moti
 .dp-j { flex: none; font-style: normal; font-size: 11px; font-weight: 800; color: #2a1a06; background: var(--gold); border-radius: 8px; padding: 1px 6px; }
 .dp-bar { position: relative; display: flex; height: 7px; border-radius: 4px; overflow: hidden; background: color-mix(in srgb, var(--text) 11%, transparent); }
 .dp-bar i { height: 100%; transition: width .6s ease; } .dp-bar i + i { box-shadow: inset 1.5px 0 0 rgba(0,0,0,.4); }
+.dp-cal { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; height: 10px; }
+.dp-cal i { border-radius: 2px; background: color-mix(in srgb, var(--text) 10%, transparent); }
+.dp-cal i.passe { background: color-mix(in srgb, var(--text) 5%, transparent); }
+.dp-cal i.auj { box-shadow: inset 0 0 0 1.5px var(--gold); }
+.dp-cal i.on { background: var(--gold); box-shadow: 0 0 4px color-mix(in srgb, var(--gold) 60%, transparent); }
+.dp-et3 span { color: color-mix(in srgb, var(--text) 25%, transparent); font-size: 10px; } .dp-et3 span.on { color: var(--gold); }
 .dp-l3 { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dp-l3 i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; } .dp-l3 b { color: var(--gold); font-weight: 700; }
 .defi.dernier .dp-j { background: #ff9f43; } .defi.dernier { animation: cofPulse 2.4s ease-in-out infinite; }
@@ -3211,7 +3217,7 @@ const defiXp = D => Number(D && D.xp) || 150;
 function carteDefi(s) {
   const D = s.defi; if (!D || !D.debut || !D.fin || s.today < D.debut) return '';
   // réussi : encore 2 jours ; pas réussi : visible jusqu'au 17/01 (les oublis se rattrapent jusqu'au 16)
-  if (s.today > isoPlus(D.fin, 7) || (s.today > isoPlus(D.fin, 2) && D.reussi)) return '';
+  if (s.today > (D.montreA || isoPlus(D.fin, 7)) || (!D.montreA && s.today > isoPlus(D.fin, 2) && D.reussi)) return '';
   const P = D.parHeros || {}, a = Math.max(0, Number(P.moi) || 0), b = Math.max(0, Number(P.compagnon) || 0);
   const obj = Math.max(1, Number(D.objectif) || 1), fait = Math.max(Number(D.fait) || 0, a + b);
   const wa = Math.min(100, a / obj * 100), wb = Math.min(100 - wa, b / obj * 100);
@@ -3221,6 +3227,22 @@ function carteDefi(s) {
     <circle cx="-2.6" cy="-6.6" r="1.1"/><circle cx="-.6" cy="-7.6" r="1.2"/><circle cx="1.6" cy="-7.2" r="1.1"/><circle cx="3.2" cy="-5.6" r=".9"/></g>`;
   const pieds = `<svg viewBox="0 0 32 32" aria-hidden="true">${pas(11, 19, -14, cM, 'dp-p1')}${lui ? pas(21, 11, 12, cL, 'dp-p2') : ''}${ok ? '<path class="dp-et" d="M26 23l1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4z" fill="#ffd27a" stroke="#7a4a12" stroke-width=".6"/>' : ''}</svg>`;
   const unite = D.unite || 'quêtes';
+  if (Array.isArray(D.cases)) { // Défi de l'Avent : une case par jour, ouverte quand vous avez joué tous les deux
+    const ouv = new Set(D.cases), n = D.cases.length, cal = [];
+    for (let d = D.debut; d <= D.fin; d = isoPlus(d, 1)) cal.push(`<i class="${ouv.has(d) ? 'on' : d === s.today ? 'auj' : d < s.today ? 'passe' : ''}"></i>`);
+    const etoiles = [6, 12, 18].map(k => `<span class="${n >= k ? 'on' : ''}">✦</span>`).join('');
+    const pa = Math.max(0, Number(P.moi) || 0), pb = Math.max(0, Number(P.compagnon) || 0);
+    return `<button class="defi avent ${ok ? 'reussi' : ''} ${dernier ? 'dernier' : ''}" data-defi="1" aria-label="${esc(D.nom)} : ${n} cases sur ${obj}${ok ? ', réussi' : ''}">
+    <span class="dp-pas">${pieds}</span>
+    <span class="dp-txt">
+      <span class="dp-l1"><b>${esc(D.nom)}</b><span class="dp-n">${Math.min(n, obj)}<small>/${obj}</small></span>
+        ${retard ? '' : `<em class="dp-j">${ok ? '✓ Réussi' : dernier ? 'dernier jour' : 'J-' + j}</em>`}</span>
+      <span class="dp-cal">${cal.join('')}</span>
+      <span class="dp-l3"><span class="dp-et3">${etoiles}</span> ${ok ? `🎁 <b>Coffre ${defiCoffre(D)} + ${defiXp(D)} XP chacun</b>`
+        : retard ? `<b class="dp-retard">⏳ Saisies en retard jusqu'au ${dateCourte(D.montreA || isoPlus(D.fin, 4))}</b>`
+        : `<i style="background:${cM}"></i>Toi ${pa} j${lui ? ` · <i style="background:${cL}"></i>Lui ${pb} j` : ''} · 🎁 +${defiXp(D)} XP`}</span>
+    </span></button>`;
+  }
   return `<button class="defi ${ok ? 'reussi' : ''} ${dernier ? 'dernier' : ''}" data-defi="1" aria-label="${esc(D.nom || 'Les Premiers Pas')} : ${fait} sur ${obj} ${unite}${ok ? ', réussi' : ''}">
     <span class="dp-pas">${pieds}</span>
     <span class="dp-txt">
@@ -3235,6 +3257,8 @@ function carteDefi(s) {
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-defi]')) return;
   const D = state && state.defi; if (!D) return;
+  if (Array.isArray(D.cases)) return toast(D.reussi ? `🎄 Calendrier réussi : un coffre ${defiCoffre(D)} chacun et +${defiXp(D)} XP sont à vous.`
+    : `🎄 Une case s'ouvre chaque jour où vous faites tous les deux au moins une quête. ${D.objectif} cases sur 24 d'ici le ${dateCourte(D.fin)} : un coffre ${defiCoffre(D)} chacun et +${defiXp(D)} XP.`);
   toast(D.reussi ? `👣 Défi réussi : un coffre ${defiCoffre(D)} chacun et +${defiXp(D)} XP sont à vous.`
     : state.today > D.fin ? `👣 Défi terminé le ${dateCourte(D.fin)} : une quête oubliée de cette période compte encore si tu la saisis d'ici le ${dateCourte(isoPlus(D.fin, 6))}`
     : `👣 Ensemble, ${D.objectif} ${D.unite || 'quêtes'} d'ici le ${dateCourte(D.fin)} inclus : un coffre ${defiCoffre(D)} chacun et +${defiXp(D)} XP.`);
@@ -3342,7 +3366,7 @@ function lienAFaire() {
  * Mémoire : localStorage 'defiCompagnon|' + debut (dernière valeur vue). Première visite : on mémorise sans rien jouer. */
 let empreintePrevue = false;
 function empreinteAFaire() {
-  const D = state && state.defi; if (!D || !D.debut || empreintePrevue || !(state.compagnons || []).length) return;
+  const D = state && state.defi; if (!D || !D.debut || Array.isArray(D.cases) || empreintePrevue || !(state.compagnons || []).length) return;
   const k = 'defiCompagnon|' + D.debut, n = Math.max(0, Number((D.parHeros || {}).compagnon) || 0);
   let avant = null; try { avant = localStorage.getItem(k); } catch (e) {}
   if (avant === null || n <= Number(avant)) { try { localStorage.setItem(k, String(n)); } catch (e) {} return; }
@@ -4987,20 +5011,20 @@ function rgSchema(k) {
     const X = j => 12 + (j - 1) / 31 * 262; // 1er déc → 1er janv (j = 32)
     const barre = (y, a, b, op) => `<rect x="${X(a).toFixed(1)}" y="${y}" width="${(X(b) - X(a)).toFixed(1)}" height="10" rx="5" fill="var(--gold)" opacity="${op}"/>`;
     const deux = `<g transform="translate(${X(1) + 4} 12)"><circle r="6.5" fill="var(--panel)" stroke="var(--gold)" stroke-width="2"/><circle cx="8" r="6.5" fill="var(--panel)" stroke="var(--allie)" stroke-width="2"/></g>`;
-    const svg = `<svg viewBox="0 0 288 150" width="100%" role="img" aria-label="Décembre : Lien d'armes dès le 1er, Défi de l'Avent du 7 au 13, Trêve des fêtes du 24 au 1er janvier">
+    const svg = `<svg viewBox="0 0 288 150" width="100%" role="img" aria-label="Décembre : Lien d'armes dès le 1er, Défi de l'Avent du 1er au 24, Trêve des fêtes du 24 au 1er janvier">
       <defs><linearGradient id="rgLueur" x1="0" x2="1"><stop offset="0" stop-color="#fff6c8" stop-opacity="0"/><stop offset=".5" stop-color="#fff6c8" stop-opacity=".85"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></linearGradient>
         <clipPath id="rgLien"><rect x="${X(1)}" y="24" width="${X(32) - X(1)}" height="10" rx="5"/></clipPath></defs>
-      ${[1, 7, 13, 24, 32].map(j => `<path d="M${X(j).toFixed(1)} 24 V124" stroke="var(--line)" stroke-dasharray="2 3"/>`).join('')}
+      ${[1, 25, 32].map(j => `<path d="M${X(j).toFixed(1)} 24 V124" stroke="var(--line)" stroke-dasharray="2 3"/>`).join('')}
       ${deux}<text x="${X(1) + 22}" y="17" font-size="12.5" font-weight="800" fill="var(--text)">Lien d'armes <tspan fill="var(--gold)">×1,05</tspan></text>
       ${barre(24, 1, 32, .9)}<path d="M${X(32) - 2} 22 l8 7 l-8 7" fill="var(--gold)"/>
       <g clip-path="url(#rgLien)"><rect class="rg-file" x="${X(1) - 40}" y="24" width="40" height="10" fill="url(#rgLueur)"/></g>
-      <g transform="translate(${X(7) - 2} 44) scale(.6)"><path d="M10 25 V5" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"/><path class="rg-flotte" d="M11 5 h11 l-3 4.5 l3 4.5 h-11z" fill="var(--gold)"/></g>
-      <text x="${X(14) + 6}" y="73" font-size="12.5" font-weight="800" fill="var(--text)">Défi de l'Avent</text>
-      ${barre(64, 7, 14, .9)}
+      <g transform="translate(${X(1) - 2} 44) scale(.6)"><path d="M10 25 V5" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"/><path class="rg-flotte" d="M11 5 h11 l-3 4.5 l3 4.5 h-11z" fill="var(--gold)"/></g>
+      <text x="${X(1) + 14}" y="58" font-size="12.5" font-weight="800" fill="var(--text)">Défi de l'Avent <tspan fill="var(--gold)">18 j / 24</tspan></text>
+      ${barre(64, 1, 25, .9)}
       <text x="${X(24) - 6}" y="111" text-anchor="end" font-size="12.5" font-weight="800" fill="var(--text)">Trêve des fêtes</text>
       ${barre(102, 24, 32, .55)}${rgEtinc(X(28), 96, 4.5, 'var(--gold)')}
       <path d="M${X(1)} 124 H${X(32)}" stroke="var(--muted)" stroke-width="1.4"/>
-      ${[[1, '1 déc.', 'start'], [7, '7', 'middle'], [13, '13', 'middle'], [24, '24', 'middle'], [32, '1 janv.', 'end']].map(([j, t, a]) => `<text x="${(X(j) + (a === 'start' ? -2 : a === 'end' ? 4 : 0)).toFixed(1)}" y="140" text-anchor="${a}" font-size="12" fill="var(--muted)">${t}</text>`).join('')}
+      ${[[1, '1 déc.', 'start'], [25, '24', 'middle'], [32, '1 janv.', 'end']].map(([j, t, a]) => `<text x="${(X(j) + (a === 'start' ? -2 : a === 'end' ? 4 : 0)).toFixed(1)}" y="140" text-anchor="${a}" font-size="12" fill="var(--muted)">${t}</text>`).join('')}
     </svg>`;
     return `<div class="rg-sch">${svg}</div>`;
   }
@@ -5126,7 +5150,7 @@ const REGLES_PAGES = [
     p: ['Jusqu\'à 13 emplacements, de la cape au sceau. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Combattre à deux', get s() { return rgSchema('deux'); },
     p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', 'Un boss de la semaine ne tombe <b>jamais avant mercredi</b> : écrasé plus tôt, il tient à 1 PV.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
-      '<b>Défi de l\'Avent</b>, du 7 au 13 décembre : un nombre de quêtes à atteindre à deux. Réussi, chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
+      '<b>Défi de l\'Avent</b>, du 1er au 24 décembre : une case s\'ouvre chaque jour où vous faites <b>tous les deux</b> au moins une quête. <b>18 cases sur 24</b> : chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
       '<b>Pacte et Saga</b>, chaque semaine au camp : l\'un propose un pacte, l\'autre le scelle ; tenu jusqu\'à dimanche, il rapporte <b>+150 XP</b> chacun le lundi. Votez aussi la suite du chapitre : le choix gagnant (le Maître du Jeu tranche mercredi en cas de désaccord) vous bénit jusqu\'à dimanche. Un rappel reste en haut de Quêtes tant que c\'est à toi d\'agir.'] },
   { t: 'Les talents', id: 'talents', s: `<div class="rg-sch"><div class="tal-ech"><span class="def">8<small>défaut</small></span><i>→</i><span>12<small>I</small></span><i>→</i><span>15<small>II</small></span><i>→</i><span class="or">18<small>III</small></span></div></div>`,
     get p() { const T = TALENTS_APP, l = (c, x) => `<b>${c} · ${T[c].nom}</b> : ${x}.`;
