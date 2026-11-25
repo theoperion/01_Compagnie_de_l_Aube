@@ -2037,7 +2037,7 @@ body.calme .rappel-cof.dernier { animation: none; } @media (prefers-reduced-moti
 .dp-bar i { height: 100%; transition: width .6s ease; } .dp-bar i + i { box-shadow: inset 1.5px 0 0 rgba(0,0,0,.4); }
 .dp-cal { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; height: 10px; }
 .dp-cal i { border-radius: 2px; background: color-mix(in srgb, var(--text) 10%, transparent); }
-.dp-cal i.passe { background: color-mix(in srgb, var(--text) 5%, transparent); }
+.dp-cal i.passe { background: transparent; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 30%, transparent); }
 .dp-cal i.auj { box-shadow: inset 0 0 0 1.5px var(--gold); }
 .dp-cal i.on { background: var(--gold); box-shadow: 0 0 4px color-mix(in srgb, var(--gold) 60%, transparent); }
 .dp-et3 span { color: color-mix(in srgb, var(--text) 25%, transparent); font-size: 10px; } .dp-et3 span.on { color: var(--gold); }
@@ -3240,7 +3240,7 @@ function carteDefi(s) {
       <span class="dp-cal">${cal.join('')}</span>
       <span class="dp-l3"><span class="dp-et3">${etoiles}</span> ${ok ? `🎁 <b>Coffre ${defiCoffre(D)} + ${defiXp(D)} XP chacun</b>`
         : retard ? `<b class="dp-retard">⏳ Saisies en retard jusqu'au ${dateCourte(D.montreA || isoPlus(D.fin, 4))}</b>`
-        : `<i style="background:${cM}"></i>Toi ${pa} j${lui ? ` · <i style="background:${cL}"></i>Lui ${pb} j` : ''} · 🎁 +${defiXp(D)} XP`}</span>
+        : `<i style="background:${cM}"></i>Toi ${pa} j${lui ? ` · <i style="background:${cL}"></i>Ton compagnon ${pb} j` : ''} · 🎁 +${defiXp(D)} XP`}</span>
     </span></button>`;
   }
   return `<button class="defi ${ok ? 'reussi' : ''} ${dernier ? 'dernier' : ''}" data-defi="1" aria-label="${esc(D.nom || 'Les Premiers Pas')} : ${fait} sur ${obj} ${unite}${ok ? ', réussi' : ''}">
@@ -5150,7 +5150,7 @@ const REGLES_PAGES = [
     p: ['Jusqu\'à 13 emplacements, de la cape au sceau. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Combattre à deux', get s() { return rgSchema('deux'); },
     p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', 'Un boss de la semaine ne tombe <b>jamais avant mercredi</b> : écrasé plus tôt, il tient à 1 PV.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
-      '<b>Défi de l\'Avent</b>, du 1er au 24 décembre : une case s\'ouvre chaque jour où vous faites <b>tous les deux</b> au moins une quête. <b>18 cases sur 24</b> : chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
+      '<b>Défi de l\'Avent</b>, du 1er au 24 décembre : une case s\'ouvre chaque jour où vous faites <b>tous les deux</b> au moins une quête. Un héros en vacances n\'est pas attendu ce jour-là. <b>18 cases sur 24</b> : chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
       '<b>Pacte et Saga</b>, chaque semaine au camp : l\'un propose un pacte, l\'autre le scelle ; tenu jusqu\'à dimanche, il rapporte <b>+150 XP</b> chacun le lundi. Votez aussi la suite du chapitre : le choix gagnant (le Maître du Jeu tranche mercredi en cas de désaccord) vous bénit jusqu\'à dimanche. Un rappel reste en haut de Quêtes tant que c\'est à toi d\'agir.'] },
   { t: 'Les talents', id: 'talents', s: `<div class="rg-sch"><div class="tal-ech"><span class="def">8<small>défaut</small></span><i>→</i><span>12<small>I</small></span><i>→</i><span>15<small>II</small></span><i>→</i><span class="or">18<small>III</small></span></div></div>`,
     get p() { const T = TALENTS_APP, l = (c, x) => `<b>${c} · ${T[c].nom}</b> : ${x}.`;
@@ -6715,6 +6715,7 @@ function nouvellesDe(s, dimanche) {
       fin: E.actuel ? 'jusqu\'au ' + dateCourte(e.fin) : 'dès le ' + dateCourte(e.debut), x: r.texte || e.texte });
   }
   ((s.reglages && s.reglages.montre) || []).forEach(mo => { const x = texteMontre(mo); L.push({ id: 'montre|' + mo.id, g: 'info', ic: '⌚', t: `${mo.type === 'renfo' ? 'Renfo' : 'Course'} reçue · <span class="nf-nw">${dateCourte(mo.date)}</span>`, d: x.detail + ' · ' + x.statut }); });
+  if (s.defi && Array.isArray(s.defi.cases) && s.today <= '2026-12-07') L.push({ id: 'annonceAvent1', g: 'info', ic: '🎄', t: 'Le Défi de l\'Avent commence', d: 'Une case par jour où vous jouez tous les deux : 18 sur 24 = un coffre chacun', act: 'data-tab="quetes"' });
   if (s.armurerie && s.today <= AVENTURE_NOUVELLE_JUSQUA) L.push({ id: 'annonceAventure1', g: 'info', ic: '🗺', t: 'Nouveau : l\'Aventure', d: 'Chemin, coffres, garde-robe et trophées, dans Héros → Aventure', act: 'data-annonce-aventure="1"' });
   if (s.today <= '2026-12-07') L.push({ id: 'annonceBoss2026', g: 'info', ic: '⚔', t: s.today >= '2026-11-23' ? 'Les boss ont changé' : 'Les boss changent le <span class="nf-nw">23 novembre</span>', d: 'PV à votre mesure, coups spéciaux à contrer, 3 stades d\'évolution', act: 'data-annonce-boss="1"' });
   if (dimanche && s.bilan) L.push({ id: 'bilan|' + s.bilan.semaine.lundi, g: 'bilan', html: carteBilan(s, true) });
