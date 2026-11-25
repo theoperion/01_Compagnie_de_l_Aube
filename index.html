@@ -5035,7 +5035,7 @@ function effetTalent(s, t) {
   const T = TALENTS_APP[t.carac], n = Number(t.niveau) || 0, R = (s && s.regles) || {}, pen0 = Number(R.penSansTalent || R.pen) || 0, pen = Number(R.pen) || 0;
   if (!T) return '';
   if (t.defaut) return {
-    Force: `ta 1re quête d'un jour de coup spécial frappe le boss ${pctT(T.defaut.valeur)} de moins`,
+    Force: `les jours de coup spécial, ta 1re quête frappe le boss ${pctT(T.defaut.valeur)} moins fort`,
     Endurance: `Épuisé, ton XP vaut ×${virT(s && s.malus || T.defaut.valeur)}`,
     'Agilité': `tes ratés soignent le boss ${pctT(T.defaut.valeur)} de plus`,
     Intelligence: `−1 à ton d20`,
@@ -5045,7 +5045,7 @@ function effetTalent(s, t) {
   }[t.carac];
   const v = T.valeurs[n - 1], e = encouragementApp(s);
   return {
-    Force: `ta 1re quête d'un jour de coup spécial frappe le boss +${pctT(v)}`,
+    Force: `les jours de coup spécial, ta 1re quête frappe le boss +${pctT(v)}`,
     Endurance: v >= 1 ? `Épuisé, ton XP n'est plus freinée (×1)` : `Épuisé, ton XP vaut ×${virT(v)} au lieu de ×${virT((s && s.malusSansTalent) || 0.85)}`,
     'Agilité': `tes ratés soignent le boss ${pctT(v)} de moins`,
     Intelligence: `+${v} à ton d20 (bonus total plafonné à +5)`,
@@ -5055,13 +5055,19 @@ function effetTalent(s, t) {
   }[t.carac];
 }
 /** Bloc de la fiche Héros, sous les caractéristiques : chaque talent ou défaut actif, son niveau et son effet. */
-function talentsHtml(s) {
+// fiche du compagnon : on parle de lui, pas de toi (ergonome, 25/11)
+const enTroisieme = t => String(t).replace(/\bta /g, 'sa ').replace(/\btes /g, 'ses ').replace(/\bton (?!compagnon)/g, 'son ').replace(/\bte coûte/g, 'lui coûte').replace(/\bà ton compagnon/g, 'à son compagnon').replace(/\bà toi\b/g, 'à lui');
+/** Défaut : combien de XP (et d'entraînements) il reste avant le prochain point de cette caractéristique. */
+function resteDefaut(s, carac) { const st = ((s && s.stats) || []).find(x => x.nom === carac), pas = Number(s && s.xpParPoint) || 5000; if (!st) return '';
+  const xp = Number(String(st.xp).replace(/\s/g, '')) || 0, reste = pas - (xp % pas); return ` · encore ${reste.toLocaleString('fr-FR')} XP de ${carac} (≈ ${Math.ceil(reste / 1000)} entraînement${Math.ceil(reste / 1000) > 1 ? 's' : ''})`; }
+function talentsHtml(s, autre) {
   const L = ((s && s.talents) || {}).liste || [];
   if (!L.length) return '';
-  return `<div class="section"><h2>Talents</h2><span>12 · 15 · 18</span></div><div class="panel tal-liste">${L.map(t => `<div class="tal ${t.defaut ? 'def' : ''}">
+  const T3 = x => autre ? enTroisieme(x) : x;
+  return `<div class="section"><h2>Talents</h2><span>s'éveillent à 12</span></div><div class="panel tal-liste">${L.map(t => `<div class="tal ${t.defaut ? 'def' : ''}">
       <div class="tal-top"><span>${ICONES[t.carac] || ''} <b>${esc(t.nom)}</b></span><span class="tal-niv">${esc(t.carac) + (t.defaut ? ' · défaut' : ' ' + ROMAIN[t.niveau])}</span></div>
-      <div class="tal-eff">${esc(effetTalent(s, t))}</div></div>`).join('')}
-    <div class="stat-note">${L.some(t => t.defaut) ? 'Un défaut disparaît au premier point gagné : ton entraînement de la semaine le vise. ' : ''}Un talent compte à partir du jour où il s'éveille, et il reste le 1er janvier.</div></div>`;
+      <div class="tal-eff">${esc(T3(effetTalent(s, t)) + (t.defaut ? resteDefaut(s, t.carac) : ''))}</div></div>`).join('')}
+    <div class="stat-note">${L.some(t => t.defaut) ? T3('Un défaut disparaît au premier point gagné : ton entraînement de la semaine le vise. ') : ''}Un talent compte à partir du jour où il s'éveille, et il reste le 1er janvier.</div></div>`;
 }
 /** Petit moment, une fois : « Talent éveillé : … » / « Défaut surmonté : … » (rien la toute première fois, sauf ce qui vient d'arriver). */
 let talentsVusLe = '';
@@ -6391,7 +6397,7 @@ document.addEventListener('click', e => { if (!e.target.closest('[data-fuite-ok]
 
 document.addEventListener('click', e => { if (e.target.closest('[data-annonce-boss]')) ouvrirAnnonceBoss(); });
 function ouvrirEncouragement() {
-  const C = state.camp; if (!C) return;
+  const s = state, C = state.camp; if (!C) return;
   const el = document.getElementById('sheetPal');
   el.innerHTML = `<h3>Encourager la Compagnie</h3>
     <p class="muted" style="font-size:13px;margin:0 0 4px">Une fois par jour. Ton compagnon le verra à sa prochaine ouverture (+${encouragementApp(s).autre} XP de moral${encouragementApp(s).soi ? `, et +${encouragementApp(s).soi} XP pour toi : Meneur` : ''}).</p>
@@ -7298,7 +7304,8 @@ function ouvrirPaliers(nomGroupe) {
 }
 const moisNom = ym => { const m = Number(String(ym).slice(5, 7)); return ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'][m] || 'ce mois'; };
 function carteAnnexe(a) {
-  let info = a.entrainement ? `<span class="entr">Entraînement · ${esc(a.carac)}</span> · cette semaine` : a.finDeMois ? `bilan de ${moisNom(a.moisBilan)}` : a.mensuel ? 'une fois par mois' : a.repetable ? (a.fois ? `faite ${a.fois} fois` : 'répétable') : 'unique';
+  const defE = a.entrainement && (((state.talents || {}).liste) || []).find(t => t.defaut && t.carac === a.carac);
+  let info = a.entrainement ? `<span class="entr">Entraînement · ${esc(a.carac)}</span> · +1 000 XP de ${esc(a.carac)}${defE ? ` · soigne ${esc(defE.nom)}` : ''}` : a.finDeMois ? `bilan de ${moisNom(a.moisBilan)}` : a.mensuel ? 'une fois par mois' : a.repetable ? (a.fois ? `faite ${a.fois} fois` : 'répétable') : 'unique';
   if (a.echeance) info += ` · avant le ${dateCourte(a.echeance)}`;
   return `<div class="card annexe ${classeJour(a.jour)} ${busy.has(a.nom) ? 'busy' : ''}" data-q="${esc(a.nom)}">
     <div class="icon">${ICONES[a.carac] || '⭐'}</div>
@@ -7692,7 +7699,7 @@ function vueCompagnonDetail(c) {
     <div class="panel">${ann.map(a => ligne(a, `<span class="wk">${a.jour.fait ? '✓ aujourd\'hui' : a.fois + ' fois'}</span>`)).join('')}</div>` : ''}
     ${c.objectifs.length ? `<div class="section"><h2>Quêtes épiques</h2><span>progression</span></div><div class="list">${c.objectifs.map(carteEpique).join('')}</div>` : ''}
     ${sem.some(h => h.serieNb > 0 && h.serie > 0) ? `<div class="section"><h2>Séries</h2><span>record</span></div><div class="panel">${[...sem].filter(h => h.serieNb > 0 && h.serie > 0).sort((a, b) => b.serie - a.serie).map(h => `<div class="serie-row"><span>${ICONES[h.carac] || '⭐'} ${esc(nomVu(h))}</span><span><span class="streak">🔥 ${h.serie}</span><span class="muted"> · record&nbsp;${h.record || 0}</span></span></div>`).join('')}</div>` : ''}
-    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}${talentsHtml(c)}
+    ${(c.stats || []).length ? `<div class="section"><h2>Caractéristiques</h2><span>score · modificateur</span></div><div class="panel">${statsDe(c)}</div>` : ''}${talentsHtml(c, true)}
     <div class="aide-coop">Lecture seule : chacun valide ses propres quêtes avec sa clé.</div></div>`;
 }
 document.addEventListener('click', e => {
