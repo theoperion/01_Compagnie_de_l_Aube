@@ -642,6 +642,7 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
 .en-porte .en-ic{font-size:1.5rem;line-height:1}.en-porte b{font-size:1rem}.en-porte small{color:var(--muted);font-size:.8rem}.en-porte em{font-style:normal;font-size:.78rem;color:var(--en)}.en-porte em b{color:var(--en)}
 .en-journal{justify-self:center;display:block;margin:10px auto 0;text-decoration:none;color:var(--fg)}
 .en-mods{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.en-mods .mod{padding:8px 6px;min-height:44px}.en-mods .mod .small{font-size:.72rem}.en-mods .mod span.muted{display:none}
+[data-vue][hidden]{display:none!important}
 .en-ret{margin:4px 0}.en-h{margin:6px 2px 2px;font-size:1.2rem}.en-intro{margin:0 2px 10px;font-size:.9rem;line-height:1.4}
 .en-etapes{margin:4px 0 2px;padding-left:20px;display:grid;gap:4px;font-size:.92rem;line-height:1.35}.en-etapes b{color:var(--en)}
 .en-plus summary{cursor:pointer;font-weight:700;color:var(--muted);min-height:40px;display:flex;align-items:center}.en-plus[open] summary{margin-bottom:8px}
@@ -2413,6 +2414,24 @@ function mapSVG(W){
     <path class="route" d="${d(pos)}"/>${walkedTo>0?`<path class="walked" d="${d(pos.slice(0,walkedTo))}"/>`:""}${labels}${dots}${me}</svg>`;
 }
 let openLog=null;
+/* ---------- Course et Renfo en accueil + portes (Théo, 25/11 : « même travail que l'anglais ») ----------
+   On garde le rendu d'origine (gestes, montre, lecteur) et on le RANGE : chaque bloc reçoit une vue ; l'accueil montre l'essentiel et des portes. */
+let runVue="", strVue="";
+function rangerVues(p, vue, nomVar, classer, portes, entete, titre){
+  const blocs=[...p.children]; if(!blocs.length)return;
+  blocs.forEach(b=>{const v=classer(b); b.dataset.vue=v; b.hidden=!(v===vue||(vue===""&&v==="accueil"))});
+  if(vue===""){p.insertAdjacentHTML("afterbegin",entete||"");p.insertAdjacentHTML("beforeend",`<p class="aj-sous">Tout le reste</p><div class="en-portes">${portes.map(([k,ic,t,sous])=>`<button class="en-porte" data-vue-go="${k}"><span class="en-ic" aria-hidden="true">${ic}</span><b>${t}</b><small>${sous}</small></button>`).join("")}</div>`)}
+  else p.insertAdjacentHTML("afterbegin",`<button class="btn sm en-ret" data-vue-go="">‹ ${titre}</button><h2 class="en-h">${(portes.find(x=>x[0]===vue)||[])[2]||""}</h2>`);
+  p.querySelectorAll("[data-vue-go]").forEach(b=>b.onclick=()=>{if(nomVar==="run")runVue=b.dataset.vueGo;else strVue=b.dataset.vueGo;(nomVar==="run"?renderRun:renderStr)();scrollTo(0,0)});
+}
+function enteteCourse(){
+  const t=todayISO(), W=weeksPlan(); let it=null;
+  W.forEach(w=>w.s.forEach(s=>{if(!it&&s.date>=t&&!state.run.logs[s.key])it={s,w}}));
+  if(!it)return `<div class="card aj aj-grande" style="--c:var(--run)"><span class="kicker aj-tag"><span>Course</span></span><h2>Plan terminé : bravo !</h2></div>`;
+  const x=texteRun(it.s), quand=it.s.date===t?"aujourd'hui":jourLong(it.s.date)+" "+jourMois(it.s.date);
+  return `<div class="card aj aj-grande" style="--c:var(--run)"><span class="kicker aj-tag"><span>Course · prochaine sortie : ${esc(quand)}</span><span class="aj-min">≈ ${x.min} min</span></span>
+    <h2>${esc(x.t)}</h2><p>${esc(x.p)}</p><p class="small muted" style="margin:4px 0 0">Coche ta séance dans ta semaine ci-dessous${montre?.ok?", ou laisse ta montre le faire":""}.</p></div>`;
+}
 function renderRun(){
   const p=$("#p-run"); const P=paces(); const W=weeksPlan(); const wi=curWeekIdx(); const S=strWeeks();
   const zoneTxt={EF:"Endurance fondamentale",SL:"Sortie longue",SEUIL:"Seuil",AS10:"Allure 10 km",VMA:"VMA (400–800 m)"};
@@ -2471,6 +2490,8 @@ Intègre les vrais détails de sa note (temps, météo, sensations) dans le réc
     }catch(e){b.disabled=false;b.textContent="Raconter la séance en légende";toast(sampleErr(e.code))}
   });
   if(openLog&&$("#lok")){$("#lok").onclick=()=>{state.run.logs[openLog]={date:$("#ld").value||todayISO(),rpe:+$("#lr").value||null,note:$("#ln").value.trim(),at:Date.now()};openLog=null;save();sfx("ok");toast("Étape franchie ! Elle sera comptée dans la Compagnie");renderAll()};$("#lno").onclick=()=>{openLog=null;renderRun()}}
+  rangerVues(p, runVue, "run", b=>b.id==="curweek"?(runVue==="plan"?"plan":"accueil"):b.matches("details.week")?"plan":b.querySelector("#allures")?"allures":b.querySelector("#histo")||/Bilan de la semaine/.test(b.textContent.slice(0,60))?"montre":"plan",
+    [["plan","🗺","Plan et voyage","12 semaines, boss, décaler"],["allures","⏱","Mes allures","Tes vitesses par séance"],["montre","⌚","Montre et bilans","Sorties reçues, bilans"]], enteteCourse(), "Course");
 }
 
 /* ======================================================================
@@ -2774,8 +2795,8 @@ function renderStr(){
       <span class="small muted">Matériel : haltères, élastique, une marche</span></div>
       ${log?`<span class="pill ok">Faite le ${frDate(log.date)}</span>`:wi>=0&&wi<S.length&&cur.date<todayISO()?'<span class="pill bad">À rattraper</span>':""}
     </div>
-    <div class="row"><button class="btn primary str" id="sgo">Allumer la forge · séance guidée</button><button class="btn" id="smark">${log?"Annuler la validation":"Marquer comme faite"}</button></div>
-    <p class="small muted">Le Veilleur attise la forge. Le minuteur enchaîne les exercices, bipe sur les 3 dernières secondes et annonce l'exercice suivant à voix haute. Monte le son et pose le téléphone face à toi.</p>
+    <div class="row"><button class="btn primary str" id="sgo">Commencer (guidé)</button><button class="btn" id="smark">${log?"Annuler la validation":"Marquer comme faite"}</button></div>
+    <p class="small muted">Le minuteur enchaîne les exercices et les annonce à voix haute : monte le son et pose le téléphone face à toi.</p>
   </div>
   ${cur.blocs.map((b,bi)=>`<div class="card"><div class="row" style="justify-content:space-between"><h3>Bloc ${bi+1}</h3><span class="pill neutral">${b.tours} tours</span></div>
     <div class="exgrid">${b.exos.map(x=>`<div class="ex"><div class="figbox">${figSVG(x.id)}</div><b>${esc(EX[x.id].name)}</b><span class="small"><b>${doseTxt(x)}</b> · effort ${esc(x.e)}</span><ul class="small muted">${EX[x.id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></div>`).join("")}
@@ -2787,6 +2808,8 @@ function renderStr(){
   </div>
   <details class="card"><summary>Le manuel du forgeron : tous les exercices</summary><div class="exgrid" style="margin-top:10px">${Object.keys(EX).map(id=>`<div class="ex"><div class="figbox">${figSVG(id)}</div><b>${esc(EX[id].name)}</b><ul class="small muted">${EX[id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></details>`;
   $("#sgo").onclick=()=>startPlayer(cur);
+  rangerVues(p, strVue, "str", b=>b.querySelector("#sgo")?"accueil":/^\s*Bloc \d/.test(b.textContent)?"seance":b.classList.contains("forge")||/Progression du renfo|forge du Veilleur/i.test(b.textContent.slice(0,40))?"forge":/Calendrier de la forge/.test(b.textContent.slice(0,40))?"calendrier":/manuel/i.test(b.textContent.slice(0,40))?"manuel":"seance",
+    [["seance","🧩","Les exercices","La séance pas à pas"],["calendrier","📅","Calendrier","Les 12 semaines"],["manuel","📖","Manuel","Tous les exercices"],["forge","🛡","La forge","Armurerie et boss"]], "", "Renfo");
   $("#smark").onclick=()=>{if(log){if(!confirm(DECOCHER))return;decocher(state.str,cur.key)}else state.str.logs[cur.key]={date:todayISO(),rpe:null,min:tlMinutes(cur),at:Date.now()};save();renderAll()};
 }
 
