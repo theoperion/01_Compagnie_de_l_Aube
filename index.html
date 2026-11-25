@@ -312,6 +312,14 @@
   #armurerie > .section:first-child { padding-right: 52px; }
   .vit-x { position: sticky; top: 0; float: right; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 16px; cursor: pointer; z-index: 2; }
   /* La route en perspective (maquette, éteinte par défaut) */
+  .rv-vie { position: absolute; inset: 0; pointer-events: none; z-index: 1500; }
+  .rv-oiseau { position: absolute; width: 14px; height: 6px; border-top: 2px solid #1a1a2a; border-radius: 50% 50% 0 0; animation: rvVol 9s linear infinite; }
+  .rv-oiseau::after { content: ''; position: absolute; left: 12px; top: -2px; width: 14px; height: 6px; border-top: 2px solid #1a1a2a; border-radius: 50% 50% 0 0; }
+  @keyframes rvVol { from { transform: translateX(-40px); } to { transform: translateX(420px); } }
+  .rv-luciole { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #fff3a0; box-shadow: 0 0 6px 2px rgba(255,236,140,.7); animation: rvLuc 4s ease-in-out infinite; }
+  @keyframes rvLuc { 0%, 100% { opacity: 0; transform: translate(0, 0); } 50% { opacity: 1; transform: translate(6px, -10px); } }
+  .calme .rv-oiseau, .calme .rv-luciole { animation: none; } .calme .rv-luciole { opacity: .6; }
+  @media (prefers-reduced-motion: reduce) { .rv-oiseau, .rv-luciole { animation: none; } }
   .rv-2d { position: absolute; right: 12px; top: calc(max(10px, env(safe-area-inset-top)) + 52px); z-index: 2001; min-height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,.5); background: rgba(10,14,30,.72); color: #fff; font: 700 13px var(--f-texte); }
   .rv-ov { position: fixed; inset: 0; z-index: 70; overflow: hidden; background: #0f1a36; touch-action: none; }
   .rv-fond { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -4528,11 +4536,36 @@ const DECORS_ROUTE = {
   pre: { ciel: ['#1a2350', '#5a4a8a', '#f0a070'], sol: ['#4a8a46', '#1e4a24'], route: ['#d8b07a', '#9a7444'], bord: '#5a3a1e', astre: '#ffe08a', nom: 'Le chemin du Rodage',
     nuages: '#f8d8c8', monts3: ['#6a6a9a', '#4a5282', '#2e4a5a'], neige: '#f4eefa', collines: ['#3a7a3e', '#2e6a34'], paves: '#b89060',
     monts: '#2a3858', arbre: (k) => `<path d="M0 0 l-9 0 l9 -30 l9 30 z" fill="${k % 2 ? '#1e4a2a' : '#245a30'}"/><path d="M0 -30 l-6 14 h12 z" fill="#2e6a3a"/><rect x="-1.6" y="0" width="3.2" height="5" fill="#4a3018"/>`,
-    deco: decoRodage, repere: repereRodage,
+    deco: decoRodage, repere: repereRodage, foret: { pres: '#1e4a2a', pres2: '#2e6a32', loin: '#5a6a8a', forme: 'mixte' },
     horizon: `${[[-46, 0, 1], [-34, -2, .9], [30, 0, 1], [42, -1, .85]].map(([x, y, k]) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-6 0 V-8 L0 -14 L6 -8 V0Z" fill="#e8d8c0"/><path d="M-8 -7 L0 -15 L8 -7" fill="#a83a2a"/><rect x="-2" y="-5" width="3" height="4" fill="#ffd27a"/></g>`).join('')}
       <path d="M-26 0 V-30 h7 v5 h4 v-5 h7 V-44 l6 -9 l6 9 V-30 h7 v5 h4 v-5 h7 V0Z" fill="#3a3a5a"/><path d="M-26 0 V-30 h7 v5 h4 v-5 h7 V-44 l6 -9 l6 9 V-30 h7 v5 h4 v-5 h7 V0Z" fill="#000" opacity=".15"/>
       <path d="M0 -53 V-64" stroke="#2a2a3a" stroke-width="1.2"/><path d="M0 -64 L9 -61 L0 -58Z" fill="#e5383b"/><rect x="-3" y="-36" width="6" height="7" rx="3" fill="#ffd36a"/><rect x="-18" y="-22" width="3" height="4" fill="#ffd36a"/><rect x="15" y="-22" width="3" height="4" fill="#ffd36a"/>` }
 };
+/* Lisières de forêt (Théo, 25/11 : « pas assez de décor à droite et à gauche, pas d'effet waouh ») : des rangées d'arbres continues des deux côtés,
+ * du loin vers le près, qui se fondent dans la brume de l'horizon. D.foret = { pres, loin, forme: 'sapin' | 'cypres' | 'mixte' }. */
+const melangeHex = (a, b, t) => { const h = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16)); const A = h(a), B = h(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
+function lisieres(proj, cam, N, D, W) {
+  const F = D.foret; if (!F) return '';
+  let out = '';
+  for (let z = Math.min(N + 3, cam + 16); z >= cam - .3; z -= .3) {
+    const zi = Math.round(z / .3), brume = Math.min(1, Math.max(0, (z - cam) / 15)), coul = melangeHex(F.pres, F.loin, brume * .9);
+    let d1 = '', d2 = '';
+    for (const sg of [-1, 1]) for (let k = 0; k < 11; k++) {
+      const cote = sg * (.95 + k * .38 + hashPl(zi * 13 + k * 7 + (sg > 0 ? 3 : 0)) * .25), P = proj(z, cote);
+      if (P.p < -.3 || P.x < -80 || P.x > W + 80) continue;
+      const rond = (F.forme === 'mixte' && hashPl(zi + k * 3) > .62) || (F.forme === 'grec' && hashPl(zi + k * 3) > .5), cyp = F.forme === 'cypres' || (F.forme === 'grec' && !rond);
+      const h = (60 + hashPl(zi * 7 + k * 11) * 50) * P.f * (rond && F.forme === 'grec' ? .6 : 1), w = h * (cyp ? .2 : .42), x = P.x, y = P.y;
+      if (cyp) d1 += `M${x.toFixed(1)} ${(y - h).toFixed(1)} C${(x + w).toFixed(1)} ${(y - h * .7).toFixed(1)} ${(x + w).toFixed(1)} ${(y - h * .15).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)} C${(x - w).toFixed(1)} ${(y - h * .15).toFixed(1)} ${(x - w).toFixed(1)} ${(y - h * .7).toFixed(1)} ${x.toFixed(1)} ${(y - h).toFixed(1)}Z`;
+      else if (rond) d2 += `M${(x - w).toFixed(1)} ${(y - h * .45).toFixed(1)} a${w.toFixed(1)} ${(h * .4).toFixed(1)} 0 1 1 ${(2 * w).toFixed(1)} 0 a${w.toFixed(1)} ${(h * .4).toFixed(1)} 0 1 1 ${(-2 * w).toFixed(1)} 0Z`;
+      else d1 += `M${x.toFixed(1)} ${(y - h).toFixed(1)} L${(x + w * .7).toFixed(1)} ${(y - h * .5).toFixed(1)} L${(x + w * .4).toFixed(1)} ${(y - h * .5).toFixed(1)} L${(x + w).toFixed(1)} ${y.toFixed(1)} L${(x - w).toFixed(1)} ${y.toFixed(1)} L${(x - w * .4).toFixed(1)} ${(y - h * .5).toFixed(1)} L${(x - w * .7).toFixed(1)} ${(y - h * .5).toFixed(1)}Z`;
+    }
+    if (d1) out += `<path d="${d1}" fill="${coul}"/>`;
+    if (d2) out += `<path d="${d2}" fill="${melangeHex(F.pres2 || F.pres, F.loin, brume * .9)}"/>`;
+    // lumière du couchant sur le haut des arbres proches
+    if (brume < .25 && d1) out += `<path d="${d1}" fill="${D.astre}" opacity="${(.12 * (1 - brume * 4)).toFixed(2)}" transform="translate(${(2 * (1 - brume)).toFixed(1)} 0)"/>`;
+  }
+  return out;
+}
 let routeCam = 0, routeEl = null;
 function ouvrirRoute() {
   const s = state; if (!s || !s.armurerie || !s.armurerie.saison) return;
@@ -4546,6 +4579,7 @@ function ouvrirRoute() {
   const prochE = E.find(e => !e.fait);
   ov.innerHTML = `<svg class="rv-fond" aria-hidden="true"></svg><div class="rv-objets"></div>
     <div class="rv-tete"><b>${esc(D.nom || 'Le chemin de la saison')}</b><span>palier ${S.palier} / ${N}${prochE ? ` · prochaine borne : ${esc(prochE.nom)}, encore ${xpFr(prochE.reste)} XP` : ' · chemin terminé'}</span></div>
+    ${D.foret ? `<div class="rv-vie" aria-hidden="true">${[[18, 14], [26, 18], [34, 13]].map(([x, y], i) => `<i class="rv-oiseau" style="left:${x}%;top:${y}%;animation-delay:${-i * 1.3}s"></i>`).join('')}${Array.from({ length: 14 }, (_, i) => `<i class="rv-luciole" style="left:${(hashPl(i + 91) * 96).toFixed(0)}%;top:${(55 + hashPl(i + 97) * 40).toFixed(0)}%;animation-delay:${(-hashPl(i + 99) * 4).toFixed(1)}s"></i>`).join('')}</div>` : ''}
     <button class="rv-x" data-route-fermer="1" aria-label="Revenir à la vue 2D">✕</button><button class="rv-2d" data-route-fermer="1">Vue 2D</button><p class="rv-aide">glisse le doigt pour avancer sur la route</p>`;
   document.body.appendChild(ov);
   const objets = ov.querySelector('.rv-objets');
@@ -4575,7 +4609,8 @@ function ouvrirRoute() {
     ov.querySelector('.rv-fond').innerHTML = `<defs><linearGradient id="rvC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.ciel[0]}"/><stop offset=".7" stop-color="${D.ciel[1]}"/><stop offset="1" stop-color="${D.ciel[2]}"/></linearGradient>
         <linearGradient id="rvS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.sol[0]}"/><stop offset="1" stop-color="${D.sol[1]}"/></linearGradient>
         <linearGradient id="rvR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.route[1]}"/><stop offset="1" stop-color="${D.route[0]}"/></linearGradient>
-        <radialGradient id="rvA"><stop offset="0" stop-color="${D.astre}" stop-opacity=".7"/><stop offset="1" stop-color="${D.astre}" stop-opacity="0"/></radialGradient></defs>
+        <radialGradient id="rvA"><stop offset="0" stop-color="${D.astre}" stop-opacity=".7"/><stop offset="1" stop-color="${D.astre}" stop-opacity="0"/></radialGradient>
+        <linearGradient id="rvBr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D.ciel[2]}" stop-opacity="0"/><stop offset=".4" stop-color="${D.ciel[2]}" stop-opacity=".45"/><stop offset="1" stop-color="${D.ciel[2]}" stop-opacity="0"/></linearGradient></defs>
       <rect width="${W}" height="${hz + 2}" fill="url(#rvC)"/>${Array.from({ length: D.nuages ? 18 : 40 }, (_, k) => `<circle cx="${(hashPl(k + 5) * W).toFixed(0)}" cy="${(hashPl(k + 61) * hz * .75).toFixed(0)}" r="${(.6 + hashPl(k + 17) * 1.2).toFixed(1)}" fill="#fff" opacity="${(.35 + hashPl(k + 29) * .6).toFixed(2)}"/>`).join('')}<circle cx="${W * .72}" cy="${hz - (D.nuages ? 110 : 26)}" r="70" fill="url(#rvA)"/>${D.nuages ? Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI; return `<path d="M${(W * .72 + Math.cos(a * 2) * 30).toFixed(0)} ${(hz - 110 - Math.sin(a * 2) * 30).toFixed(0)} L${(W * .72 + Math.cos(a * 2) * 52).toFixed(0)} ${(hz - 110 - Math.sin(a * 2) * 52).toFixed(0)}" stroke="${D.astre}" stroke-width="3" stroke-linecap="round" opacity=".35"/>`; }).join('') : ''}<circle cx="${W * .72}" cy="${hz - (D.nuages ? 110 : 26)}" r="20" fill="${D.astre}"/>
       ${D.nuages ? [[.18, .32, 1], [.5, .2, .8], [.82, .4, 1.1], [.36, .5, .7]].map(([x, y, k]) => `<g transform="translate(${(W * x).toFixed(0)} ${(hz * y).toFixed(0)}) scale(${k})" fill="${D.nuages}" opacity=".55"><ellipse cx="0" cy="0" rx="34" ry="9"/><ellipse cx="-12" cy="-7" rx="14" ry="9"/><ellipse cx="10" cy="-9" rx="17" ry="11"/></g>`).join('') : ''}
       ${D.monts3 ? [[0, 128, .7], [1, 84, .85], [2, 40, 1]].map(([i, hm, o]) => { const pts = Array.from({ length: 9 }, (_, k) => [W * k / 8, hz - (k % 2 ? hm * (.6 + hashPl(k + i * 9) * .4) : hm * (.2 + hashPl(k + i * 5) * .3))]);
@@ -4592,7 +4627,10 @@ function ouvrirRoute() {
       ${D.paves ? (() => { let o = ''; for (let z = Math.ceil(routeCam * 4) / 4 - .5; z <= routeCam + 10; z += .25) for (const c of [-.5, .5]) { const P = proj(z, c); if (P.p < -.5) continue; o += `<ellipse cx="${P.x.toFixed(1)}" cy="${P.y.toFixed(1)}" rx="${(7 * P.f).toFixed(1)}" ry="${(3.4 * P.f).toFixed(1)}" fill="${D.paves}" stroke="#4a3418" stroke-width="${(.8 * P.f).toFixed(2)}"/>`; }
           const orn = c => { const pts = []; for (let z = routeCam - .5; z <= routeCam + 12; z += .3) { const P = proj(z, c); pts.push(`${P.x.toFixed(1)},${P.y.toFixed(1)}`); } return `<polyline points="${pts.join(' ')}" stroke="#7a5a32" stroke-width="2" fill="none" opacity=".35"/>`; };
           return orn(-.22) + orn(.22) + o; })() : ''}
-      <path d="${mil.join(' ')}" stroke="#fff6d8" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>`;
+      <path d="${mil.join(' ')}" stroke="#fff6d8" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+      ${D.foret ? (() => { const P = proj(moi.z, 0); return `<ellipse cx="${P.x.toFixed(0)}" cy="${P.y.toFixed(0)}" rx="${(140 * P.f).toFixed(0)}" ry="${(40 * P.f).toFixed(0)}" fill="url(#rvA)" opacity=".55"/>`; })() : ''}
+      ${lisieres(proj, routeCam, N, D, W)}
+      ${D.foret ? `<rect y="${hz - 10}" width="${W}" height="60" fill="url(#rvBr)"/>${Array.from({ length: 5 }, (_, k) => `<path d="M${(W * .72).toFixed(0)} ${(hz - 110).toFixed(0)} L${(W * (.05 + k * .22)).toFixed(0)} ${H} L${(W * (.12 + k * .22)).toFixed(0)} ${H}Z" fill="${D.astre}" opacity=".05"/>`).join('')}` : ''}`;
     // objets : plus loin = plus petit, plus haut, derrière ; cachés hors de la scène
     items.concat(deco).forEach(it => { const P = proj(it.z, it.cote), vis = P.p > -.35 && P.p < 16;
       it.el.style.display = vis ? '' : 'none'; if (!vis) return;
