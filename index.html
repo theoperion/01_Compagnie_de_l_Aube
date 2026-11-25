@@ -972,7 +972,7 @@
   .cof-box .btn.plein { width: 100%; min-height: 48px; font-size: 16px; }
   .cof-box.ouvert { width: min(340px, 90vw); }
   .cof-liens { display: flex; flex-wrap: wrap; gap: 4px 22px; justify-content: center; width: 100%; } .cof-liens .btn.plein { flex-basis: 100%; } .cof-lien { white-space: nowrap; }
-  .cof-lien { background: none; border: 0; color: #f3d9a8; font: 600 14px var(--f-texte); text-decoration: underline; text-underline-offset: 3px; padding: 10px 4px; cursor: pointer; }
+  .cof-lien { background: none; border: 0; color: #f3d9a8; font: 600 14px var(--f-texte); text-decoration: underline; text-underline-offset: 3px; padding: 10px 4px; cursor: pointer;  min-height: 44px; } .cof-liens .btn.plein { min-height: 48px; }
   .cof-duo { display: flex; align-items: flex-end; justify-content: center; gap: 14px; position: relative; z-index: 1; }
   .cof-porte { display: grid; justify-items: center; } .cof-porte svg { width: 76px; height: auto; display: block; } .cof-porte small { color: #f3e6d0; opacity: .7; font-size: 11px; }
   .cof-rar.r-commun { color: #a8d88f; } .cof-rar.r-rare { color: #8ccaff; } .cof-rar.r-epique { color: #d0b8ff; } .cof-rar.r-legendaire { color: #ffc46b; }
@@ -5154,41 +5154,51 @@ function talentsAFaire() {
   try { localStorage.setItem(k, JSON.stringify(Array.from(new Set((vus || []).concat(cles))))); } catch (e) {}
   if (neufs.length) { vib([20, 40, 60]); toast('✦ ' + neufs.join(' · ') + ' (fiche Héros)', 'ok'); }
 }
-const REGLES_PAGES = [
-  { t: 'L\'Aventure d\'un coup d\'œil', get s() { return rgSchema('aventure'); },
-    p: ['Tu fais tes quêtes. Tout le reste en découle.', '<b>Astuce</b> : glisse le doigt vers la gauche ou la droite pour passer d\'un onglet à l\'autre.', 'L\'XP te fait avancer sur le <b>chemin du Rodage</b> : 15 paliers jusqu\'au château de l\'Aube.', 'Chaque palier donne un objet, un <b>coffre</b> ou des <b>éclats</b>. Tu portes tes trésors dans ta <b>garde-robe</b>.'] },
+const REGLES_PAGES = [ // refait le 25/11 (Théo : « retravailler les règles » ; plan du maître du jeu) : 8 pages, 3 à 5 lignes. La garde-robe reste l'index 5 (bouton « Comment ça marche ? »).
+  { t: 'Ta journée', get s() { return rgSchema('aventure'); },
+    get p() { const s = (typeof state !== 'undefined' && state) || {}, R = s.regles || {}, pen = Number(R.pen) || 8;
+      return ['Chaque quête faite te donne de l\'<b>XP</b> et frappe le boss. Un raté le soigne.',
+        `<b>Tes PV</b> : une quête <b>+${Number(R.soinHab) || 4}</b>, une annexe <b>+${Number(R.soinAnnexe) || 6}</b>, un raté <b>−${pen}</b> (la quête qui suit un raté soigne double). Une journée complète, sans raté : <b>+10</b> le lendemain.`,
+        `🎲 <b>Jet de sauvegarde</b> : à chaque raté, un d20 + ta caractéristique. <b>10 ou plus</b> : tu perds ${Math.floor(pen * 3 / 4)} PV au lieu de ${pen} ; <b>20</b> : rien.`,
+        'Sous ' + (Number(s.seuilEpuise) || 40) + ' PV, tu es <b>Épuisé</b> : ton XP ne vaut que <b>×' + virT(s.malus || 0.85) + '</b>. À 0, tu tombes, et tu te relèves après 3 jours de quêtes.',
+        '<b>Astuce</b> : glisse le doigt vers la gauche ou la droite pour changer d\'onglet.']; } },
   { t: 'Le chemin', get s() { return rgSchema('chemin'); },
-    get p() { return ['Un palier = <b>750 XP</b>, la moitié d\'une semaine parfaite : environ <b>2 paliers par semaine</b>.', 'Annexes, boss vaincus et défis comptent aussi : ils te font aller plus vite.', '<b>Épuisé</b>, ton XP ne vaut que <b>×' + virT(((typeof state !== 'undefined' && state) || {}).malus || 0.85) + '</b>. Soigne-toi : le chemin repart.',
-      'Toi et ton compagnon d\'armes avancez au même pas sur la semaine, même avec des quêtes différentes.', 'Touche une étape : sa récompense et l\'XP qui manque. <b>Tout le chemin</b> déroule tous les paliers.', 'Touche <b>Vue 3D</b> pour marcher sur ta route ; un <b>point rouge</b> sur l\'Armurerie = un nouvel objet à voir.', 'Chaque semaine, un <b>entraînement</b> travaille ta caractéristique la plus faible : une quête annexe, une fois du lundi au dimanche, qui donne en plus <b>1 000 XP</b> à cette caractéristique.']; } },
-  { t: 'Les coffres', get s() { return rgSchema('coffres'); },
+    p: ['Un palier = <b>750 XP</b>, la moitié d\'une semaine parfaite : environ <b>2 paliers par semaine</b>. Annexes, boss et défis te font aller plus vite.',
+      'Chaque palier donne un objet, un <b>coffre</b> ou des <b>éclats</b>. Touche une étape pour voir sa récompense ; <b>⛰️ 3D</b> pour marcher sur ta route.',
+      'Chaque semaine, un <b>entraînement</b> (quête annexe) travaille ta caractéristique la plus faible : <b>+1 000 XP</b> à cette caractéristique.',
+      'Toi et ton compagnon d\'armes avancez au même pas, même avec des quêtes différentes.'] },
+  { t: 'Coffres et éclats', get s() { return rgSchema('coffres'); },
     get p() { const s = (typeof state !== 'undefined' && state) || {}, sa = ((s.armurerie || {}).saison || {}).id, avant = sa !== 's1' && String(s.today || '') < COFFRES_S1_RODAGE;
-      return ['<b>Coffre (N)</b> sous le chemin. Le chiffre rouge sur « Aventure » les compte.', 'Touche une case coffre : ses chances par rareté. <b>Voir les objets</b> : ce qu\'il te reste à gagner.',
-        (avant ? 'Dès le 1er décembre, <b>plus de doublon</b>' : '<b>Plus de doublon</b>') + ' : si la rareté tirée est complète, le coffre monte de rareté (jusqu\'à épique).', 'Un coffre suit les règles du jour où tu l\'ouvres.',
-        'Seul le <b>boss du mois</b> donne <b>sa panoplie</b> : cape, couronne, puis aura.']; } },
-  { t: 'Éclats et marchand', get s() { return rgSchema('eclats'); },
-    p: ['Les paliers <b>6, 11 et 13</b> donnent <b>60 éclats</b> chacun.', 'Un coffre qui n\'a plus rien pour toi donne des éclats : <b>20</b>, <b>50</b>, <b>120</b> ou <b>300</b>, selon sa rareté.', 'Touche ton compteur <b>✦</b> sous le chemin : le marchand te vend l\'objet du Rodage de ton choix.'] },
-  { t: 'Gagné sans coffre', get s() { return rgSchema('autrement'); },
-    p: ['Ces récompenses viennent toutes seules en jouant : pas besoin de coffre.', 'Petits ornements (familier de poche, sol, emblème, lueur) : ils se gagnent avec ton niveau, ton XP, tes séries et tes titres.'] },
+      return ['<b>Coffre (N)</b> sous le chemin : touche-le pour l\'ouvrir. Une case coffre montre ses chances par rareté.',
+        (avant ? 'Dès le 1er décembre, <b>plus de doublon</b>' : '<b>Plus de doublon</b>') + ' : si la rareté tirée est complète, le coffre monte d\'un cran (jusqu\'à épique).',
+        'Un coffre qui n\'a plus rien pour toi donne des <b>éclats</b> : ' + (avant ? '10, 25, 60 ou 150 (le double dès le 1er décembre)' : '<b>20</b>, <b>50</b>, <b>120</b> ou <b>300</b>') + ' selon sa rareté. Les paliers 6, 11 et 13 en donnent 60.',
+        'Touche ton compteur <b>✦</b> : le marchand te vend l\'objet de ton choix. Seul le <b>boss du mois</b> donne <b>sa panoplie</b> (cape, couronne, puis aura).']; } },
+  { t: 'Les boss', s: `<div class="rg-sch"><div class="rg-ligne"><div class="rg-bloc">⚔<small>XP = coups</small></div><b>·</b><div class="rg-bloc">🗡<small>contrer son coup</small></div><b>·</b><div class="rg-bloc or">🏆<small>victoire</small></div></div></div>`,
+    p: ['Un boss par semaine, un par mois. Ses PV suivent votre rythme : <b>toute l\'XP de vos quêtes le frappe</b>, chaque raté le soigne.',
+      '<b>Coups spéciaux</b> le mardi et le jeudi (le samedi pour le boss du mois), annoncés la veille : la quête marquée « 🗡 » le contre et ouvre une <b>Brèche</b> (+25 %).',
+      'Sous 30 % de PV il est <b>Enragé</b>, sous 20 % il peut tenter un <b>dernier recours</b>. Un boss de la semaine ne tombe <b>jamais avant mercredi</b>.',
+      'S\'il s\'enfuit, le suivant arrive blessé (−5 %) mais peut vous maudire deux jours. Une quête oubliée, saisie dans les 7 jours, compte encore.'] },
+  { t: 'À deux', get s() { return rgSchema('deux'); },
+    p: ['<b>Jour à deux</b> : un jour où vous faites chacun au moins une quête (en vacances, l\'autre suffit). Il donne le <b>Lien d\'armes</b> : vos coups font <b>×1,05</b>, et ouvre une case du <b>Défi de l\'Avent</b> (18 sur 24 du 1er au 24 décembre : 150 XP et un coffre rare chacun).',
+      '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun 3 quêtes ou 200 XP ; son coup échoue.',
+      '<b>Au camp</b>, chaque semaine : un <b>pacte</b> tenu rapporte +150 XP chacun ; la <b>Saga</b> se vote ; un <b>encouragement</b> donne 10 XP à ton compagnon (plus avec le talent Meneur).',
+      '<b>Échos du Rodage</b>, dès février : un week-end par mois, un ancien boss revient 48 h ; vaincu, 60 éclats chacun. <b>Trêve des fêtes</b> (24/12 → 1er janvier) : les PV des boss comptent ces jours pour moitié.'] },
   { t: 'La garde-robe', get s() { return rgSchema('garde'); },
-    p: ['Jusqu\'à 13 emplacements, de la cape au sceau. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.', 'Ton compagnon d\'armes voit ce que tu portes.'] },
-  { t: 'Combattre à deux', get s() { return rgSchema('deux'); },
-    p: ['<b>Lien d\'armes</b>, dès le 1er décembre : un jour où vous validez chacun au moins une quête, vos coups sur les boss font <b>×1,05</b>. En vacances, le lien tient seul.', 'Un boss de la semaine ne tombe <b>jamais avant mercredi</b> : écrasé plus tôt, il tient à 1 PV.', '<b>Étourdi</b> : la veille d\'un coup spécial, faites chacun <b>3 quêtes</b> ou <b>200 XP</b>. Le boss est sonné, son coup échoue.',
-      '<b>Échos du Rodage</b>, dès février : un week-end par mois, un ancien boss revient 48 h. Votez pour lui dans l\'onglet Combat ; vaincu, <b>60 éclats</b> chacun.', '<b>Défi de l\'Avent</b>, du 1er au 24 décembre : une case s\'ouvre chaque jour où vous faites <b>tous les deux</b> au moins une quête. Un héros en vacances n\'est pas attendu ce jour-là. <b>18 cases sur 24</b> : chacun gagne <b>150 XP</b> et un <b>coffre rare</b>.', '<b>Trêve des fêtes</b>, du 24 décembre au 1er janvier : chaque jour de fête compte pour moitié dans les PV des boss.',
-      '<b>Pacte et Saga</b>, chaque semaine au camp : l\'un propose un pacte, l\'autre le scelle ; tenu jusqu\'à dimanche, il rapporte <b>+150 XP</b> chacun le lundi. Votez aussi la suite du chapitre : le choix gagnant (le Maître du Jeu tranche mercredi en cas de désaccord) vous bénit jusqu\'à dimanche. Un rappel reste en haut de Quêtes tant que c\'est à toi d\'agir.'] },
+    p: ['Jusqu\'à 13 emplacements, de la cape au sceau. Un cadenas : pas encore gagné, le « ? » dit comment l\'obtenir.',
+      'Les petits ornements (familier de poche, sol, emblème, lueur) se gagnent tout seuls avec ton niveau, tes séries et tes titres.',
+      'Un <b>point rouge</b> sur l\'Armurerie = un nouvel objet à voir. Ton compagnon d\'armes voit ce que tu portes.'] },
   { t: 'Les talents', id: 'talents', s: `<div class="rg-sch"><div class="tal-ech"><span class="def">8<small>défaut</small></span><i>→</i><span>12<small>I</small></span><i>→</i><span>15<small>II</small></span><i>→</i><span class="or">18<small>III</small></span></div></div>`,
     get p() { const T = TALENTS_APP, l = (c, x) => `<b>${c} · ${T[c].nom}</b> : ${x}.`;
-      return ['Chaque semaine, ton <b>entraînement</b> vise ta caractéristique la plus faible : <b>+1 000 XP</b> à cette caractéristique.',
-        'Chaque caractéristique cache un talent : il s\'éveille à <b>12</b> (I), grandit à <b>15</b> (II), culmine à <b>18</b> (III).',
+      return ['Chaque caractéristique cache un talent : il s\'éveille à <b>12</b> (I), grandit à <b>15</b> (II), culmine à <b>18</b> (III).',
         l('Force', 'ta 1re quête d\'un jour de coup spécial frappe le boss +10 / 20 / 30 %'), l('Endurance', 'Épuisé, ton XP vaut ×0,90 / 0,95 / 1'),
         l('Agilité', 'tes ratés soignent le boss 5 / 10 / 15 % de moins'), l('Intelligence', '+1 / 2 / 3 à ton d20 (bonus total plafonné à +5)'),
         l('Sagesse', '+5 / 10 / 15 % d\'XP sur les annexes, entraînement compris'), l('Volonté', 'un raté te coûte 10 / 20 / 30 % de PV en moins (arrondi en ta faveur)'),
         l('Charisme', 'ton encouragement donne 15 / 20 / 25 XP à ton compagnon et 5 / 10 / 15 XP à toi'),
-        'Une caractéristique à <b>8</b> a un défaut (Bras lourds, Souffle court, Pataud, Distrait, Impatient, Fragile, Solitaire) ; ton entraînement de la semaine la vise : au premier point gagné, le défaut disparaît.',
-        'Un talent compte à partir du jour où il s\'éveille. Le 1er janvier, il reste.',
-        '🎲 <b>Jet de sauvegarde</b> : à chaque raté, le destin lance un d20 pour toi, avec le bonus de la caractéristique de la quête. <b>10 ou plus</b> : tu ne perds que les trois quarts des PV. <b>20</b> : aucun PV perdu. Un mauvais jet ne coûte jamais plus.']; } },
+        'Une caractéristique à <b>8 ou moins</b> a un défaut (Bras lourds, Souffle court, Pataud, Distrait, Impatient, Fragile, Solitaire) ; ton entraînement de la semaine la vise : au premier point gagné, le défaut disparaît.',
+        'Un talent compte à partir du jour où il s\'éveille. Le 1er janvier, il reste.']; } },
   { t: 'Les saisons', get s() { return rgSchema('saisons'); },
     get p() { const s1 = (((typeof state !== 'undefined' && state && state.armurerie) || {}).saison || {}).id === 's1'; // pas la date : entre minuit et le recommencement, le moteur envoie encore le Rodage
-      return ['Chaque saison a <b>son chemin</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau). Les objets du Rodage s\'en vont avec lui, sauf ton <b>Dragon de l\'Aube</b>, qui te suit.', 'Tes <b>trophées</b> et tes <b>titres</b> restent, souvenirs du Rodage.',
+      return ['Chaque saison a <b>son chemin</b>, <b>ses objets</b> et <b>ses boss</b>.', 'Le 1er janvier, la Compagnie <b>repart à neuf</b> : niveau 1 (tes capacités se regagnent avec le niveau). Les objets du Rodage s\'en vont avec lui, sauf ton <b>Dragon de l\'Aube</b> et tes <b>sceaux</b>, qui te suivent.', 'Tes <b>trophées</b>, tes <b>titres</b>, tes <b>caractéristiques</b> et tes <b>talents</b> restent.',
         s1 ? 'La ' + esc(((state.armurerie || {}).saison || {}).nom || 'Saison 1') + ' court jusqu\'au 30 juin.' : 'La Saison 1 arrive le 1er janvier. Tout le reste est un secret.']
         .concat(s1 ? [] : ['<b>⚠ Ouvre tes coffres et dépense tes éclats avant le 31 décembre : ils disparaissent avec le Rodage.</b>']); } }
 ];
