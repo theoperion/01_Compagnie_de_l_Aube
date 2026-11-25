@@ -637,6 +637,11 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
 .aj-boss:empty{display:none}.aj-boss .enlu-boss{grid-template-columns:70px 1fr;padding:4px 10px 4px 2px;margin:0;overflow:visible}.aj-boss .eb-av{transform:scale(.7);transform-origin:center;margin:-12px -10px;overflow:visible}
 .aj-bilan{border-left:4px solid var(--gold);display:grid;gap:6px}.aj-bilan p{margin:0;line-height:1.5}.aj-mot{font-style:italic;color:var(--muted)}.aj-score{font:800 1.6rem var(--display,inherit);color:var(--gold)}.aj-score small{font-size:.9rem;color:var(--muted)}.aj-manque{color:#ff9f43}
 .aj-suite{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.88rem}.aj-suite b{color:var(--gold);margin-right:3px}.aj-bilan .lien{justify-self:end}
+.en-portes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.en-porte{display:grid;justify-items:start;gap:2px;text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line2);background:var(--surface);color:var(--fg);font:inherit;cursor:pointer;min-height:96px}
+.en-porte .en-ic{font-size:1.5rem;line-height:1}.en-porte b{font-size:1rem}.en-porte small{color:var(--muted);font-size:.8rem}.en-porte em{font-style:normal;font-size:.78rem;color:var(--en)}.en-porte em b{color:var(--en)}
+.en-journal{justify-self:center;display:block;margin:10px auto 0;text-decoration:none;color:var(--fg)}
+.en-ret{margin:4px 0}.en-h{margin:6px 2px 2px;font-size:1.2rem}.en-intro{margin:0 2px 10px;font-size:.9rem;line-height:1.4}
 .en-etapes{margin:4px 0 2px;padding-left:20px;display:grid;gap:4px;font-size:.92rem;line-height:1.35}.en-etapes b{color:var(--en)}
 .en-plus summary{cursor:pointer;font-weight:700;color:var(--muted);min-height:40px;display:flex;align-items:center}.en-plus[open] summary{margin-bottom:8px}
 .aj-ligne{padding:10px 10px 10px 14px;gap:6px}
@@ -1435,55 +1440,57 @@ function enteteAnglais(){
   const etapes=[q?`<b>${Math.min(q,30)} mots</b> à revoir (~${Math.max(2,Math.round(Math.min(q,30)/3))} min)`:"<b>Pas de mots</b> à revoir aujourd'hui",
     conv?`<b>Parler 10 min</b> avec Claude : « ${esc(scenOf(prochainScen()).nom)} »`:`<b>Mission</b> « ${esc(modUnit("travail")[0])} » : écouter, répéter, puis le boss`,
     "<b>Tes erreurs</b> deviennent des cartes pour la prochaine fois"];
-  return `<div class="card aj aj-grande en-tete" style="--c:var(--en)"><span class="kicker aj-tag"><span>Anglais · parler au travail</span><span class="aj-min">≈ 20 min</span></span>
+  return `<div class="card aj aj-grande en-tete" style="--c:var(--en)"><span class="kicker aj-tag"><span>Anglais · séance du jour</span><span class="aj-min">≈ 20 min</span></span>
     <h2>${auj?"Séance du jour faite ✓":"Ta séance d'anglais"}</h2>
     <ol class="en-etapes">${etapes.map(x=>`<li>${x}</li>`).join("")}</ol>
     <div class="aj-act"><button class="btn primary big en" id="enGo">${auj?"Encore une séance":"Commencer"}</button><button class="lien" id="enCourt">Pas le temps : 5 min de mots</button></div>
-    <p class="small muted" style="margin:2px 0 0">${fait} / ${E.goal} séances · ${minM} min d'oral ce mois-ci. Le micro écoute ta voix : parle à voix haute, même avec des fautes.</p></div>
-    <details class="card en-plus"><summary>Tout le contenu (missions au choix, conversation libre, séries, journal…)</summary><div class="en-plus-c"></div></details>`;
+    <p class="small muted" style="margin:2px 0 0">${fait} / ${E.goal} séances · ${minM} min d'oral ce mois-ci. Le micro écoute ta voix : parle à voix haute, même avec des fautes.</p></div>`;
 }
+/* Onglet Anglais (Théo, 25/11 : « c'est brouillon… il faut que pour l'utilisateur ce soit nickel » ; tous les objectifs gardés, parler en premier) :
+   un accueil = la séance guidée du jour + 4 portes (Parler, Écouter et répéter, Mots, Séries) + progression ; chaque porte ouvre SON écran. */
+let enVue="";
+const enRetour=t=>`<button class="btn sm en-ret" data-en-vue="">‹ Anglais</button><h2 class="en-h">${t}</h2>`;
 function renderEn(){
   const p=$("#p-en");
   micStop(true); majFocus();
   if(ses) return ses.kind==="vocab"?renderReview(p):ses.kind==="conv"?renderConv(p):renderMission(p);
-  const a=state.en.active, M=MODULES[a], u=modUnit(a), cur=state.en.mods[a].unit;
-  const dueCount=srsQueue().length;
+  const a=state.en.active, M=MODULES[a], u=modUnit(a), cur=state.en.mods[a].unit, q=srsQueue().length, d=deckStats();
   const starsOf=i=>state.en.mods[a].stars?.[i]||0;
-  p.innerHTML=`
-  ${hasTTS()?"":'<p class="note">Ce navigateur ne sait pas lire l\'audio. Ouvre la page dans Safari ou Chrome pour les exercices d\'écoute.</p>'}
-  <div class="card prochaine"><span class="kicker">Ce soir, à la chandelle</span>
-    ${dueCount?`<div class="cs-big">${dueCount}<small>carte${dueCount>1?"s":""}</small></div><div class="cs-sub">~${Math.max(2,Math.round(dueCount/3))} min · Mémoire des mots</div>
-    <button class="btn primary big" data-next="rev">Réviser ${dueCount} carte${dueCount>1?"s":""}</button>`:`<div class="cs-big">0<small>révision</small></div><div class="cs-sub">L'Oubli dort : un message d'Albion t'attend</div>`}
-    <button class="btn ${dueCount?"":"primary big"}" data-next="go">Partir en mission · ${esc(M.name)}</button></div>
-  ${playerCard()}
-  ${convCard()}
-  ${pierreRunique()}
-  <div class="card">${epicHTML(EPICS.en,epicDone("en"))}</div>
-  <div class="mods">${Object.entries(MODULES).map(([k,m])=>`<button class="mod" data-mod="${k}" aria-pressed="${k===a}"><b>${m.name}</b><span class="small muted">${m.sub}</span><span class="small mono">chapitre ${state.en.mods[k].unit+1} / ${m.units.length}</span></button>`).join("")}</div>
-  <div class="card mission">
-    <span class="small muted">${M.name} · chapitre ${cur+1} / ${M.units.length} ${"★".repeat(starsOf(cur))}</span>
-    <h2>${esc(u[0])}</h2><span class="muted">À placer à l'oral : ${esc(u[1])}</span>
-    <div class="row"><span class="pill neutral">1 · Écoute ×6</span><span class="pill neutral">2 · Parole ×6</span><span class="pill bad">3 · Boss du passage</span></div>
-    <div class="row"><button class="btn primary" id="go">Partir en mission</button><button class="btn" id="snd">Tester le son</button></div>
-    <p class="small muted">Réécouter ne coûte rien. Les jokers se paient en XP : ralentir −3, voir le texte −8. Bats le boss pour ouvrir le chapitre suivant.</p>
-    ${sample?"":'<p class="note">Les missions sont créées par Claude : ajoute ta clé API dans les réglages. La révision express marche sans.</p>'}
-  </div>
-  ${memoryCard()}
-  ${a==="series"?seriesExtras():""}
-  <div class="card"><h3>Hauts faits</h3><div class="badges">${BADGES.map(b=>`<div class="badge ${G().badges[b[0]]?"on":""}"><span class="medal">${b[1].replace(/[^A-Za-zÀ-ÿ ]/g,"").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()}</span><b class="small">${esc(b[1])}</b><span class="small muted">${esc(b[2])}</span></div>`).join("")}</div></div>
-  <div class="card"><h3>Carte ${M.name}</h3><div class="hist small">${M.units.map((x,i)=>`<div><span class="mono">${String(i+1).padStart(2,"0")}</span><span style="flex:1">${esc(x[0])}</span><span class="starline">${i<cur||starsOf(i)?"★".repeat(starsOf(i))+"☆".repeat(3-starsOf(i)):i===cur?'<span class="pill warn">en cours</span>':'<span class="muted">scellé</span>'}</span></div>`).join("")}</div></div>
-  <div class="card"><h3>Journal des missions</h3><div class="hist small">${state.en.sessions.slice(-6).reverse().map(s=>`<div><span>${frDate(s.date)}</span><span class="muted" style="flex:1">${esc(nomMonde(s))}</span><span class="starline">${s.stars!=null?"★".repeat(s.stars)+"☆".repeat(3-s.stars):""}</span><span class="mono">${s.xp!=null?"+"+s.xp+" XP":s.min+" min"}</span></div>`).join("")||'<p class="muted">Ton journal est vierge : la première mission t\'attend.</p>'}</div></div>`;
+  const son=hasTTS()?"":'<p class="note">Ce navigateur ne sait pas lire l\'audio. Ouvre la page dans Chrome pour les exercices d\'écoute.</p>';
+  const cle=sample?"":'<p class="note">Les missions et les conversations sont créées par Claude : ajoute ta clé dans les réglages (⚙). Les mots marchent sans.</p>';
+  let h="";
+  if(enVue==="parler") h=`${enRetour("🗣️ Parler")}<p class="muted en-intro">Une vraie discussion à voix haute avec Claude, dans une situation choisie. À la fin : tes erreurs corrigées et les mots à retenir.</p>${cle}${convCard()}`;
+  else if(enVue==="missions") h=`${enRetour("👂 Écouter et répéter")}<p class="muted en-intro">Un chapitre = une situation et une règle de grammaire : tu écoutes 6 phrases, tu les répètes, puis tu affrontes le boss du chapitre.</p>${son}${cle}
+    <div class="mods">${Object.entries(MODULES).map(([k,m])=>`<button class="mod" data-mod="${k}" aria-pressed="${k===a}"><b>${m.name}</b><span class="small muted">${m.sub}</span><span class="small mono">chapitre ${state.en.mods[k].unit+1} / ${m.units.length}</span></button>`).join("")}</div>
+    <div class="card mission"><span class="small muted">${M.name} · chapitre ${cur+1} / ${M.units.length} ${"★".repeat(starsOf(cur))}</span>
+      <h2>${esc(u[0])}</h2><span class="muted">À placer à l'oral : ${esc(u[1])}</span>
+      <div class="row"><button class="btn primary" id="go">Partir en mission</button><button class="btn" id="snd">Tester le son</button></div>
+      <p class="small muted">Réécouter ne coûte rien. Ralentir coûte 3 XP, voir le texte 8 XP.</p></div>
+    <details class="card"><summary>Les ${M.units.length} chapitres ${esc(M.name)}</summary><div class="hist small" style="margin-top:8px">${M.units.map((x,i)=>`<div><span class="mono">${String(i+1).padStart(2,"0")}</span><span style="flex:1">${esc(x[0])}</span><span class="starline">${i<cur||starsOf(i)?"★".repeat(starsOf(i))+"☆".repeat(3-starsOf(i)):i===cur?'<span class="pill warn">en cours</span>':'<span class="muted">scellé</span>'}</span></div>`).join("")}</div></details>`;
+  else if(enVue==="mots") h=`${enRetour("📚 Mots")}<p class="muted en-intro">Chaque mot revient juste avant que tu l'oublies. Tes erreurs des conversations et des missions arrivent ici toutes seules.</p>${memoryCard()}`;
+  else if(enVue==="series") h=`${enRetour("🎬 Séries")}<p class="muted en-intro">Apprendre avec ce que tu regardes : analyse un extrait, garde ses expressions.</p>${cle}${seriesExtras()}`;
+  else if(enVue==="journal") h=`${enRetour("🏆 Progression et journal")}${playerCard()}${pierreRunique()}<div class="card">${epicHTML(EPICS.en,epicDone("en"))}</div>
+    <div class="card"><h3>Hauts faits</h3><div class="badges">${BADGES.map(b=>`<div class="badge ${G().badges[b[0]]?"on":""}"><span class="medal">${b[1].replace(/[^A-Za-zÀ-ÿ ]/g,"").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()}</span><b class="small">${esc(b[1])}</b><span class="small muted">${esc(b[2])}</span></div>`).join("")}</div></div>
+    <div class="card"><h3>Journal des séances</h3><div class="hist small">${state.en.sessions.slice(-10).reverse().map(x=>`<div><span>${frDate(x.date)}</span><span class="muted" style="flex:1">${esc(nomMonde(x))}</span><span class="mono">${x.min?x.min+" min":x.xp!=null?"+"+x.xp+" XP":""}</span></div>`).join("")||'<p class="muted">Ton journal est vierge : ta première séance t\'attend.</p>'}</div></div>`;
+  else {
+    const portes=[["parler","🗣️","Parler","Discuter à voix haute",`${SCENARIOS.length} situations`],["missions","👂","Écouter et répéter","Comprendre et redire",`chapitre ${cur+1} · ${esc(M.name)}`],
+      ["mots","📚","Mots","Retenir le vocabulaire",q?`<b>${q} à revoir</b>`:`${d.mast} maîtrisés`],["series","🎬","Séries","Apprendre en regardant","extraits et expressions"]];
+    h=`${son}${enteteAnglais()}<p class="aj-sous">Ou choisis toi-même</p>
+      <div class="en-portes">${portes.map(([k,ic,t,sous,info])=>`<button class="en-porte" data-en-vue="${k}"><span class="en-ic" aria-hidden="true">${ic}</span><b>${t}</b><small>${sous}</small><em>${info}</em></button>`).join("")}</div>
+      <button class="lien en-journal" data-en-vue="journal">🏆 Progression, hauts faits et journal ›</button>`;
+  }
+  p.innerHTML=h;
+  p.querySelectorAll("[data-en-vue]").forEach(b=>b.onclick=()=>{enVue=b.dataset.enVue;renderEn();scrollTo(0,0)});
   p.querySelectorAll("[data-mod]").forEach(b=>b.onclick=()=>{state.en.active=b.dataset.mod;save();renderEn();renderQuestEn()});
-  $("#go").onclick=startMission;
-  $("#snd").onclick=()=>{if(!speak("Hello Theron! If you can hear me, you're ready to play.",earRate()))toast("Audio indisponible dans ce navigateur")};
-  $("#rev").onclick=startReview;
-  $("#nwAdd").onclick=()=>{const en=$("#nwEn").value.trim(),fr=$("#nwFr").value.trim();if(!en||!fr)return;addWord(en,fr,($("#nwEx").value||"").trim());renderEn()};
-  if(a==="series") bindSeriesExtras();
-  bindConvCard();
-  const vieux=[...p.childNodes]; p.insertAdjacentHTML("afterbegin",enteteAnglais()); const boite=p.querySelector(".en-plus-c"); vieux.forEach(n=>boite.appendChild(n)); // les boutons gardent leurs gestes (nœuds déplacés, pas recopiés)
+  $("#go")&&($("#go").onclick=startMission);
+  $("#snd")&&($("#snd").onclick=()=>{if(!speak("Hello Theron! If you can hear me, you're ready to play.",earRate()))toast("Audio indisponible dans ce navigateur")});
+  $("#rev")&&($("#rev").onclick=startReview);
+  $("#nwAdd")&&($("#nwAdd").onclick=()=>{const en=$("#nwEn").value.trim(),fr=$("#nwFr").value.trim();if(!en||!fr)return;addWord(en,fr,($("#nwEx").value||"").trim());renderEn()});
+  if(enVue==="series") bindSeriesExtras();
+  if(enVue==="parler") bindConvCard();
   const it={k:"en",key:"en|"+todayISO(),date:todayISO()};
-  $("#enGo").onclick=()=>{retourAuj=false;commencer(it);retourAuj=false};
-  $("#enCourt").onclick=()=>{commencer(it,true);retourAuj=false};
+  $("#enGo")&&($("#enGo").onclick=()=>{commencer(it);retourAuj=false});
+  $("#enCourt")&&($("#enCourt").onclick=()=>{commencer(it,true);retourAuj=false});
 }
 const nomMonde=s=>s.mod==="conv"?"Conversation"+(s.scen&&SCENARIOS.find(x=>x.id===s.scen)?" · "+SCENARIOS.find(x=>x.id===s.scen).nom:""):(MODULES[s.mod||"travail"]||{name:s.mod||"?"}).name;
 
