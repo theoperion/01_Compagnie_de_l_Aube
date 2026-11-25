@@ -251,7 +251,7 @@ label{font-weight:600;font-size:.92rem;display:grid;gap:4px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 details.parcours summary{cursor:pointer;color:var(--gold,#d3a84a);font-size:.95rem;margin:6px 0}
 /* Mode concentration (mission, révision, conversation) : seul l'exercice reste à l'écran */
-body.focus .top,body.focus .quests,body.focus .tabs{display:none}
+body.focus .top,body.focus .quests,body.focus .tabs,body.focus .nav3{display:none}
 body.focus .wrap{padding-top:10px}
 body.focus .hud{position:sticky;top:0;z-index:6;background:linear-gradient(160deg,rgba(207,232,245,.06),transparent 45%),var(--surface);padding:10px 14px;gap:8px}
 /* Micro intégré */
@@ -613,6 +613,47 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
 .rfig .fx-manche{fill:#7a4f2c;stroke:var(--fig-trait);stroke-width:.8} .rfig .fx-reflet{stroke:#fff6dc;stroke-width:1;opacity:.6}
 .fx-coup-heros .fx-sol{display:none}
 
+.quests[hidden],.tabs[hidden]{display:none!important}
+/* ---------- Aujourd'hui / Ma progression / Plus (25/11) ---------- */
+.nav3{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px;border:1px solid var(--line2);position:sticky;top:6px;z-index:5;margin:2px 0 4px}
+.nav3 button{flex:1;min-height:42px;border:0;border-radius:999px;background:none;color:var(--muted);font:700 .86rem var(--body);cursor:pointer}
+.nav3 button[aria-current="page"]{background:var(--surface2);color:var(--fg);box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 0 1px var(--line2)}
+.aj-date{margin:6px 2px 0;font-weight:800;color:var(--muted);font-size:.85rem}
+.aj{border-left:4px solid var(--c);display:grid;gap:6px}
+.aj h2{margin:0;font-size:1.28rem;line-height:1.25} .aj-petite h2{font-size:1rem} .aj p{margin:0;color:var(--fg);opacity:.86;line-height:1.45}
+.card>.kicker.aj-tag{width:auto!important;max-width:none;display:flex!important;justify-content:flex-start!important} .aj-tag .aj-min{margin-left:auto}
+.aj-tag{display:flex;justify-content:space-between;gap:8px;font:800 .72rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
+.aj-min{color:var(--muted);letter-spacing:.04em;text-transform:none;font-weight:700}
+.aj-act{display:grid;gap:6px;margin-top:4px;justify-items:stretch}
+.aj-act .btn.big{min-height:50px;font-size:1.05rem}.aj-grande{gap:5px;padding-top:12px;padding-bottom:10px}.aj-date{margin-top:2px!important}
+.aj-petite .aj-act .btn.big{min-height:46px;font-size:.95rem}
+.aj-petite .btn.primary{background:transparent!important;color:var(--c)!important;border:1.5px solid var(--c)!important;box-shadow:none!important}
+.btn.primary.en{background:var(--en);border-color:var(--en);color:#1a1230}
+.lien{background:none;border:0;color:var(--muted);text-decoration:underline;font:600 .88rem var(--body);min-height:40px;cursor:pointer;justify-self:center}
+.aj-fait{opacity:.75} .aj-fait .pill{justify-self:start}
+.aj-repos{border-left-color:var(--gold)} .aj-repos .aj-tag{color:var(--gold)}
+.aj-sous{margin:6px 2px 0;font:800 .72rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.aj-glisse{display:grid} .aj-glisse .lien{justify-self:end;margin-top:-6px}
+.aj-ligne{padding:10px 10px 10px 14px;gap:6px}
+.aj-l{display:flex;align-items:center;gap:8px}.aj-lt{flex:1;min-width:0;display:grid;gap:1px}.aj-lt b{font-size:.98rem;line-height:1.25}.aj-lt small{color:var(--c);font-weight:700;font-size:.74rem}
+.aj-b{min-height:44px;flex:none;background:transparent;color:var(--c);border:1.5px solid var(--c);font-weight:800;padding:0 12px}
+.aj-plus{flex:none;min-width:40px;min-height:44px;background:none;border:0;color:var(--muted);font-size:1.3rem;cursor:pointer}
+.aj-menu{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:flex-end}
+.aj-rpe{display:grid;gap:6px}.aj-rpe .row{gap:6px}.aj-rpe .row .btn{flex:1;min-height:44px}
+.rd-l{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.rd{display:grid;justify-items:center;gap:3px}.rd b{font-size:.75rem;color:var(--muted)}
+.rd-o{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;border:2px solid var(--line2);color:#1a1230}
+.rd.plein .rd-o{background:var(--gold);border-color:var(--gold)} .rd.rate .rd-o{border-color:var(--bad);border-style:dashed} .rd.repos .rd-o{border:0;width:8px;height:8px;margin:13px 0;background:var(--line2)}
+.rd.auj .rd-o,.rd.ajd .rd-o{box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 45%,transparent)} .rd.ajd b{color:var(--gold)}
+.rd-p{display:flex;gap:4px;min-height:10px}.rd-p i{width:10px;height:10px;border-radius:50%;border:2px solid transparent;box-sizing:border-box}
+.rd-leg{display:flex;gap:12px;justify-content:center;margin-top:8px}.rd-leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.pg{border-left:4px solid var(--c);display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.card.pg>.kicker{width:auto!important;white-space:normal;overflow-wrap:anywhere}.pg-segs i{min-width:0}.pg h2{margin:0}.pg p{margin:0;line-height:1.45}.pg .kicker{color:var(--c)}
+.pg-segs{display:flex;gap:3px}.pg-segs i{flex:1;height:12px;border-radius:3px;background:linear-gradient(90deg,var(--c) calc(var(--f)*100%),color-mix(in srgb,var(--fg) 10%,transparent) 0)}
+.pg-jeu{display:grid;justify-items:start;gap:2px}.pg-jeu .lien{justify-self:start;text-decoration:none;color:var(--fg)}
+.plus{display:grid;gap:0;padding:4px 0}.plus-r{grid-row:1/3;grid-column:1;width:28px;height:28px;border-radius:50%;border:2px solid var(--c);box-sizing:border-box;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 20'%3E%3Cpath d='M3 1 V19 M3 3 L11 7 M3 9 L11 13' stroke='%23d39a5c' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/9px 13px no-repeat}
+.plus-l{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:2px 8px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line2);padding:12px 14px;color:var(--fg);cursor:pointer;font:inherit;min-height:56px}
+.plus-l:last-child{border-bottom:0}.plus-l b{font-size:1rem;grid-column:2}.plus-l .small{grid-column:2}.plus-l span[aria-hidden]{grid-row:1/3;grid-column:3;font-size:1.4rem;color:var(--muted)}
 </style>
 <style>html,body{margin:0}body{-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -629,19 +670,23 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
     <span class="sync" id="sync">Connexion à la Compagnie…</span>
   </header>
 
-  <div class="quests">
+  <div class="quests" hidden>
     <button class="quest en" id="qEn" data-go="en"></button>
     <button class="quest run" id="qRun" data-go="run"></button>
     <button class="quest str" id="qStr" data-go="str"></button>
   </div>
 
-  <div class="tabs" role="tablist">
+  <nav class="nav3" aria-label="Carnet"><button data-nav="auj" aria-current="page">Aujourd'hui</button><button data-nav="prog">Progression</button><button data-nav="plus" aria-label="Plus : anglais, course, renfo, réglages">⋯ Plus</button></nav>
+  <div class="tabs" role="tablist" hidden>
     <button class="tab" role="tab" id="tab-en" data-tab="en" aria-selected="true">Anglais</button>
     <button class="tab" role="tab" id="tab-run" data-tab="run" aria-selected="false">Course</button>
     <button class="tab" role="tab" id="tab-str" data-tab="str" aria-selected="false">Renfo</button>
   </div>
 
-  <section class="panel" id="p-en"></section>
+  <section class="panel" id="p-auj"></section>
+  <section class="panel" id="p-prog" hidden></section>
+  <section class="panel" id="p-plus" hidden></section>
+  <section class="panel" id="p-en" hidden></section>
   <section class="panel" id="p-run" hidden></section>
   <section class="panel" id="p-str" hidden></section>
   <section class="panel" id="p-set" hidden></section>
@@ -748,7 +793,7 @@ window.addEventListener("unhandledrejection",e=>{const r=e.reason;toParent({t:"c
     throw {code:"invalid_json",message:"Réponse illisible"}};
   const db={doc:()=>({
     get:async()=>{let j=await run("loadState");
-      if(j&&typeof j==="object"){try{window.majVacances&&window.majVacances(j.vacances||[])}catch(e){}j=j.json}
+      if(j&&typeof j==="object"){try{window.majVacances&&window.majVacances(j.vacances||[])}catch(e){}try{window.majEpiques&&window.majEpiques(j.epiques)}catch(e){}j=j.json}
       return {exists:!!j,data:()=>j?{json:j}:undefined}},
     set:async(d)=>run("saveState",d.json)})};
   const user={id:async()=>"moi",isOwner:()=>true,canEdit:()=>true};
@@ -765,7 +810,7 @@ const NUMERO_CARNET_APP = (window.COMPAGNIE || {}).NUMERO_CARNET || '?'; // affi
 const SESSION_MIN = 20;          // durée d'une séance d'anglais
 const EN_EVERY_DAYS = 3;         // une séance tous les 3 jours
 const RUN_PER_WEEK = 3;          // séances de course par semaine
-const STR_DAY = 3;               // renfo le jeudi (0 = lundi)
+const STR_DAY = 2;               // renfo le mercredi, après la séance dure (0 = lundi ; préparateur physique 25/11 : le jeudi, les courbatures tombaient sur la sortie longue)
 const SRS_DAYS = [0,1,3,7,14,30,60];
 const REVIEW_MAX = 12;
 const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
@@ -1523,8 +1568,8 @@ function startReview(){const q=srsQueue();if(!q.length)return;ses={kind:"vocab",
 function cardMode(c){return c.phrase?"prod":isNew(c)?"new":["ecoute","prod","reco"][(c.reps||0)%3]}
 function renderReview(p){
   if(ses.idx>=ses.queue.length){
-    p.innerHTML=`<div class="card game"><span class="kicker">Mémoire des mots</span><h2>Révision achevée</h2><p>${ses.ok} / ${ses.n} cartes retrouvées. Chaque mot retrouvé a frappé l'Oubli.</p>${oubliHTML()}<button class="btn primary" id="back">Retour</button></div>`;
-    $("#back").onclick=()=>{ses=null;renderAll()};return;
+    p.innerHTML=`<div class="card game"><span class="kicker">Mémoire des mots</span><h2>Révision achevée</h2><p>${ses.ok} / ${ses.n} cartes retrouvées. Chaque mot retrouvé a frappé l'Oubli.</p>${oubliHTML()}<button class="btn primary" id="back">${enchainer?"Continuer : la suite de la séance":"Retour"}</button></div>`;
+    $("#back").onclick=()=>{ses=null;if(enchainer){const f=enchainer;enchainer=null;f()}else renderAll()};return;
   }
   let c=state.en.deck.find(x=>x.id===ses.queue[ses.idx]); if(!c){ses.idx++;return renderReview(p)}
   const mode=ses.mode||(ses.mode=cardMode(c)), shown=ses.step==="show";
@@ -2164,19 +2209,23 @@ function diffHTML(expected,typed){
    ====================================================================== */
 const toSec=s=>{const m=String(s).trim().match(/^(\d+):(\d{1,2})$/);return m?+m[1]*60+ +m[2]:NaN};
 const mmss=sec=>`${Math.floor(sec/60)}:${String(Math.round(sec%60)).padStart(2,"0")}`;
-function paces(){const f=Number(state.run.facteur)||1;const p=toSec(state.run.goal)/10*f;return {EF:p*1.27,SL:p*1.30,SEUIL:p*1.06,AS10:p,VMA:p*0.93}}
+/* Allures (25/11) : les allures faciles partent de ton VRAI dernier 10 km (state.run.ref) s'il est plus lent que l'objectif
+   (avant : de l'objectif, ~4 % trop vite) ; l'allure 10 km et la VMA restent celles de l'objectif (c'est elles qu'on travaille). */
+function paces(){const f=Number(state.run.facteur)||1;const g0=toSec(state.run.goal)/10, r0=toSec(state.run.ref)/10, r=r0>g0?r0:g0;return {EF:r*1.27*f,SL:r*1.30*f,SEUIL:r*1.06*f,AS10:g0*f,VMA:g0*0.93*f}}
+/* Plan 10 km (refait le 25/11/2026 avec le préparateur physique) : UN seul jour dur (mercredi, la qualité, renfo le même jour),
+   lundi toujours facile, samedi sortie longue facile. Avant, la 2e colonne était du seuil 7 semaines sur 12, posé le lundi : 2 jours durs. */
 const PLAN=[
  ["10 × (1' vite / 1' lent) à allure 10 km","40' EF + 4 lignes droites",50],
- ["8 × 400 m allure VMA, récup 1'15","2 × 10' allure seuil, récup 2'",55],
- ["5 × 800 m allure VMA, récup 1'30","3 × 8' allure seuil, récup 2'",60],
+ ["8 × 400 m allure VMA, récup 1'15","40' EF",55],
+ ["5 × 800 m allure VMA, récup 1'30","45' EF + 4 lignes droites",60],
  ["6 × 1' vite / 1' lent (semaine légère)","35' EF",45],
- ["5 × 1000 m allure 10 km, récup 1'30","2 × 12' allure seuil, récup 2'",65],
- ["10 × 400 m allure VMA, récup 1'","20' continu allure seuil",70],
- ["4 × 1500 m allure 10 km, récup 2'","3 × 10' allure seuil, récup 2'",70],
+ ["5 × 1000 m allure 10 km, récup 1'30","45' EF",65],
+ ["10 × 400 m allure VMA, récup 1'","45' EF + 4 lignes droites",70],
+ ["4 × 1500 m allure 10 km, récup 2'","50' EF",70],
  ["8 × 300 m allure VMA (semaine légère)","40' EF",50],
- ["3 × 2000 m allure 10 km, récup 2'30","25' continu allure seuil",75],
- ["6 × 1000 m allure 10 km, récup 1'15","2 × 15' allure seuil, récup 3'",65],
- ["3 × 1000 m allure 10 km, récup 2'","30' EF + 3 × 1' allure 10 km",50],
+ ["3 × 2000 m allure 10 km, récup 2'30","50' EF + 4 lignes droites",75],
+ ["6 × 1000 m allure 10 km, récup 1'15","45' EF",65],
+ ["3 × 1000 m allure 10 km, récup 2'","35' EF + 3 lignes droites",50],
  ["5 × 400 m allure 10 km (rappel)","20' EF + 3 lignes droites","RACE"]
 ];
 /* Semaine allégée par l'adaptation : une répétition de moins, sortie longue −15 % */
@@ -2260,12 +2309,16 @@ function weeksPlan(){
   return PLAN.slice(off).map((w0,i)=>{const mon=L[i]||addDays(state.run.start,7*i);
     const auto=(state.run.allege||{})[i];
     const w=auto?alleger(w0):w0;const mk=(k,dow,o)=>({key:`${i}-${k}`,dow,date:addDays(mon,dow),...o});
-    return {n:i+1,abs:i+off,monday:mon,auto:!!auto,s:[
+    const list=[
     mk(0,D.q,{tag:"Qualité",title:w[0],detail:"L'assaut de la semaine. Échauffement 15' EF + gammes, corps de séance, retour au calme 10'.",zone:/VMA/.test(w[0])?"VMA":"AS10"}),
     mk(1,D.s,{tag:/seuil/.test(w[1])?"Seuil":"Endurance",title:w[1],detail:/seuil/.test(w[1])?"Marche forcée. Échauffement 15' EF, retour au calme 10'.":"Route paisible. Allure facile, tu dois pouvoir parler.",zone:/seuil/.test(w[1])?"SEUIL":"EF"}),
     w[2]==="RACE"?mk(2,D.l,{tag:"Course",title:`Le 10 km, objectif ${state.run.goal}`,detail:"Le combat final. Échauffement 15' + 3 accélérations. Pars à l'allure, pas plus vite sur le 1er km.",zone:"AS10"})
       :mk(2,D.l,{tag:"Sortie longue",title:`${w[2]}' en endurance`,detail:i+off>=4?"Longue chevauchée. Option : les 10 dernières minutes à allure 10 km.":"Longue chevauchée. Allure facile du début à la fin.",zone:"SL"})
-  ].sort((a,b)=>a.dow-b.dow)}});
+  ].sort((a,b)=>a.dow-b.dow);
+    /* Séance dure ratée (préparateur physique 25/11) : jamais rattrapée, la sortie longue de la semaine prend 3 × 5' à allure 10 km */
+    const t=todayISO(), q=list.find(x=>x.tag==="Qualité"), sl=list.find(x=>x.tag==="Sortie longue");
+    if(q&&sl&&q.date<t&&!state.run.logs[q.key]&&!state.run.logs[sl.key]){sl.title=`${w[2]}' en endurance, dont 3 × 5' allure 10 km`;sl.qualiteRatee=true}
+    return {n:i+1,abs:i+off,monday:mon,auto:!!auto,s:list}});
 }
 const curWeekIdx=()=>{const t=todayISO();const W=weeksPlan();const d0=W[0]?.monday||state.run.start;if(t<d0)return Math.floor(daysBetween(d0,t)/7);
   const i=W.findIndex(w=>t<addDays(w.monday,7));return i<0?W.length:i};
@@ -2559,6 +2612,10 @@ const EPICS={
   en:{name:"45 séances d'anglais avant fin mars",goal:45,unit:"séances",start:"2026-10-26",end:"2027-03-31"},
   run:{name:"70 sorties avant fin avril",goal:70,unit:"sorties",start:"2026-10-26",end:"2027-04-30"}
 };
+/* Les vraies quêtes épiques de la Compagnie remplacent ces valeurs (moteur 6.36, carnetCharger → epiques) : elles repartent au 01/01 */
+window.majEpiques=L=>{if(!Array.isArray(L))return;try{localStorage.setItem("quetes-epiques",JSON.stringify(L))}catch(e){}
+  ["en","run"].forEach(k=>{const e=L.find(x=>x.type===k);if(e)Object.assign(EPICS[k],{name:e.nom,goal:e.visees,start:e.debut,end:e.echeance})})};
+try{window.majEpiques(JSON.parse(localStorage.getItem("quetes-epiques")||"null"))}catch(e){}
 function epicDone(k){const e=EPICS[k];return k==="en"?state.en.sessions.filter(s=>s.date>=e.start&&s.date<=e.end).length:Object.values(state.run.logs).filter(l=>l.date>=e.start&&l.date<=e.end).length}
 function epicHTML(e,done){
   const tot=daysBetween(e.start,e.end), el=Math.min(tot,Math.max(0,daysBetween(e.start,todayISO())));
@@ -2574,7 +2631,7 @@ function forgeCard(S){
   const n=S.filter(w=>state.str.logs[w.key]).length, tot=S.length, hp=tot-n, pieces=FORGE.slice(FORGE.length-tot);
   return `<div class="card"><span class="kicker" style="color:var(--str)">Progression du renfo</span>
     <h2>${n} séance${n>1?"s":""} sur ${tot}</h2>
-    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque jeudi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
+    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque mercredi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
     <div class="foe"><div class="row" style="justify-content:space-between"><b class="foe-name">Gargouille de la Raideur</b><span class="small mono">${hp} / ${tot} PV</span></div><div class="hp"><i style="width:${hp/tot*100}%"></i></div></div>
     <div class="slots">${pieces.map((f,i)=>`<div class="slot ${i<n?"on":""}">${i<n?"✦ ":""}${esc(f)}</div>`).join("")}</div>
   </div>`;
@@ -2605,7 +2662,7 @@ function renderQuestStr(){
   else if(cur.date===t) pill='<span class="pill warn">Aujourd\'hui</span>';
   else if(cur.date<t) pill='<span class="pill bad">À rattraper</span>';
   else pill=`<span class="pill neutral">${frDate(cur.date)}</span>`;
-  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · la forge du jeudi</i></span><span class="big">${esc(cur.phase)}<small class="bsub">~${tlMinutes(cur)} min</small></span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
+  $("#qStr").innerHTML=`<span class="k">Renfo<i class="kx"> · la forge du mercredi</i></span><span class="big">${esc(cur.phase)}<small class="bsub">~${tlMinutes(cur)} min</small></span><span class="row">${pill}<span class="pill neutral">${Object.keys(state.str.logs).length} séance${Object.keys(state.str.logs).length>1?"s":""}</span></span>`;
 }
 
 /* ---------- Lecteur de séance guidée ---------- */
@@ -2691,7 +2748,7 @@ function renderStr(){
     <div class="tbl"><table><thead><tr><th>Sem.</th><th>Date</th><th>Phase</th><th>Séance</th><th></th></tr></thead><tbody>
     ${S.map((w,i)=>`<tr class="${i===wi?"cur":""}"><td class="mono">${w.n}</td><td>${jourMois(w.date)}</td><td>${esc(w.phase)}${w.light?" (allégée)":""}</td><td class="mono">${w.seance} · ${w.blocs.map(b=>b.tours).join("+")} tours</td><td>${state.str.logs[w.key]?'<span class="pill ok">fait</span>':""}</td></tr>`).join("")}
     </tbody></table></div>
-    <p class="small muted">Le renfo le jeudi tombe au lendemain de la séance de qualité : les jours durs restent groupés et la sortie longue arrive après 48 h de récupération.</p>
+    <p class="small muted">Le renfo se fait le mercredi, après la séance dure : les efforts restent groupés le même jour, et la sortie longue du samedi arrive après 72 h de récupération.</p>
   </div>
   <details class="card"><summary>Le manuel du forgeron : tous les exercices</summary><div class="exgrid" style="margin-top:10px">${Object.keys(EX).map(id=>`<div class="ex"><div class="figbox">${figSVG(id)}</div><b>${esc(EX[id].name)}</b><ul class="small muted">${EX[id].cues.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`).join("")}</div></details>`;
   $("#sgo").onclick=()=>startPlayer(cur);
@@ -2714,7 +2771,9 @@ function seanceTexte(s){
   const t=s.title;
   let m;
   if(s.tag==="Course") return `${ech}\nCourse\n- 10km ${allureTxt(P.AS10,0.01)}${rac}`;
-  if(s.tag==="Sortie longue"){const min=+(t.match(/^(\d+)/)||[0,60])[1];return `Sortie longue\n- ${min}m ${allureTxt(P.SL,0.04)}`}
+  if(s.tag==="Sortie longue"){const min=+(t.match(/^(\d+)/)||[0,60])[1];
+    if(s.qualiteRatee) return `Sortie longue\n- ${Math.max(20,min-25)}m ${allureTxt(P.SL,0.04)}\n\n3x\n- 5m ${allureTxt(P.AS10)}\n- 2m ${EF}\n\nRetour au calme\n- 4m ${EF}`;
+    return `Sortie longue\n- ${min}m ${allureTxt(P.SL,0.04)}`}
   if(m=t.match(/^(\d+)\s*×\s*\((\d+)'\s*vite\s*\/\s*(\d+)'\s*lent\)/)) return `${ech}\n${m[1]}x\n- ${m[2]}m ${allureTxt(P.AS10)}\n- ${m[3]}m ${EF}\n${rac}`;
   if(m=t.match(/^(\d+)\s*×\s*(\d+)\s*m/)) return `${ech}\n${m[1]}x\n- ${m[2]}m ${allureTxt(z)}\n- ${recSec(t)}s ${allureTxt(P.EF*1.1,0.05)}\n${rac}`;
   if(m=t.match(/^(\d+)\s*×\s*(\d+)'/)) return `${ech}\n${m[1]}x\n- ${m[2]}m ${allureTxt(z)}\n- ${recSec(t)}s ${allureTxt(P.EF*1.1,0.05)}\n${rac}`;
@@ -2748,7 +2807,7 @@ async function synchroMontre(){
   state.run.garmin=state.run.garmin||{}; let n=0;
   acts.filter(a=>/run/i.test(a.type||"")&&!state.run.garmin[a.id]).sort((a,b)=>a.date<b.date?-1:1).forEach(a=>{
     const w=W.find(w=>a.date>=w.monday&&a.date<=addDays(w.monday,6)); if(!w) return;
-    const libres=w.s.filter(s=>!state.run.logs[s.key]);
+    const libres=w.s.filter(s=>!state.run.logs[s.key]&&(a.travail||s.tag!=="Qualité")); // sans fractions, une sortie ne coche jamais la séance dure (25/11)
     const s=libres.find(s=>s.date===a.date)||libres.sort((x,y)=>Math.abs(daysBetween(x.date,a.date))-Math.abs(daysBetween(y.date,a.date)))[0];
     if(!s) return;
     state.run.logs[s.key]={date:a.date,rpe:a.rpe||null,note:"",auto:true,km:a.km,min:a.min,allure:a.allure,fc:a.fc,id:a.id,travail:a.travail||null,at:Date.now()};
@@ -2820,7 +2879,7 @@ function renderSet(){
       <label>Jour du seuil / endurance<select id="ds">${opt(D.s)}</select></label>
       <label>Jour de la sortie longue<select id="dl">${opt(D.l)}</select></label>
     </div>
-    <p class="small muted">Conseillé : lundi seuil, mercredi qualité, jeudi renfo, samedi sortie longue. Évite deux séances dures d'affilée, et la qualité le lendemain du renfo.</p>
+    <p class="small muted">Conseillé : lundi facile, mercredi séance dure puis renfo, samedi sortie longue. Un seul jour dur par semaine, jamais deux séances dures d'affilée.</p>
   </div>
   <div class="card"><h2>Anglais</h2>
     <div class="grid2">
@@ -2905,19 +2964,189 @@ function bindAcct(){
 }
 
 /* ======================================================================
+   AUJOURD'HUI · refonte du 25/11/2026 (conseil : coach d'anglais, préparateur physique, ergonome, maître du jeu ; validé par Théo)
+   Un écran = LA séance du jour et un bouton ; la semaine en 7 ronds ; « Ma progression » ; le reste dans « ⋯ ».
+   Il ne change aucune donnée : il lit le plan (weeksPlan, strWeeks) et appelle les vrais démarrages (startReview, startMission,
+   startConv, startPlayer) ; les détails restent dans les anciens écrans (Anglais, Course, Renfo, Réglages).
+   ====================================================================== */
+const EN_JOURS=[1,3,6];            // anglais : mardi, jeudi, dimanche (jamais un jour dur)
+const SCEN_PRO=["labo","congres","cafe","visio"];
+const dowOf=d=>daysBetween(mondayOf(d),d);
+const LETTRES=["L","M","M","J","V","S","D"];
+let enchainer=null, retourAuj=false, ouvertCourse=null;
+function sautes(){try{return JSON.parse(localStorage.getItem("carnet-sautes")||"{}")||{}}catch(e){return {}}}
+function sauter(k){const S=sautes();S[k]=todayISO();try{localStorage.setItem("carnet-sautes",JSON.stringify(S))}catch(e){}}
+/* Ce qui est prévu un jour donné : [{k:'run'|'str'|'en', key, date, fait, ...}] */
+function prevusDu(d){
+  const out=[];
+  weeksPlan().forEach(w=>w.s.forEach(s=>{if(s.date===d)out.push({k:"run",key:"run|"+s.key,date:d,s,w,fait:!!state.run.logs[s.key]})}));
+  strWeeks().forEach(x=>{if(x.date===d)out.push({k:"str",key:"str|"+x.key,date:d,x,fait:!!state.str.logs[x.key]})});
+  if(EN_JOURS.includes(dowOf(d)))out.push({k:"en",key:"en|"+d,date:d,fait:state.en.sessions.some(x=>x.date===d)});
+  return out;
+}
+/* Anglais rattrapé : une séance faite un autre jour de la même « période » (jusqu'au prochain jour d'anglais) compte */
+function enFaitEntre(a,b){return state.en.sessions.some(x=>x.date>=a&&x.date<=b)}
+function enFait(it){if(it.fait)return true;let f=it.date;for(let i=1;i<7;i++){const d=addDays(it.date,i);if(EN_JOURS.includes(dowOf(d)))break;f=d}return enFaitEntre(it.date,f>todayISO()?todayISO():f)}
+const estFait=it=>it.k==="en"?enFait(it):it.fait;
+/* Textes simples, sans jargon (ergonome) */
+function texteRun(s){
+  const P=paces(), t=s.title, ok=!isNaN(toSec(state.run.goal));
+  const al=z=>ok?mmss(P[z])+" /km":"";
+  if(s.tag==="Course") return {t:"Le jour J : ton 10 km",p:`Objectif ${state.run.goal}. Échauffe-toi 15 min, pars à ${al("AS10")}, pas plus vite sur le 1er km.`,min:60};
+  if(s.zone==="EF"||s.zone==="SL"){
+    const min=+(t.match(/^(\d+)'/)||[0,45])[1], lg=(t.match(/(\d+) lignes droites/)||[])[1];
+    if(s.qualiteRatee) return {t:`Sortie longue : ${min} min, dont 3 × 5 min plus vite`,p:`Mercredi n'a pas été fait : on ne le rattrape pas. Tranquille à ${al("SL")}, avec au milieu 3 fois 5 min à ${al("AS10")} (2 min tranquilles entre).`,min};
+    return {t:`${s.tag==="Sortie longue"?"Sortie longue":"Sortie facile"} : ${min} min${lg?` + ${lg} accélérations`:""}`,
+      p:`Tranquille, vers ${al(s.zone)} : tu dois pouvoir parler.${lg?` À la fin, ${lg} fois 20 s plus vite, en souplesse.`:""}${s.tag==="Sortie longue"&&s.w&&s.w.abs>=4?" Si tu te sens bien : les 10 dernières minutes à allure 10 km.":""}`,min:min+(lg?5:0)};
+  }
+  const vma=/VMA/.test(t);
+  return {t:"Séance dure : "+t.replace(/(\d+)'(\d+)/g,"$1 min $2").replace(/(\d+)'/g,"$1 min").replace(/allure VMA/g,"très vite").replace(/ à allure 10 km/g,"").replace(/récup/g,"repos").replace(/\s*\((semaine légère|rappel)\)/,""),
+    p:`15 min tranquille avant, 10 min après. ${vma?`« Très vite » : ${al("VMA")}`:`Allure 10 km : ${al("AS10")}`}. C'est LA séance dure de la semaine.`,min:50};
+}
+function detailIt(it){
+  if(it.k==="run"){const x=texteRun(it.s);return {tag:"Course",t:x.t,p:x.p,min:x.min}}
+  if(it.k==="str"){const c=it.x;return {tag:"Renfo",t:`Renfo ${c.seance} · ${c.phase}${c.light?" (allégé)":""}`,p:`${c.blocs.length} blocs en circuit, guidé à la voix. Matériel : haltères, élastique, une marche.`,min:tlMinutes(c)}}
+  const q=srsQueue().length, conv=prochainEstConv();
+  return {tag:"Anglais",t:conv?`Conversation : ${scenOf(prochainScen()).nom}`:`Mission : ${modUnit("travail")[0]}`,
+    p:`${q?`D'abord ${q} carte${q>1?"s":""} de vocabulaire (~${Math.max(2,Math.round(q/3))} min), puis `:""}${conv?"une vraie discussion à voix haute avec Claude":"écoute, parole et le boss du chapitre"}.`,min:20};
+}
+const prochainEstConv=()=>{const L=state.en.sessions[state.en.sessions.length-1];return !!L&&L.mod!=="conv"};
+const prochainScen=()=>SCEN_PRO[state.en.sessions.filter(x=>x.mod==="conv").length%SCEN_PRO.length];
+/* Le cœur de l'anglais : l'app choisit (coach d'anglais : « le plus gros frein, c'est le choix ») */
+function anglaisPrincipal(){
+  if(!sample){toast(sampleErr("absent"));renderAll();return}
+  if(prochainEstConv())startConv(prochainScen());else{state.en.active="travail";startMission()}
+}
+function commencer(it,court){
+  retourAuj=true;
+  if(it.k==="en"){setTab("en");const q=srsQueue().length;
+    if(court){if(q)startReview();else{retourAuj=false;toast("Pas de carte à revoir aujourd'hui : fais une conversation de 4 répliques, ou repose-toi.")}return}
+    if(q){enchainer=anglaisPrincipal;startReview()}else anglaisPrincipal();return}
+  if(it.k==="str"){startPlayer(it.x);return} // startPlayer ouvre lui-même Renfo, une fois le lecteur prêt (sinon le retour sur Aujourd'hui se perdait)
+  ouvertCourse=ouvertCourse===it.key?null:it.key;retourAuj=false;renderAuj();
+}
+function marquer(it,rpe){
+  if(it.k==="run"){state.run.logs[it.s.key]={date:todayISO(),rpe:rpe||null,note:"",at:Date.now()};ouvertCourse=null;sfx("ok");toast("Étape franchie ! Elle compte dans la Compagnie")}
+  else if(it.k==="str"){state.str.logs[it.x.key]={date:todayISO(),rpe:null,min:tlMinutes(it.x),at:Date.now()};sfx("ok");toast("Séance forgée ! Elle compte dans la Compagnie")}
+  save();renderAll();
+}
+const COUL={run:"var(--run)",str:"var(--str)",en:"var(--en)"};
+function rondsSemaine(){
+  const mon=mondayOf(todayISO()),t=todayISO();let fait=0,tot=0;
+  const j=LETTRES.map((L,i)=>{const d=addDays(mon,i),P=prevusDu(d),n=P.filter(estFait).length;fait+=n;tot+=P.length;
+    const etat=!P.length?"repos":n===P.length?"plein":d<t?"rate":d===t?"auj":"prevu";
+    return `<div class="rd ${etat}${d===t?" ajd":""}" aria-label="${DAYS[i]} : ${!P.length?"repos":n+" sur "+P.length}"><span class="rd-o">${n===P.length&&P.length?"✓":""}</span><span class="rd-p">${P.map(x=>`<i style="${estFait(x)?"background":"border-color"}:${COUL[x.k]}"></i>`).join("")}</span><b>${L}</b></div>`}).join("");
+  return `<div class="card rds"><div class="row" style="justify-content:space-between"><span class="kicker">Ta semaine</span><span class="small mono">${fait} / ${tot} séances</span></div><div class="rd-l">${j}</div>
+    <div class="rd-leg small muted"><span><i style="background:var(--run)"></i>course</span><span><i style="background:var(--str)"></i>renfo</span><span><i style="background:var(--en)"></i>anglais</span></div></div>`;
+}
+let menuOuvert=null;
+/* « Aussi aujourd'hui » : une ligne compacte (~56 px), un bouton, le reste dans « ⋯ » (ergonome 25/11 : tout doit tenir à 360 × 640) */
+function ligneIt(it,glisse){
+  const D=detailIt(it), f=estFait(it), m=menuOuvert===it.key, rpe=it.k==="run"&&ouvertCourse===it.key;
+  const bouton=f?'<span class="pill ok">✓</span>':it.k==="run"?`<button class="btn sm aj-b" data-faite>${rpe?"Fermer":"C'est fait"}</button>`:`<button class="btn sm aj-b" data-go-auj>Commencer</button>`;
+  const menu=[it.k==="str"&&!f?'<button class="lien" data-deja>Déjà faite</button>':"",it.k==="en"&&!f?'<button class="lien" data-court>Version 5 min (cartes)</button>':"",glisse&&!f?`<button class="lien" data-sauter="${esc(it.key)}">La sauter</button>`:""].filter(Boolean).join("");
+  return `<div class="card aj aj-ligne ${f?"aj-fait":""}" data-it="${esc(it.key)}" style="--c:${COUL[it.k]}">
+    <div class="aj-l"><span class="aj-lt"><b>${esc(D.t)}</b><small>${D.tag} · ${D.min} min${it.date!==todayISO()?` · prévue ${jourLong(it.date)}`:""}</small></span>${bouton}${menu?`<button class="aj-plus" data-menu aria-label="Autres choix" aria-expanded="${m}">⋯</button>`:""}</div>
+    ${m&&menu?`<div class="aj-menu">${menu}</div>`:""}
+    ${rpe?`<div class="aj-rpe"><span class="small">Comment c'était ?</span><div class="row">${[["Facile",3],["Moyen",5],["Dur",7],["Très dur",9]].map(([l,v])=>`<button class="btn sm" data-rpe-auj="${v}">${l}</button>`).join("")}</div></div>`:""}</div>`;
+}
+function carteIt(it,grande,glisse){
+  if(!grande)return ligneIt(it,glisse);
+  const D=detailIt(it), f=estFait(it);
+  const btns=f?`<span class="pill ok">✓ Faite</span>`
+    :it.k==="run"?(ouvertCourse===it.key?`<div class="aj-rpe"><span class="small">Comment c'était ?</span><div class="row">${[["Facile",3],["Moyen",5],["Dur",7],["Très dur",9]].map(([l,v])=>`<button class="btn sm" data-rpe-auj="${v}">${l}</button>`).join("")}</div><button class="btn sm" data-annuler-auj>Annuler</button></div>`
+        :`<button class="btn primary big run" data-faite>C'est fait</button>${montre?.ok?'<p class="small muted">Ta montre la cochera toute seule après la sortie.</p>':""}`)
+    :it.k==="str"?`<button class="btn primary big str" data-go-auj>Commencer la séance guidée</button><button class="lien" data-deja>Déjà faite</button>`
+    :`<button class="btn primary big en" data-go-auj>Commencer</button><button class="lien" data-court>Pas le temps : version 5 min (cartes)</button>`;
+  const sauter=glisse&&!f?`<button class="lien" data-sauter="${esc(it.key)}">La sauter</button>`:"";
+  return `<div class="card aj ${grande?"aj-grande":"aj-petite"} ${f?"aj-fait":""}" data-it="${esc(it.key)}" style="--c:${COUL[it.k]}">
+    <span class="kicker aj-tag"><span>${D.tag}${it.date!==todayISO()?` · prévue ${jourLong(it.date)}`:""}</span><span class="aj-min">≈ ${D.min} min</span></span>
+    <h2>${esc(D.t)}</h2>${grande&&!f?`<p>${esc(D.p)}</p>`:""}<div class="aj-act">${btns}${sauter}</div></div>`;
+}
+/* Séances non faites des jours passés de la semaine, qu'on peut encore faire (jamais une séance dure, jamais deux séances du corps le même jour) */
+function aRattraper(corpsAujourdhui){
+  const t=todayISO(),mon=mondayOf(t),S=sautes(),out=[];
+  for(let d=mon;d<t;d=addDays(d,1))prevusDu(d).forEach(it=>{
+    if(estFait(it)||S[it.key])return;
+    if(it.k==="run"&&(it.s.tag==="Qualité"||it.s.tag==="Course"))return;
+    if(it.k!=="en"&&corpsAujourdhui)return;
+    if(it.k==="en"&&prevusDu(t).some(x=>x.k==="en"))return;
+    out.push(it)});
+  const corps=out.filter(x=>x.k!=="en").slice(-1), en=out.filter(x=>x.k==="en").slice(-1); // une seule de chaque
+  return corps.concat(en);
+}
+function renderAuj(){
+  const p=$("#p-auj"); if(!p)return; const t=todayISO(), A=prevusDu(t);
+  const corpsAuj=A.some(x=>x.k!=="en"&&!estFait(x)), R=aRattraper(A.some(x=>x.k!=="en"));
+  const todo=A.filter(x=>!estFait(x)), principal=todo.find(x=>x.k!=="en")||todo[0]||R[0];
+  const autres=A.filter(x=>x!==principal), autresR=R.filter(x=>x!==principal);
+  let prochain="";
+  if(!A.length&&!R.length){for(let i=1;i<8&&!prochain;i++){const d=addDays(t,i),P=prevusDu(d);if(P.length)prochain=`${i===1?"Demain":jourLong(d).replace(/^./,c=>c.toUpperCase())} : ${P.map(x=>detailIt(x).tag).join(" + ")}`}}
+  p.innerHTML=`<p class="aj-date">Quête du jour · ${jourLong(t)} ${jourMois(t)}</p>
+  ${principal?carteIt(principal,true):`<div class="card aj aj-grande aj-repos"><span class="kicker aj-tag">${A.length?"Tout est fait":"Jour de repos"}</span><h2>${A.length?"Bravo, la journée est faite ✓":"Repos : ton corps progresse aujourd'hui"}</h2><p>${prochain||"Profite, la suite est prévue."}</p></div>`}
+  ${autres.length||autresR.length?`<p class="aj-sous">Aussi aujourd'hui</p>${autres.map(x=>carteIt(x,false)).join("")}${autresR.map(x=>carteIt(x,false,true)).join("")}`:""}
+  ${rondsSemaine()}`;
+  const trouve=k=>A.concat(R).find(x=>x.key===k);
+  p.querySelectorAll("[data-it]").forEach(c=>{const it=trouve(c.dataset.it);if(!it)return;
+    c.querySelector("[data-go-auj]")&&(c.querySelector("[data-go-auj]").onclick=()=>commencer(it));
+    c.querySelector("[data-faite]")&&(c.querySelector("[data-faite]").onclick=()=>commencer(it));
+    c.querySelector("[data-court]")&&(c.querySelector("[data-court]").onclick=()=>commencer(it,true));
+    c.querySelector("[data-deja]")&&(c.querySelector("[data-deja]").onclick=()=>marquer(it));
+    c.querySelector("[data-menu]")&&(c.querySelector("[data-menu]").onclick=()=>{menuOuvert=menuOuvert===it.key?null:it.key;renderAuj()});
+    c.querySelector("[data-sauter]")&&(c.querySelector("[data-sauter]").onclick=()=>{sauter(it.key);menuOuvert=null;toast("Séance sautée : on continue la semaine sans elle.");renderAuj()});
+    c.querySelector("[data-annuler-auj]")&&(c.querySelector("[data-annuler-auj]").onclick=()=>{ouvertCourse=null;renderAuj()});
+    c.querySelectorAll("[data-rpe-auj]").forEach(b=>b.onclick=()=>marquer(it,+b.dataset.rpeAuj))});
+}
+/* ---------- Ma progression : un bloc par activité, un seul dessin, une phrase ---------- */
+function segs(n,f){return `<div class="pg-segs">${Array.from({length:n},(_,i)=>`<i style="--f:${Math.max(0,Math.min(1,f(i)))}"></i>`).join("")}</div>`}
+function renderProg(){
+  const p=$("#p-prog"); if(!p)return; const t=todayISO(), W=weeksPlan(), wi=curWeekIdx(), S=strWeeks();
+  const runFaites=W.reduce((a,w)=>a+w.s.filter(s=>state.run.logs[s.key]).length,0), runPrevues=W.reduce((a,w)=>a+w.s.filter(s=>s.date<=t&&(state.run.logs[s.key]||s.tag!=="Qualité"||s.date===t)).length,0); // séance dure ratée : pas rattrapée, donc pas « en retard »
+  const faciles=Object.entries(state.run.logs).filter(([k,l])=>l.allure&&l.date>=addDays(t,-28)&&!W.some(w=>w.s.some(s=>s.key===k&&s.tag==="Qualité"))).map(([k,l])=>l.allure);
+  const allure=faciles.length?mmss(faciles.reduce((a,b)=>a+b,0)/faciles.length):"";
+  const strF=S.filter(x=>state.str.logs[x.key]).length, strP=S.filter(x=>x.date<=t).length;
+  const E=EPICS.en, enF=epicDone("en"), mois=t.slice(0,7), enMois=state.en.sessions.filter(x=>x.date.slice(0,7)===mois), minMois=enMois.reduce((a,x)=>a+(Number(x.min)||0),0);
+  const tot=daysBetween(E.start,E.end), el=Math.min(tot,Math.max(0,daysBetween(E.start,t))), dansLesTemps=enF>=E.goal*el/tot-1;
+  const ph=(f,p_)=>f>=p_?"à l'heure ✓":`${p_-f} en retard`;
+  p.innerHTML=`
+  <div class="card pg" style="--c:var(--run)"><span class="kicker">Course · plan 10 km</span>
+    <h2>${wi<0?`Départ le ${frDate(W[0]?.monday||state.run.start)}`:wi>=W.length?"Plan terminé":`Semaine ${wi+1} sur ${W.length}`}</h2>
+    ${segs(W.length,i=>W[i].s.filter(s=>state.run.logs[s.key]).length/3)}
+    <p>${runPrevues?`${runFaites} sortie${runFaites>1?"s":""} sur ${runPrevues} prévue${runPrevues>1?"s":""} : ${ph(runFaites,runPrevues)}`:"Aucune sortie prévue pour l'instant."}${allure?`<br>Allure moyenne des sorties faciles (4 sem.) : <b>${allure} /km</b>. Si elle baisse, tu progresses.`:""}</p></div>
+  <div class="card pg" style="--c:var(--str)"><span class="kicker">Renfo · la forge</span>
+    <h2>${strF} séance${strF>1?"s":""} sur ${S.length}</h2>${segs(S.length,i=>state.str.logs[S[i].key]?1:0)}
+    <p>${strP?`${ph(strF,strP)} · chaque séance forge une pièce d'armure.`:"Première séance le "+frDate(S[0]?.date||t)+"."}</p></div>
+  <div class="card pg" style="--c:var(--en)"><span class="kicker">Anglais · ${esc(E.name)}</span>
+    <h2>${enF} séance${enF>1?"s":""} sur ${E.goal}</h2>${segs(15,i=>(enF-i*3)/3)}
+    <p>${dansLesTemps?"Dans les temps ✓":"Un peu en retard : 3 séances par semaine suffisent pour rattraper"} · ce mois-ci : ${enMois.length} séance${enMois.length>1?"s":""}${minMois?`, ${minMois} min`:""}.</p></div>
+  <p class="aj-sous">Le jeu du Carnet</p>
+  <div class="card plus">${[["run","Le voyage et ses boss","--run"],["str","L'armurerie du Veilleur","--str"],["en","La pierre runique et les hauts faits","--en"]].map(([k,t,c])=>`<button class="plus-l" data-voir="${k}" style="--c:var(${c})"><i class="plus-r" aria-hidden="true"></i><b>${t}</b><span aria-hidden="true">›</span></button>`).join("")}</div>`;
+  p.querySelectorAll("[data-voir]").forEach(b=>b.onclick=()=>setTab(b.dataset.voir));
+}
+/* ---------- Menu « ⋯ » ---------- */
+function renderPlus(){
+  const p=$("#p-plus"); if(!p)return;
+  p.innerHTML=`<div class="card plus">${[["en","Anglais","Missions, conversation libre, cartes, séries, journal","--en"],["run","Course","Le plan complet sur 12 semaines, allures, montre, décaler","--run"],["str","Renfo","Toutes les séances, le calendrier, le manuel des exercices","--str"],["set","Réglages","Compte, montre, objectifs, clé Claude","--muted"]].map(([k,t,d,c])=>`<button class="plus-l" data-voir="${k}" style="--c:var(${c})"><i class="plus-r" aria-hidden="true"></i><b>${t}</b><span class="small muted">${d}</span><span aria-hidden="true">›</span></button>`).join("")}</div>`;
+  p.querySelectorAll("[data-voir]").forEach(b=>b.onclick=()=>setTab(b.dataset.voir));
+}
+
+/* ======================================================================
    NAVIGATION
    ====================================================================== */
-let tab="en", lastTab="en";
+let tab="auj", lastTab="auj";
 /* Bouton maison : revient à l'app de la Compagnie (onglet Quêtes) ; ouvert seul, le Carnet mène à l'app */
 document.getElementById("maison").onclick=()=>{try{if(window.parent!==window){window.parent.postMessage({t:"compagnie-retour"},"*");return}}catch(e){}location.href="./"};
-function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);majFocus();try{localStorage.setItem("quetes-tab",t)}catch(e){}}
+function setTab(t){if(t!=="set")lastTab=t;else if(!acct)loadAcct();$("#gear").setAttribute("aria-pressed",t==="set");tab=t;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  const grp=t==="auj"||t==="prog"?t:"plus";document.querySelectorAll(".nav3 button").forEach(b=>b.setAttribute("aria-current",b.dataset.nav===grp?"page":"false"));
+  ["auj","prog","plus","en","run","str","set"].forEach(k=>$("#p-"+k).hidden=k!==t);majFocus();scrollTo(0,0);try{localStorage.setItem("quetes-tab",t)}catch(e){}}
+document.querySelectorAll(".nav3 button").forEach(b=>b.onclick=()=>setTab(b.dataset.nav));
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{setTab(b.dataset.go);requestAnimationFrame(()=>{const c=document.querySelector("#p-"+b.dataset.go+" .prochaine, #p-"+b.dataset.go+" .card");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})})});
 document.addEventListener("click",e=>{const n=e.target.closest("[data-next]");if(!n)return;const t=document.getElementById(n.dataset.next);if(t){t.scrollIntoView({block:"center"});t.click()}});
 $("#gear").onclick=()=>setTab(tab==="set"?lastTab:"set");
-function renderAll(){renderQuestEn();renderQuestRun();renderQuestStr();if(!ses)renderEn();renderRun();if(!pl)renderStr();if(!document.querySelector("#p-set :focus"))renderSet()} // réglages : pas redessinés pendant qu'on tape (sinon la saisie s'effaçait)
+function renderAll(){if(retourAuj&&!ses&&!pl){retourAuj=false;enchainer=null;if(tab!=="auj")setTab("auj")}renderAuj();renderProg();renderPlus();renderQuestEn();renderQuestRun();renderQuestStr();if(!ses)renderEn();renderRun();if(!pl)renderStr();if(!document.querySelector("#p-set :focus"))renderSet()} // réglages : pas redessinés pendant qu'on tape (sinon la saisie s'effaçait)
 renderAll();
-try{const t=localStorage.getItem("quetes-tab");if(t&&t!=="en"&&t!=="set")setTab(t)}catch(e){}
+setTab("auj"); // on ouvre toujours sur « Aujourd'hui »
 try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
 </script>
 <script>
@@ -3009,8 +3238,8 @@ forgeCard=function(S){
   const neuve=now-t<2000?n-1:-1;
   return `<div class="card forge"><span class="kicker" style="color:var(--str)">La forge du Veilleur</span>
     <h2>${n} séance${n>1?"s":""} sur ${tot}</h2>
-    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque jeudi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
-    ${sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:tot-n,max:tot,sous:n>=tot?"":"un jeudi = un coup"})}
+    <p class="story">Figée sur les toits, elle change en pierre les muscles qu'on oublie. Chaque mercredi de forge fissure sa carapace et t'apporte une pièce d'armure.</p>
+    ${sceneBoss({cle:"gargouille",id:"gargouille",kicker:"Boss du renfo",nom:"Gargouille de la Raideur",pv:tot-n,max:tot,sous:n>=tot?"":"un mercredi = un coup"})}
     <div class="forge-tete"><b>Armurerie du Veilleur</b><span class="small muted mono">${n} / ${tot} pièces</span></div>
     ${armurerie(pieces,n,neuve)}
   </div>`};
@@ -3319,7 +3548,7 @@ if(typeof renderAll==="function")try{renderAll()}catch(e){}
 /* Glisser le doigt pour changer d'onglet (21/11/2026) : Anglais ↔ Course ↔ Renfo ; au bout, l'appli passe à son onglet voisin.
  * Ignoré : bord de l'écran (< 30 px), geste court ou pas assez horizontal, champ de saisie, séance guidée en cours, réglages, zone qui défile de côté. */
 (function () {
-  let g = null; const ORDRE = ["en", "run", "str"];
+  let g = null; const ORDRE_DETAIL = ["en", "run", "str"], ORDRE_ACCUEIL = ["auj", "prog", "plus"];
   const saisie = () => { const a = document.activeElement; return !!a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable); };
   const defileCote = el => { for (let n = el; n && n !== document.body; n = n.parentElement) { const s = getComputedStyle(n); if (/(auto|scroll)/.test(s.overflowX) && n.scrollWidth > n.clientWidth + 2) return true; } return false; };
   const occupe = () => (typeof pl !== "undefined" && pl && !pl.done) || (typeof ses !== "undefined" && ses) || document.querySelector("dialog[open]");
@@ -3332,6 +3561,7 @@ if(typeof renderAll==="function")try{renderAll()}catch(e){}
   document.addEventListener("touchend", e => {
     if (!g) return; const t = e.changedTouches[0], dx = t.clientX - g.x, dy = t.clientY - g.y; g = null;
     if (Math.abs(dx) < 70 || Math.abs(dx) < 2 * Math.abs(dy) || saisie() || occupe() || typeof tab === "undefined" || tab === "set") return;
+    const ORDRE = ORDRE_ACCUEIL.includes(tab) ? ORDRE_ACCUEIL : ORDRE_DETAIL;
     const sens = dx < 0 ? 1 : -1, i = ORDRE.indexOf(tab), j = i + sens;
     if (i >= 0 && j >= 0 && j < ORDRE.length) { setTab(ORDRE[j]); window.scrollTo(0, 0); return; }
     try { if (window.parent !== window) window.parent.postMessage({ t: "carnet-glisser", sens: sens }, "*"); } catch (x) {}

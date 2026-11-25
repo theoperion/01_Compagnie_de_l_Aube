@@ -9,7 +9,7 @@ globalThis.COMPAGNIE = {
   VERSION_APP: '2026-11-25-09',
   NUMERO_APP: '14.0',      // +0.1 à chaque livraison
   /* Carnet de quêtes (carnet.html). Changer VERSION_CARNET force le téléphone à recharger le Carnet. */
-  VERSION_CARNET: '2026-11-21-01',
-  NUMERO_CARNET: '4.3'    // +0.1 à chaque livraison
+  VERSION_CARNET: '2026-11-25-01',
+  NUMERO_CARNET: '5.0'    // +0.1 à chaque livraison
 };
 globalThis.API_URL = globalThis.COMPAGNIE.API_URL;
