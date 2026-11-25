@@ -839,6 +839,16 @@
   .rg-leg2 span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; } .rg-leg2 svg { flex: none; }
   /* pages 3 et 4 */
   .rg-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
+  /* schémas en ligne (page « Les boss » et livret de la Saison 1) : ces classes n'avaient pas de style (Théo, 25/11 : « le schéma est mal foutu ») */
+  .rg-ligne { display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .rg-ligne > b { color: var(--gold); font-size: 18px; flex: none; }
+  .rg-bloc { flex: 1 1 0; min-width: 0; display: grid; justify-items: center; align-content: start; gap: 3px; padding: 8px 4px 7px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); font-size: 24px; line-height: 1.1; text-align: center; }
+  .rg-bloc small { font-size: 11px; line-height: 1.25; color: var(--text); font-weight: 600; }
+  .rg-bloc.or { border-color: var(--gold); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent); } .rg-bloc.bleu { border-color: #8ccaff; }
+  .rg-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .rg-grille > div { display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); font-size: 22px; text-align: center; }
+  .rg-grille b { font-size: 12px; } .rg-grille small { font-size: 11px; color: var(--muted); line-height: 1.25; }
+  .rg-rar { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; } .rg-rar span { border: 1.5px solid var(--line); border-radius: 999px; padding: 3px 9px; font-size: 11.5px; font-weight: 700; }
   .rg-conv { display: block; width: 100%; height: 22px; color: var(--gold); }
   .rg-but { display: flex; align-items: center; justify-content: center; gap: 10px; }
   .rg-faux { pointer-events: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
@@ -5214,7 +5224,7 @@ const REGLES_PAGES = [ // refait le 25/11 (Théo : « retravailler les règles �
         (avant ? 'Dès le 1er décembre, <b>plus de doublon</b>' : '<b>Plus de doublon</b>') + ' : si la rareté tirée est complète, le coffre monte d\'un cran (jusqu\'à épique).',
         'Un coffre qui n\'a plus rien pour toi donne des <b>éclats</b> : ' + (avant ? '10, 25, 60 ou 150 (le double dès le 1er décembre)' : '<b>20</b>, <b>50</b>, <b>120</b> ou <b>300</b>') + ' selon sa rareté. Les paliers 6, 11 et 13 en donnent 60.',
         'Touche ton compteur <b>✦</b> : le marchand te vend l\'objet de ton choix. Seul le <b>boss du mois</b> donne <b>sa panoplie</b> (cape, couronne, puis aura).']; } },
-  { t: 'Les boss', s: `<div class="rg-sch"><div class="rg-ligne"><div class="rg-bloc">⚔<small>XP = coups</small></div><b>·</b><div class="rg-bloc">🗡<small>contrer son coup</small></div><b>·</b><div class="rg-bloc or">🏆<small>victoire</small></div></div></div>`,
+  { t: 'Les boss', s: `<div class="rg-sch"><div class="rg-ligne"><div class="rg-bloc">⚔️<small>tes quêtes le frappent</small></div><b>→</b><div class="rg-bloc">🗡️<small>contre son coup spécial</small></div><b>→</b><div class="rg-bloc or">🏆<small>victoire et coffre</small></div></div></div>`,
     p: ['Un boss par semaine, un par mois. Ses PV suivent votre rythme : <b>toute l\'XP de vos quêtes le frappe</b>, chaque raté le soigne.',
       '<b>Coups spéciaux</b> le mardi et le jeudi (le samedi pour le boss du mois), annoncés la veille : la quête marquée « 🗡 » le contre et ouvre une <b>Brèche</b> (+25 %).',
       'Sous 30 % de PV il est <b>Enragé</b>, sous 20 % il peut tenter un <b>dernier recours</b>. Un boss de la semaine ne tombe <b>jamais avant mercredi</b>.',

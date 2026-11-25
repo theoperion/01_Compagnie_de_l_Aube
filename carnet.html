@@ -620,12 +620,12 @@ html.calme .fx-coup-eclat,body.calme .fx-coup-eclat{display:none}
 .nav3 button[aria-current="page"]{background:var(--surface2);color:var(--fg);box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 0 1px var(--line2)}
 .aj-date{margin:6px 2px 0;font-weight:800;color:var(--muted);font-size:.85rem}
 .aj{border-left:4px solid var(--c);display:grid;gap:6px}
-.aj h2{margin:0;font-size:1.28rem;line-height:1.25} .aj-petite h2{font-size:1rem} .aj p{margin:0;color:var(--fg);opacity:.86;line-height:1.45}
+.aj h2{margin:0;font-size:1.08rem;line-height:1.25} .aj-petite h2{font-size:1rem} .aj p{margin:0;color:var(--fg);opacity:.86;line-height:1.4;font-size:.9rem} /* Théo 25/11 : cartes trop grosses */
 .card>.kicker.aj-tag{width:auto!important;max-width:none;display:flex!important;justify-content:flex-start!important} .aj-tag .aj-min{margin-left:auto}
 .aj-tag{display:flex;justify-content:space-between;gap:8px;font:800 .72rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
 .aj-min{color:var(--muted);letter-spacing:.04em;text-transform:none;font-weight:700}
 .aj-act{display:grid;gap:6px;margin-top:4px;justify-items:stretch}
-.aj-act .btn.big{min-height:50px;font-size:1.05rem}.aj-grande{gap:5px;padding-top:12px;padding-bottom:10px}.aj-date{margin-top:2px!important}
+.aj-act .btn.big{min-height:44px;font-size:.98rem;padding-top:6px;padding-bottom:6px}.aj-grande{gap:4px;padding:10px 12px 8px 14px}.aj-date{margin-top:2px!important}
 .aj-petite .aj-act .btn.big{min-height:46px;font-size:.95rem}
 .aj-petite .btn.primary{background:transparent!important;color:var(--c)!important;border:1.5px solid var(--c)!important;box-shadow:none!important}
 .btn.primary.en{background:var(--en);border-color:var(--en);color:#1a1230}
@@ -3060,7 +3060,7 @@ function carteIt(it,grande,glisse){
   const btns=f?`<span class="pill ok">✓ Faite</span>`
     :it.k==="run"?(ouvertCourse===it.key?`<div class="aj-rpe"><span class="small">Comment c'était ?</span><div class="row">${[["Facile",3],["Moyen",5],["Dur",7],["Très dur",9]].map(([l,v])=>`<button class="btn sm" data-rpe-auj="${v}">${l}</button>`).join("")}</div><button class="btn sm" data-annuler-auj>Annuler</button></div>`
         :`<button class="btn primary big run" data-faite>C'est fait</button>${montre?.ok?'<p class="small muted">Ta montre la cochera toute seule après la sortie.</p>':""}`)
-    :it.k==="str"?`<button class="btn primary big str" data-go-auj>Commencer la séance guidée</button><button class="lien" data-deja>Déjà faite</button>`
+    :it.k==="str"?`<button class="btn primary big str" data-go-auj>Commencer (guidé)</button><button class="lien" data-deja>Déjà faite</button>`
     :`<button class="btn primary big en" data-go-auj>Commencer</button><button class="lien" data-court>Pas le temps : version 5 min (cartes)</button>`;
   const sauter=glisse&&!f?`<button class="lien" data-sauter="${esc(it.key)}">La sauter</button>`:"";
   return `<div class="card aj ${grande?"aj-grande":"aj-petite"} ${f?"aj-fait":""}" data-it="${esc(it.key)}" style="--c:${COUL[it.k]}">
