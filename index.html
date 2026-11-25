@@ -1008,8 +1008,20 @@
   @keyframes cofLeve { 0% { opacity: 0; transform: translateY(48px) scale(.4); } 45% { opacity: 1; } 100% { opacity: 1; transform: translateY(0) scale(1); } }
   @keyframes cofTombe { 0% { opacity: 0; transform: translateY(-58px); } 30% { opacity: 1; } 100% { opacity: 1; transform: translateY(0); } }
   @keyframes cofEtinc { 0% { opacity: 0; transform: rotate(var(--a)) translateX(10px) rotate(45deg) scale(.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateX(70px) rotate(45deg) scale(.3); } }
-  body.calme #coffreOv *, body.calme #coffreOv *::before { animation: none !important; } body.calme .cof-etinc, body.calme .cof-faisceau { display: none; }
-  @media (prefers-reduced-motion: reduce) { #coffreOv *, #coffreOv *::before { animation: none !important; } .cof-etinc, .cof-faisceau { display: none; } }
+  .cof-halo { position: absolute; left: 50%; top: 50%; width: 170px; height: 170px; margin: -85px 0 0 -85px; border-radius: 50%; pointer-events: none; opacity: 0;
+    background: radial-gradient(circle, color-mix(in srgb, var(--rc) 55%, transparent), transparent 68%); }
+  .cof-box.cof-anim .cof-halo { animation: cofHalo var(--ts) ease-in forwards; }
+  .cof-gem { display: flex; gap: 10px; justify-content: center; margin-top: -2px; } .cof-gem i { width: 12px; height: 12px; transform: rotate(45deg); border-radius: 2px; border: 1.5px solid color-mix(in srgb, var(--gc) 60%, #000); background: #2a2430; }
+  .cof-gem i.on { background: var(--gc); box-shadow: 0 0 10px var(--gc); } .cof-box.cof-anim .cof-gem i.on { opacity: .25; background: #2a2430; box-shadow: none; animation: cofGem .28s ease-out var(--gd) forwards; }
+  .cof-passer { margin: 6px 0 0; font-size: 11px; opacity: .55; letter-spacing: .04em; }
+  .cof-eclair { position: fixed; inset: 0; pointer-events: none; z-index: 2; background: #fff; opacity: 0; animation: cofEclair .5s ease-out forwards; } .cof-eclair.r-legendaire { background: radial-gradient(circle, #fff6d8, #ffc46b 60%, transparent); animation-duration: .8s; }
+  .cof-box.sec { animation: cofSec .5s ease-out; }
+  @keyframes cofHalo { 0% { opacity: 0; transform: scale(.5); } 100% { opacity: 1; transform: scale(1.25); } }
+  @keyframes cofGem { 0% { opacity: .25; transform: rotate(45deg) scale(.6); background: #2a2430; } 60% { transform: rotate(45deg) scale(1.5); } 100% { opacity: 1; transform: rotate(45deg) scale(1); background: var(--gc); box-shadow: 0 0 10px var(--gc); } }
+  @keyframes cofEclair { 0% { opacity: .9; } 100% { opacity: 0; } }
+  @keyframes cofSec { 0%, 100% { transform: none; } 20% { transform: translate(-6px, 3px); } 40% { transform: translate(5px, -4px); } 60% { transform: translate(-4px, 2px); } 80% { transform: translate(2px, -1px); } }
+  body.calme #coffreOv *, body.calme #coffreOv *::before { animation: none !important; } body.calme .cof-etinc, body.calme .cof-faisceau, body.calme .cof-eclair, body.calme .cof-halo, body.calme .cof-passer { display: none; }
+  @media (prefers-reduced-motion: reduce) { #coffreOv *, #coffreOv *::before { animation: none !important; } .cof-etinc, .cof-faisceau, .cof-eclair, .cof-halo, .cof-passer { display: none; } }
   .trainee { position: fixed; z-index: 80; pointer-events: none; font-style: normal; font-size: 16px; color: #ffe27a; text-shadow: 0 0 6px rgba(255,210,110,.8); animation: trainee 1s ease-out forwards; }
   .trainee.tr_petales { color: #f7b6c8; } .trainee.tr_flammes { color: #ff9a3c; }
   @keyframes trainee { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.4); opacity: 0; } }
@@ -5308,6 +5320,10 @@ function coffreSvg(type) {
 }
 /* Ouverture en 3 temps (secousses croissantes → couvercle qui bascule + faisceau → l'objet s'élève) : durées par coffre, en ms */
 const COF_TEMPS = { commun: [380, 220, 300], rare: [520, 260, 380], epique: [700, 300, 450], legendaire: [940, 360, 500] };
+/* Montée selon ce qui SORT (Théo, 25/11 : « l'ouverture du coffre, pas ouf ») : 1,5 s pour un commun → 3 s pour un légendaire, les gemmes s'allument
+   une à une jusqu'à la rareté tirée, éclair à l'épique, éclair + secousse + gerbe au légendaire. Un toucher passe tout. */
+const COF_MONTEE = { commun: [900, 300, 400], rare: [1250, 350, 480], epique: [1650, 420, 600], legendaire: [2100, 520, 800] };
+const RAR_ORDRE = ['commun', 'rare', 'epique', 'legendaire'];
 const COF_LUEUR = { commun: '#a8d88f', rare: '#8ccaff', epique: '#d0b8ff', legendaire: '#ffc46b' };
 /** Petit tas de cristaux (éclats) qui tombent un à un */
 function tasEclats() {
@@ -5328,11 +5344,13 @@ function ouvrirUnCoffre() {
   if (!ov) { ov = document.createElement('div'); ov.id = 'coffreOv'; document.body.appendChild(ov); }
   const o = tirerCoffreLocal(c, state), jourTirage = state.today; // le moteur tire avec ce même jour (coffre ouvert à cheval sur minuit)
   const xo = o.item ? cosmItem(o.item) : null, rar = (xo && xo.rarete) || o.rarete || c.type; // le faisceau prend la couleur de ce qui sort
-  const [tS, tL, tR] = COF_TEMPS[c.type] || COF_TEMPS.rare;
+  const [tS, tL, tR] = COF_MONTEE[rar] || COF_TEMPS[c.type] || COF_TEMPS.rare, iR = Math.max(0, RAR_ORDRE.indexOf(rar));
+  const gemmes = `<div class="cof-gem" aria-hidden="true">${RAR_ORDRE.map((r, i) => `<i class="${i <= iR ? 'on' : ''}" style="--gc:${COF_LUEUR[r]};--gd:${Math.round(tS * (i + 1) / (iR + 2))}ms"></i>`).join('')}</div>`;
   const anime = confort().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-  ov.innerHTML = `<div class="cof-box ${anime ? 'cof-anim' : ''}" data-cof-vite="1" style="--ts:${tS}ms;--tl:${tL}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><p class="muted">${esc(c.origine || '')}</p><div class="cof r-${c.type}"><i class="cof-faisceau"></i>${coffreSvg(c.type)}</div><p>Coffre ${esc((RARETE_NOM[c.type] || '').toLowerCase())}</p><p class="muted" style="font-size:12px">Ouverture…</p></div>`;
+  ov.innerHTML = `<div class="cof-box ${anime ? 'cof-anim' : ''}" data-cof-vite="1" style="--ts:${tS}ms;--tl:${tL}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><p class="muted">${esc(c.origine || '')}</p><div class="cof r-${c.type}"><i class="cof-halo"></i><i class="cof-faisceau"></i>${coffreSvg(c.type)}</div>${gemmes}<p>Coffre ${esc((RARETE_NOM[c.type] || '').toLowerCase())}</p><p class="muted" style="font-size:12px">Ouverture…</p></div>`;
+  if (anime) ov.querySelector('.cof-box').insertAdjacentHTML('beforeend', '<p class="cof-passer">touche pour passer</p>');
   ov.classList.add('on'); document.body.classList.add('bloque');
-  if (anime) { setTimeout(() => vib(12), tS * .5); setTimeout(() => vib(20), tS * .85); setTimeout(() => vib(35), tS); } // les secousses se sentent aussi
+  if (anime) { RAR_ORDRE.slice(0, iR + 1).forEach((r, i) => setTimeout(() => vib(10 + i * 8), tS * (i + 1) / (iR + 2))); setTimeout(() => vib(iR >= 3 ? [40, 30, 80] : 35), tS); } // une vibration par gemme, puis l'ouverture
   // l'état local avance tout de suite (coffre retiré, objet ou éclats ajoutés)
   state = appliquerCoffre(copie(state), c.source, o);
   coffresEnVol[c.source] = o;
@@ -5353,9 +5371,11 @@ function ouvrirUnCoffre() {
   coffreRevele = (direct) => {
     coffreRevele = null;
     const x = o.item ? cosmItem(o.item) : null, leve = anime && !direct; // un toucher : le résultat tout de suite, sans montée
-    const etinc0 = leve ? `<span class="cof-etinc">${Array.from({ length: 7 }, (_, i) => `<i style="--a:${-150 + i * 20}deg;--d:${(i % 3) * 60}ms"></i>`).join('')}</span>` : '';
+    const nE = rar === 'legendaire' ? 18 : rar === 'epique' ? 12 : 7, pasE = rar === 'legendaire' ? 360 / nE : 20, depE = rar === 'legendaire' ? 0 : -150;
+    const etinc0 = leve ? `<span class="cof-etinc">${Array.from({ length: nE }, (_, i) => `<i style="--a:${depE + i * pasE}deg;--d:${(i % 3) * 60}ms"></i>`).join('')}</span>` : '';
+    const eclair = leve && (rar === 'epique' || rar === 'legendaire') ? `<i class="cof-eclair r-${rar}"></i>` : '';
     const etinc = (leve ? '<i class="cof-faisceau fin"></i>' : '') + etinc0; // le faisceau reste sous l'objet, qui s'élève dedans
-    ov.innerHTML = `<div class="cof-box ouvert ${leve ? 'leve' : ''}" style="--tr:${tR}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
+    ov.innerHTML = `${eclair}<div class="cof-box ouvert ${leve ? 'leve' : ''} ${leve && rar === 'legendaire' ? 'sec' : ''}" style="--tr:${tR}ms;--rc:${COF_LUEUR[rar] || COF_LUEUR.commun}"><div class="cof-rayons r-${x ? x.rarete : 'commun'}"></div>
       ${x ? `<div class="cof-duo"><div class="cof-obj">${apercuCosm(x)}${etinc}</div>${herosPortant(x)}</div><h3 class="r-${x.rarete}">${esc(x.nom)}</h3><p><b class="cof-rar r-${x.rarete}">${RARETE_NOM[x.rarete]}</b> · ${esc((SLOTS_COSM.find(e => e.id === x.slot) || {}).nom || '')}</p>${x.slot === 'sceau' ? '<p class="cof-aide">Porté, il se pose sur chaque quête que tu valides.</p>' : ''}
         <button class="btn or plein" data-cof-porter="${x.slot}|${x.id}">Le porter</button>` : `<div class="cof-obj">${tasEclats()}${etinc}</div><h3><span class="cof-n">${leve ? 0 : o.eclats || 0}</span> éclats</h3><p>${texteEclatsCoffre(o)} : voici des éclats pour le marchand.</p>`}
       ${(state.armurerie.coffres || []).length ? `<div class="cof-liens">${x ? `<button class="cof-lien" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>` : `<button class="btn or plein" data-cof-fermer="1">Coffre suivant (${state.armurerie.coffres.length})</button>`}<button class="cof-lien" data-cof-plus-tard="1">Plus tard</button></div>` : `<button class="${x ? 'cof-lien' : 'btn or plein'}" data-cof-fermer="1">Fermer</button>`}</div>`;
