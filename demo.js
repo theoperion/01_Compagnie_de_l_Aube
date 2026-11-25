@@ -22,7 +22,8 @@ window.demo = (() => {
     { nom: 'Taverne de la Compagnie', sous: 'Voir des amis', categorie: 'Perso', carac: 'Charisme', carac2: '', repetable: true, echeance: '', xp: 90, fois: 0 },
     { nom: 'Déchiffrer un grimoire', sous: 'Lire un chapitre', categorie: 'Perso', carac: 'Sagesse', carac2: 'Intelligence', repetable: true, echeance: '', xp: 120, fois: 2 },
     { nom: 'L\'Alchimie des fourneaux', sous: 'Cuisiner un vrai repas maison', categorie: 'Perso', carac: 'Volonté', carac2: '', repetable: true, echeance: '', xp: 75, fois: 0 },
-    { nom: 'Pèlerinage aux Anciens', sous: 'Aller voir mes grands-parents à Perpignan', categorie: 'Perso', carac: 'Charisme', carac2: 'Sagesse', repetable: true, echeance: '', xp: 225, fois: 0 }
+    { nom: 'Pèlerinage aux Anciens', sous: 'Aller voir mes grands-parents à Perpignan', categorie: 'Perso', carac: 'Charisme', carac2: 'Sagesse', repetable: true, echeance: '', xp: 225, fois: 0 },
+    { nom: 'Entraînement de Force', sous: '20 pompes, en plusieurs fois si besoin', categorie: 'Perso', carac: 'Force', carac2: '', repetable: false, entrainement: true, echeance: '', xp: 80, fois: 0 }
   ].map(x => Object.assign(x, { jour: vide() }));
   const objectifs = [
     { nom: 'Le Codex des Langues Oubliées', sous: 'Anglais : 60 séances avant fin mars', categorie: 'Perso', habitude: 'Maîtrise de la Langue Ancienne', debut: ilYa(20), echeance: ilYa(-140), visees: 60, recompense: 1500, faites: 9 },
