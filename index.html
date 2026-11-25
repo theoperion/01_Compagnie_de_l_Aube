@@ -5914,7 +5914,10 @@ document.addEventListener('click', e => {
   const k = d.dataset.bkDit; bkDitOuvert[k] = !bkDitOuvert[k];
   d.classList.toggle('ouvert', bkDitOuvert[k]); d.setAttribute('aria-expanded', bkDitOuvert[k] ? 'true' : 'false');
 });
-document.addEventListener('click', e => { const c = e.target.closest('[data-bk-coup]'); if (!c) return; const o = c.classList.toggle('ouvert'); c.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+/* Ligne du coup ouverte au toucher : mémorisée, sinon l'écran redessiné (état reçu du moteur ~1 s après) la refermait (Théo, 25/11) */
+const coupsOuverts = new Set();
+document.addEventListener('click', e => { const c = e.target.closest('[data-bk-coup]'); if (!c) return; const o = c.classList.toggle('ouvert'); c.setAttribute('aria-expanded', o ? 'true' : 'false');
+  const k = c.dataset.bkCoup; if (o) coupsOuverts.add(k); else coupsOuverts.delete(k); });
 /** Barre de vie : rouge plein = PV « gagnés » par le boss, hachures = PV regagnés par la riposte */
 function barreVie(c, cls) {
   return `<div class="bk-vie ${cls || ''}" role="img" aria-label="${nbF(c.pv)} PV sur ${nbF(c.max)}${c.soin ? ', dont ' + nbF(c.soin) + ' regagnés par la riposte' : ''}">
@@ -6040,7 +6043,7 @@ const sansVerbe = t => String(t || '').replace(/^[^:]{0,24}:\s*/, '').replace(/\
 function coupLigneB(b) {
   if (!b.nouvellesRegles || b.statut !== 'En cours') return '';
   const c = b.coupDuJour, d = b.coupDemain; let h = '';
-  const ligne = (cls, ic, tete, suite, annonce) => `<button class="bf-coup ${cls}" data-bk-coup="1" aria-expanded="false"><span class="ic"><span>${ic}</span></span><span class="tx">${tete}${suite ? ' · <em>' + suite + '</em>' : ''}<small>${esc(annonce)}</small></span></button>`;
+  const ligne = (cls, ic, tete, suite, annonce, k = b.type + '|' + (cls === 'demain' ? 'demain' : 'jour') + '|' + annonce) => `<button class="bf-coup ${cls}${coupsOuverts.has(k) ? ' ouvert' : ''}" data-bk-coup="${esc(k)}" aria-expanded="${coupsOuverts.has(k)}"><span class="ic"><span>${ic}</span></span><span class="tx">${tete}${suite ? ' · <em>' + suite + '</em>' : ''}<small>${esc(annonce)}</small></span></button>`;
   if (c) {
     const neutre = c.capacite === 'vol' || c.capacite === 'hurlement';
     const [cls, suite] = c.etourdi ? ['ok', '😵 étourdi, son coup échoue'] : neutre ? (c.brise ? ['ok', '🙏 aucun raté, tenez jusqu\'à minuit'] : ['ko', c.capacite === 'vol' ? '🃏 joker volé' : '📢 riposte ×2'])
